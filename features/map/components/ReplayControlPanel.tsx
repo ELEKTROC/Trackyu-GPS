@@ -698,7 +698,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                   setIsVehicleDropdownOpen(true);
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-transparent border-none text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
+                className="bg-transparent border-none text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] flex-1"
               />
               {selectedVehicle && !vehicleSearch && (
                 <span className="text-sm font-medium text-slate-700">{selectedVehicle.name}</span>
@@ -723,7 +723,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                             setVehicleSearch('');
                             setIsVehicleDropdownOpen(false);
                           }}
-                          className={`px-4 py-2 cursor-pointer hover:bg-blue-50 flex items-center justify-between ${selectedVehicle?.id === v.id ? 'bg-blue-50 border-l-2 border-blue-500' : ''}`}
+                          className={`px-4 py-2 cursor-pointer hover:bg-[var(--primary-dim)] flex items-center justify-between ${selectedVehicle?.id === v.id ? 'bg-[var(--primary-dim)] border-l-2 border-[var(--primary)]' : ''}`}
                         >
                           <div>
                             <p className="text-sm font-medium text-slate-700">{v.name}</p>
@@ -746,7 +746,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
               <select 
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value as PeriodPreset)}
-                className="bg-slate-50 border border-slate-200 rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-slate-50 border border-slate-200 rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                 title="Période"
               >
                 {Object.entries(PERIOD_PRESETS).map(([key, label]) => (
@@ -759,7 +759,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
               <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200">
                 <input 
                   type="date" 
-                  className="bg-transparent border-none text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-transparent border-none text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                   value={dateRange.start.toISOString().split('T')[0]}
                   onChange={(e) => {
                     const date = new Date(e.target.value);
@@ -771,7 +771,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                 <span className="text-slate-400">-</span>
                 <input 
                   type="date" 
-                  className="bg-transparent border-none text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-transparent border-none text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                   value={dateRange.end.toISOString().split('T')[0]}
                   onChange={(e) => {
                     const date = new Date(e.target.value);
@@ -789,10 +789,10 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
           <button 
             onClick={handleExportVideo}
             disabled={isExporting}
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors text-sm font-medium disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-dim)] text-[var(--primary)] rounded-md hover:bg-[var(--primary-dim)] transition-colors text-sm font-medium disabled:opacity-50"
           >
             {isExporting ? (
-              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
             ) : (
               <Camera size={16} />
             )}
@@ -835,21 +835,21 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
         {/* Playback Controls */}
         <div className="bg-white shadow-lg rounded-full px-6 py-2 mb-4 flex items-center gap-6 border border-slate-200 print:hidden">
           <button 
-            className="text-slate-500 hover:text-blue-600 transition-colors"
+            className="text-slate-500 hover:text-[var(--primary)] transition-colors"
             onClick={() => onProgressChange(Math.max(0, progress - 10))}
             title="Reculer de 10%"
           >
             <Rewind size={20} />
           </button>
           <button 
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors ${isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-blue-600 hover:bg-blue-700'}`}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors ${isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-[var(--primary)] hover:bg-[var(--primary-light)]'}`}
             onClick={onPlayPause}
             title={isPlaying ? 'Pause' : 'Lecture'}
           >
             {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
           </button>
           <button 
-            className="text-slate-500 hover:text-blue-600 transition-colors"
+            className="text-slate-500 hover:text-[var(--primary)] transition-colors"
             onClick={() => onProgressChange(Math.min(100, progress + 10))}
             title="Avancer de 10%"
           >
@@ -857,7 +857,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
           </button>
           <div className="h-4 w-px bg-slate-300 mx-2"></div>
           <select 
-            className="bg-transparent text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+            className="bg-transparent text-sm font-medium text-slate-600 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] cursor-pointer"
             value={playbackSpeed}
             onChange={(e) => onSpeedChange(Number(e.target.value))}
             title="Vitesse de lecture"
@@ -876,7 +876,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
           {/* Progress bar */}
           <div className="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
             <div 
-              className="h-full bg-blue-600 transition-all duration-100"
+              className="h-full bg-[var(--primary)] transition-all duration-100"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -898,14 +898,14 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                   }}
                   className={`flex items-center gap-2 px-4 h-full border-b-2 transition-colors text-sm font-medium ${
                     activeTab === tab.id 
-                      ? 'border-blue-600 text-blue-600 bg-blue-50/50' 
+                      ? 'border-[var(--primary)] text-[var(--primary)] bg-[var(--primary-dim)]/50' 
                       : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
                   }`}
                 >
                   <tab.icon size={16} />
                   {tab.label}
                   {tab.id === 'STOPS' && stops.length > 0 && (
-                    <span className="ml-1 px-1.5 py-0.5 text-xs bg-blue-100 text-blue-600 rounded-full">{stops.length}</span>
+                    <span className="ml-1 px-1.5 py-0.5 text-xs bg-[var(--primary-dim)] text-[var(--primary)] rounded-full">{stops.length}</span>
                   )}
                   {tab.id === 'EVENTS' && speedingEvents.length > 0 && (
                     <span className="ml-1 px-1.5 py-0.5 text-xs bg-red-100 text-red-600 rounded-full">{speedingEvents.length}</span>
@@ -983,7 +983,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
                       {stops.map((stop, index) => (
-                        <tr key={stop.id} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20 cursor-pointer" onClick={() => onStopClick?.(stop)}>
+                        <tr key={stop.id} className="hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/20 cursor-pointer" onClick={() => onStopClick?.(stop)}>
                           <td className="px-4 py-2 font-medium text-slate-700 dark:text-slate-300">{index + 1}</td>
                           <td className="px-4 py-2">
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${stop.type === 'STOP' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}`}>
@@ -1001,7 +1001,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                             {stop.address || `${stop.location.lat.toFixed(4)}, ${stop.location.lng.toFixed(4)}`}
                           </td>
                           <td className="px-4 py-2">
-                            <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">Voir sur carte</button>
+                            <button className="text-[var(--primary)] hover:text-[var(--primary)] text-xs font-medium">Voir sur carte</button>
                           </td>
                         </tr>
                       ))}
@@ -1036,7 +1036,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     </thead>
                     <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
                       {tripSegments.map((trip, index) => (
-                        <tr key={trip.id} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20">
+                        <tr key={trip.id} className="hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/20">
                           <td className="px-4 py-2 font-medium text-slate-700 dark:text-slate-300">{index + 1}</td>
                           <td className="px-4 py-2">{trip.startTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</td>
                           <td className="px-4 py-2">{trip.endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</td>
@@ -1092,7 +1092,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           <td className="px-4 py-2 font-medium text-red-600">+{(event.speed - event.maxAllowed).toFixed(0)} km/h</td>
                           <td className="px-4 py-2">{event.duration.toFixed(0)}s</td>
                           <td className="px-4 py-2">
-                            <button className="text-blue-600 hover:text-blue-800 text-xs font-medium">Voir sur carte</button>
+                            <button className="text-[var(--primary)] hover:text-[var(--primary)] text-xs font-medium">Voir sur carte</button>
                           </td>
                         </tr>
                       ))}
@@ -1147,9 +1147,9 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           type="checkbox"
                           checked={showSpeedOnFuelChart}
                           onChange={(e) => setShowSpeedOnFuelChart(e.target.checked)}
-                          className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                          className="w-3.5 h-3.5 rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                         />
-                        <Gauge className="w-3.5 h-3.5 text-blue-500" />
+                        <Gauge className="w-3.5 h-3.5 text-[var(--primary)]" />
                         <span className="text-slate-600">Vitesse</span>
                       </label>
                       <label className="flex items-center gap-1.5 cursor-pointer select-none">
@@ -1383,7 +1383,7 @@ const StatCard: React.FC<{
   color: 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'cyan';
 }> = ({ icon: Icon, label, value, color }) => {
   const colors = {
-    blue: 'bg-blue-50 border-blue-200 text-blue-700',
+    blue: 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)]',
     purple: 'bg-purple-50 border-purple-200 text-purple-700',
     green: 'bg-green-50 border-green-200 text-green-700',
     orange: 'bg-orange-50 border-orange-200 text-orange-700',
@@ -1392,7 +1392,7 @@ const StatCard: React.FC<{
   };
 
   const iconColors = {
-    blue: 'text-blue-500',
+    blue: 'text-[var(--primary)]',
     purple: 'text-purple-500',
     green: 'text-green-500',
     orange: 'text-orange-500',

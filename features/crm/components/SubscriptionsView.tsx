@@ -530,7 +530,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
       {!isMobile && <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="p-3 border-l-4 border-l-blue-500">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-blue-600">
+            <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
               <Truck className="w-5 h-5" />
             </div>
             <div>
@@ -596,7 +596,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
             Filtres
             {(statusFilter !== 'ALL' || resellerFilter !== 'ALL' || cycleFilter !== 'ALL') && (
-              <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+              <span className="absolute -top-1.5 -right-1.5 bg-[var(--primary-dim)]0 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
                 {(statusFilter !== 'ALL' ? 1 : 0) + (resellerFilter !== 'ALL' ? 1 : 0) + (cycleFilter !== 'ALL' ? 1 : 0)}
               </span>
             )}
@@ -647,7 +647,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
         </span>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+          className="flex items-center gap-2 px-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-medium"
         >
           <Plus className="w-4 h-4" />
           Créer un abonnement
@@ -656,8 +656,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
 
       {/* Bulk actions bar */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+        <div className="flex items-center gap-3 px-4 py-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg">
+          <span className="text-sm font-medium text-[var(--primary)] dark:text-[var(--primary)]">
             {selectedIds.size} sélectionné{selectedIds.size > 1 ? 's' : ''}
           </span>
           <div className="flex gap-2 ml-auto">
@@ -675,8 +675,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
               <Trash2 className="w-3.5 h-3.5" />
               Supprimer
             </button>
-            <button onClick={() => setSelectedIds(new Set())} className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-800 rounded">
-              <X className="w-3.5 h-3.5 text-blue-500" />
+            <button onClick={() => setSelectedIds(new Set())} className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded">
+              <X className="w-3.5 h-3.5 text-[var(--primary)]" />
             </button>
           </div>
         </div>
@@ -729,9 +729,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             <thead className="bg-slate-50 dark:bg-slate-900 sticky top-0 dark:text-white">
               <tr>
                 <th className="px-3 py-3 w-10">
-                  <button onClick={toggleSelectAll} className="text-slate-400 hover:text-blue-600">
+                  <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[var(--primary)]">
                     {selectedIds.size === paginatedSubscriptions.length && paginatedSubscriptions.length > 0
-                      ? <CheckSquare className="w-4 h-4 text-blue-500" />
+                      ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                       : <Square className="w-4 h-4" />}
                   </button>
                 </th>
@@ -844,12 +844,12 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                       key={sub.id}
                       className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
                         isExpired ? 'bg-red-50/50 dark:bg-red-900/10' : isExpiringSoon ? 'bg-amber-50/50 dark:bg-amber-900/10' : ''
-                      } ${selectedIds.has(sub.id) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                      } ${selectedIds.has(sub.id) ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}
                     >
                       <td className="px-3 py-3">
-                        <button onClick={() => toggleSelect(sub.id)} className="text-slate-400 hover:text-blue-600">
+                        <button onClick={() => toggleSelect(sub.id)} className="text-slate-400 hover:text-[var(--primary)]">
                           {selectedIds.has(sub.id)
-                            ? <CheckSquare className="w-4 h-4 text-blue-500" />
+                            ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                             : <Square className="w-4 h-4" />}
                         </button>
                       </td>
@@ -857,7 +857,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         <td className="px-4 py-3">
                           <button
                             onClick={() => setSelectedSubscription(sub)}
-                            className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                            className="font-mono text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] hover:underline cursor-pointer"
                           >
                             {sub.subscriptionNumber || '-'}
                           </button>
@@ -893,7 +893,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         <td className="px-4 py-3">
                           <button
                             onClick={() => handleViewContract(sub.contractId)}
-                            className="font-mono text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                            className="font-mono text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1"
                           >
                             {sub.contractNumber}
                             <ExternalLink className="w-3 h-3" />
@@ -1026,7 +1026,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                   }}
                                   className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
                                 >
-                                  <Eye className="w-4 h-4 text-blue-500" />
+                                  <Eye className="w-4 h-4 text-[var(--primary)]" />
                                   Modifier
                                 </button>
                                 <button
@@ -1233,7 +1233,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                <Plus className="w-5 h-5 text-blue-500" />
+                <Plus className="w-5 h-5 text-[var(--primary)]" />
                 Sélectionner un véhicule
               </h2>
               <button
@@ -1256,13 +1256,13 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     <button
                       key={v.id}
                       onClick={() => setCreateVehicle(v)}
-                      className="w-full flex items-center gap-3 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 text-left transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 hover:border-[var(--primary)] text-left transition-colors"
                     >
                       <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
                         <Truck className="w-4 h-4 text-slate-500" />
                       </div>
                       <div>
-                        <p className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">{v.id}</p>
+                        <p className="font-mono text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)]">{v.id}</p>
                         <p className="text-sm font-medium text-slate-800 dark:text-white">{v.plate}</p>
                         {v.name && <p className="text-xs text-slate-500">{v.name}</p>}
                       </div>
@@ -1281,7 +1281,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                <Plus className="w-5 h-5 text-blue-500" />
+                <Plus className="w-5 h-5 text-[var(--primary)]" />
                 Créer un abonnement
               </h2>
               <button

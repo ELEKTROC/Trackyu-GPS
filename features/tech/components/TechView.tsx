@@ -9,7 +9,7 @@ import {
 import { Card } from '../../../components/Card';
 import { Modal } from '../../../components/Modal';
 import { Tabs } from '../../../components/Tabs';
-import { Intervention, DeviceStock } from '../../../types';
+import type { Intervention, DeviceStock } from '../../../types';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -33,7 +33,7 @@ import { useMobileViewTabs } from '../../../hooks/useMobileViewTabs';
 
 const STOCK_STATUS_LABELS: Record<string, { label: string; bg: string; text: string }> = {
   IN_STOCK: { label: 'Disponible', bg: 'bg-green-100', text: 'text-green-700' },
-  INSTALLED: { label: 'Installé', bg: 'bg-blue-100', text: 'text-blue-700' },
+  INSTALLED: { label: 'Installé', bg: 'bg-[var(--primary-dim)]', text: 'text-[var(--primary)]' },
   RMA: { label: 'En SAV', bg: 'bg-red-100', text: 'text-red-700' },
   RMA_PENDING: { label: 'SAV en attente', bg: 'bg-orange-100', text: 'text-orange-700' },
   SENT_TO_SUPPLIER: { label: 'Envoyé fournisseur', bg: 'bg-purple-100', text: 'text-purple-700' },
@@ -49,7 +49,7 @@ const getStockStatusStyle = (status: string) => {
 
 const TECH_TABS = [
   { id: 'OVERVIEW', label: 'Vue d\'ensemble', icon: PieChart,  color: 'bg-purple-500', description: 'Statistiques et KPIs' },
-  { id: 'LIST',     label: 'Liste',           icon: Table,     color: 'bg-blue-500',   description: 'Toutes les interventions' },
+  { id: 'LIST',     label: 'Liste',           icon: Table,     color: 'bg-[var(--primary-dim)]0',   description: 'Toutes les interventions' },
   { id: 'PLANNING', label: 'Planning',        icon: Calendar,  color: 'bg-orange-500', description: 'Calendrier des interventions' },
   { id: 'MAP',      label: 'Radar',           icon: MapIcon,   color: 'bg-teal-500',   description: 'Carte des techniciens' },
   { id: 'STOCK',    label: 'Stock',           icon: Box,       color: 'bg-amber-500',  description: 'Gestion du matériel' },
@@ -373,21 +373,21 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input type="text" placeholder="Modèle, IMEI, S/N..." value={stockSearch} onChange={e => setStockSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-100 dark:bg-slate-700 border-0 rounded-lg text-sm focus:ring-2 focus:ring-blue-500" />
+                    className="w-full pl-9 pr-3 py-2 bg-slate-100 dark:bg-slate-700 border-0 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)]" />
                 </div>
                 <select value={stockTypeFilter} onChange={e => setStockTypeFilter(e.target.value)} title="Type"
                   className="px-2 py-2 text-xs border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800">
                   <option value="ALL">Tous</option>
                   {stockTypes.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
-                <button onClick={() => setIsAuditModalOpen(true)} className="p-2 bg-blue-600 text-white rounded-lg" title="Inventaire">
+                <button onClick={() => setIsAuditModalOpen(true)} className="p-2 bg-[var(--primary)] text-white rounded-lg" title="Inventaire">
                   <ClipboardCheck className="w-4 h-4" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-3 pb-16 lg:pb-3 space-y-2" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {filteredMyStock.map(item => {
                   const s = getStockStatusStyle(item.status);
-                  const typeColor = item.type === 'BOX' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : item.type === 'SIM' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : item.type === 'SENSOR' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' : item.type === 'ACCESSORY' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+                  const typeColor = item.type === 'BOX' ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]' : item.type === 'SIM' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : item.type === 'SENSOR' ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300' : item.type === 'ACCESSORY' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
                   return (
                     <div key={item.id} className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3 shadow-sm">
                       <div className="flex items-start justify-between gap-2 mb-2">
@@ -422,16 +422,16 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   <span className="whitespace-nowrap">Mon Stock ({filteredMyStock.length})</span>
                   <div className="flex items-center gap-2 flex-1 justify-end flex-wrap">
                     <select title="Filtrer par type" value={stockTypeFilter} onChange={e => setStockTypeFilter(e.target.value)}
-                      className="px-2 py-1.5 text-xs border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      className="px-2 py-1.5 text-xs border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                       <option value="ALL">Tous les types</option>
                       {stockTypes.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                     <div className="relative max-w-xs w-full">
                       <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input type="text" placeholder="Rechercher (Modèle, IMEI, S/N)..." value={stockSearch} onChange={e => setStockSearch(e.target.value)}
-                        className="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        className="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                     </div>
-                    <button onClick={() => setIsAuditModalOpen(true)} className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 flex items-center gap-2 whitespace-nowrap">
+                    <button onClick={() => setIsAuditModalOpen(true)} className="px-3 py-1.5 bg-[var(--primary)] text-white text-xs rounded-lg hover:bg-[var(--primary-light)] flex items-center gap-2 whitespace-nowrap">
                       <ClipboardCheck className="w-3 h-3" /> Inventaire
                     </button>
                   </div>
@@ -453,7 +453,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
                     {paginatedStock.map(item => (
                       <tr key={item.id} className="density-row hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td className="px-4 py-2"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item.type === 'BOX' ? 'bg-blue-100 text-blue-700' : item.type === 'SIM' ? 'bg-purple-100 text-purple-700' : item.type === 'SENSOR' ? 'bg-teal-100 text-teal-700' : item.type === 'ACCESSORY' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>{item.type}</span></td>
+                        <td className="px-4 py-2"><span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item.type === 'BOX' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : item.type === 'SIM' ? 'bg-purple-100 text-purple-700' : item.type === 'SENSOR' ? 'bg-teal-100 text-teal-700' : item.type === 'ACCESSORY' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-700'}`}>{item.type}</span></td>
                         <td className="px-4 py-2 text-slate-700 dark:text-slate-300">{item.model}</td>
                         <td className="px-4 py-2 font-mono text-slate-500 text-xs">{item.serialNumber || item.imei || item.iccid}</td>
                         <td className="px-4 py-2">{(() => { const s = getStockStatusStyle(item.status); return <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${s.bg} ${s.text}`}>{s.label}</span>; })()}</td>
@@ -570,7 +570,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                       {paginatedHistory.map(log => (
                           <tr key={log.id} className="density-row hover:bg-slate-50 dark:hover:bg-slate-800/50">
                               <td className="px-4 py-2 text-slate-500 text-xs">{new Date(log.date).toLocaleString()}</td>
-                              <td className="px-4 py-2 font-mono text-blue-600 text-xs">{log.interventionId}</td>
+                              <td className="px-4 py-2 font-mono text-[var(--primary)] text-xs">{log.interventionId}</td>
                               <td className="px-4 py-2 font-bold text-slate-700 dark:text-slate-300">{log.user}</td>
                               <td className="px-4 py-2"><span className="bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-xs font-medium border border-slate-200 dark:border-slate-600">{log.action}</span></td>
                               <td className="px-4 py-2 text-slate-600 dark:text-slate-400 text-xs">{log.details}</td>
@@ -660,7 +660,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <>
               <button
                   onClick={handleCreate}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 shadow-sm transition-colors whitespace-nowrap"
+                  className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white text-sm font-bold rounded-lg hover:bg-[var(--primary-light)] shadow-sm transition-colors whitespace-nowrap"
               >
                   <Plus className="w-4 h-4" /> Nouvelle Intervention
               </button>
@@ -668,7 +668,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <div className="relative hidden sm:block" ref={filterMenuRef}>
                   <button
                     onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-                    className={`flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors whitespace-nowrap ${isFilterMenuOpen ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
+                    className={`flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-colors whitespace-nowrap ${isFilterMenuOpen ? 'ring-2 ring-offset-2 ring-[var(--primary)]' : ''}`}
                   >
                       <Filter className="w-4 h-4" /> <span className="hidden sm:inline">Filtres</span>
                   </button>
@@ -707,7 +707,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                           </div>
                         </div>
                         <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-                          <button onClick={() => { setFilterStatus('ALL'); setFilterType('ALL'); setFilterTech('ALL'); }} className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                          <button onClick={() => { setFilterStatus('ALL'); setFilterType('ALL'); setFilterTech('ALL'); }} className="text-xs text-[var(--primary)] hover:text-[var(--primary)] font-medium">
                             Réinitialiser
                           </button>
                         </div>
@@ -736,7 +736,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
         <div className="flex gap-2 shrink-0">
           {[
             { key: 'pending' as const, label: 'En attente', value: kpis.pending, active: 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 ring-1 ring-amber-400', inactive: 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-900/30', text: 'text-amber-600 dark:text-amber-400', sub: 'text-amber-500' },
-            { key: 'in_progress' as const, label: 'En cours', value: kpis.inProgress, active: 'bg-blue-100 dark:bg-blue-900/40 border-blue-400 ring-1 ring-blue-400', inactive: 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/30', text: 'text-blue-600 dark:text-blue-400', sub: 'text-blue-500' },
+            { key: 'in_progress' as const, label: 'En cours', value: kpis.inProgress, active: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] ring-1 ring-[var(--primary-dim)]', inactive: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]/30', text: 'text-[var(--primary)] dark:text-[var(--primary)]', sub: 'text-[var(--primary)]' },
             { key: 'completed' as const, label: 'Terminées', value: kpis.completed, active: 'bg-green-100 dark:bg-green-900/40 border-green-400 ring-1 ring-green-400', inactive: 'bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900/30', text: 'text-green-600 dark:text-green-400', sub: 'text-green-500' },
           ].map(({ key, label, value, active, inactive, text, sub }) => (
             <button
@@ -760,7 +760,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <p className="text-xs font-bold text-slate-500 uppercase">Total Interventions</p>
               <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.total}</p>
             </div>
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
               <Wrench className="w-6 h-6" />
             </div>
           </div>
@@ -881,7 +881,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
        {isMobile && ['LIST', 'PLANNING'].includes(viewMode) && (
          <button
            onClick={handleCreate}
-           className="fixed bottom-32 right-4 z-30 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 active:scale-95 transition-all sm:hidden"
+           className="fixed bottom-32 right-4 z-30 bg-[var(--primary)] text-white p-4 rounded-full shadow-lg hover:bg-[var(--primary-light)] active:scale-95 transition-all sm:hidden"
            aria-label="Nouvelle intervention"
          >
            <Plus className="w-6 h-6" />
@@ -946,7 +946,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   <p className="text-sm text-slate-500">Veuillez confirmer la présence physique de chaque élément.</p>
                   <button 
                       onClick={handleAuditSubmit}
-                      className="px-3 py-1.5 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700"
+                      className="px-3 py-1.5 bg-[var(--primary)] text-white text-sm font-bold rounded hover:bg-[var(--primary-light)]"
                   >
                       Valider l'inventaire
                   </button>
@@ -958,7 +958,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                               type="checkbox" 
                               checked={auditItems.has(item.id)}
                               onChange={() => toggleAuditItem(item.id)}
-                              className="rounded border-slate-300 text-blue-600 w-5 h-5"
+                              className="rounded border-slate-300 text-[var(--primary)] w-5 h-5"
                           />
                           <div className="flex-1">
                               <div className="flex justify-between">
@@ -996,7 +996,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                       id="transfer-tech"
                       value={transferTechId}
                       onChange={(e) => setTransferTechId(e.target.value)}
-                      className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                   >
                       <option value="">— Sélectionner un technicien —</option>
                       {technicians.filter(t => t.id !== user?.id).map(t => (

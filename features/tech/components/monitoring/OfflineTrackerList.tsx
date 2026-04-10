@@ -363,12 +363,12 @@ export const OfflineTrackerList: React.FC = () => {
               placeholder="Rechercher un véhicule..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-9 pr-4 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
             />
           </div>
           <button
             onClick={handleExport}
-            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-blue-600 transition-colors"
+            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-[var(--primary)] transition-colors"
             title={selectedIds.size > 0 ? `Exporter ${selectedIds.size} sélectionné(s)` : 'Exporter tout en CSV'}
           >
             <Download className="w-4 h-4" />
@@ -378,12 +378,12 @@ export const OfflineTrackerList: React.FC = () => {
 
       {/* ── Bulk action bar ─────────────────────────── */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-sm">
-          <span className="font-medium text-blue-800">{selectedIds.size} véhicule(s) sélectionné(s)</span>
+        <div className="flex items-center gap-3 bg-[var(--primary-dim)] border border-[var(--border)] rounded-lg px-4 py-2 text-sm">
+          <span className="font-medium text-[var(--primary)]">{selectedIds.size} véhicule(s) sélectionné(s)</span>
           <div className="flex gap-2 ml-auto">
             <button
               onClick={() => handleBulkAction('PING')}
-              className="px-3 py-1 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700"
+              className="px-3 py-1 bg-[var(--primary)] text-white rounded text-xs font-medium hover:bg-[var(--primary-light)]"
             >
               <Signal className="w-3 h-3 inline mr-1" /> Ping tous
             </button>
@@ -452,7 +452,7 @@ export const OfflineTrackerList: React.FC = () => {
             <tr>
               <th className="px-3 py-3 w-10">
                 <button onClick={toggleSelectAll} className="text-slate-400 hover:text-slate-600" title="Sélectionner tout">
-                  {allPageSelected ? <CheckSquare className="w-4 h-4 text-blue-600" /> : somePageSelected ? <Minus className="w-4 h-4 text-blue-400" /> : <Square className="w-4 h-4" />}
+                  {allPageSelected ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" /> : somePageSelected ? <Minus className="w-4 h-4 text-[var(--primary)]" /> : <Square className="w-4 h-4" />}
                 </button>
               </th>
               <SortableHeader label="Véhicule" sortKey="name" currentSortKey={offlineSortConfig.key} currentDirection={offlineSortConfig.direction} onSort={handleOfflineSort} />
@@ -472,16 +472,16 @@ export const OfflineTrackerList: React.FC = () => {
               const lastComment = getLastComment(vehicle.id);
               const commentCount = getVehicleComments(vehicle.id).length;
               return (
-                <tr key={vehicle.id} className={`hover:bg-slate-50 transition-colors group ${selectedIds.has(vehicle.id) ? 'bg-blue-50/50' : ''}`}>
+                <tr key={vehicle.id} className={`hover:bg-slate-50 transition-colors group ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)]/50' : ''}`}>
                   <td className="px-3 py-3">
                     <button onClick={() => toggleSelect(vehicle.id)} className="text-slate-400 hover:text-slate-600">
-                      {selectedIds.has(vehicle.id) ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4" />}
+                      {selectedIds.has(vehicle.id) ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" /> : <Square className="w-4 h-4" />}
                     </button>
                   </td>
                   <td className="px-4 py-3 font-medium text-slate-800">
                     <button
                       onClick={() => setInactivityModal({ vehicle })}
-                      className="hover:text-blue-600 hover:underline text-left"
+                      className="hover:text-[var(--primary)] hover:underline text-left"
                       title="Voir l'historique d'inactivité"
                     >
                       {vehicle.name}
@@ -498,7 +498,7 @@ export const OfflineTrackerList: React.FC = () => {
                     {lastComment ? (
                       <button
                         onClick={() => { setCommentModal({ vehicle }); setCommentText(''); }}
-                        className="text-left text-xs text-slate-600 hover:text-blue-600 truncate block w-full"
+                        className="text-left text-xs text-slate-600 hover:text-[var(--primary)] truncate block w-full"
                         title={lastComment.text}
                       >
                         <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 mr-1">{commentCount}</span>
@@ -512,7 +512,7 @@ export const OfflineTrackerList: React.FC = () => {
                     <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() => handleAction('PING', vehicle)}
-                        className="p-1.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 disabled:opacity-50"
+                        className="p-1.5 bg-[var(--primary-dim)] text-[var(--primary)] rounded hover:bg-[var(--primary-dim)] disabled:opacity-50"
                         title="Ping Tracker"
                         disabled={loadingAction === `PING-${vehicle.id}`}
                       >
@@ -695,7 +695,7 @@ export const OfflineTrackerList: React.FC = () => {
                     {history.map((entry, i) => {
                       const colors: Record<string, string> = {
                         offline_start: 'bg-red-500',
-                        command_sent: 'bg-blue-500',
+                        command_sent: 'bg-[var(--primary-dim)]0',
                         ticket_created: 'bg-orange-500',
                         comment: 'bg-emerald-500'
                       };
@@ -715,7 +715,7 @@ export const OfflineTrackerList: React.FC = () => {
               <div className="border-t px-5 py-3 flex gap-2 justify-end">
                 <button
                   onClick={() => { setInactivityModal(null); handleAction('PING', vehicle); }}
-                  className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700"
+                  className="px-3 py-1.5 bg-[var(--primary)] text-white rounded text-xs font-medium hover:bg-[var(--primary-light)]"
                 >
                   <Signal className="w-3 h-3 inline mr-1" /> Ping
                 </button>

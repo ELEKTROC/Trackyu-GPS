@@ -474,7 +474,7 @@ export const TechSettingsPanel: React.FC = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary)]"></div>
             </div>
         );
     }
@@ -485,7 +485,7 @@ export const TechSettingsPanel: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Settings className="w-6 h-6 text-blue-500" />
+                    <Settings className="w-6 h-6 text-[var(--primary)]" />
                     <h2 className="text-xl font-semibold dark:text-white">Configuration Interventions</h2>
                 </div>
                 <button
@@ -506,7 +506,7 @@ export const TechSettingsPanel: React.FC = () => {
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                                 activeTab === tab.id
-                                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                    ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
                             }`}
                         >
@@ -531,7 +531,7 @@ export const TechSettingsPanel: React.FC = () => {
                             <h3 className="text-lg font-medium dark:text-white">Types d'interventions</h3>
                             <button
                                 onClick={() => setNewType({ code: '', label: '', icon: 'Wrench', color: '#3B82F6', default_duration: 60, base_cost: 0 })}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                             >
                                 <Plus className="w-4 h-4" /> Nouveau type
                             </button>
@@ -539,7 +539,7 @@ export const TechSettingsPanel: React.FC = () => {
 
                         {/* New Type Form */}
                         {newType && (
-                            <Card className="p-4 border-2 border-blue-500">
+                            <Card className="p-4 border-2 border-[var(--primary)]">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <input
                                         type="text"
@@ -660,7 +660,7 @@ export const TechSettingsPanel: React.FC = () => {
                                                                 {type.code}
                                                             </span>
                                                             {type.is_system && (
-                                                                <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded">
+                                                                <span className="text-xs px-2 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded">
                                                                     Système
                                                                 </span>
                                                             )}
@@ -682,7 +682,7 @@ export const TechSettingsPanel: React.FC = () => {
                                                         <>
                                                             <button
                                                                 onClick={() => setEditingType(type)}
-                                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                                                className="p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg"
                                                             >
                                                                 <Edit2 className="w-4 h-4" />
                                                             </button>
@@ -722,7 +722,7 @@ export const TechSettingsPanel: React.FC = () => {
                                 </select>
                                 <button
                                     onClick={() => setNewNature({ code: '', label: '', type_id: types[0]?.id || '' })}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                                 >
                                     <Plus className="w-4 h-4" /> Nouvelle nature
                                 </button>
@@ -731,7 +731,7 @@ export const TechSettingsPanel: React.FC = () => {
 
                         {/* New Nature Form */}
                         {newNature && (
-                            <Card className="p-4 border-2 border-blue-500">
+                            <Card className="p-4 border-2 border-[var(--primary)]">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <select
                                         value={newNature.type_id || ''}
@@ -787,7 +787,7 @@ export const TechSettingsPanel: React.FC = () => {
                                                     {nature.code}
                                                 </span>
                                                 {nature.is_system && (
-                                                    <span className="text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded">
+                                                    <span className="text-xs px-2 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded">
                                                         Système
                                                     </span>
                                                 )}
@@ -801,7 +801,7 @@ export const TechSettingsPanel: React.FC = () => {
                                                 <>
                                                     <button
                                                         onClick={() => setEditingNature(nature)}
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                                        className="p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg"
                                                     >
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
@@ -841,7 +841,7 @@ export const TechSettingsPanel: React.FC = () => {
                             {/* Response Times */}
                             <Card className="p-4">
                                 <h4 className="font-medium mb-4 dark:text-white flex items-center gap-2">
-                                    <Clock className="w-4 h-4 text-blue-500" />
+                                    <Clock className="w-4 h-4 text-[var(--primary)]" />
                                     Délai de réponse (heures)
                                 </h4>
                                 <div className="space-y-4">
@@ -925,7 +925,7 @@ export const TechSettingsPanel: React.FC = () => {
                                             }}
                                             className="sr-only peer"
                                         />
-                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-blue-600"></div>
+                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--primary-dim)] dark:peer-focus:ring-[var(--primary-dim)] rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-[var(--primary)]"></div>
                                     </label>
                                 </div>
                             </div>
@@ -936,7 +936,7 @@ export const TechSettingsPanel: React.FC = () => {
                                 <button
                                     onClick={handleSaveSla}
                                     disabled={saving}
-                                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    className="flex items-center gap-2 px-6 py-3 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
                                 >
                                     <Save className="w-4 h-4" />
                                     {saving ? 'Enregistrement...' : 'Sauvegarder SLA'}
@@ -964,7 +964,7 @@ export const TechSettingsPanel: React.FC = () => {
                                 </select>
                                 <button
                                     onClick={() => setNewDevice({ type: 'BOX', brand: '', model: '', protocol: '', default_price: 0 })}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                                 >
                                     <Plus className="w-4 h-4" /> Nouveau modèle
                                 </button>
@@ -973,7 +973,7 @@ export const TechSettingsPanel: React.FC = () => {
 
                         {/* New Device Form */}
                         {newDevice && (
-                            <Card className="p-4 border-2 border-blue-500">
+                            <Card className="p-4 border-2 border-[var(--primary)]">
                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <select
                                         value={newDevice.type || 'BOX'}
@@ -1057,7 +1057,7 @@ export const TechSettingsPanel: React.FC = () => {
                                                 <div className="font-medium dark:text-white">
                                                     {device.brand} {device.model}
                                                     {device.protocol && (
-                                                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                                        <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]">
                                                             {device.protocol}
                                                         </span>
                                                     )}
@@ -1069,7 +1069,7 @@ export const TechSettingsPanel: React.FC = () => {
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     onClick={() => setEditingDevice(device)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                                    className="p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg"
                                                 >
                                                     <Edit2 className="w-4 h-4" />
                                                 </button>
@@ -1100,7 +1100,7 @@ export const TechSettingsPanel: React.FC = () => {
                             </div>
                             <button
                                 onClick={() => setNewRule({ name: '', description: '', priority: rules.length })}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                             >
                                 <Plus className="w-4 h-4" /> Nouvelle règle
                             </button>
@@ -1108,7 +1108,7 @@ export const TechSettingsPanel: React.FC = () => {
 
                         {/* New Rule Form */}
                         {newRule && (
-                            <Card className="p-4 border-2 border-blue-500">
+                            <Card className="p-4 border-2 border-[var(--primary)]">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <input
                                         type="text"
@@ -1171,7 +1171,7 @@ export const TechSettingsPanel: React.FC = () => {
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => setEditingRule(rule)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                                className="p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg"
                                             >
                                                 <Edit2 className="w-4 h-4" />
                                             </button>

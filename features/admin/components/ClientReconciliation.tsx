@@ -330,7 +330,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
   // Get source badge color
   const getSourceColor = (source: string) => {
     switch (source) {
-      case 'TRAKZEE': return 'bg-blue-100 text-blue-700';
+      case 'TRAKZEE': return 'bg-[var(--primary-dim)] text-[var(--primary)]';
       case 'ZOHO_BOOKS': return 'bg-green-100 text-green-700';
       case 'ZOHO_INVOICE': return 'bg-purple-100 text-purple-700';
       default: return 'bg-gray-100 text-gray-700';
@@ -342,7 +342,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
     const config = {
       matched: { color: 'bg-green-100 text-green-700', icon: CheckCircle2, label: 'Correspondance' },
       review: { color: 'bg-yellow-100 text-yellow-700', icon: Eye, label: 'À vérifier' },
-      new: { color: 'bg-blue-100 text-blue-700', icon: Plus, label: 'Nouveau' },
+      new: { color: 'bg-[var(--primary-dim)] text-[var(--primary)]', icon: Plus, label: 'Nouveau' },
       conflict: { color: 'bg-red-100 text-red-700', icon: AlertTriangle, label: 'Conflit' }
     };
     const c = config[status];
@@ -360,7 +360,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-            <ArrowLeftRight className="w-5 h-5 text-blue-600" />
+            <ArrowLeftRight className="w-5 h-5 text-[var(--primary)]" />
             Réconciliation des Clients
           </h3>
           <p className="text-sm text-slate-500 mt-1">
@@ -371,7 +371,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
           <button
             onClick={runReconciliation}
             disabled={isProcessing}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
           >
             {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             {matches.length === 0 ? 'Analyser' : 'Réanalyser'}
@@ -381,13 +381,13 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
 
       {/* Source Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-medium mb-1">
+        <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg p-4">
+          <div className="flex items-center gap-2 text-[var(--primary)] dark:text-[var(--primary)] font-medium mb-1">
             <Building2 className="w-4 h-4" />
             TRAKZEE
           </div>
-          <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{trakzeeClients.length}</p>
-          <p className="text-xs text-blue-600">clients</p>
+          <p className="text-2xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">{trakzeeClients.length}</p>
+          <p className="text-xs text-[var(--primary)]">clients</p>
         </div>
         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
           <div className="flex items-center gap-2 text-green-700 dark:text-green-300 font-medium mb-1">
@@ -444,7 +444,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
             <button
               onClick={() => setFilter('new')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                filter === 'new' ? 'bg-blue-100 text-blue-700' : 'text-slate-500 hover:bg-slate-100'
+                filter === 'new' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'text-slate-500 hover:bg-slate-100'
               }`}
             >
               <span className="flex items-center gap-1">
@@ -472,7 +472,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
               placeholder="Rechercher un client..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-full sm:w-64 focus:ring-2 focus:ring-blue-500"
+              className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-full sm:w-64 focus:ring-2 focus:ring-[var(--primary)]"
             />
           </div>
         </div>
@@ -565,7 +565,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
                             {match.status !== 'new' && (
                               <button
                                 onClick={() => markAsNew(match.id)}
-                                className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                                className="p-1.5 text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
                                 title="Créer comme nouveau"
                               >
                                 <Plus className="w-4 h-4" />
@@ -581,8 +581,8 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
                           <td colSpan={7} className="px-4 py-4">
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                               {/* TRAKZEE Details */}
-                              <div className={`p-3 rounded-lg border ${match.sources.trakzee ? 'bg-blue-50 border-blue-200' : 'bg-slate-100 border-slate-200'}`}>
-                                <div className="font-semibold text-blue-700 mb-2">TRAKZEE</div>
+                              <div className={`p-3 rounded-lg border ${match.sources.trakzee ? 'bg-[var(--primary-dim)] border-[var(--border)]' : 'bg-slate-100 border-slate-200'}`}>
+                                <div className="font-semibold text-[var(--primary)] mb-2">TRAKZEE</div>
                                 {match.sources.trakzee ? (
                                   <div className="space-y-1 text-slate-600">
                                     <p><strong>Nom:</strong> {match.sources.trakzee.name}</p>
@@ -652,7 +652,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
           </p>
           <button
             onClick={runReconciliation}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
           >
             <RefreshCw className="w-4 h-4" />
             Lancer l'analyse

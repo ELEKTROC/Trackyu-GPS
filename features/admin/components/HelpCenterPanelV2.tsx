@@ -400,8 +400,8 @@ export const HelpCenterPanelV2: React.FC = () => {
               <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.totalArticles}</p>
               <p className="text-xs text-green-600">{stats.publishedArticles} publiés</p>
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <FileText className="w-6 h-6 text-blue-600" />
+            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+              <FileText className="w-6 h-6 text-[var(--primary)]" />
             </div>
           </div>
         </Card>
@@ -457,7 +457,7 @@ export const HelpCenterPanelV2: React.FC = () => {
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-[var(--primary)] text-white'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
               }`}
             >
@@ -497,7 +497,7 @@ export const HelpCenterPanelV2: React.FC = () => {
           {activeTab === 'articles' && (
             <button
               onClick={handleCreateArticle}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)]"
             >
               <Plus className="w-4 h-4" />
               Nouvel Article
@@ -506,7 +506,7 @@ export const HelpCenterPanelV2: React.FC = () => {
           {activeTab === 'faq' && (
             <button
               onClick={handleCreateFaq}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)]"
             >
               <Plus className="w-4 h-4" />
               Nouvelle FAQ
@@ -526,7 +526,7 @@ export const HelpCenterPanelV2: React.FC = () => {
                 <p className="text-slate-500 font-medium">Aucun article trouvé</p>
                 <button
                   onClick={handleCreateArticle}
-                  className="mt-4 text-blue-600 hover:underline"
+                  className="mt-4 text-[var(--primary)] hover:underline"
                 >
                   Créer un article
                 </button>
@@ -580,7 +580,7 @@ export const HelpCenterPanelV2: React.FC = () => {
                       <div className="flex gap-1">
                         <button
                           onClick={() => handleEditArticle(article)}
-                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+                          className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -616,7 +616,7 @@ export const HelpCenterPanelV2: React.FC = () => {
                   >
                     <div className="flex items-center gap-3">
                       {expandedFaq === faq.id ? (
-                        <ChevronDown className="w-5 h-5 text-blue-600" />
+                        <ChevronDown className="w-5 h-5 text-[var(--primary)]" />
                       ) : (
                         <ChevronRight className="w-5 h-5 text-slate-400" />
                       )}
@@ -630,7 +630,7 @@ export const HelpCenterPanelV2: React.FC = () => {
                       </span>
                       <button
                         onClick={() => handleEditFaq(faq)}
-                        className="p-1 text-slate-400 hover:text-blue-600"
+                        className="p-1 text-slate-400 hover:text-[var(--primary)]"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -664,7 +664,7 @@ export const HelpCenterPanelV2: React.FC = () => {
             <p className="text-slate-500 mb-4">
               Ajoutez des vidéos de formation pour vos utilisateurs
             </p>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg mx-auto">
+            <button className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg mx-auto">
               <Plus className="w-4 h-4" />
               Ajouter une vidéo
             </button>
@@ -698,7 +698,7 @@ export const HelpCenterPanelV2: React.FC = () => {
             
             <Card className="p-6">
               <h4 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                <Folder className="w-5 h-5 text-blue-600" />
+                <Folder className="w-5 h-5 text-[var(--primary)]" />
                 Articles par catégorie
               </h4>
               <div className="space-y-3">
@@ -731,7 +731,7 @@ export const HelpCenterPanelV2: React.FC = () => {
             <button onClick={() => setIsArticleModalOpen(false)} className="px-4 py-2 border rounded-lg">
               Annuler
             </button>
-            <button onClick={handleSaveArticle} className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2">
+            <button onClick={handleSaveArticle} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg flex items-center gap-2">
               <Save className="w-4 h-4" />
               Enregistrer
             </button>
@@ -791,7 +791,7 @@ export const HelpCenterPanelV2: React.FC = () => {
             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tags</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {articleForm.tags?.map(tag => (
-                <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
+                <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--primary-dim)] text-[var(--primary)] rounded text-sm">
                   {tag}
                   <button onClick={() => removeTag(tag)} className="hover:text-red-600">
                     <X className="w-3 h-3" />
@@ -848,7 +848,7 @@ export const HelpCenterPanelV2: React.FC = () => {
             <button onClick={() => setIsFaqModalOpen(false)} className="px-4 py-2 border rounded-lg">
               Annuler
             </button>
-            <button onClick={handleSaveFaq} className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2">
+            <button onClick={handleSaveFaq} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg flex items-center gap-2">
               <Save className="w-4 h-4" />
               Enregistrer
             </button>

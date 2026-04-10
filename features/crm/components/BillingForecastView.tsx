@@ -33,7 +33,7 @@ const PAGE_SIZE  = 15;
 const CYCLE_COLORS: Record<string, string> = {
   ANNUAL:     'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300',
   YEARLY:     'bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300',
-  SEMESTRIAL: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
+  SEMESTRIAL: 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]',
   QUARTERLY:  'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
   MONTHLY:    'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
 };
@@ -42,8 +42,8 @@ const CYCLE_COLORS: Record<string, string> = {
 const INVOICE_CELL_COLORS: Record<string, string> = {
   PAID:           'bg-green-100  text-green-800  dark:bg-green-900/40  dark:text-green-300',
   paid:           'bg-green-100  text-green-800  dark:bg-green-900/40  dark:text-green-300',
-  SENT:           'bg-blue-100   text-blue-800   dark:bg-blue-900/40   dark:text-blue-300',
-  sent:           'bg-blue-100   text-blue-800   dark:bg-blue-900/40   dark:text-blue-300',
+  SENT:           'bg-[var(--primary-dim)]   text-[var(--primary)]   dark:bg-[var(--primary-dim)]   dark:text-[var(--primary)]',
+  sent:           'bg-[var(--primary-dim)]   text-[var(--primary)]   dark:bg-[var(--primary-dim)]   dark:text-[var(--primary)]',
   OVERDUE:        'bg-red-100    text-red-800    dark:bg-red-900/40    dark:text-red-300',
   overdue:        'bg-red-100    text-red-800    dark:bg-red-900/40    dark:text-red-300',
   DRAFT:          'bg-slate-100  text-slate-500  dark:bg-slate-700     dark:text-slate-400',
@@ -444,7 +444,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
             type="text" value={search}
             onChange={e => { setSearch(e.target.value); setPage(1); }}
             placeholder="Client, contrat, ABO, plaque…"
-            className="w-full pl-8 pr-8 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full pl-8 pr-8 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
           />
           {search && (
             <button onClick={() => { setSearch(''); setPage(1); }} className="absolute right-2 top-1/2 -translate-y-1/2">
@@ -458,13 +458,13 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
           onClick={() => setShowFilters(f => !f)}
           className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border transition-colors
             ${showFilters || (filterClient || filterReseller || filterCycle)
-              ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-900/30 dark:border-blue-600 dark:text-blue-300'
+              ? 'bg-[var(--primary-dim)] border-[var(--primary)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]'
               : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
             }`}>
           <Filter className="w-3.5 h-3.5" />
           Filtres
           {(filterClient || filterReseller || filterCycle) && (
-            <span className="bg-blue-500 text-white rounded-full px-1.5 text-[10px] font-bold">
+            <span className="bg-[var(--primary-dim)]0 text-white rounded-full px-1.5 text-[10px] font-bold">
               {[filterClient, filterReseller, filterCycle].filter(Boolean).length}
             </span>
           )}
@@ -510,7 +510,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
         <div className="flex items-center gap-1.5 ml-auto flex-wrap">
           {([
             { status: 'PAID',           label: 'Payée',     color: 'bg-green-100  text-green-800  dark:bg-green-900/40  dark:text-green-300'  },
-            { status: 'SENT',           label: 'Émise',     color: 'bg-blue-100   text-blue-800   dark:bg-blue-900/40   dark:text-blue-300'   },
+            { status: 'SENT',           label: 'Émise',     color: 'bg-[var(--primary-dim)]   text-[var(--primary)]   dark:bg-[var(--primary-dim)]   dark:text-[var(--primary)]'   },
             { status: 'OVERDUE',        label: 'En retard', color: 'bg-red-100    text-red-800    dark:bg-red-900/40    dark:text-red-300'    },
             { status: 'PARTIALLY_PAID', label: 'Partiel',   color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300' },
             { status: 'DRAFT',          label: 'Brouillon', color: 'bg-slate-100  text-slate-500  dark:bg-slate-700     dark:text-slate-400'  },
@@ -583,7 +583,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                 <div className="flex items-center justify-between gap-2">
                   <span>Client / Contrat</span>
                   <div className="flex gap-1 font-normal normal-case text-[10px]">
-                    <button onClick={expandAll}  className="text-blue-500 hover:underline">+</button>
+                    <button onClick={expandAll}  className="text-[var(--primary)] hover:underline">+</button>
                     <button onClick={collapseAll} className="text-slate-400 hover:underline">−</button>
                   </div>
                 </div>
@@ -594,9 +594,9 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                   onClick={() => { setFilterMonth(filterMonth === i ? null : i); setPage(1); }}
                   className={`text-center px-1 py-3 font-bold uppercase tracking-wide whitespace-nowrap w-14 cursor-pointer select-none transition-colors
                     ${filterMonth === i
-                      ? 'bg-blue-500 text-white dark:bg-blue-600'
+                      ? 'bg-[var(--primary-dim)]0 text-white dark:bg-[var(--primary)]'
                       : i === currentMonth && year === currentYear
-                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40'
+                        ? 'text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/40'
                         : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700/50'
                     }`}>
                   {m}
@@ -628,7 +628,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                         {/* Clic sur N° contrat → modal contrat */}
                         <button
                           onClick={() => setSelectedContractId(contract.contractId)}
-                          className="text-slate-400 font-mono font-normal text-[10px] flex-shrink-0 hover:text-blue-600 hover:underline"
+                          className="text-slate-400 font-mono font-normal text-[10px] flex-shrink-0 hover:text-[var(--primary)] hover:underline"
                         >
                           {contract.contractNumber}
                         </button>
@@ -640,7 +640,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                     <td className="text-center px-1 py-2.5 text-slate-300 dark:text-slate-600">—</td>
                     {cTotals.map((total, i) => (
                       <td key={i} className={`text-center px-1 py-2.5 font-medium
-                        ${i === currentMonth && year === currentYear ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}>
+                        ${i === currentMonth && year === currentYear ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}>
                         {total > 0
                           ? <span className="text-slate-700 dark:text-slate-200">{format(total)}</span>
                           : <span className="text-slate-300 dark:text-slate-600">—</span>}
@@ -660,7 +660,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                             {/* Clic sur plaque → modal abonnement */}
                             <button
                               onClick={() => setSelectedSub({ ...sub, contractId: contract.contractId })}
-                              className="font-mono text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline truncate"
+                              className="font-mono text-[11px] font-medium text-[var(--primary)] dark:text-[var(--primary)] hover:underline truncate"
                             >
                               {sub.plate || sub.id}
                             </button>
@@ -682,9 +682,9 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                             <td key={i}
                               onClick={has ? (e) => handleCellClick(e, sub, contract.contractId, contract.clientName, i) : undefined}
                               className={`text-center px-0.5 py-1.5 ${has ? 'cursor-pointer' : ''}
-                                ${i === currentMonth && year === currentYear ? 'bg-blue-50/30 dark:bg-blue-900/10' : ''}`}>
+                                ${i === currentMonth && year === currentYear ? 'bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : ''}`}>
                               {has
-                                ? <span className={`inline-block px-1 py-0.5 rounded text-[10px] font-semibold transition-all ${cellColor} ${isActive ? 'ring-2 ring-blue-400 ring-offset-1' : 'hover:brightness-95'}`}>{format(sub.fee)}</span>
+                                ? <span className={`inline-block px-1 py-0.5 rounded text-[10px] font-semibold transition-all ${cellColor} ${isActive ? 'ring-2 ring-[var(--primary-dim)] ring-offset-1' : 'hover:brightness-95'}`}>{format(sub.fee)}</span>
                                 : <span className="text-slate-200 dark:text-slate-700">·</span>}
                             </td>
                           );
@@ -713,7 +713,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
               <td className="text-center px-1 py-2.5 text-slate-600">—</td>
               {monthlyTotals.map((total, i) => (
                 <td key={i} className={`text-center px-1 py-2.5 font-bold
-                  ${i === currentMonth && year === currentYear ? 'text-blue-300' : 'text-green-300'}`}>
+                  ${i === currentMonth && year === currentYear ? 'text-[var(--primary)]' : 'text-green-300'}`}>
                   {total > 0 ? format(total) : <span className="text-slate-600">—</span>}
                 </td>
               ))}
@@ -772,7 +772,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-500">Véhicule</span>
-                    <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{previewPopup.sub.plate}</span>
+                    <span className="font-mono font-medium text-[var(--primary)] dark:text-[var(--primary)]">{previewPopup.sub.plate}</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-500">Période</span>
@@ -797,7 +797,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                 <div className="px-4 pb-3">
                   <button
                     onClick={() => { setPreviewPopup(null); setSelectedContractId(previewPopup.contractId); }}
-                    className="w-full text-center text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                    className="w-full text-center text-[11px] text-[var(--primary)] dark:text-[var(--primary)] hover:underline font-medium"
                   >
                     Voir le contrat →
                   </button>
@@ -819,7 +819,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-500">Véhicule</span>
-                    <span className="font-mono font-medium text-blue-600 dark:text-blue-400">{previewPopup.sub.plate}</span>
+                    <span className="font-mono font-medium text-[var(--primary)] dark:text-[var(--primary)]">{previewPopup.sub.plate}</span>
                   </div>
                   <div className="flex justify-between text-xs">
                     <span className="text-slate-500">Période</span>
@@ -839,7 +839,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                 <div className="px-4 pb-3">
                   <button
                     onClick={() => { setPreviewPopup(null); setSelectedSub({ ...previewPopup.sub, contractId: previewPopup.contractId }); }}
-                    className="w-full text-center text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                    className="w-full text-center text-[11px] text-[var(--primary)] dark:text-[var(--primary)] hover:underline font-medium"
                   >
                     Voir l'abonnement →
                   </button>

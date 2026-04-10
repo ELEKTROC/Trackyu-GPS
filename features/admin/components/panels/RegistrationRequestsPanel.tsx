@@ -319,7 +319,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <UserPlus className="text-blue-500" />
+            <UserPlus className="text-[var(--primary)]" />
             Demandes d'inscription
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
@@ -381,16 +381,16 @@ export const RegistrationRequestsPanel: React.FC = () => {
           </div>
         </Card>
         
-        <Card className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+        <Card className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]">
           <div className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-blue-600 dark:text-blue-400">Total</p>
-                <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">
+                <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">Total</p>
+                <p className="text-3xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">
                   {stats?.total_count || 0}
                 </p>
               </div>
-              <UserPlus className="text-blue-500" size={32} />
+              <UserPlus className="text-[var(--primary)]" size={32} />
             </div>
           </div>
         </Card>
@@ -425,7 +425,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                 onClick={() => setFilter(item.value as any)}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                   filter === item.value
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-[var(--primary)] text-white'
                     : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600'
                 }`}
               >
@@ -440,7 +440,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
       <Card>
         {loading ? (
           <div className="p-8 text-center">
-            <RefreshCw className="animate-spin mx-auto text-blue-500 mb-2" size={32} />
+            <RefreshCw className="animate-spin mx-auto text-[var(--primary)] mb-2" size={32} />
             <p className="text-slate-500">Chargement...</p>
           </div>
         ) : filteredRequests.length === 0 ? (
@@ -556,7 +556,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => openDetailModal(request)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 transition-colors"
                           title="Voir détails"
                         >
                           <Eye size={16} />
@@ -767,7 +767,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                   <button
                     onClick={handleSendEmail}
                     disabled={processing}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     title="Envoyer un email"
                   >
                     {processing ? <RefreshCw size={16} className="animate-spin" /> : <Mail size={16} />}
@@ -823,8 +823,8 @@ export const RegistrationRequestsPanel: React.FC = () => {
         maxWidth="max-w-3xl"
       >
         <div className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-            <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">📧 Destinataire</p>
+          <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-3 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
+            <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] font-medium mb-1">📧 Destinataire</p>
             <p className="text-slate-900 dark:text-white font-medium">
               {selectedRequest?.email}
             </p>
@@ -839,7 +839,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               value={emailSubject}
               onChange={(e) => setEmailSubject(e.target.value)}
               placeholder="Ex: Bienvenue chez TrackYu GPS"
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]"
             />
           </div>
 
@@ -852,7 +852,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               onChange={(e) => setEmailContent(e.target.value)}
               rows={14}
               placeholder="Rédigez votre message..."
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-blue-500 leading-relaxed"
+              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-[var(--primary)] leading-relaxed"
             />
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               💡 Les variables ont déjà été remplacées. Vous pouvez personnaliser le message avant envoi.
@@ -869,7 +869,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
             <button
               onClick={confirmSendEmail}
               disabled={processing || !emailSubject.trim() || !emailContent.trim()}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+              className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
             >
               {processing ? <RefreshCw size={16} className="animate-spin" /> : <Send size={16} />}
               Envoyer l'email

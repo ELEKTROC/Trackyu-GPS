@@ -21,7 +21,7 @@ import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 import { api } from '../../../services/api';
-import {
+import type {
   PermissionAction,
   RolePermission,
   RoleWithPermissions
@@ -57,7 +57,7 @@ const MOBILE_ICON_MAP: Record<string, React.ElementType> = {
 // Mapping des couleurs pour Tailwind (classes complètes)
 const COLOR_CLASSES: Record<string, { dot: string; bg: string; text: string; badge: string }> = {
   purple: { dot: 'bg-purple-500', bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600', badge: 'bg-purple-100 text-purple-700' },
-  blue: { dot: 'bg-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600', badge: 'bg-blue-100 text-blue-700' },
+  blue: { dot: 'bg-[var(--primary-dim)]0', bg: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]', text: 'text-[var(--primary)]', badge: 'bg-[var(--primary-dim)] text-[var(--primary)]' },
   green: { dot: 'bg-green-500', bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600', badge: 'bg-green-100 text-green-700' },
   orange: { dot: 'bg-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600', badge: 'bg-orange-100 text-orange-700' },
   cyan: { dot: 'bg-cyan-500', bg: 'bg-cyan-100 dark:bg-cyan-900/30', text: 'text-cyan-600', badge: 'bg-cyan-100 text-cyan-700' },
@@ -508,7 +508,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
 
   // Mapping des couleurs pour les actions (classes Tailwind complètes)
   const ACTION_COLOR_CLASSES: Record<PermissionAction, { checked: string; unchecked: string }> = {
-    VIEW: { checked: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30', unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700' },
+    VIEW: { checked: 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)]', unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700' },
     CREATE: { checked: 'bg-green-100 text-green-600 dark:bg-green-900/30', unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700' },
     EDIT: { checked: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30', unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700' },
     DELETE: { checked: 'bg-red-100 text-red-600 dark:bg-red-900/30', unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700' },
@@ -553,7 +553,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
         onClick={handleClick}
         className={`w-8 h-8 rounded flex items-center justify-center transition-all ${
           isChecked ? colorClasses.checked : colorClasses.unchecked
-        } ${canEdit ? 'hover:ring-2 ring-blue-400 cursor-pointer' : 'opacity-60 cursor-not-allowed'}`}
+        } ${canEdit ? 'hover:ring-2 ring-[var(--primary-dim)] cursor-pointer' : 'opacity-60 cursor-not-allowed'}`}
         title={`${actionConfig.label}${isChecked ? ' (accordé)' : ''}${!canEdit ? ' - Cliquez sur "Modifier les droits" pour éditer' : ''}`}
       >
         {isChecked ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
@@ -566,7 +566,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
     return (
       <div className="flex items-center justify-center h-96">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
           <p className="text-slate-500">Chargement des rôles...</p>
         </div>
       </div>
@@ -579,7 +579,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
       {isSaving && (
         <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center">
           <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-xl flex items-center gap-4">
-            <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
+            <Loader2 className="w-6 h-6 text-[var(--primary)] animate-spin" />
             <span>Sauvegarde en cours...</span>
           </div>
         </div>
@@ -596,14 +596,14 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
             <div className="flex gap-2">
               <button
                 onClick={() => loadRoles()}
-                className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg"
+                className="p-2 text-slate-500 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg"
                 title="Rafraîchir"
               >
                 <RefreshCw className="w-4 h-4" />
               </button>
               <button
                 onClick={handleCreateRole}
-                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="p-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                 title="Nouveau rôle"
               >
                 <Plus className="w-4 h-4" />
@@ -620,7 +620,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               onClick={() => handleSelectRole(role)}
               className={`p-3 rounded-lg cursor-pointer mb-2 transition-all ${
                 selectedRole?.id === role.id
-                  ? 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-400'
+                  ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] ring-2 ring-[var(--primary-dim)]'
                   : 'hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
@@ -646,7 +646,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               <div className="flex gap-1 mt-2" onClick={e => e.stopPropagation()}>
                 <button
                   onClick={() => handleEditRole(role)}
-                  className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+                  className="p-1 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
                   title="Modifier"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -733,7 +733,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                           }
                         }}
                         disabled={isSaving}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
                       >
                         {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                         Sauvegarder
@@ -746,7 +746,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                           setEditingPermissions([...selectedRole.permissions]);
                           setIsEditingPermissions(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                       >
                         <Edit2 className="w-4 h-4" />
                         Modifier les droits
@@ -802,8 +802,8 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               {/* Légende */}
               <div className="flex flex-wrap gap-4 mt-3 text-xs text-slate-500">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                    <Check className="w-3 h-3 text-blue-600" />
+                  <div className="w-4 h-4 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center">
+                    <Check className="w-3 h-3 text-[var(--primary)]" />
                   </div>
                   Voir
                 </div>
@@ -993,7 +993,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
             </button>
             <button 
               onClick={handleSaveRole}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex items-center gap-2"
+              className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
               Enregistrer
@@ -1041,7 +1041,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                     title={`Couleur ${color}`}
                     onClick={() => setEditingRole({ ...editingRole, color })}
                     className={`w-8 h-8 rounded-full ${getColorClass(color, 'dot')} ${
-                      editingRole.color === color ? 'ring-2 ring-offset-2 ring-blue-500' : ''
+                      editingRole.color === color ? 'ring-2 ring-offset-2 ring-[var(--primary)]' : ''
                     }`}
                   />
                 ))}
@@ -1082,14 +1082,14 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                             disabled={!isSelected && selected.length >= 4}
                             className={`relative flex flex-col items-center gap-1 p-2 rounded-lg border text-xs transition-all ${
                               isSelected
-                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 ring-1 ring-blue-500'
+                                ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] ring-1 ring-[var(--primary)]'
                                 : selected.length >= 4
                                 ? 'border-slate-200 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed'
-                                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-blue-300 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
+                                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/10'
                             }`}
                           >
                             {isSelected && (
-                              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center">
+                              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[var(--primary)] text-white text-[10px] font-bold flex items-center justify-center">
                                 {order + 1}
                               </span>
                             )}
@@ -1102,7 +1102,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                     {selected.length > 0 && (
                       <div className="flex items-center gap-1 text-xs text-slate-500">
                         <span>{selected.length}/4 sélectionnés :</span>
-                        <span className="font-medium text-blue-600 dark:text-blue-400">
+                        <span className="font-medium text-[var(--primary)] dark:text-[var(--primary)]">
                           {selected.map(id => allItems.find(i => i.id === id)?.mobileLabel || allItems.find(i => i.id === id)?.label || id).join(' → ')}
                         </span>
                         <button
@@ -1125,9 +1125,9 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
             </div>
             
             <div className="pt-4 border-t dark:border-slate-700">
-              <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                <div className="text-sm text-blue-800 dark:text-blue-300">
+              <div className="flex items-start gap-3 p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                <Info className="w-5 h-5 text-[var(--primary)] shrink-0 mt-0.5" />
+                <div className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">
                   <p className="font-medium mb-1">Configuration des permissions</p>
                   <p className="text-xs opacity-80">
                     Après avoir enregistré le rôle, utilisez la matrice de permissions 

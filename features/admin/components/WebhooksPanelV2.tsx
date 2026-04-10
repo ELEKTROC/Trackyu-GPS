@@ -24,7 +24,7 @@ import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
-import { WebhookConfig } from '../../../types';
+import type { WebhookConfig } from '../../../types';
 
 // Types
 interface WebhookDelivery {
@@ -345,7 +345,7 @@ export const WebhooksPanelV2 = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
       </div>
     );
   }
@@ -360,7 +360,7 @@ export const WebhooksPanelV2 = () => {
         </div>
         <button
           onClick={() => { resetForm(); setIsModalOpen(true); }}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
           Nouveau webhook
@@ -370,14 +370,14 @@ export const WebhooksPanelV2 = () => {
       {/* Stats Overview */}
       {webhooks.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200">
+          <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-[var(--border)]">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500 rounded-lg">
+              <div className="p-2 bg-[var(--primary-dim)]0 rounded-lg">
                 <Webhook className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{webhooks.length}</p>
-                <p className="text-xs text-blue-600">Webhooks configurés</p>
+                <p className="text-2xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">{webhooks.length}</p>
+                <p className="text-xs text-[var(--primary)]">Webhooks configurés</p>
               </div>
             </div>
           </Card>
@@ -430,7 +430,7 @@ export const WebhooksPanelV2 = () => {
             <p className="text-sm text-slate-500 mb-4">Créez votre premier webhook pour recevoir des notifications automatiques</p>
             <button
               onClick={() => { resetForm(); setIsModalOpen(true); }}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Créer un webhook
@@ -465,7 +465,7 @@ export const WebhooksPanelV2 = () => {
                       {webhook.events.slice(0, 4).map((event, index) => (
                         <span 
                           key={index} 
-                          className="px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-full border border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800"
+                          className="px-2 py-0.5 bg-[var(--primary-dim)] text-[var(--primary)] text-xs rounded-full border border-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-[var(--primary)]"
                         >
                           {event}
                         </span>
@@ -533,7 +533,7 @@ export const WebhooksPanelV2 = () => {
               type="url"
               value={formData.url}
               onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
               placeholder="https://api.example.com/webhook"
               required
             />
@@ -548,7 +548,7 @@ export const WebhooksPanelV2 = () => {
                 type="text"
                 value={formData.secret}
                 onChange={(e) => setFormData({ ...formData, secret: e.target.value })}
-                className="flex-1 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
                 placeholder="Optionnel - pour vérifier l'authenticité"
               />
               <button
@@ -580,9 +580,9 @@ export const WebhooksPanelV2 = () => {
                       <span className="font-medium text-sm text-slate-700 dark:text-slate-300">{category}</span>
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         allSelected 
-                          ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' 
+                          ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]' 
                           : categorySelected > 0 
-                            ? 'bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-500'
+                            ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
                             : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
                       }`}>
                         {categorySelected}/{events.length}
@@ -598,7 +598,7 @@ export const WebhooksPanelV2 = () => {
                             type="checkbox"
                             checked={formData.events?.includes(event)}
                             onChange={() => toggleEvent(event)}
-                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                           />
                           <span className="text-xs text-slate-600 dark:text-slate-400">{event}</span>
                         </label>
@@ -616,7 +616,7 @@ export const WebhooksPanelV2 = () => {
                 type="checkbox"
                 checked={formData.status === 'ACTIVE'}
                 onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'ACTIVE' : 'INACTIVE' })}
-                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
               />
               <span className="text-sm text-slate-700 dark:text-slate-300">Webhook actif</span>
             </label>
@@ -632,7 +632,7 @@ export const WebhooksPanelV2 = () => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors"
             >
               {editingWebhook ? 'Mettre à jour' : 'Créer le webhook'}
             </button>

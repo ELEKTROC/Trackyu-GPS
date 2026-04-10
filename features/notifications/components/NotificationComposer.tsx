@@ -272,7 +272,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
                     onClick={() => handleTemplateSelect(type as ManualNotificationType)}
                     className={`p-3 rounded-lg border-2 transition-all flex flex-col items-center gap-2 ${
                       isSelected
-                        ? `border-blue-500 ${config.bgColor}`
+                        ? `border-[var(--primary)] ${config.bgColor}`
                         : 'border-slate-200 hover:border-slate-300'
                     }`}
                   >
@@ -296,7 +296,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
               value={subject}
               onChange={e => setSubject(e.target.value)}
               placeholder="Sujet de la notification..."
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] ${
                 errors.subject ? 'border-red-300' : 'border-slate-200'
               }`}
             />
@@ -315,7 +315,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
               onChange={e => setBody(e.target.value)}
               placeholder="Contenu de votre message..."
               rows={6}
-              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none ${
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] resize-none ${
                 errors.body ? 'border-red-300' : 'border-slate-200'
               }`}
             />
@@ -344,7 +344,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
                     onClick={() => toggleChannel(channel.id)}
                     className={`px-4 py-2 rounded-lg border-2 flex items-center gap-2 transition-all ${
                       isSelected
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)]'
                         : 'border-slate-200 text-slate-600 hover:border-slate-300'
                     }`}
                   >
@@ -367,7 +367,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
                 type="radio"
                 checked={sendImmediately}
                 onChange={() => setSendImmediately(true)}
-                className="w-4 h-4 text-blue-600"
+                className="w-4 h-4 text-[var(--primary)]"
               />
               <span className="text-sm text-slate-700">Envoyer immédiatement</span>
             </label>
@@ -376,7 +376,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
                 type="radio"
                 checked={!sendImmediately}
                 onChange={() => setSendImmediately(false)}
-                className="w-4 h-4 text-blue-600"
+                className="w-4 h-4 text-[var(--primary)]"
               />
               <span className="text-sm text-slate-700">Programmer</span>
             </label>
@@ -402,11 +402,11 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
               onClick={() => setRecipientType('SELECTED')}
               className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                 recipientType === 'SELECTED'
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-[var(--primary)] bg-[var(--primary-dim)]'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
-              <Users className="w-6 h-6 text-blue-600 mx-auto mb-2" />
+              <Users className="w-6 h-6 text-[var(--primary)] mx-auto mb-2" />
               <p className="font-medium text-slate-800">Sélection manuelle</p>
               <p className="text-xs text-slate-500">Choisir les clients un par un</p>
             </button>
@@ -417,7 +417,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
               }}
               className={`flex-1 p-4 rounded-lg border-2 transition-all ${
                 recipientType === 'ALL_CLIENTS'
-                  ? 'border-blue-500 bg-blue-50'
+                  ? 'border-[var(--primary)] bg-[var(--primary-dim)]'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >
@@ -448,7 +448,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
                 </span>
                 <button
                   onClick={toggleAllRecipients}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-[var(--primary)] hover:text-[var(--primary)]"
                 >
                   {selectedRecipients.length === filteredRecipients.length
                     ? 'Tout désélectionner'
@@ -464,14 +464,14 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
                     <label
                       key={recipient.id}
                       className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-slate-50 ${
-                        isSelected ? 'bg-blue-50' : ''
+                        isSelected ? 'bg-[var(--primary-dim)]' : ''
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleRecipient(recipient)}
-                        className="w-4 h-4 text-blue-600 rounded"
+                        className="w-4 h-4 text-[var(--primary)] rounded"
                       />
                       <div className="flex-1">
                         <p className="font-medium text-slate-800">{recipient.name}</p>
@@ -480,7 +480,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
                           {recipient.phone && ` • ${recipient.phone}`}
                         </p>
                       </div>
-                      {isSelected && <CheckCircle className="w-4 h-4 text-blue-600" />}
+                      {isSelected && <CheckCircle className="w-4 h-4 text-[var(--primary)]" />}
                     </label>
                   );
                 })}
@@ -550,7 +550,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
             </p>
             <div className="flex flex-wrap gap-2">
               {selectedRecipients.slice(0, 10).map(r => (
-                <span key={r.id} className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                <span key={r.id} className="px-2 py-1 bg-[var(--primary-dim)] text-[var(--primary)] rounded text-xs">
                   {r.name}
                 </span>
               ))}
@@ -580,7 +580,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
               <div
                 className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
                   step === s
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-[var(--primary)] text-white'
                     : i < ['compose', 'recipients', 'confirm'].indexOf(step)
                     ? 'bg-green-100 text-green-600'
                     : 'bg-slate-100 text-slate-400'
@@ -619,7 +619,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
             <button
               onClick={handleSend}
               disabled={isSending}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 flex items-center gap-2"
             >
               {isSending ? (
                 <>
@@ -636,7 +636,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({
           ) : (
             <button
               onClick={handleNextStep}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"
+              className="px-6 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] flex items-center gap-2"
             >
               Suivant
               <ChevronDown className="w-4 h-4 rotate-[-90deg]" />

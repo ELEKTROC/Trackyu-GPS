@@ -137,13 +137,13 @@ export const MyOperationsView: React.FC = () => {
             if (status === 'TERMINATED') colorClass = 'bg-slate-100 text-slate-700';
         } else if (type === 'intervention') {
             if (status === 'COMPLETED') colorClass = 'bg-green-100 text-green-700';
-            if (status === 'SCHEDULED') colorClass = 'bg-blue-100 text-blue-700';
+            if (status === 'SCHEDULED') colorClass = 'bg-[var(--primary-dim)] text-[var(--primary)]';
             if (status === 'PENDING') colorClass = 'bg-yellow-100 text-yellow-700';
             if (status === 'CANCELLED') colorClass = 'bg-red-100 text-red-700';
         } else if (type === 'ticket') {
             if (status === 'RESOLVED' || status === 'CLOSED') colorClass = 'bg-green-100 text-green-700';
             if (status === 'OPEN') colorClass = 'bg-red-100 text-red-700';
-            if (status === 'IN_PROGRESS') colorClass = 'bg-blue-100 text-blue-700';
+            if (status === 'IN_PROGRESS') colorClass = 'bg-[var(--primary-dim)] text-[var(--primary)]';
             if (status === 'WAITING_CLIENT') colorClass = 'bg-yellow-100 text-yellow-700';
         }
 
@@ -180,7 +180,7 @@ export const MyOperationsView: React.FC = () => {
                     {activeTab === 'tickets' && (
                         <button 
                             onClick={() => setIsTicketModalOpen(true)}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-sm"
+                            className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-sm"
                         >
                             <Ticket className="w-4 h-4" /> Nouveau Ticket
                         </button>
@@ -234,7 +234,7 @@ export const MyOperationsView: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400">
+                        <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-xl text-[var(--primary)] dark:text-[var(--primary)]">
                             <FileText className="w-6 h-6" />
                         </div>
                         <div>
@@ -291,7 +291,7 @@ export const MyOperationsView: React.FC = () => {
                             <button 
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as OperationTab)}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === tab.id ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === tab.id ? 'bg-white dark:bg-slate-800 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                             >
                                 {tab.label}
                             </button>
@@ -303,7 +303,7 @@ export const MyOperationsView: React.FC = () => {
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                             title="Filtrer par statut"
-                            className="flex-1 sm:flex-none pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none appearance-none cursor-pointer"
+                            className="flex-1 sm:flex-none pl-3 pr-8 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none cursor-pointer"
                         >
                             <option value="ALL">Tous les statuts</option>
                             {activeTab === 'subscriptions' && (
@@ -337,7 +337,7 @@ export const MyOperationsView: React.FC = () => {
                                 placeholder="Rechercher..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                             />
                         </div>
                     </div>
@@ -358,14 +358,14 @@ export const MyOperationsView: React.FC = () => {
                                 <div 
                                     key={sub.id} 
                                     onClick={() => setSelectedSub(sub)}
-                                    className="group bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500/50 transition-all cursor-pointer relative overflow-hidden"
+                                    className="group bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-[var(--primary)] dark:hover:border-[var(--primary)]/50 transition-all cursor-pointer relative overflow-hidden"
                                 >
                                     <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
                                         <FileText className="w-16 h-16" />
                                     </div>
                                     
                                     <div className="flex justify-between items-start mb-4">
-                                        <span className="font-mono text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-lg text-sm">
+                                        <span className="font-mono text-[var(--primary)] dark:text-[var(--primary)] font-bold bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] px-3 py-1 rounded-lg text-sm">
                                             {sub.vehicle_id || sub.vehicleId || '-'}
                                         </span>
                                         {renderStatusBadge(sub.status, 'contract')}
@@ -402,7 +402,7 @@ export const MyOperationsView: React.FC = () => {
                                             </div>
                                             <div className="bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg">
                                                 <p className="text-[10px] text-slate-500 uppercase font-semibold">Prochaine Facture</p>
-                                                <p className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                <p className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)]">
                                                     {sub.next_billing_date || sub.nextBillingDate ? new Date(sub.next_billing_date || sub.nextBillingDate).toLocaleDateString('fr-FR') : '-'}
                                                 </p>
                                             </div>
@@ -432,7 +432,7 @@ export const MyOperationsView: React.FC = () => {
                                 >
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="bg-slate-100 dark:bg-slate-700 p-2 rounded-lg">
-                                            <Wrench className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                            <Wrench className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)]" />
                                         </div>
                                         {renderStatusBadge(intervention.status, 'intervention')}
                                     </div>
@@ -460,7 +460,7 @@ export const MyOperationsView: React.FC = () => {
                                     </div>
                                     
                                     <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-                                        <button className="text-blue-600 dark:text-blue-400 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
+                                        <button className="text-[var(--primary)] dark:text-[var(--primary)] text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all">
                                             Détails <ArrowRight className="w-4 h-4" />
                                         </button>
                                     </div>
@@ -480,7 +480,7 @@ export const MyOperationsView: React.FC = () => {
                                             <div className={`w-2 h-10 rounded-full ${
                                                 ticket.priority === 'CRITICAL' ? 'bg-red-500' :
                                                 ticket.priority === 'HIGH' ? 'bg-orange-500' :
-                                                ticket.priority === 'MEDIUM' ? 'bg-blue-500' :
+                                                ticket.priority === 'MEDIUM' ? 'bg-[var(--primary-dim)]0' :
                                                 'bg-slate-300'
                                             }`} />
                                             <div className="min-w-0 flex-1">
@@ -549,7 +549,7 @@ export const MyOperationsView: React.FC = () => {
                                     <div className="flex gap-2 w-full mt-auto">
                                         <button 
                                             onClick={() => showToast('Téléchargement du reçu...', 'info')}
-                                            className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg text-xs font-bold hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all"
+                                            className="flex-1 flex items-center justify-center gap-2 py-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-lg text-xs font-bold hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/40 transition-all"
                                         >
                                             <FileDown className="w-4 h-4" /> REÇU
                                         </button>
@@ -631,7 +631,7 @@ export const MyOperationsView: React.FC = () => {
                         )}
                         {loadingSubs && (
                             <div className="text-center py-12">
-                                <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                                <div className="animate-spin w-8 h-8 border-4 border-[var(--primary)] border-t-transparent rounded-full mx-auto mb-4"></div>
                                 <p className="text-slate-500">Chargement de vos abonnements...</p>
                             </div>
                         )}

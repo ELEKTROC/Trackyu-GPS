@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Activity, Smartphone, Server, Ruler, Plus, AlertCircle } from 'lucide-react';
-import { Intervention } from '../../../types';
+import type { Intervention } from '../../../types';
 import { useToast } from '../../../contexts/ToastContext';
 
 interface InterventionTechTabProps {
@@ -108,7 +108,7 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
                         <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Test de Localisation</span>
                         <button 
                             onClick={() => handleSimulateTest('LOC')} 
-                            className="text-sm text-blue-600 hover:underline font-medium" 
+                            className="text-sm text-[var(--primary)] hover:underline font-medium" 
                             disabled={isTestLoading === 'LOC'}
                         >
                             {isTestLoading === 'LOC' ? 'Ping...' : 'Ping Position'}
@@ -151,15 +151,15 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
 
             {/* Configuration Jauge */}
             {hasMaterial('sonde') && (
-                <div className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-xl border border-blue-200 dark:border-blue-800 shadow-sm animate-in fade-in">
-                    <h4 className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase mb-4 flex items-center gap-2">
+                <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-6 rounded-xl border border-[var(--border)] dark:border-[var(--primary)] shadow-sm animate-in fade-in">
+                    <h4 className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-4 flex items-center gap-2">
                         <Ruler className="w-4 h-4"/> Configuration Jauge
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-blue-600/70 uppercase">Type de Capteur</label>
+                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Type de Capteur</label>
                             <select 
-                                className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
                                 value={formData.fuelSensorType || 'CANBUS'}
                                 onChange={e => setFormData({...formData, fuelSensorType: e.target.value as any})}
                             >
@@ -169,10 +169,10 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
                             </select>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-blue-600/70 uppercase">Capacité Réservoir (L)</label>
+                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Capacité Réservoir (L)</label>
                             <input 
                                 type="number" 
-                                className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm" 
+                                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" 
                                 value={formData.tankCapacity || ''} 
                                 onChange={e => setFormData({...formData, tankCapacity: parseFloat(e.target.value)})} 
                             />
@@ -182,9 +182,9 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
                     {formData.fuelSensorType !== 'CANBUS' && (
                         <div className="space-y-4 animate-in fade-in">
                             <div className="space-y-1">
-                                <label className="text-xs font-bold text-blue-600/70 uppercase">Forme du Réservoir</label>
+                                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Forme du Réservoir</label>
                                 <select 
-                                    className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
                                     value={formData.tankShape || 'RECTANGULAR'}
                                     onChange={e => setFormData({...formData, tankShape: e.target.value as any})}
                                 >
@@ -198,33 +198,33 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
 
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">Hauteur (mm)</label>
-                                    <input type="number" className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm" value={formData.tankHeight || ''} onChange={e => setFormData({...formData, tankHeight: parseFloat(e.target.value)})} />
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Hauteur (mm)</label>
+                                    <input type="number" className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" value={formData.tankHeight || ''} onChange={e => setFormData({...formData, tankHeight: parseFloat(e.target.value)})} />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">Longueur (mm)</label>
-                                    <input type="number" className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm" value={formData.tankLength || ''} onChange={e => setFormData({...formData, tankLength: parseFloat(e.target.value)})} />
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Longueur (mm)</label>
+                                    <input type="number" className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" value={formData.tankLength || ''} onChange={e => setFormData({...formData, tankLength: parseFloat(e.target.value)})} />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">Largeur (mm)</label>
-                                    <input type="number" className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm" value={formData.tankWidth || ''} onChange={e => setFormData({...formData, tankWidth: parseFloat(e.target.value)})} />
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Largeur (mm)</label>
+                                    <input type="number" className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" value={formData.tankWidth || ''} onChange={e => setFormData({...formData, tankWidth: parseFloat(e.target.value)})} />
                                 </div>
                             </div>
                             
                             {/* Table de Calibration */}
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">Table de Calibration</label>
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Table de Calibration</label>
                                     <button 
                                         type="button"
                                         onClick={handleGenerateCalibrationTable}
-                                        className="text-[10px] bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200"
+                                        className="text-[10px] bg-[var(--primary-dim)] text-[var(--primary)] px-2 py-1 rounded hover:bg-[var(--primary-dim)]"
                                     >
                                         Générer (Linéaire)
                                     </button>
                                 </div>
-                                <div className="border border-blue-200 dark:border-blue-800 rounded-lg overflow-hidden">
-                                    <div className="grid grid-cols-2 bg-blue-50 dark:bg-blue-900/20 text-[10px] font-bold text-blue-700 dark:text-blue-300 p-2 border-b border-blue-100 dark:border-blue-800">
+                                <div className="border border-[var(--border)] dark:border-[var(--primary)] rounded-lg overflow-hidden">
+                                    <div className="grid grid-cols-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] p-2 border-b border-[var(--primary)] dark:border-[var(--primary)]">
                                         <div>Hauteur (mm)</div>
                                         <div>Volume (L)</div>
                                     </div>
@@ -235,7 +235,7 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
                                                 <div key={idx} className="grid grid-cols-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
                                                     <input 
                                                         type="number" 
-                                                        className="w-full p-2 text-sm border-r border-slate-100 dark:border-slate-800 bg-transparent outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20"
+                                                        className="w-full p-2 text-sm border-r border-slate-100 dark:border-slate-800 bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
                                                         value={h || ''}
                                                         placeholder="mm"
                                                         onChange={(e) => {
@@ -246,7 +246,7 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
                                                     />
                                                     <input 
                                                         type="number" 
-                                                        className="w-full p-2 text-sm bg-transparent outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20"
+                                                        className="w-full p-2 text-sm bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
                                                         value={v || ''}
                                                         placeholder="L"
                                                         onChange={(e) => {
@@ -261,7 +261,7 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({
                                         <button 
                                             type="button"
                                             onClick={() => setFormData({...formData, calibrationTable: (formData.calibrationTable || '') + '\n,'})}
-                                            className="w-full p-2 text-xs text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center justify-center gap-1"
+                                            className="w-full p-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 flex items-center justify-center gap-1"
                                         >
                                             <Plus className="w-3 h-3" /> Ajouter une ligne
                                         </button>

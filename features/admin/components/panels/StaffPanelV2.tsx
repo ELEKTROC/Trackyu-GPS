@@ -130,7 +130,7 @@ type StaffUser = SystemUser & {
 // Map statique des classes Tailwind par couleur (évite le purge dynamique)
 const COLOR_CLASSES: Record<string, { bg50: string; bg100: string; text600: string; text700: string; ring400: string; hoverBg100: string; darkBg: string; darkText: string }> = {
   purple: { bg50: 'bg-purple-50', bg100: 'bg-purple-100', text600: 'text-purple-600', text700: 'text-purple-700', ring400: 'ring-purple-400', hoverBg100: 'hover:bg-purple-100', darkBg: 'dark:bg-purple-900/30', darkText: 'dark:text-purple-400' },
-  blue:   { bg50: 'bg-blue-50',   bg100: 'bg-blue-100',   text600: 'text-blue-600',   text700: 'text-blue-700',   ring400: 'ring-blue-400',   hoverBg100: 'hover:bg-blue-100',   darkBg: 'dark:bg-blue-900/30',   darkText: 'dark:text-blue-400' },
+  blue:   { bg50: 'bg-[var(--primary-dim)]',   bg100: 'bg-[var(--primary-dim)]',   text600: 'text-[var(--primary)]',   text700: 'text-[var(--primary)]',   ring400: 'ring-[var(--primary-dim)]',   hoverBg100: 'hover:bg-[var(--primary-dim)]',   darkBg: 'dark:bg-[var(--primary-dim)]',   darkText: 'dark:text-[var(--primary)]' },
   green:  { bg50: 'bg-green-50',  bg100: 'bg-green-100',  text600: 'text-green-600',  text700: 'text-green-700',  ring400: 'ring-green-400',  hoverBg100: 'hover:bg-green-100',  darkBg: 'dark:bg-green-900/30',  darkText: 'dark:text-green-400' },
   amber:  { bg50: 'bg-amber-50',  bg100: 'bg-amber-100',  text600: 'text-amber-600',  text700: 'text-amber-700',  ring400: 'ring-amber-400',  hoverBg100: 'hover:bg-amber-100',  darkBg: 'dark:bg-amber-900/30',  darkText: 'dark:text-amber-400' },
   orange: { bg50: 'bg-orange-50', bg100: 'bg-orange-100', text600: 'text-orange-600', text700: 'text-orange-700', ring400: 'ring-orange-400', hoverBg100: 'hover:bg-orange-100', darkBg: 'dark:bg-orange-900/30', darkText: 'dark:text-orange-400' },
@@ -363,7 +363,7 @@ export const StaffPanelV2: React.FC = () => {
     }
 
     // Validation téléphone (si rempli)
-    if (formData.phone && !/^[\d\s\+\-\(\)]{6,20}$/.test(formData.phone)) {
+    if (formData.phone && !/^[\d\s+\-()]{6,20}$/.test(formData.phone)) {
       showToast(TOAST.VALIDATION.INVALID_PHONE, 'error');
       return;
     }
@@ -528,7 +528,7 @@ export const StaffPanelV2: React.FC = () => {
   if (!updateUser || !addUser || !deleteUser) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
       </div>
     );
   }
@@ -541,7 +541,7 @@ export const StaffPanelV2: React.FC = () => {
           onClick={() => setActiveTab('users')}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'users' 
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
+              ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]' 
               : 'border-transparent text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -555,7 +555,7 @@ export const StaffPanelV2: React.FC = () => {
           onClick={() => setActiveTab('roles')}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'roles' 
-              ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
+              ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]' 
               : 'border-transparent text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -574,8 +574,8 @@ export const StaffPanelV2: React.FC = () => {
                   <p className="text-xs text-slate-500 uppercase font-bold">Total Équipe</p>
                   <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.total}</p>
                 </div>
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                  <Users className="w-6 h-6 text-blue-600" />
+                <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                  <Users className="w-6 h-6 text-[var(--primary)]" />
                 </div>
               </div>
             </Card>
@@ -694,7 +694,7 @@ export const StaffPanelV2: React.FC = () => {
                 </button>
                 <button
                   onClick={handleCreateClick}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white text-sm font-bold rounded-lg hover:bg-[var(--primary-light)]"
                 >
                   <Plus className="w-4 h-4" />
                   Nouvel Utilisateur
@@ -735,7 +735,7 @@ export const StaffPanelV2: React.FC = () => {
                       </div>
                       <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                         {getStatusBadge(user.status)}
-                        <button onClick={() => handleEditClick(user)} className="p-1.5 text-slate-400 hover:text-blue-600 rounded">
+                        <button onClick={() => handleEditClick(user)} className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded">
                           <Edit2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -817,14 +817,14 @@ export const StaffPanelV2: React.FC = () => {
                                   </code>
                                   <button
                                     onClick={() => setVisiblePasswords(prev => ({ ...prev, [user.id]: !prev[user.id] }))}
-                                    className="p-1 text-slate-400 hover:text-blue-600 rounded"
+                                    className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
                                     title={visiblePasswords[user.id] ? 'Masquer' : 'Afficher'}
                                   >
                                     {visiblePasswords[user.id] ? <XCircle className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                                   </button>
                                   <button
                                     onClick={() => { navigator.clipboard.writeText((user as StaffUser).plainPassword); showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success'); }}
-                                    className="p-1 text-slate-400 hover:text-blue-600 rounded"
+                                    className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
                                     title="Copier"
                                   >
                                     <Copy className="w-3.5 h-3.5" />
@@ -840,7 +840,7 @@ export const StaffPanelV2: React.FC = () => {
                             <div className="flex items-center justify-end gap-1">
                               <button
                                 onClick={() => handleEditClick(user)}
-                                className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+                                className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded"
                                 title="Modifier"
                               >
                                 <Edit2 className="w-4 h-4" />
@@ -921,7 +921,7 @@ export const StaffPanelV2: React.FC = () => {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)] flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" />
                 {isSaving ? 'Enregistrement...' : editingUser ? 'Mettre à jour' : 'Créer'}
@@ -972,10 +972,10 @@ export const StaffPanelV2: React.FC = () => {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className={`w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700 ${formData.phone && !/^[\d\s\+\-\(\)]{6,20}$/.test(formData.phone) ? 'border-red-500' : ''}`}
+                className={`w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700 ${formData.phone && !/^[\d\s+\-()]{6,20}$/.test(formData.phone) ? 'border-red-500' : ''}`}
                 placeholder="+225 07 00 00 00 00"
               />
-              {formData.phone && !/^[\d\s\+\-\(\)]{6,20}$/.test(formData.phone) && (
+              {formData.phone && !/^[\d\s+\-()]{6,20}$/.test(formData.phone) && (
                 <p className="text-xs text-red-500 mt-1">Format invalide (chiffres, +, -, espaces)</p>
               )}
             </div>
@@ -1317,7 +1317,7 @@ export const StaffPanelV2: React.FC = () => {
                   type="checkbox"
                   checked={formData.sendInvite}
                   onChange={(e) => setFormData({ ...formData, sendInvite: e.target.checked })}
-                  className="rounded border-slate-300 text-blue-600"
+                  className="rounded border-slate-300 text-[var(--primary)]"
                 />
                 <div>
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -1335,7 +1335,7 @@ export const StaffPanelV2: React.FC = () => {
                 type="checkbox"
                 checked={formData.require2FA}
                 onChange={(e) => setFormData({ ...formData, require2FA: e.target.checked })}
-                className="rounded border-slate-300 text-blue-600"
+                className="rounded border-slate-300 text-[var(--primary)]"
               />
               <div>
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -1379,7 +1379,7 @@ export const StaffPanelV2: React.FC = () => {
                           });
                         }
                       }}
-                      className="rounded border-slate-300 text-blue-600"
+                      className="rounded border-slate-300 text-[var(--primary)]"
                     />
                     <span className="text-sm text-slate-700 dark:text-slate-300">{org.name}</span>
                   </label>
@@ -1636,7 +1636,7 @@ export const StaffPanelV2: React.FC = () => {
                               : current.filter((c: string) => c !== canal);
                             setFormData({ ...formData, canaux: updated });
                           }}
-                          className="rounded border-slate-300 text-blue-600"
+                          className="rounded border-slate-300 text-[var(--primary)]"
                         />
                         {canal}
                       </label>
@@ -1723,7 +1723,7 @@ export const StaffPanelV2: React.FC = () => {
             </button>
             <button 
               onClick={handleSendInvite}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex items-center gap-2"
+              className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold flex items-center gap-2"
             >
               <Send className="w-4 h-4" />
               Envoyer l'invitation
@@ -1942,7 +1942,7 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
                   <span className="text-slate-600 dark:text-slate-400">Niveau</span>
                   <span className={`font-medium px-2 py-0.5 rounded-full text-xs ${
                     (user as StaffUser).niveau === 'Expert' ? 'bg-purple-100 text-purple-700' :
-                    (user as StaffUser).niveau === 'Confirmé' ? 'bg-blue-100 text-blue-700' :
+                    (user as StaffUser).niveau === 'Confirmé' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' :
                     'bg-slate-100 text-slate-700'
                   }`}>
                     {(user as StaffUser).niveau || 'Junior'}
@@ -1978,7 +1978,7 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
       <div className="p-4 border-t dark:border-slate-700 space-y-2">
         <button
           onClick={onEdit}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-light)]"
         >
           <Edit2 className="w-4 h-4" />
           Modifier
