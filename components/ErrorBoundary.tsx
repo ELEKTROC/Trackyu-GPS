@@ -24,7 +24,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logger.error('Uncaught error:', error, errorInfo);
+    logger.error('Uncaught error:', error.message);
+    logger.error('Component stack:', errorInfo.componentStack);
   }
 
   public render() {
