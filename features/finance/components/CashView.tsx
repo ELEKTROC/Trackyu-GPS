@@ -226,8 +226,8 @@ export const CashView: React.FC<CashViewProps> = ({
         
         <Card>
            <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full">
-              <ArrowUpRight className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full">
+              <ArrowUpRight className="w-6 h-6 text-[var(--primary)] dark:text-[var(--primary)]" />
             </div>
             <div>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Entrées (Mois)</p>
@@ -323,7 +323,7 @@ export const CashView: React.FC<CashViewProps> = ({
                                     {isSuperAdmin && (
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-5 h-5 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                                <div className="w-5 h-5 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                                                     {(resellers?.find(r => r.tenantId === entry.tenantId)?.slug || '??').substring(0, 2)}
                                                 </div>
                                                 <span className="text-xs text-slate-600 dark:text-slate-300">
@@ -482,8 +482,8 @@ export const CashView: React.FC<CashViewProps> = ({
                     </div>
                 </div>
             ) : (
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
-                    <p className="text-sm text-blue-800 dark:text-blue-300">
+                <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-lg border border-[var(--primary)] dark:border-[var(--primary)]">
+                    <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">
                         Cette opération génère un document PDF officiel récapitulant les mouvements de la journée.
                     </p>
                 </div>
@@ -506,7 +506,7 @@ export const CashView: React.FC<CashViewProps> = ({
                 </div>
                 <div>
                     <p className="text-xs text-slate-500 uppercase font-bold">Solde Théorique</p>
-                    <p className="text-lg font-mono font-bold text-blue-600 dark:text-blue-400">{formatPrice(dailyStats.theoreticalClosing)}</p>
+                    <p className="text-lg font-mono font-bold text-[var(--primary)] dark:text-[var(--primary)]">{formatPrice(dailyStats.theoreticalClosing)}</p>
                 </div>
                 <div>
                     <p className="text-xs text-slate-500 uppercase font-bold">Total Entrées</p>
@@ -643,7 +643,7 @@ export const CashView: React.FC<CashViewProps> = ({
                                             setClosingNotes(closing.notes);
                                             handleGenerateClosing();
                                         }}
-                                        className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1"
+                                        className="text-xs text-[var(--primary)] hover:text-[var(--primary)] flex items-center gap-1"
                                     >
                                         <Download className="w-3 h-3" /> Télécharger PDF
                                     </button>

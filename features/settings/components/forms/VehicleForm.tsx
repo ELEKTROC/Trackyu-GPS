@@ -6,7 +6,7 @@ import { Car, Cpu, Fuel, Wrench, History, Loader2 } from 'lucide-react';
 import { api } from '../../../../services/api';
 import { logger } from '../../../../utils/logger';
 import { FormField, FormSection, FormGrid, Input, Select, Textarea } from '../../../../components/form';
-import { z } from 'zod';
+import type { z } from 'zod';
 
 export type VehicleFormData = z.infer<typeof VehicleSchema>;
 
@@ -160,26 +160,26 @@ export const VehicleForm = React.forwardRef<HTMLFormElement, BaseFormProps & { c
         <form ref={ref} onSubmit={handleSubmit(onSubmit as SubmitHandler<VehicleFormData>)} className="h-[600px] flex flex-col">
             {/* ABO Code Banner (edit mode) */}
             {initialData?.id?.startsWith('ABO-') && (
-                <div className="flex items-center gap-3 mb-3 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Code Objet</span>
-                    <span className="font-mono text-sm font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-800/50 px-2.5 py-0.5 rounded-md tracking-wider">{initialData.id}</span>
+                <div className="flex items-center gap-3 mb-3 px-3 py-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg">
+                    <span className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase">Code Objet</span>
+                    <span className="font-mono text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] px-2.5 py-0.5 rounded-md tracking-wider">{initialData.id}</span>
                 </div>
             )}
             {/* Tabs Header */}
             <div className="flex border-b border-slate-200 dark:border-slate-700 mb-4 overflow-x-auto">
-                <button type="button" onClick={() => setActiveTab('info')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'info' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+                <button type="button" onClick={() => setActiveTab('info')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'info' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
                     <Car className="w-4 h-4" /> Infos Véhicule
                 </button>
-                <button type="button" onClick={() => setActiveTab('device')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'device' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+                <button type="button" onClick={() => setActiveTab('device')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'device' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
                     <Cpu className="w-4 h-4" /> Boîtier & Connectivité
                 </button>
-                <button type="button" onClick={() => setActiveTab('fuel')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'fuel' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+                <button type="button" onClick={() => setActiveTab('fuel')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'fuel' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
                     <Fuel className="w-4 h-4" /> Jauge
                 </button>
-                <button type="button" onClick={() => setActiveTab('maintenance')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'maintenance' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+                <button type="button" onClick={() => setActiveTab('maintenance')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'maintenance' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
                     <Wrench className="w-4 h-4" /> Maintenance
                 </button>
-                <button type="button" onClick={() => setActiveTab('history')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'history' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
+                <button type="button" onClick={() => setActiveTab('history')} className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'history' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}>
                     <History className="w-4 h-4" /> Historique
                 </button>
             </div>

@@ -145,19 +145,19 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
                             onDrop={(e) => handleDrop(e, day)}
                             className={`min-h-[80px] sm:min-h-[120px] p-1 sm:p-2 border-r border-b border-slate-200 dark:border-slate-700 transition-all ${
                                 !isSameMonth(day, monthStart) ? 'bg-slate-50/50 dark:bg-slate-900/20' : 'bg-white dark:bg-slate-900/40'
-                            } ${isSameDay(day, new Date()) ? 'ring-2 ring-inset ring-blue-500 ring-opacity-50' : ''} ${
-                                isDragOver ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-400' : ''
+                            } ${isSameDay(day, new Date()) ? 'ring-2 ring-inset ring-[var(--primary)] ring-opacity-50' : ''} ${
+                                isDragOver ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] ring-2 ring-[var(--primary-dim)]' : ''
                             }`}
                         >
                             <div className="flex justify-between items-center mb-1">
                                 <span className={`text-xs font-bold ${isSameDay(day, new Date())
-                                    ? 'w-6 h-6 flex items-center justify-center bg-blue-600 text-white rounded-full'
+                                    ? 'w-6 h-6 flex items-center justify-center bg-[var(--primary)] text-white rounded-full'
                                     : !isSameMonth(day, monthStart) ? 'text-slate-300' : 'text-slate-600 dark:text-slate-400'
                                     }`}>
                                     {format(day, 'd')}
                                 </span>
                                 {dayEvents.length > 0 && (
-                                    <span className="text-[9px] font-bold text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded px-0.5">
+                                    <span className="text-[9px] font-bold text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded px-0.5">
                                         {dayEvents.length}
                                     </span>
                                 )}
@@ -214,7 +214,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
                                     {hoveredEvent.title}
                                 </p>
                                 {hoveredEvent.clientName && hoveredEvent.clientName !== hoveredEvent.title && (
-                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium truncate">
+                                    <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] font-medium truncate">
                                         Client: {hoveredEvent.clientName}
                                     </p>
                                 )}
@@ -255,7 +255,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
                                         hoveredEvent.status === 'DONE' || hoveredEvent.status === 'COMPLETED'
                                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                                             : hoveredEvent.status === 'IN_PROGRESS'
-                                            ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                            ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
                                             : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
                                     }`}>
                                         {hoveredEvent.status === 'TODO' ? 'À faire' :

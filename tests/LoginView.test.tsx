@@ -12,6 +12,12 @@ vi.mock('../contexts/AuthContext', () => ({
   AuthProvider: ({ children }: any) => <div>{children}</div>
 }));
 
+// Mock ToastContext
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: () => ({ showToast: vi.fn() }),
+  ToastProvider: ({ children }: any) => <div>{children}</div>,
+}));
+
 describe('LoginView', () => {
   it('renders login form', () => {
     render(<LoginView />);

@@ -662,8 +662,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         value={`${fleet.moving + fleet.idle}/${fleet.total}`}
         subtitle={`${fleet.utilization}% utilisation`}
         icon={Truck}
-        color="text-blue-600"
-        bgColor="bg-blue-50 dark:bg-blue-900/30"
+        color="text-[var(--primary)]"
+        bgColor="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]"
         onClick={() => nav(View.FLEET)}
       />
     );

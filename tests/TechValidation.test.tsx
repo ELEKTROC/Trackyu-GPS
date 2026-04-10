@@ -10,7 +10,7 @@ import {
     getResolutionTimeColor
 } from '../features/tech/utils/resolutionTime';
 import { InterventionSchema, InterventionTypeSchema, InterventionStatusSchema } from '../schemas/interventionSchema';
-import { Intervention } from '../types';
+import type { Intervention } from '../types';
 
 // ============================================================================
 // MOCK DATA FACTORIES
@@ -433,20 +433,25 @@ describe('getResolutionTimeColor', () => {
 // ============================================================================
 // INTERVENTION SCHEMA VALIDATION TESTS
 // ============================================================================
+// Base valid object matching current InterventionSchema (ticketId is required)
+const validBase = {
+    ticketId: 'TKT-001',
+    clientId: 'CLI-001',
+    technicianId: 'TECH-001',
+    type: 'INSTALLATION' as const,
+};
+
 describe('InterventionSchema Validation', () => {
     describe('Required Fields', () => {
         it('should require clientId', () => {
             const result = InterventionSchema.safeParse({
+                ...validBase,
                 clientId: '',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: 'Test'
             });
-            
+
             expect(result.success).toBe(false);
             if (!result.success) {
-                expect(result.error.issues.some(i => 
+                expect(result.error.issues.some(i =>
                     i.path.includes('clientId')
                 )).toBe(true);
             }
@@ -454,56 +459,38 @@ describe('InterventionSchema Validation', () => {
 
         it('should accept optional scheduledDate', () => {
             const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
+                ...validBase,
                 scheduledDate: '',
-                location: 'Test'
             });
-            
-            // scheduledDate is now optional in the schema
+
+            // scheduledDate is optional (nullish)
             expect(result.success).toBe(true);
         });
 
         it('should accept optional location', () => {
             const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: ''
+                ...validBase,
+                location: '',
             });
-            
-            // location is now optional in the schema
+
+            // location is optional (nullish)
             expect(result.success).toBe(true);
         });
     });
 
     describe('Type Validation', () => {
         it('should accept valid intervention types', () => {
-            const validTypes = ['INSTALLATION', 'DEPANNAGE', 'MAINTENANCE', 'DESINSTALLATION', 'VERIFICATION', 'AUTRE'];
-            
+            // Current schema types: INSTALLATION, DEPANNAGE, REMPLACEMENT, RETRAIT, REINSTALLATION, TRANSFERT
+            const validTypes = ['INSTALLATION', 'DEPANNAGE', 'REMPLACEMENT', 'RETRAIT', 'REINSTALLATION', 'TRANSFERT'];
+
             validTypes.forEach(type => {
-                const result = InterventionSchema.safeParse({
-                    clientId: 'CLI-001',
-                    technicianId: 'TECH-001',
-                    type,
-                    scheduledDate: '2025-12-22',
-                    location: 'Test'
-                });
+                const result = InterventionSchema.safeParse({ ...validBase, type });
                 expect(result.success).toBe(true);
             });
         });
 
         it('should reject invalid intervention type', () => {
-            const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INVALID_TYPE',
-                scheduledDate: '2025-12-22',
-                location: 'Test'
-            });
-            
+            const result = InterventionSchema.safeParse({ ...validBase, type: 'INVALID_TYPE' });
             expect(result.success).toBe(false);
         });
     });
@@ -511,29 +498,16 @@ describe('InterventionSchema Validation', () => {
     describe('Status Validation', () => {
         it('should accept valid statuses', () => {
             const validStatuses = ['PENDING', 'SCHEDULED', 'EN_ROUTE', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'POSTPONED'];
-            
+
             validStatuses.forEach(status => {
-                const result = InterventionSchema.safeParse({
-                    clientId: 'CLI-001',
-                    technicianId: 'TECH-001',
-                    type: 'INSTALLATION',
-                    status,
-                    scheduledDate: '2025-12-22',
-                    location: 'Test'
-                });
+                const result = InterventionSchema.safeParse({ ...validBase, status });
                 expect(result.success).toBe(true);
             });
         });
 
         it('should default to PENDING if no status provided', () => {
-            const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: 'Test'
-            });
-            
+            const result = InterventionSchema.safeParse({ ...validBase });
+
             expect(result.success).toBe(true);
             if (result.success) {
                 expect(result.data.status).toBe('PENDING');
@@ -543,44 +517,23 @@ describe('InterventionSchema Validation', () => {
 
     describe('Numeric Fields', () => {
         it('should require positive duration', () => {
-            const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: 'Test',
-                duration: -10
-            });
-            
+            const result = InterventionSchema.safeParse({ ...validBase, duration: -10 });
             expect(result.success).toBe(false);
         });
 
         it('should reject negative cost', () => {
-            const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: 'Test',
-                cost: -100
-            });
-            
+            const result = InterventionSchema.safeParse({ ...validBase, cost: -100 });
             expect(result.success).toBe(false);
         });
 
         it('should accept valid tank dimensions', () => {
             const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: 'Test',
+                ...validBase,
                 tankCapacity: 100,
                 tankHeight: 50,
                 tankWidth: 40,
-                tankLength: 60
+                tankLength: 60,
             });
-            
             expect(result.success).toBe(true);
         });
     });
@@ -588,27 +541,17 @@ describe('InterventionSchema Validation', () => {
     describe('VIN Validation', () => {
         it('should accept VIN with 17 characters', () => {
             const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: 'Test',
-                vin: '1HGBH41JXMN109186' // 17 chars
+                ...validBase,
+                vin: '1HGBH41JXMN109186', // 17 chars
             });
-            
             expect(result.success).toBe(true);
         });
 
         it('should reject VIN over 17 characters', () => {
             const result = InterventionSchema.safeParse({
-                clientId: 'CLI-001',
-                technicianId: 'TECH-001',
-                type: 'INSTALLATION',
-                scheduledDate: '2025-12-22',
-                location: 'Test',
-                vin: '1HGBH41JXMN109186X' // 18 chars
+                ...validBase,
+                vin: '1HGBH41JXMN109186X', // 18 chars
             });
-            
             expect(result.success).toBe(false);
         });
     });
@@ -616,16 +559,9 @@ describe('InterventionSchema Validation', () => {
     describe('Fuel Sensor Type', () => {
         it('should accept valid sensor types', () => {
             const validTypes = ['CANBUS', 'CAPACITIVE', 'ULTRASONIC'];
-            
+
             validTypes.forEach(sensorType => {
-                const result = InterventionSchema.safeParse({
-                    clientId: 'CLI-001',
-                    technicianId: 'TECH-001',
-                    type: 'INSTALLATION',
-                    scheduledDate: '2025-12-22',
-                    location: 'Test',
-                    fuelSensorType: sensorType
-                });
+                const result = InterventionSchema.safeParse({ ...validBase, fuelSensorType: sensorType });
                 expect(result.success).toBe(true);
             });
         });

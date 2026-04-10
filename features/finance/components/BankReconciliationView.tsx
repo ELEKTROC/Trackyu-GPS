@@ -139,8 +139,8 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
             {!isMobile && <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-                            <Wallet className="w-5 h-5 text-blue-600" />
+                        <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                            <Wallet className="w-5 h-5 text-[var(--primary)]" />
                         </div>
                         <span className="text-xs font-bold text-slate-400 uppercase">Solde Théorique</span>
                     </div>
@@ -210,7 +210,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                 </div>
                 <button 
                     onClick={() => { setEditingTx({}); setIsModalOpen(true); }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
+                    className="bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"
                 >
                     <Plus className="w-4 h-4" /> Nouvelle Transaction
                 </button>
@@ -255,7 +255,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                                 {isSuperAdmin && (
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-5 h-5 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                            <div className="w-5 h-5 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                                                 {(resellers?.find(r => r.tenantId === tx.tenantId)?.slug || '??').substring(0, 2)}
                                             </div>
                                             <span className="text-xs text-slate-600 dark:text-slate-300">
@@ -266,7 +266,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                                 )}
                                 <td className="px-4 py-3">
                                     <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                                        tx.status === 'RECONCILED' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'
+                                        tx.status === 'RECONCILED' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-yellow-100 text-yellow-700'
                                     }`}>
                                         {tx.status}
                                     </span>
@@ -284,7 +284,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                                         )}
                                         <button 
                                             onClick={() => { setEditingTx(tx); setIsModalOpen(true); }}
-                                            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-blue-600"
+                                            className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-[var(--primary)]"
                                             aria-label="Modifier la transaction"
                                         >
                                             <Edit2 className="w-4 h-4" />
@@ -320,8 +320,8 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                             <button onClick={() => setReconcileTx(null)} className="text-slate-400 hover:text-slate-600">✕</button>
                         </div>
                         <div className="p-6 space-y-4">
-                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
-                                <p className="text-sm text-blue-600 dark:text-blue-400 font-bold">Transaction Bancaire</p>
+                            <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-lg border border-[var(--primary)] dark:border-[var(--primary)]">
+                                <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)] font-bold">Transaction Bancaire</p>
                                 <div className="flex justify-between items-center mt-1">
                                     <span className="text-slate-800 dark:text-white">{reconcileTx.description}</span>
                                     <span className="font-mono font-bold">{formatPrice(reconcileTx.amount)}</span>
@@ -525,7 +525,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                                             Compte comptable
-                                            {editingTx.category && <span className="ml-1 text-xs text-blue-500 font-normal">(auto)</span>}
+                                            {editingTx.category && <span className="ml-1 text-xs text-[var(--primary)] font-normal">(auto)</span>}
                                         </label>
                                         <select
                                             className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700"
@@ -567,7 +567,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                             <button
                                 type="submit"
                                 form="bank-tx-form"
-                                className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors"
+                                className="px-5 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-bold transition-colors"
                             >
                                 {editingTx.id ? 'Mettre à jour' : 'Enregistrer'}
                             </button>

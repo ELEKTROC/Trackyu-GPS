@@ -52,7 +52,7 @@ export const SuperAdminView: React.FC = () => {
           { id: 'resellers',    label: 'Revendeurs',          icon: Building2,    color: 'bg-purple-500', description: 'Gestion des revendeurs',      requiredRole: 'SUPERADMIN' },
           { id: 'devices',      label: 'Paramètres Boîtiers', icon: Settings,     color: 'bg-slate-600',  description: 'Configuration des trackers' },
           { id: 'whitelabel',   label: 'Marque Blanche',      icon: Palette,      color: 'bg-pink-500',   description: 'Personnalisation de la marque', requiredRole: 'SUPERADMIN' },
-          { id: 'staff',        label: 'Équipe',               icon: Users,        color: 'bg-blue-500',   description: 'Gestion des collaborateurs' },
+          { id: 'staff',        label: 'Équipe',               icon: Users,        color: 'bg-[var(--primary-dim)]0',   description: 'Gestion des collaborateurs' },
           { id: 'system',       label: 'Système',              icon: Server,       color: 'bg-red-500',    description: 'Configuration système',        requiredRole: 'SUPERADMIN' },
           { id: 'audit-logs',   label: "Journal d'Audit",      icon: Activity,     color: 'bg-orange-500', description: 'Historique des actions',        requiredRole: 'SUPERADMIN' },
           { id: 'help',         label: 'Centre d\'Aide',       icon: BookOpen,     color: 'bg-teal-500',   description: 'Articles et documentation' },

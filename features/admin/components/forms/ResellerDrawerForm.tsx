@@ -297,7 +297,7 @@ export function ResellerDrawerForm({
             {...form.register(name, { valueAsNumber: type === 'number' })}
             placeholder={placeholder}
             className="w-full px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 
-                       focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
           />
         )}
         {error && (
@@ -334,7 +334,7 @@ export function ResellerDrawerForm({
         <input
           type="checkbox"
           {...form.register(path as Path<ResellerFormData>)}
-          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+          className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
         />
         <span className="text-sm text-slate-700 dark:text-slate-300">{label}</span>
       </label>
@@ -419,7 +419,7 @@ export function ResellerDrawerForm({
                 <input
                   type={showPassword ? "text" : "password"}
                   {...form.register('password')}
-                  className="w-full pl-3 pr-10 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  className="w-full pl-3 pr-10 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                   placeholder="********"
                 />
                 <button
@@ -513,7 +513,7 @@ export function ResellerDrawerForm({
       <div className="space-y-4">
         {isLoadingClients ? (
           <div className="flex items-center justify-center h-32">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
           </div>
         ) : (
           <>
@@ -608,8 +608,8 @@ export function ResellerDrawerForm({
       <div className="space-y-6">
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-blue-600">{mockClients.length}</p>
+          <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg p-4 text-center">
+            <p className="text-2xl font-bold text-[var(--primary)]">{mockClients.length}</p>
             <p className="text-sm text-slate-600 dark:text-slate-400">Clients</p>
           </div>
           <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 text-center">
@@ -714,7 +714,7 @@ export function ResellerDrawerForm({
             <tbody className="divide-y dark:divide-gray-700">
               {paginatedInvoices.map((invoice) => (
                 <tr key={invoice.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                  <td className="px-4 py-3 font-medium text-blue-600">{invoice.number}</td>
+                  <td className="px-4 py-3 font-medium text-[var(--primary)]">{invoice.number}</td>
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{invoice.date}</td>
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{invoice.dueDate}</td>
                   <td className="px-4 py-3 text-right font-medium">{invoice.amount}</td>
@@ -792,7 +792,7 @@ export function ResellerDrawerForm({
               <button
                 type="button"
                 onClick={() => onModeChange('edit')}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
               >
                 <Edit className="w-4 h-4" />
                 Modifier
@@ -811,7 +811,7 @@ export function ResellerDrawerForm({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 {isSubmitting ? 'Enregistrement...' : 'Enregistrer'}
@@ -836,7 +836,7 @@ export function ResellerDrawerForm({
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   isActive
-                    ? 'border-blue-600 text-blue-600'
+                    ? 'border-[var(--primary)] text-[var(--primary)]'
                     : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
               >

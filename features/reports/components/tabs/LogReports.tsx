@@ -177,7 +177,7 @@ export const LogReports: React.FC<LogReportsProps> = ({ onAiAnalysis, initialIte
                             <p className="text-sm text-slate-500">Système stable</p>
                         </Card>
                         <Card title="Actions Admin">
-                            <div className="text-3xl font-bold text-blue-600">12</div>
+                            <div className="text-3xl font-bold text-[var(--primary)]">12</div>
                             <p className="text-sm text-slate-500">Dernières 24h</p>
                         </Card>
                         <Card title="Connexions Utilisateurs">

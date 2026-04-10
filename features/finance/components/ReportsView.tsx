@@ -94,7 +94,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
             <h3 className="text-xl font-bold text-slate-800 dark:text-white">Balance Générale</h3>
             <button 
                 onClick={handleExport}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-blue-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 hover:bg-blue-100 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors"
             >
                 <Download className="w-4 h-4" />
                 Export CSV
@@ -236,7 +236,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         <div className="flex justify-end">
             <button 
                 onClick={handleExport}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-blue-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 hover:bg-blue-100 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors"
             >
                 <Download className="w-4 h-4" />
                 Export CSV
@@ -362,7 +362,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         <div className="flex justify-end">
             <button 
                 onClick={handleExport}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-blue-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 hover:bg-blue-100 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors"
             >
                 <Download className="w-4 h-4" />
                 Export CSV
@@ -446,7 +446,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
                         ['TVA à Payer', vatToPay > 0 ? formatPrice(vatToPay) : formatPrice(0)],
                         ['Crédit de TVA', vatToPay < 0 ? formatPrice(Math.abs(vatToPay)) : formatPrice(0)]
                     ], `TVA_${startDate}_${endDate}.csv`)}
-                    className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-blue-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 hover:bg-blue-100 transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors"
                 >
                     <Download className="w-4 h-4" />
                     Export CSV
@@ -518,8 +518,8 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
         >
           <Card className="hover:border-emerald-500 transition-colors h-full">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-100 dark:bg-blue-500/20 rounded-lg">
-                <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]0/20 rounded-lg">
+                <FileText className="w-6 h-6 text-[var(--primary)] dark:text-[var(--primary)]" />
               </div>
               <div>
                 <h3 className="font-bold text-slate-800 dark:text-slate-200">Grand Livre</h3>

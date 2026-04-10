@@ -3,7 +3,7 @@ import { Card } from '../../../components/Card';
 import { CRMView } from './CRMView';
 import { FinanceView } from '../../finance/components/FinanceView';
 import { Users, FileDigit, BookOpen, TrendingUp, CheckCircle, AlertCircle, Briefcase, PieChart, ListTodo, Zap, Target, Clock, XCircle, Flame, Thermometer, Snowflake, ArrowRight, UserPlus } from 'lucide-react';
-import { Lead, Quote } from '../../../types';
+import type { Lead, Quote } from '../../../types';
 import { useDataContext } from '../../../contexts/DataContext';
 import { Tabs } from '../../../components/Tabs';
 import { MobileTabLayout } from '../../../components/MobileTabLayout';
@@ -167,7 +167,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
   };
 
   const PRESALES_TABS_ALL = [
-    { id: 'OVERVIEW',     label: "Vue d'ensemble",  icon: PieChart,   color: 'bg-blue-500',   description: 'KPIs et statistiques' },
+    { id: 'OVERVIEW',     label: "Vue d'ensemble",  icon: PieChart,   color: 'bg-[var(--primary-dim)]0',   description: 'KPIs et statistiques' },
     { id: 'LEADS',        label: 'Leads & Pistes',  icon: Users,      color: 'bg-orange-500', description: 'Pipeline commercial' },
     { id: 'PIPELINE',     label: 'Pipeline',        icon: TrendingUp, color: 'bg-purple-500', description: 'Vue pipeline Kanban' },
     { id: 'QUOTES',       label: 'Devis',           icon: FileDigit,  color: 'bg-green-500',  description: 'Propositions commerciales' },
@@ -216,7 +216,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                               <p className="text-xs font-bold text-slate-500 uppercase">Total Leads</p>
                               <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.totalLeads}</p>
                           </div>
-                          <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+                          <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                               <Users className="w-5 h-5" />
                           </div>
                       </div>
@@ -292,10 +292,10 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                             <p className="text-2xl font-bold text-orange-600">{kpis.warmLeads}</p>
                             <p className="text-[10px] text-orange-500 font-bold uppercase">Warm</p>
                         </div>
-                        <div className="flex-1 text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                            <Snowflake className="w-6 h-6 text-blue-500 mx-auto mb-1" />
-                            <p className="text-2xl font-bold text-blue-600">{kpis.coldLeads}</p>
-                            <p className="text-[10px] text-blue-500 font-bold uppercase">Cold</p>
+                        <div className="flex-1 text-center p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
+                            <Snowflake className="w-6 h-6 text-[var(--primary)] mx-auto mb-1" />
+                            <p className="text-2xl font-bold text-[var(--primary)]">{kpis.coldLeads}</p>
+                            <p className="text-[10px] text-[var(--primary)] font-bold uppercase">Cold</p>
                         </div>
                     </div>
                 </Card>
@@ -342,7 +342,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                 {/* FUNNEL CHART */}
                 <Card className="p-6">
                     <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                        <ArrowRight className="w-5 h-5 text-blue-500" /> Entonnoir Commercial
+                        <ArrowRight className="w-5 h-5 text-[var(--primary)]" /> Entonnoir Commercial
                     </h3>
                     <div className="h-64" style={{ minHeight: 200, minWidth: 200 }}>
                         <ResponsiveContainer width="100%" height="100%" minHeight={200} minWidth={200} initialDimension={{ width: 200, height: 200 }}>
@@ -423,7 +423,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
               <p className="text-xs font-bold text-slate-500 uppercase">Total Leads</p>
               <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.totalLeads}</p>
             </div>
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
               <Users className="w-6 h-6" />
             </div>
           </div>

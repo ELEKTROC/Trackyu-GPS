@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CatalogItem } from '../../../types';
+import type { CatalogItem } from '../../../types';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
@@ -94,7 +94,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
                             type="checkbox" 
                             checked={formData.isSellable} 
                             onChange={e => setFormData({...formData, isSellable: e.target.checked})}
-                            className="rounded text-blue-600 focus:ring-blue-500"
+                            className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                         />
                         <span className="text-sm font-medium">Vendable</span>
                     </label>
@@ -103,7 +103,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
                             type="checkbox" 
                             checked={formData.isPurchasable} 
                             onChange={e => setFormData({...formData, isPurchasable: e.target.checked})}
-                            className="rounded text-blue-600 focus:ring-blue-500"
+                            className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                         />
                         <span className="text-sm font-medium">Achetable</span>
                     </label>
@@ -112,7 +112,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
                             type="checkbox" 
                             checked={formData.trackStock} 
                             onChange={e => setFormData({...formData, trackStock: e.target.checked})}
-                            className="rounded text-blue-600 focus:ring-blue-500"
+                            className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                         />
                         <span className="text-sm font-medium">Suivre le stock</span>
                     </label>
@@ -219,7 +219,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
                             type="file" 
                             accept="image/*"
                             onChange={handleImageUpload}
-                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
                         />
                     </div>
                 </FormField>
@@ -230,7 +230,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
             </FormGrid>
             <div className="flex justify-end gap-2 pt-4 border-t dark:border-slate-700">
                 <button type="button" onClick={onCancel} className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Annuler</button>
-                <button type="submit" className="px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium">Enregistrer</button>
+                <button type="submit" className="px-4 py-2.5 bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] transition-colors font-medium">Enregistrer</button>
             </div>
         </form>
     );

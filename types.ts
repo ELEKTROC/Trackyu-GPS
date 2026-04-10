@@ -24,7 +24,7 @@ export * from './types/index';
 // This section is intentionally left empty.
 // If you need to add a new type, add it to the appropriate domain file in types/.
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 /*
   Original content (1632 lines) has been split into 12 domain modules.
   See types/ directory for the source of truth.

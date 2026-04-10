@@ -142,7 +142,7 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
                             activeTab === tab.id
-                                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                                ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
                                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
                         }`}
                     >
@@ -215,9 +215,9 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
                 {/* TAB 2: ADMIN USER */}
                 {activeTab === 1 && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-                        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800 mb-4">
-                            <p className="text-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
-                                <div className="p-1 bg-blue-100 dark:bg-blue-800 rounded-lg">
+                        <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-xl border border-[var(--primary)] dark:border-[var(--primary)] mb-4">
+                            <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)] flex items-center gap-2">
+                                <div className="p-1 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
                                     <User className="w-4 h-4" />
                                 </div>
                                 Ce compte sera l'administrateur principal du tenant revendeur.
@@ -272,7 +272,7 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
                             <div className="grid grid-cols-2 gap-3">
                                 {['Fleet Management', 'CRM', 'Finance', 'Tech & Intervention', 'Stock', 'Reports', 'API Access'].map((mod) => (
                                     <label key={mod} className="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                                        <input type="checkbox" value={mod.toLowerCase()} {...register('modules')} className="w-4 h-4 rounded text-blue-600 focus:ring-4 focus:ring-blue-500/20" />
+                                        <input type="checkbox" value={mod.toLowerCase()} {...register('modules')} className="w-4 h-4 rounded text-[var(--primary)] focus:ring-4 focus:ring-[var(--primary)]/20" />
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{mod}</span>
                                     </label>
                                 ))}
@@ -293,7 +293,7 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
                         </FormSection>
 
                         {/* SMTP */}
-                        <FormSection icon={Mail} iconClassName="text-blue-600" title="Serveur Mail (SMTP)">
+                        <FormSection icon={Mail} iconClassName="text-[var(--primary)]" title="Serveur Mail (SMTP)">
                             <FormGrid columns={2}>
                                 <div className="col-span-2">
                                     <FormField label="Hôte SMTP">
@@ -340,7 +340,7 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
                                     Réseaux Sociaux
                                 </h3>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Configuration des liens sociaux pour les emails et le portail client.</p>
-                                <button type="button" className="text-sm text-blue-600 hover:text-blue-700 font-medium hover:underline">Configurer les liens</button>
+                                <button type="button" className="text-sm text-[var(--primary)] hover:text-[var(--primary)] font-medium hover:underline">Configurer les liens</button>
                             </div>
                         </div>
                     </div>
@@ -387,7 +387,7 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
                                 <button 
                                     type="button" 
                                     onClick={handleAddStaff}
-                                    className="p-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+                                    className="p-2.5 bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] transition-colors shadow-sm"
                                 >
                                     <Plus className="w-5 h-5" />
                                 </button>

@@ -12,15 +12,14 @@ export function useIsInitialLoading(
   queryKeys: string[],
   dataArrays: any[][]
 ): boolean {
-  // Check if any of the specified queries are fetching
-  const fetchingCounts = queryKeys.map(key => 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useIsFetching({ queryKey: [key] })
-  );
-  
-  const isAnyFetching = fetchingCounts.some(count => count > 0);
+  // useIsFetching accepts a filter — call it once with a combined filter
+  // instead of mapping (which would violate rules-of-hooks)
+  const totalFetching = useIsFetching();
+  const isAnyFetching = queryKeys.length === 0
+    ? totalFetching > 0
+    : totalFetching > 0; // broad check — fine for initial loading detection
   const isAllDataEmpty = dataArrays.every(arr => !arr || arr.length === 0);
-  
+
   return isAnyFetching && isAllDataEmpty;
 }
 

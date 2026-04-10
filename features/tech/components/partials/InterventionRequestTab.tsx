@@ -7,7 +7,8 @@ import React from 'react';
 import {
     Navigation, Phone, Clock, MapPin, Plus, Building2
 } from 'lucide-react';
-import { Intervention, InterventionNature, type Ticket } from '../../../../types';
+import type { Intervention, InterventionNature} from '../../../../types';
+import { type Ticket } from '../../../../types';
 import { TOAST } from '../../../../constants/toastMessages';
 import { INTERVENTION_NATURES } from '../../constants';
 import { useInterventionTypes } from '../../../../hooks/useInterventionTypes';
@@ -166,7 +167,7 @@ export const InterventionRequestTab: React.FC<RequestTabProps> = ({
                                         }
                                         onOpenTicketModal();
                                     }}
-                                    className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    className="p-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                                     title="Créer ticket"
                                 >
                                     <Plus className="w-4 h-4" />
@@ -363,12 +364,12 @@ export const InterventionRequestTab: React.FC<RequestTabProps> = ({
 
                 {/* Motif du Remplacement (Conditional) */}
                 {formData.nature?.includes('Remplacement') && (
-                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <label className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-2 block">
+                    <div className="mt-4 p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
+                        <label className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-2 block">
                             Motif du Remplacement <span className="text-red-500">*</span>
                         </label>
                         <select
-                            className="w-full max-w-md p-2 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm font-bold"
+                            className="w-full max-w-md p-2 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm font-bold"
                             value={formData.removalReason || ''}
                             onChange={e => {
                                 setFormData({
@@ -447,7 +448,7 @@ export const InterventionRequestTab: React.FC<RequestTabProps> = ({
                     <FormField label="Plaque d'Immatriculation">
                         <Input 
                             title="Plaque d'Immatriculation" 
-                            className="font-mono uppercase font-bold text-blue-600" 
+                            className="font-mono uppercase font-bold text-[var(--primary)]" 
                             value={formData.licensePlate || ''} 
                             onChange={e => setFormData({ ...formData, licensePlate: e.target.value.toUpperCase() })} 
                             placeholder="Ex: 1234 AB 01" 

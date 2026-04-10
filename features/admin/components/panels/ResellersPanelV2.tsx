@@ -17,7 +17,7 @@ import {
   CheckCircle, XCircle
 } from 'lucide-react';
 import { Card } from '../../../../components/Card';
-import { Tier } from '../../../../types';
+import type { Tier } from '../../../../types';
 import { useDataContext } from '../../../../contexts/DataContext';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../contexts/ToastContext';
@@ -79,16 +79,7 @@ export const ResellersPanelV2: React.FC = () => {
   const { showToast } = useToast();
   const { formatPrice } = useCurrency();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
-  
-  // Protection: Vérifier que le contexte est chargé
-  if (!updateTier || !addTier) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-  
+
   // State
   const [filters, setFilters] = useState<ResellerFilter>({
     status: 'ALL',
@@ -344,6 +335,15 @@ export const ResellersPanelV2: React.FC = () => {
 
   const isMobile = useIsMobile();
 
+  // Protection: Vérifier que le contexte est chargé (après tous les hooks)
+  if (!updateTier || !addTier) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* KPI Cards - Hidden on mobile */}
@@ -361,7 +361,7 @@ export const ResellersPanelV2: React.FC = () => {
                 </>
               )}
             </div>
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
+            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-lg">
               <Building2 className="w-6 h-6" />
             </div>
           </div>
@@ -473,7 +473,7 @@ export const ResellersPanelV2: React.FC = () => {
           
           <button
             onClick={handleCreateClick}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 transition-colors shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white text-sm font-bold rounded-lg hover:bg-[var(--primary-light)] transition-colors shrink-0"
           >
             <Plus className="w-4 h-4" />
             Nouveau Revendeur
@@ -498,7 +498,7 @@ export const ResellersPanelV2: React.FC = () => {
                     </div>
                     <div className="min-w-0">
                       <p className="font-bold text-slate-800 dark:text-white text-sm truncate">{reseller.name}</p>
-                      <p className="text-xs text-blue-600 truncate">{reseller.email}</p>
+                      <p className="text-xs text-[var(--primary)] truncate">{reseller.email}</p>
                       <div className="mt-0.5 flex items-center gap-2 text-[10px] text-slate-500">
                         <span><span className="font-bold text-slate-700 dark:text-slate-300">{stats.clientCount}</span> clients</span>
                         <span><span className="font-bold text-slate-700 dark:text-slate-300">{stats.vehicleCount}</span> véh.</span>
@@ -508,7 +508,7 @@ export const ResellersPanelV2: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
                     {getStatusBadge(reseller.status)}
-                    <button onClick={() => handleEditClick(reseller)} className="p-1.5 text-slate-400 hover:text-blue-600 rounded">
+                    <button onClick={() => handleEditClick(reseller)} className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded">
                       <Edit2 className="w-4 h-4" />
                     </button>
                   </div>
@@ -558,12 +558,12 @@ export const ResellersPanelV2: React.FC = () => {
                           </div>
                           <div>
                             <div className="font-bold text-slate-800 dark:text-white">{reseller.name}</div>
-                            <div className="text-xs text-blue-600">{reseller.email}</div>
+                            <div className="text-xs text-[var(--primary)]">{reseller.email}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <code className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded font-mono font-bold">
+                        <code className="text-xs bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] px-2 py-1 rounded font-mono font-bold">
                           {reseller.slug || '-'}
                         </code>
                         <div className="text-xs text-slate-400 mt-0.5 font-mono">
@@ -591,14 +591,14 @@ export const ResellersPanelV2: React.FC = () => {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleImpersonate(reseller)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                            className="p-1.5 text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded transition-colors"
                             title="Se connecter"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleEditClick(reseller)}
-                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded transition-colors"
                             title="Modifier"
                           >
                             <Edit2 className="w-4 h-4" />

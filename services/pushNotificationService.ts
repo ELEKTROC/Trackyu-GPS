@@ -9,7 +9,8 @@
  * - Mises à jour statut (validation, pièces disponibles)
  */
 
-import { PushNotifications, Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
+import type { Token, PushNotificationSchema, ActionPerformed } from '@capacitor/push-notifications';
+import { PushNotifications } from '@capacitor/push-notifications';
 import { Capacitor } from '@capacitor/core';
 import { API_BASE_URL } from '../utils/apiConfig';
 import { logger } from '../utils/logger';

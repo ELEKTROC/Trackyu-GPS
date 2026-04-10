@@ -1,4 +1,4 @@
-import { JournalEntry } from '../types';
+import type { JournalEntry } from '../types';
 import { PLAN_COMPTABLE } from '../features/finance/constants';
 
 const JOURNAL_LABELS: Record<string, string> = {

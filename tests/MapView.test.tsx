@@ -32,6 +32,35 @@ vi.mock('react-leaflet-cluster', () => ({
   default: ({ children }: any) => <div>Cluster {children}</div>
 }));
 
+// Mock useToast to avoid ToastProvider dependency
+vi.mock('../contexts/ToastContext', () => ({
+  useToast: () => ({ showToast: vi.fn() }),
+}));
+
+// Mock react-query to avoid QueryClientProvider dependency
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useQuery: () => ({ data: [], isLoading: false, error: null }),
+    useQueryClient: () => ({ invalidateQueries: vi.fn(), setQueryData: vi.fn(), getQueryData: vi.fn() }),
+  };
+});
+
+// Mock useTenantBranding to avoid QueryClientProvider dependency
+vi.mock('../hooks/useTenantBranding', () => ({
+  useTenantBranding: () => ({ branding: null, isLoading: false }),
+}));
+
+// Mock AuthContext
+vi.mock('../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'user-1', name: 'Admin', role: 'ADMIN', tenantId: 'tenant1', permissions: [] },
+    hasPermission: () => true,
+    isAuthenticated: true,
+  }),
+}));
+
 // Mock DataContext - MapView uses useDataContext internally
 vi.mock('../contexts/DataContext', () => ({
   useDataContext: () => ({
@@ -56,6 +85,7 @@ describe('MapView', () => {
     );
 
     expect(screen.getByText('MapContainer')).toBeDefined();
-    expect(screen.getByPlaceholderText('Rechercher...')).toBeDefined();
+    // Search input placeholder updated to match current UI
+    expect(screen.getByPlaceholderText('Nom, plaque, IMEI, client...')).toBeDefined();
   });
 });

@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import type { Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ScheduleSchema, RULE_TYPES, ScheduleFormData } from '../../../../schemas/scheduleSchema';
+import type { ScheduleFormData } from '../../../../schemas/scheduleSchema';
+import { ScheduleSchema, RULE_TYPES } from '../../../../schemas/scheduleSchema';
 import type { Tier, Vehicle } from '../../../../types';
 interface ZoneOption { id: string; nom?: string; name?: string; client?: string; allClients?: boolean; }
 import { 
@@ -40,7 +41,7 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({
     initialData, onFormSubmit, clients = [], resellers = [], vehicles = [], zones = [], users = [] 
 }, ref) => {
     const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<ScheduleFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(ScheduleSchema),
         defaultValues: initialData || {
             ruleType: 'WORKING_HOURS',
@@ -137,13 +138,13 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({
             {/* Véhicules concernés */}
             <div className="p-4 border rounded-xl bg-slate-50 dark:bg-slate-800 dark:border-slate-700">
                 <label className="flex items-center gap-2 mb-3">
-                    <div className="p-1.5 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                        <Truck className="w-4 h-4 text-blue-600 dark:text-blue-300" />
+                    <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                        <Truck className="w-4 h-4 text-[var(--primary)] dark:text-[var(--primary)]" />
                     </div>
                     <span className="font-semibold text-sm text-slate-700 dark:text-slate-300">Véhicules concernés</span>
                 </label>
                 <div className="flex items-center gap-2 mb-3">
-                    <input type="checkbox" {...register('allVehicles')} id="allVehiclesSchedule" className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                    <input type="checkbox" {...register('allVehicles')} id="allVehiclesSchedule" className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                     <label htmlFor="allVehiclesSchedule" className="text-sm text-slate-600 dark:text-slate-400">Appliquer à tous les véhicules du client</label>
                 </div>
                 {!allVehicles && (
@@ -268,8 +269,8 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({
 
             {/* LIMITE KILOMÉTRIQUE */}
             {ruleType === 'DISTANCE_LIMIT' && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-4">
-                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-bold">
+                <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg space-y-4">
+                    <div className="flex items-center gap-2 text-[var(--primary)] dark:text-[var(--primary)] font-bold">
                         <Route className="w-5 h-5" />
                         Configuration Limite Kilométrique
                     </div>
@@ -318,8 +319,8 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({
 
             {/* RESTRICTION DE ZONE */}
             {ruleType === 'GEOFENCE_RESTRICTION' && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-4">
-                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-bold">
+                <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg space-y-4">
+                    <div className="flex items-center gap-2 text-[var(--primary)] dark:text-[var(--primary)] font-bold">
                         <MapPin className="w-5 h-5" />
                         Configuration Restriction de Zone
                     </div>
@@ -444,7 +445,7 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({
                 
                 <FormGrid columns={2}>
                     <div className="flex items-center gap-2">
-                        <input type="checkbox" {...register('actions.createAlert')} id="createAlert" defaultChecked className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                        <input type="checkbox" {...register('actions.createAlert')} id="createAlert" defaultChecked className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                         <label htmlFor="createAlert" className="text-sm text-slate-700 dark:text-slate-300">Créer une alerte</label>
                     </div>
                     <Select {...register('actions.alertPriority')}>
@@ -457,17 +458,17 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({
 
                 <div className="flex flex-wrap gap-4">
                     <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" {...register('actions.notifyEmail')} className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                        <input type="checkbox" {...register('actions.notifyEmail')} className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                         <Mail className="w-4 h-4 text-slate-400" />
                         <span className="text-sm text-slate-700 dark:text-slate-300">Email</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" {...register('actions.notifySms')} className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                        <input type="checkbox" {...register('actions.notifySms')} className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                         <MessageSquare className="w-4 h-4 text-slate-400" />
                         <span className="text-sm text-slate-700 dark:text-slate-300">SMS</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" {...register('actions.notifyPush')} defaultChecked className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                        <input type="checkbox" {...register('actions.notifyPush')} defaultChecked className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                         <Smartphone className="w-4 h-4 text-slate-400" />
                         <span className="text-sm text-slate-700 dark:text-slate-300">Push</span>
                     </label>

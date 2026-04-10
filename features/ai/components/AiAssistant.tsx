@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Vehicle } from '../../../types';
+import type { Vehicle } from '../../../types';
 import { askFleetAssistant, askFleetAssistantStream } from '../../../services/geminiService';
 import { getSocket } from '../../../services/socket';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -281,7 +281,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
     <Card className="h-full flex flex-col border-0 shadow-none" title={
         <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
-                {mode === 'ai' ? <Bot className="w-5 h-5 text-blue-600" /> : <Headset className="w-5 h-5 text-green-600" />}
+                {mode === 'ai' ? <Bot className="w-5 h-5 text-[var(--primary)]" /> : <Headset className="w-5 h-5 text-green-600" />}
                 <span className="text-sm font-semibold">{mode === 'ai' ? 'Assistant IA' : 'Support Humain'}</span>
                 {mode === 'human' && (
                   <span className="flex items-center gap-1 text-[10px] text-slate-400">
@@ -319,7 +319,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
                 <div key={idx} className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         isUser ? 'bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300' : 
-                        isSupport ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' : 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+                        isSupport ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
                     }`}>
                     {isUser ? <User className="w-4 h-4" /> : isSupport ? <Headset className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                     </div>
@@ -328,7 +328,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
                           <span className="text-[10px] text-green-600 dark:text-green-400 font-medium mb-0.5 px-1">{msg.senderName}</span>
                         )}
                         <div className={`p-3 rounded-lg text-sm shadow-sm ${
-                            isUser ? 'bg-blue-600 text-white rounded-tr-none' : 
+                            isUser ? 'bg-[var(--primary)] text-white rounded-tr-none' : 
                             'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-tl-none'
                         }`}>
                             {(msg.role === 'ai' || msg.role === 'support') ? (
@@ -347,7 +347,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
         {(isLoading || agentTyping) && (
           <div className="flex gap-3">
              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-               mode === 'human' ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' : 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400'
+               mode === 'human' ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400' : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
              }`}>
               {mode === 'human' ? <Headset className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
             </div>
@@ -370,12 +370,12 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder={mode === 'ai' ? "Posez une question à l'IA..." : "Écrivez au support..."}
-          className="w-full pl-4 pr-12 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+          className="w-full pl-4 pr-12 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
         />
         <button 
           onClick={handleSend}
           disabled={isLoading || !query.trim()}
-          className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${mode === 'ai' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-green-600 hover:bg-green-700'}`}
+          className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${mode === 'ai' ? 'bg-[var(--primary)] hover:bg-[var(--primary-light)]' : 'bg-green-600 hover:bg-green-700'}`}
         >
           <Send className="w-4 h-4" />
         </button>

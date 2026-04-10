@@ -89,7 +89,7 @@ const ACCESSORY_COLUMNS = [
 ];
 
 const STOCK_TABS = [
-    { id: 'overview',     label: "Vue d'ensemble", icon: PieChart,     color: 'bg-blue-500',   description: 'KPIs et synthèse du stock' },
+    { id: 'overview',     label: "Vue d'ensemble", icon: PieChart,     color: 'bg-[var(--primary-dim)]0',   description: 'KPIs et synthèse du stock' },
     { id: 'devices',      label: 'Boîtiers GPS',   icon: Box,          color: 'bg-indigo-500', description: 'Trackers et boîtiers' },
     { id: 'sims',         label: 'Cartes SIM',     icon: Cpu,          color: 'bg-teal-500',   description: 'Gestion des SIM' },
     { id: 'accessories',  label: 'Accessoires',    icon: PackageOpen,  color: 'bg-orange-500', description: 'Câbles, antennes...' },
@@ -830,7 +830,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
                     <button onClick={() => setIsBulkImportModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-bold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors">
                         <Upload className="w-4 h-4" /> Import en bloc
                     </button>
-                    <button onClick={() => setIsAddModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 shadow-sm transition-colors">
+                    <button onClick={() => setIsAddModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white text-sm font-bold rounded-lg hover:bg-[var(--primary-light)] shadow-sm transition-colors">
                         <Plus className="w-4 h-4" /> Ajouter
                     </button>
                 </div>
@@ -840,7 +840,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
             {isMobile && (
                 <button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="fixed bottom-32 right-4 z-30 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 active:scale-95 transition-all"
+                    className="fixed bottom-32 right-4 z-30 w-14 h-14 bg-[var(--primary)] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[var(--primary-light)] active:scale-95 transition-all"
                 >
                     <Plus className="w-6 h-6" />
                 </button>
@@ -850,7 +850,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
             <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 shrink-0">
                 <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3">
                     <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900/20 text-blue-600 rounded-lg"><Box className="w-4 h-4" /></div>
+                        <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] rounded-lg"><Box className="w-4 h-4" /></div>
                         <div>
                             <p className="text-[10px] text-slate-500 uppercase font-bold">Boîtiers Stock</p>
                             <p className="text-lg font-bold text-slate-800 dark:text-white">{stats.inStockDevices}</p>

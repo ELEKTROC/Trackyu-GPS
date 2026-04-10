@@ -63,7 +63,7 @@ const StatCard: React.FC<{
   trend?: 'up' | 'down' | 'stable';
 }> = ({ title, value, subtitle, icon: Icon, color, trend }) => {
   const colors = {
-    blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+    blue: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]',
     purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800',
     green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
     orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
@@ -74,7 +74,7 @@ const StatCard: React.FC<{
   };
 
   const iconColors = {
-    blue: 'text-blue-600',
+    blue: 'text-[var(--primary)]',
     purple: 'text-purple-600',
     green: 'text-green-600',
     orange: 'text-orange-600',
@@ -85,7 +85,7 @@ const StatCard: React.FC<{
   };
 
   const textColors = {
-    blue: 'text-blue-800 dark:text-blue-300',
+    blue: 'text-[var(--primary)] dark:text-[var(--primary)]',
     purple: 'text-purple-800 dark:text-purple-300',
     green: 'text-green-800 dark:text-green-300',
     orange: 'text-orange-800 dark:text-orange-300',
@@ -124,7 +124,7 @@ const ProgressBar: React.FC<{
   max?: number;
   color?: string;
   label?: string;
-}> = ({ value, max = 100, color = 'bg-blue-500', label }) => {
+}> = ({ value, max = 100, color = 'bg-[var(--primary-dim)]0', label }) => {
   const percent = Math.min((value / max) * 100, 100);
   return (
     <div className="w-full">
@@ -242,7 +242,7 @@ export const SystemMetricsPanel: React.FC = () => {
           <ProgressBar
             value={systemStats?.cpu.percent || 0}
             label="CPU"
-            color={systemStats && systemStats.cpu.percent > 80 ? 'bg-red-500' : 'bg-blue-500'}
+            color={systemStats && systemStats.cpu.percent > 80 ? 'bg-red-500' : 'bg-[var(--primary-dim)]0'}
           />
           <ProgressBar
             value={systemStats?.memory.percent || 0}
@@ -367,7 +367,7 @@ export const SystemMetricsPanel: React.FC = () => {
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-blue-500" />
+              <div className="w-3 h-3 rounded-full bg-[var(--primary-dim)]0" />
               <span className="text-slate-600 dark:text-slate-400">
                 Batch inserts: {formatNumber(gpsMetrics?.database.batchInserts || 0)}
               </span>
@@ -378,7 +378,7 @@ export const SystemMetricsPanel: React.FC = () => {
               value={gpsMetrics?.database.poolActive || 0}
               max={gpsMetrics?.database.poolTotal || 20}
               label="Utilisation Pool"
-              color="bg-blue-500"
+              color="bg-[var(--primary-dim)]0"
             />
           </div>
         </Card>

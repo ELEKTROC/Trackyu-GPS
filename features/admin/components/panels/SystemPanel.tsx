@@ -60,7 +60,7 @@ export const SystemPanel = () => {
                         <button 
                             onClick={handleSaveKey}
                             disabled={updateSettingMutation.isPending}
-                            className="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 disabled:opacity-50"
+                            className="px-4 py-2 bg-[var(--primary)] text-white rounded font-bold hover:bg-[var(--primary-light)] disabled:opacity-50"
                         >
                             {updateSettingMutation.isPending ? '...' : 'Enregistrer'}
                         </button>

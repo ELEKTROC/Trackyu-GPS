@@ -1,6 +1,7 @@
 import React from 'react';
-import { Vehicle } from '../types';
-import { BottomSheet, BottomSheetState } from './BottomSheet';
+import type { Vehicle } from '../types';
+import type { BottomSheetState } from './BottomSheet';
+import { BottomSheet } from './BottomSheet';
 import { VehicleDetailPanel } from '../features/fleet/components/VehicleDetailPanel';
 
 interface VehicleBottomSheetProps {

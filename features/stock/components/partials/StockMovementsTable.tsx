@@ -1,7 +1,7 @@
 import React from 'react';
 import { History, Box } from 'lucide-react';
 import { Card } from '../../../../components/Card';
-import { DeviceStock, StockMovement } from '../../../../types';
+import type { DeviceStock, StockMovement } from '../../../../types';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
 
@@ -24,7 +24,7 @@ export const StockMovementsTable: React.FC<StockMovementsTableProps> = ({
 }) => {
     const typeColors: Record<string, string> = {
         'ENTRY': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-        'INSTALLATION': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+        'INSTALLATION': 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]',
         'REMOVAL': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
         'RMA_OUT': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
         'RMA_RETURN': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
@@ -67,7 +67,7 @@ export const StockMovementsTable: React.FC<StockMovementsTableProps> = ({
                     <select
                         value={historyFilter}
                         onChange={(e) => setHistoryFilter(e.target.value)}
-                        className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 dark:text-white appearance-none cursor-pointer min-w-[130px]"
+                        className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-white dark:bg-slate-900 dark:text-white appearance-none cursor-pointer min-w-[130px]"
                     >
                         <option value="ALL">Tous les types</option>
                         <option value="ENTRY">Entrées</option>

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Intervention } from '../../../types';
+import type { Intervention } from '../../../types';
 
 export const useInterventionFilter = (interventions: Intervention[], dateRange?: { start: string; end: string }) => {
     const [filterTech, setFilterTech] = useState('ALL');

@@ -53,21 +53,21 @@ const formatCSVValue = (value: any, column: ExportColumn): string => {
       if (typeof value === 'string') return new Date(value).toLocaleDateString('fr-FR');
       return String(value);
       
-    case 'currency':
+    case 'currency': {
       const num = typeof value === 'number' ? value : parseFloat(value);
       return isNaN(num) ? '0' : num.toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-      
-    case 'number':
+    }
+    case 'number': {
       const n = typeof value === 'number' ? value : parseFloat(value);
       return isNaN(n) ? '0' : n.toLocaleString('fr-FR');
-      
-    default:
-      // Escape double quotes and wrap in quotes if contains delimiter or quotes
+    }
+    default: {
       const str = String(value).replace(/"/g, '""');
       if (str.includes(',') || str.includes(';') || str.includes('\n') || str.includes('"')) {
         return `"${str}"`;
       }
       return str;
+    }
   }
 };
 

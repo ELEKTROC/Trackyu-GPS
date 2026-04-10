@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin, Copy, ExternalLink, PlayCircle } from 'lucide-react';
-import { Vehicle, VehicleStatus } from '../../../../types';
+import type { Vehicle} from '../../../../types';
+import { VehicleStatus } from '../../../../types';
 import { ConfigurableRow } from './SharedBlocks';
 
 interface ActivityBlockProps {
@@ -33,12 +34,12 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
             <div className="bg-slate-50 p-3 rounded border border-slate-100">
                 <div className="flex justify-between items-start mb-2">
                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-blue-500" />
+                        <MapPin className="w-4 h-4 text-[var(--primary)]" />
                         <span className="text-sm font-bold text-slate-700">Position Actuelle</span>
                      </div>
                      <div className="flex gap-1">
-                         <button onClick={copyLocationLink} title="Copier Lien" className="p-1 hover:bg-white rounded text-slate-400 hover:text-blue-600 transition-colors"><Copy className="w-3 h-3"/></button>
-                         <a href={`https://www.google.com/maps?q=${vehicle.location.lat},${vehicle.location.lng}`} target="_blank" rel="noreferrer" title="Ouvrir Maps" className="p-1 hover:bg-white rounded text-slate-400 hover:text-blue-600 transition-colors"><ExternalLink className="w-3 h-3"/></a>
+                         <button onClick={copyLocationLink} title="Copier Lien" className="p-1 hover:bg-white rounded text-slate-400 hover:text-[var(--primary)] transition-colors"><Copy className="w-3 h-3"/></button>
+                         <a href={`https://www.google.com/maps?q=${vehicle.location.lat},${vehicle.location.lng}`} target="_blank" rel="noreferrer" title="Ouvrir Maps" className="p-1 hover:bg-white rounded text-slate-400 hover:text-[var(--primary)] transition-colors"><ExternalLink className="w-3 h-3"/></a>
                      </div>
                 </div>
                 <p className="text-xs text-slate-600 mb-1">
@@ -55,7 +56,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
                 {onReplay && (
                     <button 
                         onClick={onReplay}
-                        className="w-full mt-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded flex items-center justify-center gap-2 transition-colors shadow-sm"
+                        className="w-full mt-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white text-xs font-bold rounded flex items-center justify-center gap-2 transition-colors shadow-sm"
                     >
                         <PlayCircle className="w-4 h-4" /> Rejouer l'historique
                     </button>
@@ -68,7 +69,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
               <ConfigurableRow id="currentTrip" isConfigMode={isConfigMode} isHidden={hiddenFields.has('currentTrip')} onToggle={() => toggleFieldVisibility('currentTrip')}>
                 <div className="p-2 bg-white border border-slate-100 rounded shadow-sm h-full">
                     <span className="text-[10px] text-slate-400 uppercase font-bold block mb-1">Dernier trajet</span>
-                    <span className="text-lg font-bold text-blue-600">{(vehicle.lastTripDistance ?? 0).toFixed(1)} km</span>
+                    <span className="text-lg font-bold text-[var(--primary)]">{(vehicle.lastTripDistance ?? 0).toFixed(1)} km</span>
                 </div>
               </ConfigurableRow>
               <ConfigurableRow id="dailyDist" isConfigMode={isConfigMode} isHidden={hiddenFields.has('dailyDist')} onToggle={() => toggleFieldVisibility('dailyDist')}>

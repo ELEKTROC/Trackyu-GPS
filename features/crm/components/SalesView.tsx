@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TiersView } from './TiersView';
 import { FinanceView } from '../../finance/components/FinanceView';
 import { DollarSign, FileText, Users, LayoutDashboard } from 'lucide-react';
-import { View } from '../../../types';
+import type { View } from '../../../types';
 import { ContractTabs } from './ContractTabs';
 import { SalesDashboard } from './SalesDashboard';
 import { Tabs } from '../../../components/Tabs';
@@ -40,7 +40,7 @@ export const SalesView: React.FC<SalesViewProps> = ({ initialTab, onNavigate }) 
   }, [initialTab]);
 
   const SALES_TABS = [
-    { id: 'DASHBOARD', label: "Vue d'ensemble", icon: LayoutDashboard, color: 'bg-blue-500',   description: 'KPIs et indicateurs ventes' },
+    { id: 'DASHBOARD', label: "Vue d'ensemble", icon: LayoutDashboard, color: 'bg-[var(--primary-dim)]0',   description: 'KPIs et indicateurs ventes' },
     { id: 'TIERS',     label: 'Clients & Tiers', icon: Users,          color: 'bg-teal-500',   description: 'Clients, revendeurs, partenaires' },
     { id: 'CONTRACTS', label: 'Contrats',         icon: FileText,       color: 'bg-indigo-500', description: 'Gestion des contrats' },
     { id: 'INVOICES',  label: 'Factures',         icon: DollarSign,     color: 'bg-green-500',  description: 'Factures et paiements' },

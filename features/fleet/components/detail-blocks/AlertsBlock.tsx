@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { ConfigurableRow } from './SharedBlocks';
-import { Alert } from '../../../../types';
+import type { Alert } from '../../../../types';
 
 interface AlertsBlockProps {
   alerts: Alert[];

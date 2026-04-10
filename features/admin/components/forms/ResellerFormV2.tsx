@@ -18,7 +18,7 @@ import {
   Upload, Check, AlertTriangle, Eye, EyeOff,
   Image, Zap, Info
 } from 'lucide-react';
-import { Tier } from '../../../../types';
+import type { Tier } from '../../../../types';
 import { useToast } from '../../../../contexts/ToastContext';
 import { TOAST } from '../../../../constants/toastMessages';
 
@@ -200,7 +200,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 relative ${
                 activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                  ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
                   : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
               }`}
             >
@@ -384,8 +384,8 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
           {/* TAB 2: ADMINISTRATEUR */}
           {activeTab === 1 && (
             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 mb-4">
-                <p className="text-sm text-blue-800 dark:text-blue-200 flex items-center gap-2">
+              <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-lg border border-[var(--primary)] dark:border-[var(--primary)] mb-4">
+                <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)] flex items-center gap-2">
                   <Info className="w-4 h-4" />
                   Ce compte sera l'administrateur principal du tenant. Il aura tous les droits sur son espace.
                 </p>
@@ -529,7 +529,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
                       key={mod.id} 
                       className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
                         selectedModules.includes(mod.id)
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
                           : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                       }`}
                     >
@@ -537,7 +537,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
                         type="checkbox" 
                         checked={selectedModules.includes(mod.id)}
                         onChange={() => toggleModule(mod.id)}
-                        className="mt-1 rounded text-blue-600 focus:ring-blue-500" 
+                        className="mt-1 rounded text-[var(--primary)] focus:ring-[var(--primary)]" 
                       />
                       <div>
                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{mod.label}</span>
@@ -570,7 +570,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
                     )}
                   </div>
                   <div>
-                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 cursor-pointer">
+                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--primary-light)] cursor-pointer">
                       <Upload className="w-4 h-4" />
                       Choisir un logo
                       <input 

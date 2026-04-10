@@ -85,7 +85,7 @@ function PipelineGpsTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <RefreshCw className="h-6 w-6 animate-spin text-blue-600" />
+        <RefreshCw className="h-6 w-6 animate-spin text-[var(--primary)]" />
         <span className="ml-2 text-gray-500">Chargement des métriques pipeline…</span>
       </div>
     );
@@ -109,7 +109,7 @@ function PipelineGpsTab() {
       {/* Refresh info */}
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <Server className="h-4 w-4 text-blue-600" />
+          <Server className="h-4 w-4 text-[var(--primary)]" />
           Pipeline GPS — Données en temps réel
         </h3>
         <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -141,8 +141,8 @@ function PipelineGpsTab() {
             label: 'Paquets reçus',
             value: stats.totals.packets.toLocaleString('fr-FR'),
             icon: Activity,
-            color: 'text-blue-600',
-            bg: 'bg-blue-50',
+            color: 'text-[var(--primary)]',
+            bg: 'bg-[var(--primary-dim)]',
           },
           {
             label: 'IMEI inconnus',
@@ -211,7 +211,7 @@ function PipelineGpsTab() {
               {stats.parsers.map(p => (
                 <tr key={p.name} className="hover:bg-gray-50">
                   <td className="px-3 py-2.5">
-                    <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-mono rounded">
+                    <span className="px-2 py-0.5 bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-mono rounded">
                       {p.name}
                     </span>
                   </td>
@@ -261,7 +261,7 @@ function PipelineGpsTab() {
       {/* Rate limiting */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-          <Shield className="h-4 w-4 text-blue-600" />
+          <Shield className="h-4 w-4 text-[var(--primary)]" />
           Rate Limiting IMEI
         </h4>
         <div className="flex gap-6 text-sm text-gray-600">
@@ -358,7 +358,7 @@ export function MonitoringView() {
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-1.5 px-3 py-2.5 text-sm border-b-2 whitespace-nowrap transition-colors ${
               activeTab === id
-                ? 'border-blue-600 text-blue-700 font-medium'
+                ? 'border-[var(--primary)] text-[var(--primary)] font-medium'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >

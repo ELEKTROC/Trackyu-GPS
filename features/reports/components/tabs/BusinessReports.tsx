@@ -218,7 +218,7 @@ export const BusinessReports: React.FC<BusinessReportsProps> = ({ onAiAnalysis, 
                             <p className="text-sm text-slate-500"><span className="text-red-500">{summaryStats.overdueCount} en retard</span></p>
                         </Card>
                         <Card title="Devis en cours">
-                            <div className="text-3xl font-bold text-blue-600">{summaryStats.pendingQuotes}</div>
+                            <div className="text-3xl font-bold text-[var(--primary)]">{summaryStats.pendingQuotes}</div>
                             <p className="text-sm text-slate-500">Taux conversion: {summaryStats.conversionRate.toFixed(1)}%</p>
                         </Card>
                         <Card title="Clients actifs">

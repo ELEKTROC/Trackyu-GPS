@@ -3,7 +3,7 @@
  * Sprint 2 - Sécurité Finance
  */
 
-import { Payment } from '../types';
+import type { Payment } from '../types';
 
 // Configuration par défaut
 const DEFAULT_APPROVAL_THRESHOLD = 500000; // 500,000 XOF

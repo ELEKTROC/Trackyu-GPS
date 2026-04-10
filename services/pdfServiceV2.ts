@@ -564,7 +564,7 @@ export const generateInvoicePDF = async (
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
 
-    let noteLines = [];
+    const noteLines = [];
     if (data.paymentTerms) noteLines.push(`Conditions de paiement: ${data.paymentTerms}`);
     if (data.notes) noteLines.push(data.notes);
     if (data.generalConditions) noteLines.push(data.generalConditions);

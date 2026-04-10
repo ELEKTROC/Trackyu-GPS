@@ -77,7 +77,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                 onClick={() => setIsOpen(!isOpen)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
                     hasFilter || isOpen
-                        ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300'
+                        ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
                         : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
                 }`}
             >
@@ -92,11 +92,11 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                         <div className="relative">
                             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
                             <input type="text" placeholder="Rechercher…" value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
-                                className="w-full pl-8 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-transparent text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full pl-8 pr-3 py-1.5 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-transparent text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                             />
                         </div>
                         <div className="flex justify-between text-xs">
-                            <button onClick={selectAll} className="text-blue-600 dark:text-blue-400 hover:underline">Tout sélectionner</button>
+                            <button onClick={selectAll} className="text-[var(--primary)] dark:text-[var(--primary)] hover:underline">Tout sélectionner</button>
                             <button onClick={() => onChange(new Set())} className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Tout désélectionner</button>
                         </div>
                     </div>
@@ -114,7 +114,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                                             {expanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                                         </button>
                                         <div className="flex items-center gap-2 flex-1 cursor-pointer" onClick={() => handleClientCheckbox(clientName, vehicles)}>
-                                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${allSel || partial ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'}`}>
+                                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${allSel || partial ? 'bg-[var(--primary)] border-[var(--primary)]' : 'border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900'}`}>
                                                 {allSel && <Check className="w-3 h-3 text-white" />}
                                                 {partial && <div className="w-2 h-0.5 bg-white rounded-full" />}
                                             </div>
@@ -127,7 +127,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                                             {list.map(v => (
                                                 <label key={v} className="flex items-center gap-2 py-1.5 px-1 rounded cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800">
                                                     <input type="checkbox" checked={selectedVehicles.has(v)} onChange={() => handleVehicleCheckbox(v)}
-                                                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5" />
+                                                        className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)] w-3.5 h-3.5" />
                                                     <span className="text-sm text-slate-600 dark:text-slate-300 truncate select-none">{v}</span>
                                                 </label>
                                             ))}
@@ -188,7 +188,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                         <select
                             value={selectedReport}
                             onChange={e => onReportChange?.(e.target.value)}
-                            className="pl-8 pr-8 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer min-w-[160px]"
+                            className="pl-8 pr-8 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] appearance-none cursor-pointer min-w-[160px]"
                         >
                             {reports.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
                         </select>
@@ -208,7 +208,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                 <select
                     value={period}
                     onChange={e => onPeriodChange(e.target.value)}
-                    className="pl-8 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+                    className="pl-8 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] appearance-none cursor-pointer"
                 >
                     {REPORT_PERIODS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
                 </select>
@@ -240,14 +240,14 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
             <div className="relative flex" ref={generateRef}>
                 <button
                     onClick={() => { onGenerate('view'); }}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-l-lg transition-colors text-sm font-medium border-r border-blue-500"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-l-lg transition-colors text-sm font-medium border-r border-[var(--primary)]"
                 >
                     <Play className="w-3.5 h-3.5" />
                     Générer
                 </button>
                 <button
                     onClick={() => setIsGenerateOpen(!isGenerateOpen)}
-                    className="flex items-center px-2 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-r-lg transition-colors"
+                    className="flex items-center px-2 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-r-lg transition-colors"
                 >
                     <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isGenerateOpen ? 'rotate-180' : ''}`} />
                 </button>

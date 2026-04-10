@@ -64,7 +64,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     switch (n.category) {
       case 'FLEET': return n.type === 'ALERT' ? <ShieldAlert className="w-5 h-5 text-red-500" /> : <Fuel className="w-5 h-5 text-orange-500" />;
       case 'MAINTENANCE': return <Wrench className="w-5 h-5 text-slate-500 dark:text-slate-400" />;
-      case 'FINANCE': return <FileText className="w-5 h-5 text-blue-500" />;
+      case 'FINANCE': return <FileText className="w-5 h-5 text-[var(--primary)]" />;
       case 'SUPPORT': return <MessageSquare className="w-5 h-5 text-purple-500" />;
       case 'SYSTEM': return n.type === 'SUCCESS' ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Info className="w-5 h-5 text-slate-400" />;
       default: return <Bell className="w-5 h-5 text-slate-500" />;
@@ -117,7 +117,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     <input 
                         type="text" 
                         placeholder="Rechercher..." 
-                        className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-slate-400 text-slate-700 dark:text-slate-200"
+                        className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all placeholder-slate-400 text-slate-700 dark:text-slate-200"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -126,7 +126,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
                     className={`p-2 rounded-lg border transition-colors flex items-center justify-center w-10 h-10 ${
                         isFilterMenuOpen 
-                        ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400' 
+                        ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]' 
                         : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
                     }`}
                     title="Filtres"
@@ -149,7 +149,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                             onClick={() => setFilter(type.id as typeof filter)}
                             className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors ${
                                 filter === type.id 
-                                ? 'bg-slate-800 dark:bg-blue-600 text-white border-slate-800 dark:border-blue-600' 
+                                ? 'bg-slate-800 dark:bg-[var(--primary)] text-white border-slate-800 dark:border-[var(--primary)]' 
                                 : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
                             }`}
                         >
@@ -161,13 +161,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 <div className="flex gap-2 overflow-x-auto pb-2 pt-1 custom-scrollbar">
                    <button 
                      onClick={() => setFilter('ALL')}
-                     className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'ALL' ? 'bg-slate-800 dark:bg-blue-600 text-white border-slate-800 dark:border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                     className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'ALL' ? 'bg-slate-800 dark:bg-[var(--primary)] text-white border-slate-800 dark:border-[var(--primary)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                    >
                      Tout
                    </button>
                    <button 
                      onClick={() => setFilter('UNREAD')}
-                     className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'UNREAD' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                     className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'UNREAD' ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
                    >
                      Non lu
                    </button>
@@ -192,7 +192,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     key={n.id} 
                     className={`p-4 rounded-xl border shadow-sm transition-all group relative ${
                         !n.read 
-                        ? 'bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-900 ring-1 ring-blue-100 dark:ring-blue-900/30' 
+                        ? 'bg-white dark:bg-slate-900 border-[var(--border)] dark:border-[var(--primary)] ring-1 ring-[var(--primary-dim)] dark:ring-[var(--primary-dim)]/30' 
                         : 'bg-white/60 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 opacity-75 hover:opacity-100'
                     }`}
                  >
@@ -217,7 +217,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           {n.link && (
                              <button 
                                 onClick={(e) => { e.stopPropagation(); onAction(n); }}
-                                className="text-[10px] font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-800 transition-colors flex items-center gap-1 w-fit shadow-sm"
+                                className="text-[10px] font-bold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-1 rounded text-slate-600 dark:text-slate-300 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] hover:border-[var(--border)] dark:hover:border-[var(--primary)] transition-colors flex items-center gap-1 w-fit shadow-sm"
                              >
                                 {n.category === 'FLEET' && 'Voir le véhicule'}
                                 {n.category === 'SUPPORT' && 'Ouvrir le ticket'}
@@ -231,10 +231,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                        {!n.read && (
                           <button 
                             onClick={() => onMarkAsRead(n.id)}
-                            className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 text-blue-500 transition-colors"
+                            className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--primary)] transition-colors"
                             title="Marquer comme lu"
                           >
-                             <div className="w-2 h-2 bg-blue-500 rounded-full group-hover:hidden"></div>
+                             <div className="w-2 h-2 bg-[var(--primary-dim)]0 rounded-full group-hover:hidden"></div>
                              <Check className="w-4 h-4 hidden group-hover:block" />
                           </button>
                        )}

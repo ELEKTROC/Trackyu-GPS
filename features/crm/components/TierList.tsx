@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Tier, TierType } from '../../../types';
+import type { Tier, TierType } from '../../../types';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { MobileCard, MobileCardList, MobileCardAction } from '../../../components/MobileCard';
 import { useDataContext } from '../../../contexts/DataContext';
@@ -150,7 +150,7 @@ export const TierList: React.FC<TierListProps> = ({ type = 'ALL', searchTerm = '
     // Quick action items for the dropdown
     const quickActions: { action: TierQuickAction; label: string; icon: React.ElementType; color: string }[] = [
         { action: 'ticket', label: 'Créer un ticket', icon: LifeBuoy, color: 'text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20' },
-        { action: 'devis', label: 'Créer un devis', icon: FileText, color: 'text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20' },
+        { action: 'devis', label: 'Créer un devis', icon: FileText, color: 'text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20' },
         { action: 'facture', label: 'Créer une facture', icon: Receipt, color: 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20' },
         { action: 'intervention', label: 'Créer une intervention', icon: Wrench, color: 'text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20' },
         { action: 'paiement', label: 'Enregistrer un paiement', icon: CreditCard, color: 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20' },
@@ -160,7 +160,7 @@ export const TierList: React.FC<TierListProps> = ({ type = 'ALL', searchTerm = '
     ];
 
     const APP_BADGE: Record<string, { label: string; className: string }> = {
-        TRACKYU:  { label: 'TrackYu',  className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' },
+        TRACKYU:  { label: 'TrackYu',  className: 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]' },
         GPS51:    { label: 'GPS51',    className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
         WHATSGPS: { label: 'WhatsGPS', className: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
         AUTRES:   { label: 'Autres',   className: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400' },
@@ -183,7 +183,7 @@ export const TierList: React.FC<TierListProps> = ({ type = 'ALL', searchTerm = '
                         <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">
                             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
                                 tier.clientData?.segment === 'VIP' ? 'bg-purple-100 text-purple-700' :
-                                tier.clientData?.segment === 'Grand Compte' ? 'bg-blue-100 text-blue-700' :
+                                tier.clientData?.segment === 'Grand Compte' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' :
                                 'bg-slate-100 text-slate-600'
                             }`}>
                                 {tier.clientData?.segment || 'Standard'}
@@ -280,12 +280,12 @@ export const TierList: React.FC<TierListProps> = ({ type = 'ALL', searchTerm = '
             
             {/* BULK ACTIONS BAR */}
             {selectedIds.size > 0 && (
-                <div className="absolute top-0 left-0 right-0 h-14 bg-blue-50 dark:bg-blue-900/50 flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-blue-100 dark:border-blue-800 rounded-t-lg">
-                    <span className="text-sm font-bold text-blue-800 dark:text-blue-200">{selectedIds.size} sélectionné(s)</span>
+                <div className="absolute top-0 left-0 right-0 h-14 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--primary)] dark:border-[var(--primary)] rounded-t-lg">
+                    <span className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)]">{selectedIds.size} sélectionné(s)</span>
                     <div className="flex gap-2">
-                        <button onClick={() => handleBulkAction('mark_inactive')} className="text-xs bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded shadow-sm hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors flex items-center gap-1.5"><X className="w-3 h-3"/> Désactiver</button>
+                        <button onClick={() => handleBulkAction('mark_inactive')} className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors flex items-center gap-1.5"><X className="w-3 h-3"/> Désactiver</button>
                         <button onClick={() => handleBulkAction('delete')} className="text-xs bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 px-3 py-1.5 rounded shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5"><Trash2 className="w-3 h-3"/> Supprimer</button>
-                        <button onClick={() => setSelectedIds(new Set())} className="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded text-blue-600 dark:text-blue-300"><X className="w-4 h-4" /></button>
+                        <button onClick={() => setSelectedIds(new Set())} className="p-1 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded text-[var(--primary)] dark:text-[var(--primary)]"><X className="w-4 h-4" /></button>
                     </div>
                 </div>
             )}
@@ -299,7 +299,7 @@ export const TierList: React.FC<TierListProps> = ({ type = 'ALL', searchTerm = '
                             : tier.type === 'RESELLER' ? 'border-l-purple-500'
                             : tier.type === 'SUPPLIER' ? 'border-l-orange-500'
                             : 'border-l-green-500';
-                        const avatarBg = tier.type === 'CLIENT' ? 'bg-blue-500'
+                        const avatarBg = tier.type === 'CLIENT' ? 'bg-[var(--primary-dim)]0'
                             : tier.type === 'RESELLER' ? 'bg-purple-500'
                             : tier.type === 'SUPPLIER' ? 'bg-orange-500'
                             : 'bg-green-500';
@@ -355,7 +355,7 @@ export const TierList: React.FC<TierListProps> = ({ type = 'ALL', searchTerm = '
                     <thead className={`bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 sticky top-0 z-10 ${selectedIds.size > 0 ? 'opacity-0' : ''}`}>
                         <tr>
                             <th className="px-4 py-3 w-10 border-b dark:border-slate-700">
-                                <input type="checkbox" checked={isAllSelected} onChange={handleSelectAll} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                <input type="checkbox" checked={isAllSelected} onChange={handleSelectAll} className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                             </th>
                             {getHeaders().map((col) => (
                                 <SortableHeader
@@ -376,17 +376,17 @@ export const TierList: React.FC<TierListProps> = ({ type = 'ALL', searchTerm = '
                             <tr 
                                 key={tier.id} 
                                 onClick={() => { setOpenMenuId(null); onViewDetail && onViewDetail(tier); }}
-                                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${selectedIds.has(tier.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${selectedIds.has(tier.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
                             >
                                 <td className="px-4 py-4" onClick={e => { e.stopPropagation(); toggleSelection(tier.id); }}>
-                                    <input type="checkbox" checked={selectedIds.has(tier.id)} onChange={() => {}} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                    <input type="checkbox" checked={selectedIds.has(tier.id)} onChange={() => {}} className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                                 </td>
                                 
                                 {/* Common Columns */}
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs ${
-                                            tier.type === 'CLIENT' ? 'bg-blue-500' : 
+                                            tier.type === 'CLIENT' ? 'bg-[var(--primary-dim)]0' : 
                                             tier.type === 'RESELLER' ? 'bg-purple-500' : 'bg-orange-500'
                                         }`}>
                                             {(tier.name || '??').substring(0, 2).toUpperCase()}

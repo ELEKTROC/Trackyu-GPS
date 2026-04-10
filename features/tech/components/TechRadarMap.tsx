@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Intervention, SystemUser } from '../../../types';
+import type { Intervention, SystemUser } from '../../../types';
 import { LOCATIONS_COORDS, getStatusColorHex, INTERVENTION_STATUSES } from '../constants';
 import { useDataContext } from '../../../contexts/DataContext';
 
@@ -206,7 +206,7 @@ export const TechRadarMap: React.FC<TechRadarMapProps> = ({ technicians, interve
                 </div>
                 <div className="h-px bg-slate-200 dark:bg-slate-700 my-1"></div>
                 <div className="flex items-center gap-2">
-                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> <span className="text-slate-600 dark:text-slate-400">Planifié</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[var(--primary-dim)]0"></span> <span className="text-slate-600 dark:text-slate-400">Planifié</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span> <span className="text-slate-600 dark:text-slate-400">En route</span>

@@ -5,7 +5,7 @@
  * avec actions disponibles pour chaque niveau
  */
 
-import { ModulePermission, PermissionAction } from './types';
+import type { ModulePermission, PermissionAction } from './types';
 
 // Actions standards
 const CRUD: PermissionAction[] = ['VIEW', 'CREATE', 'EDIT', 'DELETE'];

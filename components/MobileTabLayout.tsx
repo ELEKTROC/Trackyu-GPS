@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { useIsMobile } from '../hooks/useIsMobile';
 
 export interface MobileTabItem {
@@ -7,7 +8,7 @@ export interface MobileTabItem {
   label: string;
   icon?: LucideIcon;
   description?: string;
-  color?: string; // Tailwind bg class e.g. 'bg-blue-500'
+  color?: string; // Tailwind bg class e.g. 'bg-[var(--primary-dim)]0'
 }
 
 interface MobileTabLayoutProps {
@@ -67,14 +68,14 @@ export const MobileTabLayout: React.FC<MobileTabLayoutProps> = ({
                 onClick={() => handleSelect(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-colors active:scale-[0.98] ${
                   isActive
-                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                    ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]'
                     : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
                 }`}
               >
                 {Icon && (
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                      tab.color || 'bg-blue-500'
+                      tab.color || 'bg-[var(--primary-dim)]0'
                     }`}
                   >
                     <Icon style={{ width: 18, height: 18 }} className="text-white" />
@@ -84,7 +85,7 @@ export const MobileTabLayout: React.FC<MobileTabLayoutProps> = ({
                   <p
                     className={`text-sm font-semibold truncate ${
                       isActive
-                        ? 'text-blue-700 dark:text-blue-300'
+                        ? 'text-[var(--primary)] dark:text-[var(--primary)]'
                         : 'text-slate-800 dark:text-white'
                     }`}
                   >
@@ -98,7 +99,7 @@ export const MobileTabLayout: React.FC<MobileTabLayoutProps> = ({
                 </div>
                 <ChevronRight
                   className={`w-4 h-4 shrink-0 ${
-                    isActive ? 'text-blue-400' : 'text-slate-300 dark:text-slate-600'
+                    isActive ? 'text-[var(--primary)]' : 'text-slate-300 dark:text-slate-600'
                   }`}
                 />
               </button>
@@ -114,7 +115,7 @@ export const MobileTabLayout: React.FC<MobileTabLayoutProps> = ({
     <div className="flex flex-col flex-1 min-h-0">
       <button
         onClick={() => setMobileShowList(true)}
-        className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-3 shrink-0 self-start active:opacity-70"
+        className="flex items-center gap-1 text-[var(--primary)] dark:text-[var(--primary)] text-sm font-semibold mb-3 shrink-0 self-start active:opacity-70"
       >
         <ChevronLeft className="w-4 h-4" />
         {backLabel}

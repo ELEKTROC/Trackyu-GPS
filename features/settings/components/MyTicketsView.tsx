@@ -8,13 +8,13 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
-import { Ticket, TicketMessage } from '../../../types';
+import type { Ticket, TicketMessage } from '../../../types';
 
 // ============================================================================
 // STATUS / PRIORITY CONFIG
 // ============================================================================
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  OPEN: { label: 'Ouvert', color: 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700', icon: <MessageSquare className="w-3 h-3" /> },
+  OPEN: { label: 'Ouvert', color: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-[var(--primary)]', icon: <MessageSquare className="w-3 h-3" /> },
   IN_PROGRESS: { label: 'En cours', color: 'bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700', icon: <Loader2 className="w-3 h-3 animate-spin" /> },
   WAITING_CLIENT: { label: 'En attente de votre réponse', color: 'bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700', icon: <AlertTriangle className="w-3 h-3" /> },
   RESOLVED: { label: 'Résolu', color: 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700', icon: <CheckCircle className="w-3 h-3" /> },
@@ -29,7 +29,7 @@ const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
 };
 
 const SENDER_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode; align: string }> = {
-  CLIENT: { label: 'Vous', color: 'bg-blue-600 text-white', icon: <User className="w-3.5 h-3.5" />, align: 'justify-end' },
+  CLIENT: { label: 'Vous', color: 'bg-[var(--primary)] text-white', icon: <User className="w-3.5 h-3.5" />, align: 'justify-end' },
   SUPPORT: { label: 'Support', color: 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600', icon: <Headset className="w-3.5 h-3.5" />, align: 'justify-start' },
   SYSTEM: { label: 'Système', color: 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700', icon: <Bot className="w-3.5 h-3.5" />, align: 'justify-center' },
 };
@@ -226,13 +226,13 @@ export const MyTicketsView: React.FC = () => {
                 onChange={e => setReplyText(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSendReply()}
                 placeholder="Écrivez votre réponse..."
-                className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
                 disabled={sending}
               />
               <button
                 onClick={handleSendReply}
                 disabled={!replyText.trim() || sending}
-                className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl flex items-center gap-2 text-sm font-medium transition-colors"
+                className="px-4 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl flex items-center gap-2 text-sm font-medium transition-colors"
               >
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 Envoyer
@@ -283,7 +283,7 @@ export const MyTicketsView: React.FC = () => {
             <div
               key={ticket.id}
               onClick={() => setSelectedTicketId(ticket.id)}
-              className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-sm transition-all"
+              className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-[var(--primary)] dark:hover:border-[var(--primary)] hover:shadow-sm transition-all"
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -309,7 +309,7 @@ export const MyTicketsView: React.FC = () => {
               {lastMessage && (
                 <p className="text-xs text-slate-500 line-clamp-1 flex items-center gap-1">
                   {lastMessage.sender === 'SUPPORT' ? (
-                    <Headset className="w-3 h-3 text-blue-500 shrink-0" />
+                    <Headset className="w-3 h-3 text-[var(--primary)] shrink-0" />
                   ) : lastMessage.sender === 'CLIENT' ? (
                     <User className="w-3 h-3 text-slate-400 shrink-0" />
                   ) : (

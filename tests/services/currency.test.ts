@@ -114,10 +114,11 @@ describe('Currency Symbol Position', () => {
 // formatCurrency()
 // ═════════════════════════════════════════════════════════════════════
 describe('formatCurrency()', () => {
-  // XOF (no decimals, suffix FCFA)
+  // Note: symbols (FCFA, €, $) are intentionally hidden — only numbers are shown.
+
+  // XOF (no decimals, fr-FR locale)
   it('formats XOF correctly', () => {
     const result = formatCurrency(1500000, 'XOF');
-    expect(result).toContain('FCFA');
     expect(result).toContain('1');
     expect(result).toContain('500');
     expect(result).toContain('000');
@@ -125,70 +126,69 @@ describe('formatCurrency()', () => {
     expect(result).not.toMatch(/\.\d{2}/);
   });
 
-  // EUR (2 decimals, suffix €)
+  // EUR (2 decimals, fr-FR locale)
   it('formats EUR correctly', () => {
     const result = formatCurrency(1500.50, 'EUR');
-    expect(result).toContain('€');
     // Should contain 2 decimal digits
     expect(result).toMatch(/50/);
+    expect(result).toContain('1');
   });
 
-  // USD (2 decimals, prefix $)
+  // USD (2 decimals, en-US locale)
   it('formats USD correctly', () => {
     const result = formatCurrency(1500.99, 'USD');
-    expect(result).toContain('$');
     expect(result).toMatch(/99/);
+    expect(result).toContain('1');
   });
 
-  // MAD (2 decimals, suffix DH)
+  // MAD (2 decimals)
   it('formats MAD correctly', () => {
     const result = formatCurrency(2500.75, 'MAD');
-    expect(result).toContain('DH');
+    expect(result).toContain('2');
+    expect(result).toMatch(/75/);
   });
 
-  // GNF (no decimals, suffix GNF)
+  // GNF (no decimals)
   it('formats GNF correctly', () => {
     const result = formatCurrency(50000, 'GNF');
-    expect(result).toContain('GNF');
+    expect(result).toContain('50');
     expect(result).not.toMatch(/\.\d{2}/);
   });
 
   // Default currency (XOF)
   it('uses XOF as default when no currency specified', () => {
     const result = formatCurrency(1000);
-    expect(result).toContain('FCFA');
+    expect(result).toContain('1');
+    expect(result).toContain('000');
   });
 
   it('uses XOF when undefined currency passed', () => {
     const result = formatCurrency(1000, undefined);
-    expect(result).toContain('FCFA');
+    expect(result).toContain('1');
   });
 
   // Zero amount
   it('formats zero correctly', () => {
     const result = formatCurrency(0, 'XOF');
     expect(result).toContain('0');
-    expect(result).toContain('FCFA');
   });
 
   // Negative amount
   it('formats negative amounts', () => {
     const result = formatCurrency(-5000, 'XOF');
-    expect(result).toContain('FCFA');
+    expect(result).toContain('5');
   });
 
   // Large amounts
   it('formats large amounts with thousands separators', () => {
     const result = formatCurrency(1500000000, 'XOF');
-    expect(result).toContain('FCFA');
     // Should have separator for readability
-    expect(result.length).toBeGreaterThan(10);
+    expect(result.length).toBeGreaterThan(8);
   });
 
   // String amounts
   it('handles string amounts', () => {
     const result = formatCurrency('42000', 'XOF');
-    expect(result).toContain('FCFA');
     expect(result).toContain('42');
   });
 

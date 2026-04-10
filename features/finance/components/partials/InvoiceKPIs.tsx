@@ -38,7 +38,7 @@ export const InvoiceKPIs: React.FC<InvoiceKPIsProps> = ({
                                 <p className="text-xs font-bold text-slate-500 uppercase">Factures Émises</p>
                                 <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{invoicesCount}</p>
                             </div>
-                            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+                            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                                 <FileText className="w-6 h-6" />
                             </div>
                         </div>
@@ -85,7 +85,7 @@ export const InvoiceKPIs: React.FC<InvoiceKPIsProps> = ({
                                 <p className="text-xs font-bold text-slate-500 uppercase">Total Devis</p>
                                 <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{quotesCount}</p>
                             </div>
-                            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+                            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                                 <FileText className="w-6 h-6" />
                             </div>
                         </div>

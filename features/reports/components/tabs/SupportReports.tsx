@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Vehicle } from '../../../../types';
+import type { Vehicle } from '../../../../types';
 import { ReportLayout } from '../ReportLayout';
 import { ReportTable } from '../ReportTable';
 import { ReportFilterBar } from '../ReportFilterBar';
@@ -193,7 +193,7 @@ export const SupportReports: React.FC<SupportReportsProps> = ({ vehicles, onAiAn
                             <p className="text-sm text-slate-500">Dont 1 urgent</p>
                         </Card>
                         <Card title="Temps Moyen Réponse">
-                            <div className="text-3xl font-bold text-blue-600">2h 15m</div>
+                            <div className="text-3xl font-bold text-[var(--primary)]">2h 15m</div>
                             <p className="text-sm text-slate-500">Derniers 30 jours</p>
                         </Card>
                         <Card title="Satisfaction Client">

@@ -1,4 +1,4 @@
-import { Ticket } from '../../../types';
+import type { Ticket } from '../../../types';
 import { SLA_CONFIG } from '../utils';
 
 /**

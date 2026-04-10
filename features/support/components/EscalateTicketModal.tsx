@@ -18,7 +18,7 @@ interface EscalateTicketModalProps {
 
 const PRIORITY_LEVELS = [
     { value: 'LOW', label: 'Basse', color: 'text-slate-600' },
-    { value: 'MEDIUM', label: 'Moyenne', color: 'text-blue-600' },
+    { value: 'MEDIUM', label: 'Moyenne', color: 'text-[var(--primary)]' },
     { value: 'HIGH', label: 'Haute', color: 'text-orange-600' },
     { value: 'CRITICAL', label: 'Critique', color: 'text-red-600' },
 ];
@@ -115,7 +115,7 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
                         id="escalate-reason"
                         value={selectedReason}
                         onChange={(e) => setSelectedReason(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                     >
                         <option value="">-- Sélectionner une raison --</option>
                         {ESCALATION_REASONS.map(r => (
@@ -133,7 +133,7 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
                         <textarea
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none"
                             rows={3}
                             placeholder="Décrivez la raison de l'escalade..."
                         />
@@ -150,7 +150,7 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
                         id="assign-to"
                         value={assignTo}
                         onChange={(e) => setAssignTo(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                     >
                         <option value="">-- Aucune assignation --</option>
                         {supportUsers.map(user => (

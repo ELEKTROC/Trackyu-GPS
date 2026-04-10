@@ -1,7 +1,8 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TechSchema, TechFormData } from '../../../../schemas/techSchema';
+import type { TechFormData } from '../../../../schemas/techSchema';
+import { TechSchema } from '../../../../schemas/techSchema';
 import { User, Wrench } from 'lucide-react';
 import { FormField, Input, Select, FormSection, FormGrid } from '../../../../components/form';
 

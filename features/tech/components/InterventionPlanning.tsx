@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, User, Users, Clock, AlertTriangle, GripVertical } from 'lucide-react';
 import { Card } from '../../../components/Card';
-import { Intervention, User as UserType } from '../../../types';
+import type { Intervention, User as UserType } from '../../../types';
 import { getStatusBgClass } from '../../../constants';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useIsMobile } from '../../../hooks/useIsMobile';
@@ -279,12 +279,12 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({ inte
                                 {currentDate.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })}
                             </span>
                             {isToday(currentDate) && (
-                                <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-blue-600 text-white rounded-full font-bold">Auj.</span>
+                                <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-[var(--primary)] text-white rounded-full font-bold">Auj.</span>
                             )}
                         </div>
                         <button
                             onClick={() => setShowMyPlanningOnly(!showMyPlanningOnly)}
-                            className={`p-2 rounded-lg border transition-colors ${showMyPlanningOnly ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300' : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'}`}
+                            className={`p-2 rounded-lg border transition-colors ${showMyPlanningOnly ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'}`}
                         >
                             {showMyPlanningOnly ? <User className="w-4 h-4" /> : <Users className="w-4 h-4" />}
                         </button>
@@ -384,14 +384,14 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({ inte
                 <div className="flex items-center gap-3">
                     {/* Vue Jour / Semaine */}
                     <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 p-0.5">
-                        <button onClick={() => setViewMode('day')} className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${viewMode === 'day' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400'}`}>Jour</button>
-                        <button onClick={() => setViewMode('week')} className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${viewMode === 'week' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400'}`}>Semaine</button>
+                        <button onClick={() => setViewMode('day')} className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${viewMode === 'day' ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400'}`}>Jour</button>
+                        <button onClick={() => setViewMode('week')} className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${viewMode === 'week' ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400'}`}>Semaine</button>
                     </div>
 
                     {/* Navigation date */}
                     <div className="flex items-center gap-1.5">
                         <button onClick={goPrev} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><ChevronLeft className="w-4 h-4" /></button>
-                        <button onClick={goToday} className="px-2 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">Aujourd'hui</button>
+                        <button onClick={goToday} className="px-2 py-1 text-xs font-medium rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 transition-colors">Aujourd'hui</button>
                         <button onClick={goNext} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded"><ChevronRight className="w-4 h-4" /></button>
                     </div>
 
@@ -417,7 +417,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({ inte
                     {/* Mon planning / Tous */}
                     <button
                         onClick={() => setShowMyPlanningOnly(!showMyPlanningOnly)}
-                        className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${showMyPlanningOnly ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'}`}
+                        className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${showMyPlanningOnly ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300'}`}
                     >
                         {showMyPlanningOnly ? <User className="w-3 h-3" /> : <Users className="w-3 h-3" />}
                         {showMyPlanningOnly ? 'Mon Planning' : 'Tous'}
@@ -437,7 +437,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({ inte
                             </div>
                             <div className="flex-1 flex">
                                 {HOURS.slice(0, -1).map(hour => (
-                                    <div key={hour} className={`flex-1 text-center py-2 border-r border-slate-200 dark:border-slate-700 text-[11px] font-semibold ${hour === new Date().getHours() && isToday(currentDate) ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400'}`}>
+                                    <div key={hour} className={`flex-1 text-center py-2 border-r border-slate-200 dark:border-slate-700 text-[11px] font-semibold ${hour === new Date().getHours() && isToday(currentDate) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-500 dark:text-slate-400'}`}>
                                         {String(hour).padStart(2, '0')}h
                                     </div>
                                 ))}
@@ -462,7 +462,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({ inte
 
                                         {/* Timeline 08h → 18h */}
                                         <div
-                                            className={`flex-1 relative transition-colors ${dragOverSlot === `day-${tech.id}` ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                                            className={`flex-1 relative transition-colors ${dragOverSlot === `day-${tech.id}` ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}
                                             onDragOver={(e) => handleDragOver(e, `day-${tech.id}`)}
                                             onDragLeave={handleDragLeave}
                                             onDrop={(e) => handleDropOnTimeline(e, tech.id, currentDate)}
@@ -523,9 +523,9 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({ inte
                                 <User className="w-3 h-3" /> Technicien
                             </div>
                             {weekDates.map(date => (
-                                <div key={date.toISOString()} className={`flex-1 p-2 text-center border-r border-slate-200 dark:border-slate-700 ${isToday(date) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
-                                    <div className={`text-xs font-bold ${isToday(date) ? 'text-blue-700 dark:text-blue-300' : 'text-slate-700 dark:text-slate-300'}`}>{date.toLocaleDateString('fr-FR', { weekday: 'short' })}</div>
-                                    <div className={`text-sm font-bold ${isToday(date) ? 'bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center mx-auto' : 'text-slate-500'}`}>{date.getDate()}</div>
+                                <div key={date.toISOString()} className={`flex-1 p-2 text-center border-r border-slate-200 dark:border-slate-700 ${isToday(date) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}>
+                                    <div className={`text-xs font-bold ${isToday(date) ? 'text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-700 dark:text-slate-300'}`}>{date.toLocaleDateString('fr-FR', { weekday: 'short' })}</div>
+                                    <div className={`text-sm font-bold ${isToday(date) ? 'bg-[var(--primary)] text-white w-6 h-6 rounded-full flex items-center justify-center mx-auto' : 'text-slate-500'}`}>{date.getDate()}</div>
                                 </div>
                             ))}
                         </div>
@@ -546,7 +546,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({ inte
                                             return (
                                                 <div
                                                     key={date.toISOString()}
-                                                    className={`flex-1 border-r border-slate-200 dark:border-slate-700 p-1 flex flex-col gap-0.5 transition-colors ${dragOverSlot === slotKey ? 'bg-blue-50/60 dark:bg-blue-900/15' : isToday(date) ? 'bg-blue-50/30 dark:bg-blue-900/5' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                                                    className={`flex-1 border-r border-slate-200 dark:border-slate-700 p-1 flex flex-col gap-0.5 transition-colors ${dragOverSlot === slotKey ? 'bg-[var(--primary-dim)]/60 dark:bg-[var(--primary-dim)]' : isToday(date) ? 'bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
                                                     onDragOver={(e) => handleDragOver(e, slotKey)}
                                                     onDragLeave={handleDragLeave}
                                                     onDrop={(e) => handleDropOnWeekCell(e, tech.id, date)}

@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PoiSchema, PoiFormData } from '../../../../schemas/poiSchema';
+import type { PoiFormData } from '../../../../schemas/poiSchema';
+import { PoiSchema } from '../../../../schemas/poiSchema';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../contexts/ToastContext';
 import { 
@@ -51,7 +52,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const [clientSearch, setClientSearch] = useState('');
 
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<PoiFormData>({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       resolver: zodResolver(PoiSchema),
       defaultValues: initialData ? {
         ...initialData,
@@ -139,7 +140,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         {/* Header Actions */}
         <div className="flex justify-end">
           {initialData && (
-            <button type="button" onClick={handleClone} className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+            <button type="button" onClick={handleClone} className="text-xs flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] px-3 py-1.5 rounded-lg transition-colors">
               <Copy className="w-3 h-3" /> Dupliquer le POI
             </button>
           )}

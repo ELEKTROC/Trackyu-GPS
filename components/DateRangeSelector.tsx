@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
-import { PERIOD_PRESETS, PeriodPreset } from '../hooks/useDateRange';
+import type { PeriodPreset } from '../hooks/useDateRange';
+import { PERIOD_PRESETS } from '../hooks/useDateRange';
 
 interface DateRangeSelectorProps {
     periodPreset: PeriodPreset;
@@ -22,7 +23,7 @@ export const DateRangeSelector: React.FC<DateRangeSelectorProps> = ({
                 <select
                     value={periodPreset}
                     onChange={(e) => setPeriodPreset(e.target.value as PeriodPreset)}
-                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm py-2 px-3 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm py-2 px-3 text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                 >
                     {Object.entries(PERIOD_PRESETS).map(([key, label]) => (
                         <option key={key} value={key}>{label}</option>

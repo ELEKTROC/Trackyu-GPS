@@ -1,5 +1,8 @@
 import React, { useMemo } from 'react';
 import { View } from '../types';
+import type {
+  LucideIcon
+} from 'lucide-react';
 import {
   LayoutDashboard,
   Map,
@@ -19,8 +22,7 @@ import {
   ShieldCheck,
   LogOut,
   Briefcase,
-  Calendar,
-  LucideIcon
+  Calendar
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';

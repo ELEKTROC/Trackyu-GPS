@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Task, Lead, Client } from '../../../types';
+import type { Task} from '../../../types';
+import { Lead, Client } from '../../../types';
 import { Modal } from '../../../components/Modal';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -305,7 +306,7 @@ export const TaskForm: React.FC<TaskFormProps> = ({ isOpen, onClose, task, initi
           <button
             type="submit"
             disabled={submitting}
-            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
+            className="px-5 py-2.5 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-colors"
           >
             {submitting ? 'En cours...' : (task ? 'Mettre à jour' : 'Créer')}
           </button>

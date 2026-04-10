@@ -18,7 +18,7 @@ export const ConfigurableRow: React.FC<{
       {isConfigMode && (
         <button 
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
-          className="absolute -top-2 -right-2 bg-white shadow-md rounded-full p-1 text-slate-500 hover:text-blue-600 border border-slate-200 z-10"
+          className="absolute -top-2 -right-2 bg-white shadow-md rounded-full p-1 text-slate-500 hover:text-[var(--primary)] border border-slate-200 z-10"
           title={isHidden ? "Afficher" : "Masquer"}
         >
           {isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
@@ -48,7 +48,7 @@ export const CollapsibleSection: React.FC<{
       <div className={`border rounded-lg mb-3 p-3 flex flex-col transition-colors ${isVisible ? 'bg-white border-slate-200' : 'bg-slate-50 border-slate-200'}`}>
          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-                <button onClick={onToggleVisibility} className={`p-1.5 rounded hover:bg-slate-200 transition-colors ${isVisible ? 'text-blue-600' : 'text-slate-400'}`}>
+                <button onClick={onToggleVisibility} className={`p-1.5 rounded hover:bg-slate-200 transition-colors ${isVisible ? 'text-[var(--primary)]' : 'text-slate-400'}`}>
                   {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
                 <div className="flex items-center gap-2 font-bold text-slate-700 text-sm uppercase">

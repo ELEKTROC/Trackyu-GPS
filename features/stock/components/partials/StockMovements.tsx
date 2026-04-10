@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, History } from 'lucide-react';
 import { Card } from '../../../../components/Card';
-import { DeviceStock, StockMovement } from '../../../../types';
+import type { DeviceStock, StockMovement } from '../../../../types';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
 
@@ -13,7 +13,7 @@ interface StockMovementsProps {
 export const StockMovements: React.FC<StockMovementsProps> = ({ stock, stockMovements }) => {
     const typeColors: Record<string, string> = {
         'ENTRY': 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-        'INSTALLATION': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+        'INSTALLATION': 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]',
         'REMOVAL': 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
         'RMA_OUT': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
         'RMA_RETURN': 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',

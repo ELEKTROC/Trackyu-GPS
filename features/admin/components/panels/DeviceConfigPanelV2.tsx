@@ -55,7 +55,7 @@ interface DeviceDiagnostic {
 }
 
 const GT06_VARIANT_LABELS: Record<GT06Variant, { label: string; color: string; desc: string }> = {
-  CONCOX:    { label: 'Concox / JimiIoT', color: 'bg-blue-100 text-blue-700',   desc: 'CRC ISO-HDLC · proto 0x12' },
+  CONCOX:    { label: 'Concox / JimiIoT', color: 'bg-[var(--primary-dim)] text-[var(--primary)]',   desc: 'CRC ISO-HDLC · proto 0x12' },
   COBAN:     { label: 'Coban',             color: 'bg-purple-100 text-purple-700', desc: 'CRC IBM · proto 0x22' },
   SINOTRACK: { label: 'Sinotrack',         color: 'bg-indigo-100 text-indigo-700', desc: 'CRC IBM · proto 0x22' },
   V4:        { label: 'GT06 V4 (4G)',      color: 'bg-cyan-100 text-cyan-700',    desc: 'CRC ISO-HDLC · proto 0xA0' },
@@ -66,7 +66,7 @@ const GT06_VARIANT_LABELS: Record<GT06Variant, { label: string; color: string; d
 
 const SIGNAL_COLORS: Record<string, string> = {
   EXCELLENT: 'text-green-600 bg-green-50',
-  GOOD:      'text-blue-600 bg-blue-50',
+  GOOD:      'text-[var(--primary)] bg-[var(--primary-dim)]',
   FAIR:      'text-yellow-600 bg-yellow-50',
   POOR:      'text-red-600 bg-red-50',
   UNKNOWN:   'text-gray-500 bg-gray-50',
@@ -86,7 +86,7 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'Boîtiers connectés', value: stats.pipeline.activeConnections, icon: Wifi, color: 'text-green-600' },
-          { label: 'Paquets reçus', value: stats.totals.packets.toLocaleString(), icon: Activity, color: 'text-blue-600' },
+          { label: 'Paquets reçus', value: stats.totals.packets.toLocaleString(), icon: Activity, color: 'text-[var(--primary)]' },
           { label: 'IMEI inconnus', value: stats.unknownImeis.length, icon: AlertTriangle, color: 'text-orange-600' },
           { label: 'Erreurs CRC', value: stats.totals.crcErrors, icon: Shield, color: 'text-red-600' },
         ].map(({ label, value, icon: Icon, color }) => (
@@ -126,7 +126,7 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Protocoles actifs</h3>
         <div className="flex flex-wrap gap-2">
           {stats.pipeline.activeParsers.map(p => (
-            <span key={p} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-200">
+            <span key={p} className="px-3 py-1 bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-medium rounded-full border border-[var(--border)]">
               {p}
             </span>
           ))}
@@ -214,7 +214,7 @@ function DeviceHealthTab() {
       {/* Recherche par IMEI */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-          <Cpu className="h-4 w-4 text-blue-600" />
+          <Cpu className="h-4 w-4 text-[var(--primary)]" />
           Diagnostic boîtier par IMEI
         </h3>
         <div className="flex gap-2">
@@ -230,7 +230,7 @@ function DeviceHealthTab() {
           <button
             onClick={fetchDiagnostic}
             disabled={loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm hover:bg-[var(--primary-light)] disabled:opacity-50 flex items-center gap-2"
           >
             {loading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />}
             Diagnostiquer
@@ -292,7 +292,7 @@ function DeviceHealthTab() {
               </div>
               <button
                 onClick={() => setVariantEdit(variantEdit ? null : diagnostic.gt06Variant)}
-                className="text-xs text-blue-600 hover:text-blue-800 underline shrink-0"
+                className="text-xs text-[var(--primary)] hover:text-[var(--primary)] underline shrink-0"
               >
                 {variantEdit ? 'Annuler' : 'Modifier'}
               </button>
@@ -312,7 +312,7 @@ function DeviceHealthTab() {
                 <button
                   onClick={saveVariant}
                   disabled={variantSaving}
-                  className="px-3 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50"
+                  className="px-3 py-1.5 bg-[var(--primary)] text-white rounded text-sm hover:bg-[var(--primary-light)] disabled:opacity-50"
                 >
                   {variantSaving ? '…' : 'Sauvegarder'}
                 </button>
@@ -453,7 +453,7 @@ function GlobalConfigTab() {
       </div>
       <button
         onClick={save}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700"
+        className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm hover:bg-[var(--primary-light)]"
       >
         {saved ? '✅ Enregistré' : 'Enregistrer la configuration'}
       </button>
@@ -511,7 +511,7 @@ export default function DeviceConfigPanelV2() {
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-1.5 px-3 py-2.5 text-sm border-b-2 transition-colors ${
               activeTab === id
-                ? 'border-blue-600 text-blue-700 font-medium'
+                ? 'border-[var(--primary)] text-[var(--primary)] font-medium'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >

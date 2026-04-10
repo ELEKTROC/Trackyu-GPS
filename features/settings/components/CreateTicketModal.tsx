@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Modal } from '../../../components/Modal';
 import { Send, AlertCircle, Car, User as UserIcon, Building, Mail } from 'lucide-react';
 import { useDataContext } from '../../../contexts/DataContext';
-import { Ticket } from '../../../types';
+import type { Ticket } from '../../../types';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
@@ -172,7 +172,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                                 required
                                 value={clientId}
                                 onChange={(e) => setClientId(e.target.value)}
-                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-sm"
                             >
                                 <option value="">-- Sélectionner un client --</option>
                                 {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -194,9 +194,9 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                     )}
                 </div>
 
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg flex gap-3 items-start border border-blue-100 dark:border-blue-800">
-                    <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-lg flex gap-3 items-start border border-[var(--primary)] dark:border-[var(--primary)]">
+                    <AlertCircle className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)] shrink-0 mt-0.5" />
+                    <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">
                         Précisez la catégorie et le véhicule concerné pour générer automatiquement le sujet de votre demande.
                     </p>
                 </div>
@@ -209,7 +209,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                             title="Sélectionner une catégorie"
                             value={category}
                             onChange={handleCategoryChange}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                         >
                             <option value="">Sélectionner...</option>
                             {ticketCategories?.map(c => (
@@ -234,7 +234,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                             value={subCategory}
                             onChange={handleSubCategoryChange}
                             disabled={!availableSubCategories.length}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all disabled:opacity-50"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all disabled:opacity-50"
                         >
                             <option value="">Préciser...</option>
                             {availableSubCategories.map(sc => (
@@ -254,7 +254,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                         value={vehicleId}
                         onChange={handleVehicleChange}
                         disabled={!clientVehicles.length}
-                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all disabled:opacity-50"
+                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all disabled:opacity-50"
                     >
                         <option value="">-- Aucun véhicule sélectionné --</option>
                         {clientVehicles.map(v => (
@@ -273,7 +273,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                         required
                         value={subject}
                         onChange={(e) => setSubject(e.target.value)}
-                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all font-medium text-slate-800 dark:text-white"
+                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all font-medium text-slate-800 dark:text-white"
                         placeholder="Ex: Problème de connexion GPS"
                     />
                 </div>
@@ -287,7 +287,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                         rows={4}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none text-sm"
+                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all resize-none text-sm"
                         placeholder="Expliquez le problème rencontré..."
                     />
                 </div>
@@ -303,7 +303,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({ isOpen, on
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm shadow-md shadow-blue-500/20"
+                        className="px-5 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm shadow-md shadow-blue-500/20"
                     >
                         {isSubmitting ? (
                             <>Veuillez patienter...</>

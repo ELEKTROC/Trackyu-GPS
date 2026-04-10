@@ -79,13 +79,13 @@ const getSeverityStyles = (severity?: string) => {
       };
     default:
       return {
-        bg: 'bg-blue-600',
-        border: 'border-blue-500',
+        bg: 'bg-[var(--primary)]',
+        border: 'border-[var(--primary)]',
         icon: 'text-white',
         text: 'text-white',
-        subtext: 'text-blue-100',
-        progress: 'bg-blue-300',
-        hover: 'hover:bg-blue-700',
+        subtext: 'text-[var(--primary)]',
+        progress: 'bg-[var(--primary-dim)]',
+        hover: 'hover:bg-[var(--primary-light)]',
       };
   }
 };

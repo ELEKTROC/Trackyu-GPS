@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CatalogItem } from '../../../types';
+import type { CatalogItem } from '../../../types';
 import { Edit2, Image, FileText, Clock, Percent } from 'lucide-react';
 import { useCurrency } from '../../../hooks/useCurrency';
 
@@ -20,12 +20,12 @@ export const CatalogDetail: React.FC<CatalogDetailProps> = ({ item, onClose, onE
                 <div className="flex gap-4">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${item.type === 'Service' ? 'bg-purple-50 text-purple-600' : 'bg-blue-50 text-blue-600'}`}>{item.type}</span>
+                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${item.type === 'Service' ? 'bg-purple-50 text-purple-600' : 'bg-[var(--primary-dim)] text-[var(--primary)]'}`}>{item.type}</span>
                             <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${item.status === 'ACTIVE' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>{item.status === 'ACTIVE' ? 'Actif' : 'Inactif'}</span>
                         </div>
                         <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
                             {item.name}
-                            <button onClick={() => onEdit(item)} className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors" title="Modifier">
+                            <button onClick={() => onEdit(item)} className="p-1 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-full transition-colors" title="Modifier">
                                 <Edit2 className="w-4 h-4" />
                             </button>
                         </h2>
@@ -33,7 +33,7 @@ export const CatalogDetail: React.FC<CatalogDetailProps> = ({ item, onClose, onE
                     </div>
                 </div>
                 <div className="text-right">
-                    <p className="text-2xl font-bold text-blue-600">{formatPrice(item.price)}</p>
+                    <p className="text-2xl font-bold text-[var(--primary)]">{formatPrice(item.price)}</p>
                     <p className="text-sm text-slate-500">{item.unit}</p>
                 </div>
             </div>
@@ -42,19 +42,19 @@ export const CatalogDetail: React.FC<CatalogDetailProps> = ({ item, onClose, onE
             <div className="flex border-b border-slate-200 dark:border-slate-700">
                 <button 
                     onClick={() => setActiveTab('OVERVIEW')}
-                    className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'OVERVIEW' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                    className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'OVERVIEW' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
                 >
                     Vue d'ensemble
                 </button>
                 <button 
                     onClick={() => setActiveTab('TRANSACTIONS')}
-                    className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'TRANSACTIONS' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                    className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'TRANSACTIONS' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
                 >
                     Transactions
                 </button>
                 <button 
                     onClick={() => setActiveTab('HISTORY')}
-                    className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'HISTORY' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+                    className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'HISTORY' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
                 >
                     Historique
                 </button>
@@ -115,7 +115,7 @@ export const CatalogDetail: React.FC<CatalogDetailProps> = ({ item, onClose, onE
                                 <h3 className="font-bold text-sm text-slate-500 uppercase mb-2">Paramètres</h3>
                                 <div className="flex flex-wrap gap-2">
                                     {item.isSellable && <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-bold">Vendable</span>}
-                                    {item.isPurchasable && <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold">Achetable</span>}
+                                    {item.isPurchasable && <span className="px-2 py-1 bg-[var(--primary-dim)] text-[var(--primary)] rounded text-xs font-bold">Achetable</span>}
                                     {item.trackStock && <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-bold">Stock Suivi</span>}
                                 </div>
                             </div>

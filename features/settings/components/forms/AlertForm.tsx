@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertSchema, AlertFormData } from '../../../../schemas/alertSchema';
+import type { AlertFormData } from '../../../../schemas/alertSchema';
+import { AlertSchema } from '../../../../schemas/alertSchema';
 import type { Tier, Vehicle } from '../../../../types';
 import type { User } from '../../../../types/auth';
 interface ZoneOption { id: string; nom?: string; name?: string; client?: string; }
@@ -23,7 +24,7 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
         setValue,
         formState: { errors },
     } = useForm<AlertFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(AlertSchema),
         defaultValues: initialData || {
             nom: '',
@@ -106,7 +107,7 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
         <form ref={ref} onSubmit={handleSubmit(onSubmit)} className="space-y-4 flex flex-col">
             <div className="flex justify-end mb-2 shrink-0">
                 {initialData && (
-                    <button type="button" onClick={handleClone} className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg transition-colors font-medium">
+                    <button type="button" onClick={handleClone} className="text-xs flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] px-2.5 py-1.5 rounded-lg transition-colors font-medium">
                         <Copy className="w-3.5 h-3.5" /> Cloner vers un autre client
                     </button>
                 )}
@@ -317,7 +318,7 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
                     <div className="flex justify-between items-center mb-2">
                         <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Véhicules concernés</label>
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" {...register('allVehicles')} className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            <input type="checkbox" {...register('allVehicles')} className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                             <span className="text-xs text-slate-600 dark:text-slate-400">Tous les véhicules du client</span>
                         </label>
                     </div>
@@ -348,7 +349,7 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
                                                     type="checkbox" 
                                                     checked={selectedVehicleIds.includes(v.id)} 
                                                     onChange={() => toggleVehicle(v.id)}
-                                                    className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" 
+                                                    className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" 
                                                 />
                                                 <span className="text-sm text-slate-700 dark:text-slate-200">{v.name} ({v.id})</span>
                                             </label>
@@ -364,7 +365,7 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
                 <FormSection icon={Calendar} title="Calendrier d'activation">
                     <div className="flex items-center justify-between mb-3">
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" {...register('isScheduled')} className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            <input type="checkbox" {...register('isScheduled')} className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                             <span className="text-sm text-slate-600 dark:text-slate-400">Activer selon planning</span>
                         </label>
                     </div>
@@ -375,8 +376,8 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
                                 <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">Jours actifs</label>
                                 <div className="flex flex-wrap gap-2">
                                     {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
-                                        <label key={day} className="flex items-center gap-1.5 text-xs cursor-pointer bg-white dark:bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-blue-300 transition-colors">
-                                            <input type="checkbox" value={day} {...register('scheduleDays')} className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                        <label key={day} className="flex items-center gap-1.5 text-xs cursor-pointer bg-white dark:bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-[var(--primary)] transition-colors">
+                                            <input type="checkbox" value={day} {...register('scheduleDays')} className="w-3.5 h-3.5 rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                                             {day}
                                         </label>
                                     ))}
@@ -399,15 +400,15 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
                 <FormSection icon={Bell} title="Notifications">
                     <div className="flex gap-4 mb-4">
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" {...register('notifyWeb')} className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            <input type="checkbox" {...register('notifyWeb')} className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                             <span className="text-sm text-slate-700 dark:text-slate-300">Web (Plateforme)</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" {...register('notifyEmail')} className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            <input type="checkbox" {...register('notifyEmail')} className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                             <span className="text-sm text-slate-700 dark:text-slate-300">Email</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" {...register('notifySms')} className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                            <input type="checkbox" {...register('notifySms')} className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                             <span className="text-sm text-slate-700 dark:text-slate-300">SMS</span>
                         </label>
                     </div>
@@ -439,7 +440,7 @@ export const AlertForm = React.forwardRef<HTMLFormElement, BaseFormProps & { res
                                                     type="checkbox" 
                                                     checked={selectedUserIds.includes(u.id)} 
                                                     onChange={() => toggleUser(u.id)}
-                                                    className="mt-0.5 w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" 
+                                                    className="mt-0.5 w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" 
                                                 />
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{u.name}</span>

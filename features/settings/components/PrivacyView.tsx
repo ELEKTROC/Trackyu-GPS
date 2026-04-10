@@ -17,7 +17,7 @@ export const PrivacyView: React.FC = () => {
             <div className="space-y-6">
                 <section className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
                     <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                        <Lock className="w-5 h-5 text-blue-500" /> Protection des Données
+                        <Lock className="w-5 h-5 text-[var(--primary)]" /> Protection des Données
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-4">
                         Nous prenons la sécurité de vos données très au sérieux. Toutes les informations collectées par nos boîtiers télématiques et notre plateforme sont chiffrées selon les standards industriels les plus stricts (AES-256).
@@ -74,25 +74,25 @@ export const PrivacyView: React.FC = () => {
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center gap-2 p-3 border border-slate-100 dark:border-slate-700 rounded-lg">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">1</span>
+                            <span className="w-6 h-6 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] flex items-center justify-center text-xs font-bold">1</span>
                             <span className="text-slate-600 dark:text-slate-300">Droit d'accès</span>
                         </div>
                         <div className="flex items-center gap-2 p-3 border border-slate-100 dark:border-slate-700 rounded-lg">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">2</span>
+                            <span className="w-6 h-6 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] flex items-center justify-center text-xs font-bold">2</span>
                             <span className="text-slate-600 dark:text-slate-300">Droit de rectification</span>
                         </div>
                         <div className="flex items-center gap-2 p-3 border border-slate-100 dark:border-slate-700 rounded-lg">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">3</span>
+                            <span className="w-6 h-6 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] flex items-center justify-center text-xs font-bold">3</span>
                             <span className="text-slate-600 dark:text-slate-300">Droit à l'effacement</span>
                         </div>
                         <div className="flex items-center gap-2 p-3 border border-slate-100 dark:border-slate-700 rounded-lg">
-                            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">4</span>
+                            <span className="w-6 h-6 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] flex items-center justify-center text-xs font-bold">4</span>
                             <span className="text-slate-600 dark:text-slate-300">Droit à la portabilité</span>
                         </div>
                     </div>
                     <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-700">
                         <p className="text-xs text-slate-500">
-                            Pour exercer ces droits ou pour toute question, contactez notre DPO à <a href="mailto:dpo@trackyu.com" className="text-blue-600 hover:underline">dpo@trackyu.com</a>.
+                            Pour exercer ces droits ou pour toute question, contactez notre DPO à <a href="mailto:dpo@trackyu.com" className="text-[var(--primary)] hover:underline">dpo@trackyu.com</a>.
                         </p>
                     </div>
                 </section>

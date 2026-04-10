@@ -221,7 +221,7 @@ export const FuelReports: React.FC<FuelReportsProps> = ({ vehicles, onAiAnalysis
                 ) : activeItem === 'summary' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Card title="Coût Total Carburant">
-                            <div className="text-3xl font-bold text-blue-600">{filteredRecords.reduce((s, r) => s + r.cost, 0).toFixed(2)}</div>
+                            <div className="text-3xl font-bold text-[var(--primary)]">{filteredRecords.reduce((s, r) => s + r.cost, 0).toFixed(2)}</div>
                             <p className="text-sm text-slate-500">Période sélectionnée</p>
                         </Card>
                         <Card title="Volume Consommé">

@@ -1,13 +1,14 @@
 // LazyViews.tsx - Lazy loaded views for code splitting
 // This reduces the initial bundle size by loading views on-demand
 
-import React, { Suspense, lazy, ComponentType } from 'react';
+import type { ComponentType } from 'react';
+import React, { Suspense, lazy } from 'react';
 
 // Loading fallback component
 export const ViewLoader: React.FC<{ name?: string }> = ({ name }) => (
     <div className="flex items-center justify-center h-full min-h-[400px] animate-in fade-in duration-300">
         <div className="text-center">
-            <div className="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
+            <div className="inline-block w-12 h-12 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin mb-4" />
             <p className="text-sm text-slate-500 dark:text-slate-400">
                 {name ? `Chargement de ${name}...` : 'Chargement...'}
             </p>

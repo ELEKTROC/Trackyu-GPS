@@ -190,7 +190,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-500 text-white rounded-xl">
+            <div className="p-3 bg-[var(--primary-dim)]0 text-white rounded-xl">
               <Truck className="w-6 h-6" />
             </div>
             <div>
@@ -227,14 +227,14 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
                 activeTab === tab.id
-                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                  ? 'bg-white dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
               {tab.id === 'invoices' && vehicleInvoices.length > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 text-xs rounded-full">
+                <span className="ml-1 px-1.5 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] text-xs rounded-full">
                   {vehicleInvoices.length}
                 </span>
               )}
@@ -250,13 +250,13 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               {/* Subscription Info */}
               <div className="space-y-4">
                 <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                  <CreditCard className="w-4 h-4 text-blue-500" />
+                  <CreditCard className="w-4 h-4 text-[var(--primary)]" />
                   Abonnement
                 </h3>
                 <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 space-y-3">
                   <div className="flex justify-between">
                     <span className="text-slate-500 text-sm">N° Abonnement</span>
-                    <span className="font-mono font-bold text-blue-600">{subscriptionNumber}</span>
+                    <span className="font-mono font-bold text-[var(--primary)]">{subscriptionNumber}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 text-sm">Client</span>
@@ -269,7 +269,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                         if (onNavigate) onNavigate(View.SALES, { tab: 'contracts', contractId });
                         onClose();
                       }}
-                      className="font-mono text-sm text-blue-600 hover:underline flex items-center gap-1"
+                      className="font-mono text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
                     >
                       {contract?.contractNumber || contractId.slice(0, 8).toUpperCase()}
                       <ExternalLink className="w-3 h-3" />
@@ -305,7 +305,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 text-sm">Prochaine facturation</span>
-                    <span className="font-medium text-blue-600">{formatDate(billingDates.nextBilling)}</span>
+                    <span className="font-medium text-[var(--primary)]">{formatDate(billingDates.nextBilling)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500 text-sm">Renouvellements</span>
@@ -404,7 +404,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                         {displayedInvoices.map((inv) => (
                           <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                            <td className="px-4 py-3 font-mono text-xs text-blue-600">
+                            <td className="px-4 py-3 font-mono text-xs text-[var(--primary)]">
                               {inv.number || inv.id.slice(0, 8).toUpperCase()}
                             </td>
                             <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
@@ -433,7 +433,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                                 className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
                                 title="Voir la facture"
                               >
-                                <ExternalLink className="w-4 h-4 text-blue-500" />
+                                <ExternalLink className="w-4 h-4 text-[var(--primary)]" />
                               </button>
                             </td>
                           </tr>
@@ -444,7 +444,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                   {vehicleInvoices.length > 5 && (
                     <button
                       onClick={() => setShowAllInvoices(!showAllInvoices)}
-                      className="w-full py-2 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg flex items-center justify-center gap-1"
+                      className="w-full py-2 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg flex items-center justify-center gap-1"
                     >
                       {showAllInvoices ? (
                         <>
@@ -479,7 +479,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                     <div key={index} className="relative pl-10 pb-4">
                       <div className={`absolute left-2 w-4 h-4 rounded-full border-2 ${
                         event.type === 'CREATION' ? 'bg-green-500 border-green-500' :
-                        event.type === 'INVOICE' ? 'bg-blue-500 border-blue-500' :
+                        event.type === 'INVOICE' ? 'bg-[var(--primary-dim)]0 border-[var(--primary)]' :
                         event.type === 'RENEWAL' ? 'bg-purple-500 border-purple-500' :
                         event.type === 'STATUS_CHANGE' ? 'bg-amber-500 border-amber-500' :
                         'bg-slate-300 border-slate-300'
@@ -562,7 +562,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
             )}
             <button
               onClick={() => { onEdit?.(); onClose(); }}
-              className="px-3 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-1.5"
+              className="px-3 py-2 text-sm bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg flex items-center gap-1.5"
             >
               <Edit2 className="w-4 h-4" />
               Modifier

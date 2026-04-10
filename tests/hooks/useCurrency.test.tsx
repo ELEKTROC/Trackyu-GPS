@@ -35,9 +35,9 @@ describe('useCurrency', () => {
   it('formatPrice formats XOF amounts without decimals', () => {
     const { result } = renderHook(() => useCurrency());
     const formatted = result.current.formatPrice(150000);
-    // Should contain "150" and "000" and "FCFA"
-    expect(formatted).toContain('FCFA');
+    // Symbols are intentionally hidden — only number is shown
     expect(formatted).toContain('150');
+    expect(formatted).not.toMatch(/\.\d{2}/);
   });
 
   it('formatPrice handles undefined/null gracefully', () => {
@@ -49,20 +49,22 @@ describe('useCurrency', () => {
   it('formatPrice handles string amounts', () => {
     const { result } = renderHook(() => useCurrency());
     const formatted = result.current.formatPrice('250000');
+    // Symbols intentionally hidden
     expect(formatted).toContain('250');
-    expect(formatted).toContain('FCFA');
   });
 
   it('formatPrice with override currency (EUR)', () => {
     const { result } = renderHook(() => useCurrency());
     const formatted = result.current.formatPrice(1500, 'EUR');
-    expect(formatted).toContain('€');
+    // Symbols hidden — check decimal format instead
+    expect(formatted).toMatch(/1\s?500[,.]00/);
   });
 
   it('formatPrice with override currency (USD)', () => {
     const { result } = renderHook(() => useCurrency());
     const formatted = result.current.formatPrice(1500, 'USD');
-    expect(formatted).toContain('$');
+    // Symbols hidden — check decimal format instead
+    expect(formatted).toMatch(/1[,.]500\.00|1,500\.00/);
   });
 
   it('getSymbol returns FCFA for XOF', () => {

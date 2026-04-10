@@ -36,7 +36,7 @@ export const DateInput: React.FC<DateInputProps> = ({
         'border border-slate-200 dark:border-slate-700 rounded-lg',
         'bg-slate-50 dark:bg-slate-900',
         'text-slate-800 dark:text-white',
-        'focus:ring-2 focus:ring-blue-500 focus:outline-none',
+        'focus:ring-2 focus:ring-[var(--primary)] focus:outline-none',
         '[color-scheme:light] dark:[color-scheme:dark]',
         'transition-colors',
         showIcon ? 'pl-9' : '',

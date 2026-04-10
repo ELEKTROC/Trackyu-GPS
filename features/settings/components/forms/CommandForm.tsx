@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CommandSchema } from '../../../../schemas/commandSchema';
 import { Terminal, AlertTriangle } from 'lucide-react';
 import { FormField, Input, Select, Textarea } from '../../../../components/form';
-import { z } from 'zod';
+import type { z } from 'zod';
 
 export type CommandFormData = z.infer<typeof CommandSchema>;
 
@@ -21,7 +21,7 @@ interface BaseFormProps {
 
 export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ initialData, onFormSubmit, vehicles = [] }, ref) => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm<CommandFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(CommandSchema),
         defaultValues: initialData || {
             vehicleId: '',
@@ -46,14 +46,14 @@ export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ i
         <form ref={ref} onSubmit={handleSubmit(onSubmit)} className="space-y-5 h-[500px] flex flex-col">
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-5">
                 {/* Header Info */}
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-xl border border-[var(--primary)] dark:border-[var(--primary)]">
                     <div className="flex items-start gap-3">
-                        <div className="p-2.5 bg-blue-100 dark:bg-blue-800 rounded-xl text-blue-600 dark:text-blue-300">
+                        <div className="p-2.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-xl text-[var(--primary)] dark:text-[var(--primary)]">
                             <Terminal className="w-5 h-5" />
                         </div>
                         <div>
-                            <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-200">Console de Commande Technique</h4>
-                            <p className="text-xs text-blue-600 dark:text-blue-300 mt-1">
+                            <h4 className="text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)]">Console de Commande Technique</h4>
+                            <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] mt-1">
                                 Envoyez des instructions directement aux boîtiers GPS. Les commandes critiques nécessitent une justification.
                             </p>
                         </div>
@@ -94,11 +94,11 @@ export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ i
                     <FormField label="Canal de transmission">
                         <div className="flex gap-5 pt-2">
                             <label className="flex items-center gap-2.5 cursor-pointer group">
-                                <input {...register('transport')} type="radio" value="GPRS" className="w-4 h-4 text-blue-600 border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:ring-offset-0" />
+                                <input {...register('transport')} type="radio" value="GPRS" className="w-4 h-4 text-[var(--primary)] border-slate-300 dark:border-slate-600 focus:ring-[var(--primary)] focus:ring-offset-0" />
                                 <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors">GPRS (Data)</span>
                             </label>
                             <label className="flex items-center gap-2.5 cursor-pointer group">
-                                <input {...register('transport')} type="radio" value="SMS" className="w-4 h-4 text-blue-600 border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:ring-offset-0" />
+                                <input {...register('transport')} type="radio" value="SMS" className="w-4 h-4 text-[var(--primary)] border-slate-300 dark:border-slate-600 focus:ring-[var(--primary)] focus:ring-offset-0" />
                                 <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors">SMS (Backup)</span>
                             </label>
                         </div>

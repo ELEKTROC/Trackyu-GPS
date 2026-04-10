@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { Intervention } from '../../../types';
+import type { Intervention } from '../../../types';
 import type { SystemUser } from '../../../types/auth';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';

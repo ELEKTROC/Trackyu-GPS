@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { GeofenceSchema, GeofenceFormData } from '../../../../schemas/geofenceSchema';
+import type { GeofenceFormData } from '../../../../schemas/geofenceSchema';
+import { GeofenceSchema } from '../../../../schemas/geofenceSchema';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../contexts/ToastContext';
 import { 
@@ -51,7 +52,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const [clientSearch, setClientSearch] = useState('');
     
     const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<GeofenceFormData>({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       resolver: zodResolver(GeofenceSchema),
       defaultValues: initialData || {
         statut: 'Active',
@@ -173,7 +174,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         {/* Header Actions */}
         <div className="flex justify-end">
           {initialData && (
-            <button type="button" onClick={handleClone} className="text-xs flex items-center gap-1 text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">
+            <button type="button" onClick={handleClone} className="text-xs flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] px-3 py-1.5 rounded-lg transition-colors">
               <Copy className="w-3 h-3" /> Dupliquer la zone
             </button>
           )}
@@ -214,15 +215,15 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         )}
 
         {/* Section Partage Clients */}
-        <div className="border border-blue-200 dark:border-blue-800 rounded-xl overflow-hidden bg-blue-50/50 dark:bg-blue-900/20">
-          <div className="p-4 border-b border-blue-200 dark:border-blue-800">
-            <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-300 flex items-center gap-2">
-              <div className="p-1.5 bg-blue-100 dark:bg-blue-800 rounded-lg">
+        <div className="border border-[var(--border)] dark:border-[var(--primary)] rounded-xl overflow-hidden bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]">
+          <div className="p-4 border-b border-[var(--border)] dark:border-[var(--primary)]">
+            <h4 className="text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)] flex items-center gap-2">
+              <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
                 <Users className="w-4 h-4" />
               </div>
               Clients ayant accès à cette zone
             </h4>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+            <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] mt-1">
               Partagez cette zone entre plusieurs clients au lieu de la dupliquer
             </p>
           </div>
@@ -233,7 +234,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               <input
                 type="checkbox"
                 {...register('allClients')}
-                className="w-5 h-5 text-blue-600 rounded-lg border-slate-300 focus:ring-blue-500"
+                className="w-5 h-5 text-[var(--primary)] rounded-lg border-slate-300 focus:ring-[var(--primary)]"
               />
               <div>
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -255,7 +256,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
                     Sélection individuelle
                     {selectedClientIds.length > 0 && (
-                      <span className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-xs px-2 py-0.5 rounded-full font-medium">
+                      <span className="bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] text-xs px-2 py-0.5 rounded-full font-medium">
                         {selectedClientIds.length} client(s)
                       </span>
                     )}
@@ -276,7 +277,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                     <button
                       type="button"
                       onClick={toggleSelectAll}
-                      className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium"
+                      className="text-xs text-[var(--primary)] hover:text-[var(--primary)] flex items-center gap-1 font-medium"
                     >
                       {selectedClientIds.length === filteredClients.length ? (
                         <><CheckSquare className="w-3 h-3" /> Tout désélectionner</>
@@ -300,10 +301,10 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                             <button
                               type="button"
                               onClick={() => toggleClient(client.id)}
-                              className="text-slate-400 hover:text-blue-600"
+                              className="text-slate-400 hover:text-[var(--primary)]"
                             >
                               {selectedClientIds.includes(client.id) ? (
-                                <CheckSquare className="w-4 h-4 text-blue-600" />
+                                <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                               ) : (
                                 <Square className="w-4 h-4" />
                               )}
@@ -342,7 +343,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             <div className="flex gap-2">
               {(selectedType === 'Polygone' || selectedType === 'Route') && (
                 <>
-                  <button type="button" onClick={addSamplePoint} className="px-2 py-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-xs text-blue-600 font-medium" title="Ajouter un point">
+                  <button type="button" onClick={addSamplePoint} className="px-2 py-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-xs text-[var(--primary)] font-medium" title="Ajouter un point">
                     + Point
                   </button>
                   <button type="button" onClick={clearPoints} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg" title="Effacer">

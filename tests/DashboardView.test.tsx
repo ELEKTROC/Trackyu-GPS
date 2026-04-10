@@ -28,6 +28,30 @@ vi.mock('../services/api', () => ({
   }
 }));
 
+// Mock react-query to avoid QueryClientProvider dependency
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useQuery: () => ({ data: [], isLoading: false, error: null }),
+    useQueryClient: () => ({ invalidateQueries: vi.fn(), setQueryData: vi.fn(), getQueryData: vi.fn() }),
+  };
+});
+
+// Mock useTenantBranding to avoid QueryClientProvider dependency
+vi.mock('../hooks/useTenantBranding', () => ({
+  useTenantBranding: () => ({ branding: null, isLoading: false }),
+}));
+
+// Mock AuthContext - DashboardView uses useAuth
+vi.mock('../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'user-1', name: 'Admin', role: 'ADMIN', tenantId: 'tenant1', permissions: [] },
+    hasPermission: () => true,
+    isAuthenticated: true,
+  }),
+}));
+
 // Mock DataContext - DashboardView uses useDataContext internally
 vi.mock('../contexts/DataContext', () => ({
   useDataContext: () => ({

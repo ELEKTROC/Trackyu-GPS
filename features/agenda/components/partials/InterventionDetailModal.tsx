@@ -73,7 +73,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
     const getPriorityLabel = (priority: string) => {
         const labels: Record<string, { label: string; color: string }> = {
             'LOW': { label: 'Basse', color: 'bg-slate-100 text-slate-700' },
-            'NORMAL': { label: 'Normale', color: 'bg-blue-100 text-blue-700' },
+            'NORMAL': { label: 'Normale', color: 'bg-[var(--primary-dim)] text-[var(--primary)]' },
             'HIGH': { label: 'Haute', color: 'bg-orange-100 text-orange-700' },
             'URGENT': { label: 'Urgente', color: 'bg-red-100 text-red-700' }
         };
@@ -266,7 +266,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
                     {/* Date & Time */}
                     <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 space-y-3">
                         <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-blue-600" />
+                            <Calendar className="w-4 h-4 text-[var(--primary)]" />
                             Planification
                         </h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
@@ -306,7 +306,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
                                 {intervention.completedAt && (
                                     <div>
                                         <p className="text-xs text-slate-500 mb-1">Terminé le</p>
-                                        <p className="text-sm font-medium text-blue-600">{formatShortDate(intervention.completedAt)}</p>
+                                        <p className="text-sm font-medium text-[var(--primary)]">{formatShortDate(intervention.completedAt)}</p>
                                     </div>
                                 )}
                             </div>
@@ -377,7 +377,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
                                                 </p>
                                                 <a 
                                                     href={`tel:${intervention.siteContactPhone}`}
-                                                    className="p-1.5 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-colors"
+                                                    className="p-1.5 bg-[var(--primary-dim)] text-[var(--primary)] rounded-full hover:bg-[var(--primary-dim)] transition-colors"
                                                     title="Appeler le contact sur site"
                                                 >
                                                     <Phone className="w-3 h-3" />
@@ -460,7 +460,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
                             {intervention.ticketId && (
                                 <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700/50 flex items-center gap-2">
                                     <span className="text-xs text-slate-500">Référence Ticket:</span>
-                                    <span className="text-xs font-mono font-bold bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded border border-blue-100 dark:border-blue-800">
+                                    <span className="text-xs font-mono font-bold bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] px-2 py-0.5 rounded border border-[var(--primary)] dark:border-[var(--primary)]">
                                         #{intervention.ticketId}
                                     </span>
                                 </div>
@@ -523,7 +523,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
                         {/* Swapped Modifier Button to footer */}
                         <button
                             onClick={onEdit}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-medium transition-colors"
                         >
                             <Edit className="w-4 h-4" />
                             Modifier

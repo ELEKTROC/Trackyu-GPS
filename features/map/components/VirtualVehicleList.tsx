@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { Vehicle } from '../../../types';
-import { VehicleListCard, VehicleCardConfig } from './VehicleListCard';
+import type { Vehicle } from '../../../types';
+import type { VehicleCardConfig } from './VehicleListCard';
+import { VehicleListCard } from './VehicleListCard';
 
 interface VirtualVehicleListProps {
   vehicles: Vehicle[];

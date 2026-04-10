@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box, MapPin, User, Truck, Activity, Smartphone, Cpu } from 'lucide-react';
 import { Modal } from '../../../../components/Modal';
-import { DeviceStock } from '../../../../types';
+import type { DeviceStock } from '../../../../types';
 import { useDataContext } from '../../../../contexts/DataContext';
 
 interface StockDetailModalProps {
@@ -13,18 +13,19 @@ interface StockDetailModalProps {
 export const StockDetailModal: React.FC<StockDetailModalProps> = ({ isOpen, onClose, item }) => {
     const { stockMovements } = useDataContext();
 
-    if (!item) return null;
-
-    // Real History from DataContext
+    // Hook before early return
     const history = useMemo(() => {
+        if (!item) return [];
         return stockMovements
             .filter(m => m.deviceId === item.id)
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }, [item, stockMovements]);
 
+    if (!item) return null;
+
     const getIcon = () => {
         switch (item.type) {
-            case 'BOX': return <Box className="w-6 h-6 text-blue-600" />;
+            case 'BOX': return <Box className="w-6 h-6 text-[var(--primary)]" />;
             case 'SIM': return <Smartphone className="w-6 h-6 text-purple-600" />;
             case 'SENSOR': return <Activity className="w-6 h-6 text-green-600" />;
             default: return <Cpu className="w-6 h-6 text-slate-600" />;
@@ -48,7 +49,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ isOpen, onCl
                                 <p className="text-sm font-mono text-slate-500 dark:text-slate-400">{item.serialNumber || item.imei || item.iccid}</p>
                             </div>
                             <span className={`px-3 py-1 rounded-full text-[10px] font-bold border uppercase ${item.status === 'INSTALLED' ? 'bg-green-50 text-green-700 border-green-200' :
-                                    item.status === 'IN_STOCK' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                    item.status === 'IN_STOCK' ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' :
                                         item.status === 'RMA_PENDING' ? 'bg-amber-50 text-amber-700 border-amber-200' :
                                             item.status === 'SENT_TO_SUPPLIER' ? 'bg-purple-50 text-purple-700 border-purple-200' :
                                                 item.status === 'REMOVED' ? 'bg-slate-100 text-slate-600 border-slate-200' :
@@ -105,7 +106,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ isOpen, onCl
                             <div key={idx} className="relative">
                                 <div className={`absolute -left-[21px] top-0 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 ${event.type === 'INSTALLATION' ? 'bg-green-500' :
                                         event.type === 'RMA' ? 'bg-red-500' :
-                                            'bg-blue-500'
+                                            'bg-[var(--primary-dim)]0'
                                     }`}></div>
                                 <div className="flex flex-col">
                                     <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">

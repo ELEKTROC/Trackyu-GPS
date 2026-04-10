@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ColumnDef } from '../components/ColumnManager';
+import type { ColumnDef } from '../components/ColumnManager';
 
 interface UseColumnManagerOptions {
   /** All available columns */

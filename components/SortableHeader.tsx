@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
-import { SortDirection } from '../hooks/useTableSort';
+import type { SortDirection } from '../hooks/useTableSort';
 
 interface SortableHeaderProps {
   label: string;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertOctagon, Video, EyeOff, Coffee, Phone, ShieldAlert } from 'lucide-react';
 import { ConfigurableRow } from './SharedBlocks';
-import { Vehicle } from '../../../../types';
+import type { Vehicle } from '../../../../types';
 
 interface ViolationsBlockProps {
   vehicle: Vehicle;
@@ -28,7 +28,7 @@ export const ViolationsBlock: React.FC<ViolationsBlockProps> = ({
     if (t.includes('fatigue') || t.includes('sleep')) return <Coffee className="w-4 h-4 text-red-500" />;
     if (t.includes('distraction') || t.includes('look_away')) return <EyeOff className="w-4 h-4 text-orange-500" />;
     if (t.includes('phone') || t.includes('calling')) return <Phone className="w-4 h-4 text-red-400" />;
-    return <Video className="w-4 h-4 text-blue-500" />;
+    return <Video className="w-4 h-4 text-[var(--primary)]" />;
   };
 
   return (
@@ -49,7 +49,7 @@ export const ViolationsBlock: React.FC<ViolationsBlockProps> = ({
                   </div>
                   {event.clipUrl && (
                     <button className="ml-auto p-1.5 bg-white dark:bg-slate-800 rounded shadow-sm hover:scale-105 transition-transform">
-                      <Video className="w-3 h-3 text-blue-500" />
+                      <Video className="w-3 h-3 text-[var(--primary)]" />
                     </button>
                   )}
                 </div>
@@ -79,7 +79,7 @@ export const ViolationsBlock: React.FC<ViolationsBlockProps> = ({
 
         <button 
           onClick={() => setActiveModal('violations')} 
-          className="w-full py-2 text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-medium rounded transition-colors"
+          className="w-full py-2 text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 font-medium rounded transition-colors"
         >
           Voir le rapport de sécurité complet
         </button>

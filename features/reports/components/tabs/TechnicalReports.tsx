@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Vehicle } from '../../../../types';
+import type { Vehicle } from '../../../../types';
 import { ReportLayout } from '../ReportLayout';
 import { ReportTable } from '../ReportTable';
 import { ReportFilterBar } from '../ReportFilterBar';
@@ -259,7 +259,7 @@ export const TechnicalReports: React.FC<TechnicalReportsProps> = ({ vehicles, on
                             <p className="text-sm text-slate-500">Dernières 24h</p>
                         </Card>
                         <Card title="Maintenance à venir">
-                            <div className="text-3xl font-bold text-blue-600">{filteredInterventions.filter(i => i.status === 'SCHEDULED').length}</div>
+                            <div className="text-3xl font-bold text-[var(--primary)]">{filteredInterventions.filter(i => i.status === 'SCHEDULED').length}</div>
                             <p className="text-sm text-slate-500">Prochains 7 jours</p>
                         </Card>
                         <Card title="Capteurs Actifs">

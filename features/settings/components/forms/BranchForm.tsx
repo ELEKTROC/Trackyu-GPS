@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { BranchSchema } from '../../../../schemas/branchSchema';
 import { Building2, Info } from 'lucide-react';
 import { FormField, Input, Select, FormSection, FormGrid } from '../../../../components/form';
-import { z } from 'zod';
+import type { z } from 'zod';
 
 export type BranchFormData = z.infer<typeof BranchSchema>;
 
@@ -21,7 +21,7 @@ interface BaseFormProps {
 
 export const BranchForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ initialData, onFormSubmit, clients = [] }, ref) => {
     const { register, handleSubmit, formState: { errors } } = useForm<BranchFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(BranchSchema),
         defaultValues: initialData || { status: 'ACTIVE', isDefault: false }
     });
@@ -57,7 +57,7 @@ export const BranchForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ in
                             <input 
                                 {...register('isDefault')} 
                                 type="checkbox" 
-                                className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 focus:ring-offset-0" 
+                                className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)] focus:ring-offset-0" 
                             />
                             <span className="text-sm text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 transition-colors">
                                 Flotte par défaut

@@ -1,4 +1,5 @@
-import { io, Socket } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { WS_BASE_URL } from '../utils/apiConfig';
 
 // URL dynamique selon l'environnement (supporte web et mobile Capacitor)

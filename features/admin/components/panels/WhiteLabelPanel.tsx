@@ -97,7 +97,7 @@ export const WhiteLabelPanel: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--primary)]" />
         <span className="ml-2 text-slate-500">Chargement...</span>
       </div>
     );
@@ -121,7 +121,7 @@ export const WhiteLabelPanel: React.FC = () => {
           <button
             onClick={handleSave}
             disabled={saving || !hasChanges}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Sauvegarder
@@ -130,11 +130,11 @@ export const WhiteLabelPanel: React.FC = () => {
       </div>
 
       {isSuperAdmin && (
-        <Card className="p-4 bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30">
+        <Card className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]/30">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <Globe className="w-5 h-5 text-blue-600" />
+              <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                <Globe className="w-5 h-5 text-[var(--primary)]" />
               </div>
               <div>
                 <h4 className="font-bold text-slate-800 dark:text-white">Sélection du Revendeur</h4>

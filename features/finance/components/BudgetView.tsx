@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useDataContext } from '../../../contexts/DataContext';
 import { Card } from '../../../components/Card';
-import { Budget, Tier } from '../../../types';
+import type { Budget, Tier } from '../../../types';
 import { PLAN_COMPTABLE } from '../constants';
 import { Plus, Trash2, Edit2, TrendingUp, AlertTriangle, CheckCircle, Calculator, Save, X, Calendar } from 'lucide-react';
 import { useCurrency } from '../../../hooks/useCurrency';
@@ -165,7 +165,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                 {MONTHS.map((_, i) => (
                     <td 
                         key={i} 
-                        className={`p-2 border-r border-slate-100 dark:border-slate-800 text-center cursor-pointer min-w-[80px] ${editingCell?.id === budget.id && editingCell.monthIndex === i ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                        className={`p-2 border-r border-slate-100 dark:border-slate-800 text-center cursor-pointer min-w-[80px] ${editingCell?.id === budget.id && editingCell.monthIndex === i ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
                         onClick={() => {
                             setEditingCell({ id: budget.id, monthIndex: i });
                             setEditValue(amounts[i].toString());
@@ -175,7 +175,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                             <input 
                                 autoFocus
                                 type="number"
-                                className="w-full bg-white dark:bg-slate-800 border border-blue-500 rounded text-xs p-1 text-center font-bold focus:outline-none"
+                                className="w-full bg-white dark:bg-slate-800 border border-[var(--primary)] rounded text-xs p-1 text-center font-bold focus:outline-none"
                                 value={editValue}
                                 onChange={e => setEditValue(e.target.value)}
                                 onBlur={() => handleCellSave(budget, i)}
@@ -204,8 +204,8 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-4">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                        <Calculator className="w-6 h-6 text-blue-600" />
+                    <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                        <Calculator className="w-6 h-6 text-[var(--primary)]" />
                     </div>
                     <div>
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white uppercase tracking-tight">Budget d'Exploitation Annuel</h3>
@@ -217,7 +217,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     <select 
                         value={selectedYear} 
                         onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                        className="flex-1 md:flex-none p-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                        className="flex-1 md:flex-none p-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm font-bold focus:ring-2 focus:ring-[var(--primary)] transition-all outline-none"
                     >
                         {availableYears.map(year => (
                             <option key={year} value={year}>{year}</option>
@@ -225,7 +225,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     </select>
                     <button 
                         onClick={() => setIsAddLineModalOpen(true)}
-                        className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+                        className="flex-1 md:flex-none bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white px-5 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all active:scale-95"
                     >
                         <Plus className="w-4 h-4" /> Ajouter un Compte
                     </button>
@@ -316,7 +316,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
 
                             {/* RESULTAT NET */}
                             <tr className="bg-slate-800 dark:bg-slate-950 text-white font-bold border-t-2 border-slate-900">
-                                <td className="sticky left-0 z-10 p-4 bg-slate-800 dark:bg-slate-900 border-r border-slate-700 text-xs font-black uppercase tracking-widest text-blue-400">RÉSULTAT NET (I - II)</td>
+                                <td className="sticky left-0 z-10 p-4 bg-slate-800 dark:bg-slate-900 border-r border-slate-700 text-xs font-black uppercase tracking-widest text-[var(--primary)]">RÉSULTAT NET (I - II)</td>
                                 {calculations.monthlyTotals.net.map((sum, i) => (
                                     <td key={i} className={`p-4 text-center text-sm font-mono ${sum < 0 ? 'text-red-400' : 'text-green-400'}`}>
                                         {sum === 0 ? '-' : Math.round(sum).toLocaleString()}
@@ -333,7 +333,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                 {/* Footer Info */}
                 <div className="p-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center px-4">
                     <div className="flex gap-4 text-[10px] text-slate-500 font-medium">
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-500"></div> Cliquez sur une cellule pour éditer</span>
+                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-[var(--primary-dim)]0"></div> Cliquez sur une cellule pour éditer</span>
                         <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-500"></div> Saisie auto-calculée</span>
                     </div>
                     <div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold italic">
@@ -349,7 +349,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                     <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 w-full max-w-md border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                                <Plus className="w-5 h-5 text-blue-600" /> Ajouter un poste
+                                <Plus className="w-5 h-5 text-[var(--primary)]" /> Ajouter un poste
                             </h3>
                             <button onClick={() => setIsAddLineModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
                                 <X className="w-6 h-6" />
@@ -360,7 +360,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                             <div>
                                 <label className="block text-[10px] font-black uppercase text-slate-500 mb-2 tracking-widest">Compte Comptable</label>
                                 <select 
-                                    className="w-full p-3 border-2 border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 text-sm font-bold focus:border-blue-500 focus:outline-none transition-all"
+                                    className="w-full p-3 border-2 border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900 text-sm font-bold focus:border-[var(--primary)] focus:outline-none transition-all"
                                     value={newLineAccount}
                                     onChange={e => setNewLineAccount(e.target.value)}
                                 >
@@ -381,7 +381,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
                             <button 
                                 onClick={handleAddLine}
                                 disabled={!newLineAccount}
-                                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-200 disabled:text-slate-400 text-white p-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all mt-4"
+                                className="w-full bg-[var(--primary)] hover:bg-[var(--primary-light)] disabled:bg-slate-200 disabled:text-slate-400 text-white p-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all mt-4"
                             >
                                 Valider la ligne
                             </button>

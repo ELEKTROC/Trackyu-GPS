@@ -1,4 +1,5 @@
-import { Vehicle, VehicleStatus, Zone, CatalogItem } from './types';
+import type { Vehicle, Zone, CatalogItem } from './types';
+import { VehicleStatus } from './types';
 import { 
   BarChart3, Map, Truck, Fuel, AlertTriangle, 
   Clock, Settings

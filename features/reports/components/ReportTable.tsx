@@ -106,7 +106,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
         <div className="relative" ref={containerRef}>
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${isOpen || totalSelected < totalVehicles ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
+                className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${isOpen || totalSelected < totalVehicles ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}
             >
                 <Filter className="w-4 h-4" />
                 <span>Filtres {totalSelected < totalVehicles ? `(${totalSelected})` : ''}</span>
@@ -123,11 +123,11 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                                 placeholder="Rechercher client ou véhicule..." 
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-2 py-1.5 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full pl-9 pr-2 py-1.5 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                             />
                         </div>
                         <div className="flex justify-between text-xs">
-                            <button onClick={selectAll} className="text-blue-600 hover:underline">Tout sélectionner</button>
+                            <button onClick={selectAll} className="text-[var(--primary)] hover:underline">Tout sélectionner</button>
                             <button onClick={deselectAll} className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Tout désélectionner</button>
                         </div>
                     </div>
@@ -147,7 +147,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                                             {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                                         </button>
                                         <div className="flex items-center gap-2 flex-1 cursor-pointer" onClick={() => handleClientCheckbox(client, vehicles)}>
-                                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${isAllSelected || isIndeterminate ? 'bg-blue-600 border-blue-600' : 'border-slate-300 bg-white dark:bg-slate-900'}`}>
+                                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${isAllSelected || isIndeterminate ? 'bg-[var(--primary)] border-[var(--primary)]' : 'border-slate-300 bg-white dark:bg-slate-900'}`}>
                                                 {isAllSelected && <Check className="w-3 h-3 text-white" />}
                                                 {isIndeterminate && <div className="w-2 h-0.5 bg-white rounded-full" />}
                                             </div>
@@ -164,7 +164,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                                                         type="checkbox" 
                                                         checked={selectedVehicles.has(vehicle)}
                                                         onChange={() => handleVehicleCheckbox(vehicle)}
-                                                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3.5 h-3.5"
+                                                        className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)] w-3.5 h-3.5"
                                                     />
                                                     <span className="text-sm text-slate-600 dark:text-slate-300 truncate select-none">{vehicle}</span>
                                                 </label>
@@ -346,7 +346,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                                 <select 
                                     value={selectedPeriod}
                                     onChange={(e) => setSelectedPeriod(e.target.value)}
-                                    className="w-full sm:w-auto pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer shadow-sm font-medium text-slate-700 dark:text-slate-200 min-w-[160px]"
+                                    className="w-full sm:w-auto pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] appearance-none cursor-pointer shadow-sm font-medium text-slate-700 dark:text-slate-200 min-w-[160px]"
                                 >
                                     {REPORT_PERIODS.map(p => (
                                     <option key={p.id} value={p.id}>{p.label}</option>
@@ -370,7 +370,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                                 <input 
                                     type="text" 
                                     placeholder="Rechercher..." 
-                                    className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
+                                    className="w-full pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-white dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm"
                                     value={filter}
                                     onChange={(e) => setFilter(e.target.value)}
                                 />
@@ -381,7 +381,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                             {/* Bouton Colonnes */}
                             <button 
                                 onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                                className={`justify-center p-2 border rounded-lg shadow-sm transition-colors ${isColumnMenuOpen ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`} 
+                                className={`justify-center p-2 border rounded-lg shadow-sm transition-colors ${isColumnMenuOpen ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)]' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`} 
                                 title="Gérer les colonnes"
                             >
                                 <LayoutTemplate className="w-4 h-4" />
@@ -398,7 +398,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                                         type="checkbox" 
                                         checked={visibleColumns.includes(col)}
                                         onChange={() => toggleColumn(col)}
-                                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                        className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                                         />
                                         <span className="text-sm text-slate-700 dark:text-slate-200 truncate">{col}</span>
                                     </label>
@@ -483,7 +483,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                     <select 
                         value={itemsPerPage}
                         onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                     >
                         <option value={10}>10</option>
                         <option value={20}>20</option>

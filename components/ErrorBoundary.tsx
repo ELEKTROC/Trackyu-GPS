@@ -42,7 +42,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <button
               onClick={() => this.setState({ hasError: false, error: null })}
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
               Réessayer
@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
             <button
               onClick={() => window.location.reload()}
-              className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white font-medium rounded-lg transition-colors"
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Recharger la page

@@ -202,7 +202,7 @@ export const SalesDashboard: React.FC<{ dateRange?: { start: string; end: string
                             <Building2 className="w-4 h-4" />
                             Revendeur
                             {resellerFilter !== 'ALL' && (
-                                <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">1</span>
+                                <span className="absolute -top-1.5 -right-1.5 bg-[var(--primary-dim)]0 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">1</span>
                             )}
                         </button>
                     )}
@@ -228,7 +228,7 @@ export const SalesDashboard: React.FC<{ dateRange?: { start: string; end: string
             <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <Card className="p-4 border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-white dark:from-slate-800 dark:to-slate-900">
                     <div className="flex justify-between items-start mb-2">
-                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+                        <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-[var(--primary)] dark:text-[var(--primary)]">
                             <TrendingUp className="w-5 h-5" />
                         </div>
                     </div>
@@ -339,7 +339,7 @@ export const SalesDashboard: React.FC<{ dateRange?: { start: string; end: string
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-xs font-bold text-slate-500 uppercase">Prévision Mois Prochain</p>
-                            <p className="text-2xl font-bold text-blue-600 mt-1">{formatPrice(stats.forecastNextMonth ?? 0)}</p>
+                            <p className="text-2xl font-bold text-[var(--primary)] mt-1">{formatPrice(stats.forecastNextMonth ?? 0)}</p>
                             <p className="text-xs text-slate-500 flex items-center gap-1">
                                 {Number(stats.avgGrowth) >= 0 ? (
                                     <><ArrowUpRight className="w-3 h-3 text-green-500" /> +{stats.avgGrowth}% tendance</>
@@ -348,7 +348,7 @@ export const SalesDashboard: React.FC<{ dateRange?: { start: string; end: string
                                 )}
                             </p>
                         </div>
-                        <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600">
+                        <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                             <Zap className="w-8 h-8" />
                         </div>
                     </div>
@@ -479,7 +479,7 @@ export const SalesDashboard: React.FC<{ dateRange?: { start: string; end: string
                             <div key={inv.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                                     inv.status === 'PAID' ? 'bg-green-100 text-green-600' : 
-                                    inv.status === 'OVERDUE' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+                                    inv.status === 'OVERDUE' ? 'bg-red-100 text-red-600' : 'bg-[var(--primary-dim)] text-[var(--primary)]'
                                 }`}>
                                     <FileText className="w-4 h-4" />
                                 </div>

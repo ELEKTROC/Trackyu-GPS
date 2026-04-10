@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Vehicle, Client, Lead, LeadStatus, VehicleStatus, DeviceStock, Intervention, Zone, SystemUser, Contract, Invoice, Quote, Ticket, Alert, Branch, CatalogItem, JournalEntry, Payment, SupplierInvoice, BankTransaction, Budget, Supplier, StockMovement, VehiclePositionHistory, FuelRecord, MaintenanceRecord, Tier, Anomaly, UserActivity, Driver, Tech, Group, Command, POI, AlertConfig, MaintenanceRule, ScheduleRule, EcoDrivingProfile, Task, AutomationRule, TicketCategory, TicketSubCategory } from '../types';
+import type { Vehicle, Client, Lead, LeadStatus, DeviceStock, Intervention, Zone, SystemUser, Contract, Invoice, Quote, Ticket, Alert, Branch, CatalogItem, JournalEntry, Payment, SupplierInvoice, BankTransaction, Budget, Supplier, StockMovement, VehiclePositionHistory, FuelRecord, MaintenanceRecord, Tier, Anomaly, UserActivity, Driver, Tech, Group, Command, POI, AlertConfig, MaintenanceRule, ScheduleRule, EcoDrivingProfile, Task, AutomationRule, TicketCategory, TicketSubCategory } from '../types';
+import { VehicleStatus } from '../types';
 import { useAuth } from './AuthContext';
 import { initSocket, getSocket } from '../services/socket';
 import { PRODUCT_CATALOG } from '../constants';
@@ -395,21 +396,21 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // --- SUPPORT SETTINGS QUERIES ---
     const { data: ticketCategories = [] } = useQuery<TicketCategory[]>({
         queryKey: ['ticketCategories'],
-        // @ts-ignore
+        // @ts-expect-error - queryFn type mismatch with react-query generics
         queryFn: () => api.adminFeatures.supportSettings.getCategories(true).then((res: unknown) => (res as TicketCategory[]) || []),
         enabled: !!user && (!!tenantId || user.role === 'SUPERADMIN' || user.role === 'SUPER_ADMIN') && deferredEnabled
     });
 
     const { data: ticketSubcategories = [] } = useQuery<TicketSubCategory[]>({
         queryKey: ['ticketSubcategories'],
-        // @ts-ignore
+        // @ts-expect-error - queryFn type mismatch with react-query generics
         queryFn: () => api.adminFeatures.supportSettings.getSubCategories(undefined, true).then((res: unknown) => (res as TicketSubCategory[]) || []),
         enabled: !!user && (!!tenantId || user.role === 'SUPERADMIN' || user.role === 'SUPER_ADMIN') && deferredEnabled
     });
 
     const { data: slaConfig = {} } = useQuery<Record<string, unknown>>({
         queryKey: ['slaConfig', tenantId],
-        // @ts-ignore
+        // @ts-expect-error - queryFn type mismatch with react-query generics
         queryFn: () => api.adminFeatures.supportSettings.getSlaConfig().then((res: unknown) => (res as Record<string, unknown>) || {}),
         enabled: !!user && (!!tenantId || user.role === 'SUPERADMIN' || user.role === 'SUPER_ADMIN') && deferredEnabled
     });

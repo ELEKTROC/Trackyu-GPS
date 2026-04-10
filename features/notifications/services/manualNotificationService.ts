@@ -4,14 +4,15 @@
  */
 
 import { api } from '../../../services/api';
-import {
+import type {
   ManualNotification,
   ManualNotificationFormData,
   NotificationTemplate,
   NotificationRecipient,
   NotificationDeliveryResult,
-  DEFAULT_NOTIFICATION_TEMPLATES,
-  NotificationChannel,
+  NotificationChannel} from '../types/manualNotification';
+import {
+  DEFAULT_NOTIFICATION_TEMPLATES
 } from '../types/manualNotification';
 
 // Types de retour API

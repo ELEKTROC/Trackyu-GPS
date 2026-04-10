@@ -4,7 +4,7 @@ import { useDataContext } from '../../../contexts/DataContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { api } from '../../../services/api';
-import { TicketMessage, Ticket } from '../../../types';
+import type { TicketMessage, Ticket } from '../../../types';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 import { logger } from '../../../utils/logger';
@@ -127,11 +127,11 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
                             ) : (
                                 <div className={`max-w-[85%] p-3 rounded-xl text-sm ${
                                     msg.sender === 'SUPPORT' 
-                                        ? 'bg-blue-600 text-white rounded-tr-none shadow-sm' 
+                                        ? 'bg-[var(--primary)] text-white rounded-tr-none shadow-sm' 
                                         : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-tl-none shadow-sm text-slate-700 dark:text-slate-200'
                                 }`}>
                                     <p className="whitespace-pre-wrap break-words">{msg.text}</p>
-                                    <span className={`text-[10px] block mt-1 text-right ${msg.sender === 'SUPPORT' ? 'text-blue-200' : 'text-slate-400'}`}>
+                                    <span className={`text-[10px] block mt-1 text-right ${msg.sender === 'SUPPORT' ? 'text-[var(--primary)]' : 'text-slate-400'}`}>
                                         {new Date(msg.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                 </div>
@@ -161,7 +161,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
                                     <button 
                                         key={m.id} 
                                         onClick={() => insertMacro(m.text)} 
-                                        className="px-3 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-600 dark:text-slate-300 rounded-full text-[10px] whitespace-nowrap transition-colors border border-transparent hover:border-blue-200"
+                                        className="px-3 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 text-slate-600 dark:text-slate-300 rounded-full text-[10px] whitespace-nowrap transition-colors border border-transparent hover:border-[var(--border)]"
                                     >
                                         {m.label}
                                     </button>
@@ -186,7 +186,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
 
                     <div className="relative">
                         <textarea 
-                            className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:text-white" 
+                            className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm resize-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none transition-all dark:text-white" 
                             placeholder="Répondre..." 
                             rows={2}
                             value={messageInput} 
@@ -201,7 +201,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
                         <button 
                             onClick={handleSendMessage} 
                             disabled={!messageInput.trim()} 
-                            className="absolute bottom-3 right-3 p-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:bg-slate-400 transition-all shadow-md hover:bg-blue-700" 
+                            className="absolute bottom-3 right-3 p-2 bg-[var(--primary)] text-white rounded-lg disabled:opacity-50 disabled:bg-slate-400 transition-all shadow-md hover:bg-[var(--primary-light)]" 
                             title="Envoyer le message"
                         >
                             <Send className="w-4 h-4" />

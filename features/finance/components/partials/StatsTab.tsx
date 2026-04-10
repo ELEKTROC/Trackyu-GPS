@@ -92,7 +92,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
     const getActivityColor = (type: string) => {
         switch(type) {
             case 'payment': return 'text-emerald-600';
-            case 'invoice': return 'text-blue-600';
+            case 'invoice': return 'text-[var(--primary)]';
             case 'expense': return 'text-red-600';
             case 'entry': return 'text-purple-600';
             default: return 'text-slate-600';
@@ -108,13 +108,13 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                 {/* CA Émis */}
                 <div className="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-1.5">
-                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900/20 rounded-lg text-blue-600">
+                        <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
                             <FileText className="w-4 h-4" />
                         </div>
                         <span className="text-[9px] font-bold text-slate-400 uppercase">CA Émis</span>
                     </div>
                     <p className="text-base font-bold text-slate-800 dark:text-white">{formatPrice(financeKPIs.totalCAEmis || 0)}</p>
-                    <p className="text-xs text-blue-600 mt-0.5">Factures émises</p>
+                    <p className="text-xs text-[var(--primary)] mt-0.5">Factures émises</p>
                 </div>
 
                 {/* Encaissements */}

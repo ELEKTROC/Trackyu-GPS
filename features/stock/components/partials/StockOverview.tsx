@@ -198,13 +198,13 @@ export const StockOverview: React.FC<StockOverviewProps> = ({
                             Object.entries(stats.stockByTech).map(([id, data]) => (
                                 <div key={id} className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
                                     <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
+                                        <div className="w-8 h-8 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full flex items-center justify-center text-[var(--primary)] font-bold text-xs">
                                             {data.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                                         </div>
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{data.name}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-xs">
-                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">{data.boxes} GPS</span>
+                                        <span className="px-2 py-0.5 bg-[var(--primary-dim)] text-[var(--primary)] rounded">{data.boxes} GPS</span>
                                         <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded">{data.sims} SIM</span>
                                         <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded">{data.accessories} Acc</span>
                                     </div>
@@ -246,7 +246,7 @@ export const StockOverview: React.FC<StockOverviewProps> = ({
                                 const device = stock.find(s => s.id === mv.deviceId);
                                 const typeColors: Record<string, string> = {
                                     'ENTRY': 'bg-green-100 text-green-700',
-                                    'INSTALLATION': 'bg-blue-100 text-blue-700',
+                                    'INSTALLATION': 'bg-[var(--primary-dim)] text-[var(--primary)]',
                                     'REMOVAL': 'bg-orange-100 text-orange-700',
                                     'RMA_OUT': 'bg-red-100 text-red-700',
                                     'RMA_RETURN': 'bg-purple-100 text-purple-700',
@@ -272,7 +272,7 @@ export const StockOverview: React.FC<StockOverviewProps> = ({
                             <button
                                 onClick={() => setHistoryPage(Math.max(1, historyPage - 1))}
                                 disabled={historyPage === 1}
-                                className="text-xs text-blue-600 disabled:text-slate-400"
+                                className="text-xs text-[var(--primary)] disabled:text-slate-400"
                             >
                                 ← Précédent
                             </button>
@@ -280,7 +280,7 @@ export const StockOverview: React.FC<StockOverviewProps> = ({
                             <button
                                 onClick={() => setHistoryPage(Math.min(totalHistoryPages, historyPage + 1))}
                                 disabled={historyPage === totalHistoryPages}
-                                className="text-xs text-blue-600 disabled:text-slate-400"
+                                className="text-xs text-[var(--primary)] disabled:text-slate-400"
                             >
                                 Suivant →
                             </button>

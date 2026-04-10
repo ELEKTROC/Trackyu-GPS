@@ -260,7 +260,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
       {isEdit && (
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1">
-            <Receipt className="w-3.5 h-3.5 text-blue-500" />
+            <Receipt className="w-3.5 h-3.5 text-[var(--primary)]" />
             Prochaine facturation
           </label>
           <input
@@ -395,7 +395,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
           Annuler
         </button>
         <button type="submit" disabled={loading}
-          className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium disabled:opacity-50">
+          className="flex-1 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-medium disabled:opacity-50">
           {loading ? 'Enregistrement…' : isEdit ? 'Mettre à jour' : "Créer l'abonnement"}
         </button>
       </div>

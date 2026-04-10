@@ -4,7 +4,7 @@
  */
 import type jsPDF from 'jspdf';
 import { loadPDFLibraries } from './pdfLoader';
-import { Payment, Client, Invoice } from '../types';
+import type { Payment, Client, Invoice } from '../types';
 import type { TenantBranding } from './pdfServiceV2';
 
 interface PDFOptions {

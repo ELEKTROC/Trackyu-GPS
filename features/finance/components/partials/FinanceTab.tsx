@@ -204,7 +204,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                 <h3 className="text-base sm:text-lg font-bold text-slate-800 dark:text-white">Gestion Financière & Paiements</h3>
                 <button
                     onClick={onOpenPaymentModal}
-                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-sm transition-colors flex items-center gap-2 shrink-0"
+                    className="px-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg font-bold text-sm transition-colors flex items-center gap-2 shrink-0"
                 >
                     <DollarSign className="w-4 h-4" />
                     <span className="hidden sm:inline">Nouveau Paiement</span>
@@ -233,7 +233,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                             <DollarSign className="w-5 h-5" />
                         </div>
                         <div>
-                            <p className="text-xs font-medium text-blue-100 uppercase">Ce mois</p>
+                            <p className="text-xs font-medium text-[var(--primary)] uppercase">Ce mois</p>
                             <p className="text-xl font-bold">{formatPrice(kpiStats.thisMonthTotal)}</p>
                         </div>
                     </div>
@@ -272,7 +272,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                         <input
                             type="text"
                             placeholder="Rechercher un paiement..."
-                            className="pl-9 pr-4 py-2 w-full border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="pl-9 pr-4 py-2 w-full border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] outline-none"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -282,7 +282,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                     <div className="relative" ref={paymentColumnMenuRef}>
                         <button 
                             onClick={() => setIsPaymentColumnMenuOpen(!isPaymentColumnMenuOpen)}
-                            className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isPaymentColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-blue-500/20' : ''}`}
+                            className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isPaymentColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary-dim)]' : ''}`}
                             title="Gérer les colonnes"
                         >
                             <LayoutTemplate className="w-4 h-4" />
@@ -299,7 +299,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                                                 type="checkbox" 
                                                 checked={visiblePaymentColumns.includes(col.id)}
                                                 onChange={() => togglePaymentColumn(col.id)}
-                                                className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 bg-white dark:bg-slate-900"
+                                                className="rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)] bg-white dark:bg-slate-900"
                                             />
                                             <span className="text-slate-700 dark:text-slate-200">{col.label}</span>
                                         </label>
@@ -327,7 +327,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                                     </div>
                                     <div className="mt-1 flex items-center gap-2 flex-wrap">
                                         <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">{payment.method}</span>
-                                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-2 py-0.5 rounded-full font-bold">{payment.status}</span>
+                                        <span className="text-[10px] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] px-2 py-0.5 rounded-full font-bold">{payment.status}</span>
                                     </div>
                                 </MobileCard>
                             );
@@ -360,13 +360,13 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                                 const excessAmount = payment.amount - allocatedAmount;
                                 
                                 return (
-                                    <tr key={i} className="hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors">
+                                    <tr key={i} className="hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/10 transition-colors">
                                         {visiblePaymentColumns.includes('date') && <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{payment.date}</td>}
                                         {visiblePaymentColumns.includes('ref') && <td className="px-4 py-2 font-mono text-xs text-slate-500 dark:text-slate-400">{payment.reference}</td>}
                                         {visiblePaymentColumns.includes('reseller') && (
                                             <td className="px-4 py-2">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                                    <div className="w-6 h-6 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                                                         {(tiers.find(t => t.id === payment.resellerId || t.tenantId === payment.tenantId)?.slug || '??').substring(0, 2)}
                                                     </div>
                                                     <span className="text-xs font-medium text-slate-600 dark:text-slate-300">
@@ -402,7 +402,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                                             {excessAmount > 0 ? `${formatPrice(excessAmount)}` : '-'}
                                         </td>}
                                         {visiblePaymentColumns.includes('status') && <td className="px-4 py-2 text-center">
-                                            <span className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded text-xs font-bold">
+                                            <span className="px-2 py-1 bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] rounded text-xs font-bold">
                                                 {payment.status}
                                             </span>
                                         </td>}
@@ -410,7 +410,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                                             {excessAmount > 0 && (
                                                 <button 
                                                     onClick={() => handleUseExcess(payment, excessAmount)}
-                                                    className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                                    className="p-1 text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
                                                     title="Utiliser l'excédent"
                                                 >
                                                     <Plus className="w-4 h-4" />

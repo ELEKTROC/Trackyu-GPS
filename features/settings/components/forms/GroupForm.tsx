@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { GroupSchema, GroupFormData } from '../../../../schemas/groupSchema';
+import type { GroupFormData } from '../../../../schemas/groupSchema';
+import { GroupSchema } from '../../../../schemas/groupSchema';
 import { useDataContext } from '../../../../contexts/DataContext';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { Car, CheckSquare, Square, ChevronDown, ChevronUp, Filter, Layers } from 'lucide-react';
@@ -76,7 +77,7 @@ const CRITERIA_OPTIONS: Record<string, { label: string; values: { id: string; la
 
 export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ initialData, onFormSubmit }, ref) => {
     const { register, handleSubmit, formState: { errors }, watch, setValue, control } = useForm<GroupFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(GroupSchema),
         defaultValues: initialData || { statut: 'ACTIVE', vehicleIds: [] }
     });
@@ -240,12 +241,12 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
                     className="w-full p-4 bg-slate-100 dark:bg-slate-800 flex items-center justify-between text-left hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                 >
                     <span className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                            <Car className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                            <Car className="w-4 h-4 text-[var(--primary)] dark:text-[var(--primary)]" />
                         </div>
                         Véhicules concernés
                         {selectedVehicleIds.length > 0 && (
-                            <span className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-xs px-2 py-1 rounded-full font-medium">
+                            <span className="bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] text-xs px-2 py-1 rounded-full font-medium">
                                 {selectedVehicleIds.length} sélectionné(s)
                             </span>
                         )}
@@ -267,7 +268,7 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
                             <button 
                                 type="button"
                                 onClick={toggleSelectAll}
-                                className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium"
+                                className="text-xs text-[var(--primary)] hover:text-[var(--primary)] flex items-center gap-1 font-medium"
                             >
                                 {selectedVehicleIds.length === filteredVehicles.length ? (
                                     <><CheckSquare className="w-3 h-3" /> Tout désélectionner</>
@@ -291,7 +292,7 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
                                         type="checkbox"
                                         checked={selectedVehicleIds.includes(vehicle.id)}
                                         onChange={() => toggleVehicle(vehicle.id)}
-                                        className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                                        className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)] focus:ring-offset-0"
                                     />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">

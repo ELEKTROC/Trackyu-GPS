@@ -35,7 +35,7 @@ export const GpsBlock: React.FC<GpsBlockProps> = ({
                 <span className="font-mono font-bold">{mockData.battery}</span>
             </div>
             <div className="flex items-center gap-2 p-2 bg-slate-50 rounded">
-                <Signal className="w-3 h-3 text-blue-500" />
+                <Signal className="w-3 h-3 text-[var(--primary)]" />
                 <span className="font-mono font-bold">{mockData.signal}</span>
             </div>
         </div>

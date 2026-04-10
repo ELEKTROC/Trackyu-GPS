@@ -14,7 +14,7 @@
 
 const isDev = import.meta.env.DEV;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
+ 
 const noop = (..._args: unknown[]) => {};
 
 export const logger = {

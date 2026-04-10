@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { Payment } from '../../../../types';
+import type { Payment } from '../../../../types';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../contexts/ToastContext';
 import { TOAST } from '../../../../constants/toastMessages';
@@ -237,7 +237,7 @@ export const PaymentApprovalPanel: React.FC<PaymentApprovalPanelProps> = ({
                           <div className={`w-2 h-2 rounded-full ${
                             entry.action === 'APPROVED' ? 'bg-green-500' :
                             entry.action === 'REJECTED' ? 'bg-red-500' :
-                            'bg-blue-500'
+                            'bg-[var(--primary-dim)]0'
                           }`} />
                           <span className="text-slate-500">
                             {new Date(entry.timestamp).toLocaleString('fr-FR')}

@@ -47,7 +47,7 @@ const safeToDate = (dateValue: string | Date | null | undefined): Date | null =>
 };
 
 const ACCOUNTING_TABS = [
-  { id: 'STATS',      label: "Vue d'ensemble", icon: BarChartIcon,  color: 'bg-blue-500',   description: 'KPIs et indicateurs clés' },
+  { id: 'STATS',      label: "Vue d'ensemble", icon: BarChartIcon,  color: 'bg-[var(--primary-dim)]0',   description: 'KPIs et indicateurs clés' },
   { id: 'FINANCE',    label: 'Finance',         icon: DollarSign,   color: 'bg-green-500',  description: 'Paiements et factures' },
   { id: 'RECOVERY',  label: 'Recouvrement',     icon: AlertTriangle,color: 'bg-red-500',    description: 'Créances et relances' },
   { id: 'BUDGET',    label: 'Budget',            icon: PieChart,     color: 'bg-purple-500', description: 'Prévisions budgétaires' },
@@ -833,7 +833,7 @@ export const AccountingView: React.FC = () => {
             </div>
             {isSuperAdmin && (
                 <div className="flex items-center gap-2 shrink-0">
-                    <Building2 className="w-3 h-3 text-blue-500" />
+                    <Building2 className="w-3 h-3 text-[var(--primary)]" />
                     <select
                         className="text-[10px] uppercase font-bold bg-slate-100 dark:bg-slate-800 border-none rounded py-0.5 pl-1 pr-6 focus:ring-0 text-slate-600 dark:text-slate-300"
                         value={selectedResellerId}

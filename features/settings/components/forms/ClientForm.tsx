@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ClientSchema } from '../../../../schemas/clientSchema';
 import { User, Phone, CreditCard, Key, UserPlus, AlertCircle } from 'lucide-react';
 import { FormField, Input, Select, FormGrid } from '../../../../components/form';
-import { z } from 'zod';
+import type { z } from 'zod';
 
 export type ClientFormData = z.infer<typeof ClientSchema>;
 
@@ -22,7 +22,7 @@ interface BaseFormProps {
 
 export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ initialData, onFormSubmit, resellers = [] }, ref) => {
     const { register, handleSubmit, formState: { errors }, watch } = useForm<ClientFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(ClientSchema),
         defaultValues: initialData || {
             type: 'B2B',
@@ -58,7 +58,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ in
                         onClick={() => setActiveTab(tab.id)} 
                         className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-all flex items-center gap-2 ${
                             activeTab === tab.id 
-                                ? 'border-blue-600 text-blue-600 dark:text-blue-400' 
+                                ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]' 
                                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300'
                         }`}
                     >
@@ -183,11 +183,11 @@ export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ in
                 {/* Onglet Compte Utilisateur */}
                 {activeTab === 'account' && (
                     <div className="space-y-5 animate-in fade-in duration-200">
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl flex items-start gap-3">
-                            <UserPlus className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                        <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--primary)] dark:border-[var(--primary)] rounded-xl flex items-start gap-3">
+                            <UserPlus className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)] mt-0.5 shrink-0" />
                             <div>
-                                <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-300">Compte de connexion client</h4>
-                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                                <h4 className="text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)]">Compte de connexion client</h4>
+                                <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] mt-1">
                                     Activez cette option pour créer automatiquement un compte de connexion pour ce client. 
                                     L'identifiant sera l'adresse email du client.
                                 </p>
@@ -198,7 +198,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ in
                             <input 
                                 type="checkbox" 
                                 {...register('createUserAccount')} 
-                                className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 focus:ring-offset-0"
+                                className="w-5 h-5 rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)] focus:ring-offset-0"
                             />
                             <div>
                                 <span className="font-medium text-slate-800 dark:text-white">Créer un compte utilisateur</span>

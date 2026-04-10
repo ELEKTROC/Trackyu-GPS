@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DriverSchema, DriverFormData } from '../../../../schemas/driverSchema';
+import type { DriverFormData } from '../../../../schemas/driverSchema';
+import { DriverSchema } from '../../../../schemas/driverSchema';
 import { User, CreditCard, Truck } from 'lucide-react';
 import { FormField, Input, Select, FormSection, FormGrid } from '../../../../components/form';
 
@@ -19,7 +20,7 @@ interface BaseFormProps {
 
 export const DriverForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ initialData, onFormSubmit, vehicles = [] }, ref) => {
     const { register, handleSubmit, formState: { errors } } = useForm<DriverFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(DriverSchema),
         defaultValues: initialData || { statut: 'ACTIVE' }
     });

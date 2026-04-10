@@ -19,14 +19,14 @@ export const MaintenanceModalContent: React.FC = () => {
       {/* Section Prochaines Interventions */}
       <section>
         <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <Clock className="w-5 h-5 text-blue-600" />
+          <Clock className="w-5 h-5 text-[var(--primary)]" />
           Interventions à venir
         </h3>
         <div className="grid gap-4">
           {upcomingMaintenance.map((item) => (
             <div key={item.id} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm flex justify-between items-center">
               <div className="flex items-start gap-4">
-                <div className={`p-2 rounded-full ${item.priority === 'high' ? 'bg-red-100 text-red-600' : item.priority === 'medium' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'}`}>
+                <div className={`p-2 rounded-full ${item.priority === 'high' ? 'bg-red-100 text-red-600' : item.priority === 'medium' ? 'bg-orange-100 text-orange-600' : 'bg-[var(--primary-dim)] text-[var(--primary)]'}`}>
                   <Wrench className="w-5 h-5" />
                 </div>
                 <div>
@@ -77,7 +77,7 @@ export const MaintenanceModalContent: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button className="text-blue-600 hover:text-blue-800 p-1 hover:bg-blue-50 rounded">
+                    <button className="text-[var(--primary)] hover:text-[var(--primary)] p-1 hover:bg-[var(--primary-dim)] rounded">
                       <FileText className="w-4 h-4" />
                     </button>
                   </td>

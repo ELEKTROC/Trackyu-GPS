@@ -50,7 +50,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group/section relative ${editMode ? 'rounded-xl ring-1 ring-dashed ring-blue-300 dark:ring-blue-600/50 p-2 -mx-2' : ''} ${hidden ? 'pointer-events-auto' : ''}`}
+      className={`group/section relative ${editMode ? 'rounded-xl ring-1 ring-dashed ring-[var(--primary-dim)] dark:ring-[var(--primary-dim)]/50 p-2 -mx-2' : ''} ${hidden ? 'pointer-events-auto' : ''}`}
     >
       {showHeader && (
         <div className="flex items-center gap-2 mb-2">

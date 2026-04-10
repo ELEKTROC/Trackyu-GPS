@@ -187,7 +187,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                 </div>
                 <button
                     onClick={() => { setEditingInvoice({}); setIsModalOpen(true); }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shrink-0"
+                    className="bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 shrink-0"
                 >
                     <Plus className="w-4 h-4" /> Nouvelle Dépense
                 </button>
@@ -258,7 +258,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                 {isSuperAdmin && (
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-5 h-5 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                            <div className="w-5 h-5 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                                                 {(resellers?.find(r => r.tenantId === invoice.tenantId)?.slug || '??').substring(0, 2)}
                                             </div>
                                             <span className="text-xs text-slate-600 dark:text-slate-300">
@@ -280,7 +280,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                 </td>
                                 <td className="px-4 py-3">
                                     <div className="flex items-center gap-2">
-                                        <button onClick={() => { setEditingInvoice(invoice); setIsModalOpen(true); }} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-blue-600">
+                                        <button onClick={() => { setEditingInvoice(invoice); setIsModalOpen(true); }} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-[var(--primary)]">
                                             <Edit2 className="w-4 h-4" />
                                         </button>
                                         <button onClick={async () => { if (await confirm({ message: 'Supprimer cette facture fournisseur ?', variant: 'danger', title: 'Confirmation', confirmLabel: 'Supprimer' })) deleteSupplierInvoice(invoice.id); }} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-red-600">
@@ -366,7 +366,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                 <button
                                     type="button"
                                     disabled={!newCatLabel.trim() || !newCatCode}
-                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm font-bold"
+                                    className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] disabled:opacity-50 text-white rounded-lg text-sm font-bold"
                                     onClick={() => {
                                         const id = newCatLabel.trim().toUpperCase().replace(/\s+/g, '_').replace(/[^A-Z0-9_]/g, '');
                                         const newCat = { id, label: newCatLabel.trim(), accountCode: newCatCode };
@@ -446,7 +446,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                             <button
                                                 type="button"
                                                 onClick={() => setIsTierFormOpen(true)}
-                                                className="p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shrink-0"
+                                                className="p-2.5 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors shrink-0"
                                                 title="Nouveau Fournisseur"
                                             >
                                                 <UserPlus className="w-5 h-5" />
@@ -529,7 +529,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
                                             Compte de Charge
                                             {editingInvoice.category && (
-                                                <span className="ml-2 text-xs text-blue-500 font-normal">(auto)</span>
+                                                <span className="ml-2 text-xs text-[var(--primary)] font-normal">(auto)</span>
                                             )}
                                         </label>
                                         <select
@@ -579,7 +579,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Total TTC</label>
                                         <input
                                             type="number"
-                                            className="w-full p-2.5 rounded-lg border border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 font-bold text-blue-900 dark:text-blue-200"
+                                            className="w-full p-2.5 rounded-lg border border-[var(--primary)] dark:border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] font-bold text-[var(--primary)] dark:text-[var(--primary)]"
                                             value={editingInvoice.amount || ''}
                                             readOnly
                                         />
@@ -607,7 +607,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                         {editingInvoice.attachments && editingInvoice.attachments.length > 0 && (
                                             <div className="flex flex-wrap gap-2">
                                                 {editingInvoice.attachments.map((file, idx) => (
-                                                    <span key={idx} className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 border border-blue-100 dark:border-blue-800">
+                                                    <span key={idx} className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 border border-[var(--primary)] dark:border-[var(--primary)]">
                                                         <Paperclip className="w-3 h-3" /> {file}
                                                     </span>
                                                 ))}
@@ -635,11 +635,11 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                                            Échéance <span className="text-xs text-blue-600">(calculée auto)</span>
+                                            Échéance <span className="text-xs text-[var(--primary)]">(calculée auto)</span>
                                         </label>
                                         <input
                                             type="date"
-                                            className="w-full p-2.5 rounded-lg border border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20 font-medium"
+                                            className="w-full p-2.5 rounded-lg border border-[var(--primary)] dark:border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] font-medium"
                                             value={editingInvoice.dueDate || ''}
                                             onChange={e => setEditingInvoice({...editingInvoice, dueDate: e.target.value})}
                                             required
@@ -690,7 +690,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                                         <input 
                                             type="checkbox" 
                                             id="isRecurring"
-                                            className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                                            className="w-4 h-4 text-[var(--primary)] rounded border-slate-300 focus:ring-[var(--primary)]"
                                             checked={editingInvoice.isRecurring || false}
                                             onChange={e => setEditingInvoice({...editingInvoice, isRecurring: e.target.checked})}
                                         />
@@ -733,7 +733,7 @@ const handleAmountChange = (field: 'amountHT' | 'vatRate', value: number) => {
                             <button 
                                 type="submit" 
                                 form="invoice-form"
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
+                                className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
                             >
                                 Enregistrer
                             </button>

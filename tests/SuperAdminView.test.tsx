@@ -29,6 +29,21 @@ vi.mock('../contexts/DataContext', () => ({
   })
 }));
 
+// Mock react-query to avoid QueryClientProvider dependency
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useQuery: () => ({ data: [], isLoading: false, error: null }),
+    useQueryClient: () => ({ invalidateQueries: vi.fn(), setQueryData: vi.fn(), getQueryData: vi.fn() }),
+  };
+});
+
+// Mock useTenantBranding to avoid QueryClientProvider dependency
+vi.mock('../hooks/useTenantBranding', () => ({
+  useTenantBranding: () => ({ branding: null, isLoading: false }),
+}));
+
 // Mock ToastContext
 vi.mock('../contexts/ToastContext', () => ({
   useToast: () => ({
@@ -53,7 +68,7 @@ describe('SuperAdminView', () => {
       </ThemeProvider>
     );
 
-    expect(screen.getByText('Revendeurs')).toBeDefined();
-    expect(screen.getByText('Total Revendeurs')).toBeDefined();
+    expect(screen.getAllByText('Revendeurs').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Revendeurs Actifs').length).toBeGreaterThan(0);
   });
 });

@@ -33,7 +33,7 @@ export const MaintenanceBlock: React.FC<MaintenanceBlockProps> = ({
                 </div>
             </ConfigurableRow>
         ))}
-        <button onClick={() => setActiveModal('maintenance')} className="w-full text-xs text-blue-600 hover:underline mt-2">Voir le carnet complet</button>
+        <button onClick={() => setActiveModal('maintenance')} className="w-full text-xs text-[var(--primary)] hover:underline mt-2">Voir le carnet complet</button>
     </div>
   );
 };

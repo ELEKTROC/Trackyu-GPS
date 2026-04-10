@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Lead } from '../../../types/crm';
+import type { Lead } from '../../../types/crm';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useCurrency } from '../../../hooks/useCurrency';
 import { useIsMobile } from '../../../hooks/useIsMobile';
@@ -17,7 +17,7 @@ const ACTIVE_STAGES: {
   ringColor: string;
 }[] = [
   { id: 'NEW',         label: 'Nouveaux',    color: 'text-slate-600 dark:text-slate-300', bg: 'bg-slate-50 dark:bg-slate-800',       dotColor: 'bg-slate-400',  ringColor: 'ring-slate-400' },
-  { id: 'CONTACTED',   label: 'Contactés',   color: 'text-blue-600',                       bg: 'bg-blue-50/50 dark:bg-blue-900/10',   dotColor: 'bg-blue-500',   ringColor: 'ring-blue-400' },
+  { id: 'CONTACTED',   label: 'Contactés',   color: 'text-[var(--primary)]',                       bg: 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]',   dotColor: 'bg-[var(--primary-dim)]0',   ringColor: 'ring-[var(--primary-dim)]' },
   { id: 'QUALIFIED',   label: 'Qualifiés',   color: 'text-violet-600',                     bg: 'bg-violet-50/50 dark:bg-violet-900/10', dotColor: 'bg-violet-500', ringColor: 'ring-violet-400' },
   { id: 'PROPOSAL',    label: 'Proposition', color: 'text-amber-600',                      bg: 'bg-amber-50/50 dark:bg-amber-900/10', dotColor: 'bg-amber-500',  ringColor: 'ring-amber-400' },
   { id: 'NEGOTIATION', label: 'Négociation', color: 'text-orange-600',                     bg: 'bg-orange-50/50 dark:bg-orange-900/10', dotColor: 'bg-orange-500', ringColor: 'ring-orange-400' },
@@ -124,7 +124,7 @@ export const PipelineView: React.FC = () => {
             <Building2 className="w-3.5 h-3.5" />
             Revendeur
             {resellerFilter !== 'ALL' && (
-              <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">1</span>
+              <span className="absolute -top-1.5 -right-1.5 bg-[var(--primary-dim)]0 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">1</span>
             )}
           </button>
         )}

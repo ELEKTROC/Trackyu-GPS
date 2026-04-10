@@ -1,7 +1,7 @@
 import React from 'react';
 import { Thermometer, Scale, Gauge, Zap, Wind, AlertCircle, Truck } from 'lucide-react';
 import { ConfigurableRow } from './SharedBlocks';
-import { Vehicle } from '../../../../types';
+import type { Vehicle } from '../../../../types';
 
 interface SensorsBlockProps {
   vehicle: Vehicle;
@@ -47,7 +47,7 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
 
         <ConfigurableRow id="airPressure" isConfigMode={isConfigMode} isHidden={hiddenFields.has('airPressure')} onToggle={() => toggleFieldVisibility('airPressure')}>
           <div className="p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50 rounded-lg flex items-center gap-3">
-            <Wind className="w-5 h-5 text-blue-500" />
+            <Wind className="w-5 h-5 text-[var(--primary)]" />
             <div>
               <div className="text-[10px] text-slate-400 font-bold uppercase">Pression Air</div>
               <div className="text-lg font-bold text-slate-700 dark:text-slate-200">{can.airPressure || '---'} <span className="text-xs font-normal text-slate-400">bar</span></div>
@@ -56,11 +56,11 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
         </ConfigurableRow>
 
         <ConfigurableRow id="temp" isConfigMode={isConfigMode} isHidden={hiddenFields.has('temp')} onToggle={() => toggleFieldVisibility('temp')}>
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg flex items-center gap-3">
-            <Thermometer className="w-5 h-5 text-blue-500" />
+          <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--primary)] dark:border-[var(--primary)] rounded-lg flex items-center gap-3">
+            <Thermometer className="w-5 h-5 text-[var(--primary)]" />
             <div>
-              <div className="text-[10px] text-blue-400 font-bold uppercase">Temp. Moteur</div>
-              <div className="text-lg font-bold text-blue-700 dark:text-blue-300">{can.engineTemp || vehicle.temperature || '---'}°C</div>
+              <div className="text-[10px] text-[var(--primary)] font-bold uppercase">Temp. Moteur</div>
+              <div className="text-lg font-bold text-[var(--primary)] dark:text-[var(--primary)]">{can.engineTemp || vehicle.temperature || '---'}°C</div>
             </div>
           </div>
         </ConfigurableRow>
@@ -108,7 +108,7 @@ const Tire = ({ value, label }: { value?: { pressure: number, temperature: numbe
         <span className="text-[8px] text-slate-400">bar</span>
       </div>
       <div className="text-[9px] font-bold text-slate-500">{label}</div>
-      {value && <div className="text-[8px] text-blue-400 mt-0.5">{value.temperature}°C</div>}
+      {value && <div className="text-[8px] text-[var(--primary)] mt-0.5">{value.temperature}°C</div>}
     </div>
   );
 };

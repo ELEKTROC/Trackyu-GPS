@@ -1,10 +1,12 @@
 import React from 'react';
 import { View } from '../types';
+import type {
+  LucideIcon
+} from 'lucide-react';
 import {
   LayoutDashboard, Map, Truck, FileText, Settings, Activity, LogOut,
   Wrench, Package, ShieldCheck, Headset,
-  Calculator, Briefcase, ShoppingCart, Database, Calendar,
-  LucideIcon
+  Calculator, Briefcase, ShoppingCart, Database, Calendar
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getSortedSidebarMenu } from '../features/admin/permissions/permissionStructure';

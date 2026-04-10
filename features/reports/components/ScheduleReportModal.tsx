@@ -55,7 +55,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
                             type="text"
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
                             placeholder="Rapport hebdomadaire..."
                             required
                         />
@@ -69,7 +69,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
                             type="text"
                             value={recipients}
                             onChange={(e) => setRecipients(e.target.value)}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
                             placeholder="email@exemple.com, ..."
                             required
                         />
@@ -83,7 +83,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
                             type="time"
                             value={time}
                             onChange={(e) => setTime(e.target.value)}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
                             required
                         />
                     </div>
@@ -95,7 +95,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
                         <select
                             value={frequency}
                             onChange={(e) => setFrequency(e.target.value)}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
                         >
                             <option value="daily">Quotidien</option>
                             <option value="weekly">Hebdomadaire</option>
@@ -110,7 +110,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
                         <select
                             value={format}
                             onChange={(e) => setFormat(e.target.value)}
-                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
                         >
                             <option value="pdf">PDF</option>
                             <option value="csv">CSV</option>
@@ -126,7 +126,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
                     <textarea
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
-                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none min-h-[100px]"
+                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none min-h-[100px]"
                         placeholder="Message accompagnant le rapport..."
                     />
                 </div>
@@ -141,7 +141,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
                     </button>
                     <button
                         type="submit"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                        className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors shadow-sm"
                     >
                         Programmer
                     </button>

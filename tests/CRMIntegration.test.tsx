@@ -6,7 +6,23 @@ import { CRMView } from '../features/crm/components/CRMView';
 import { DataContext } from '../contexts/DataContext';
 import { ToastContext } from '../contexts/ToastContext';
 import { AuthContext } from '../contexts/AuthContext';
-import { Lead, Client, Contract, Invoice, Quote, Intervention, Ticket, Vehicle, Tier, CatalogItem } from '../types';
+import type { Lead, Client, Tier, CatalogItem } from '../types';
+import { Contract, Invoice, Quote, Intervention, Ticket, Vehicle } from '../types';
+
+// Mock react-query to avoid QueryClientProvider dependency
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useQuery: () => ({ data: [], isLoading: false, error: null }),
+    useQueryClient: () => ({ invalidateQueries: vi.fn(), setQueryData: vi.fn(), getQueryData: vi.fn() }),
+  };
+});
+
+// Mock useTenantBranding to avoid QueryClientProvider dependency
+vi.mock('../hooks/useTenantBranding', () => ({
+  useTenantBranding: () => ({ branding: null, isLoading: false }),
+}));
 
 // Mock useConfirmDialog
 vi.mock('../components/ConfirmDialog', () => ({
@@ -120,6 +136,7 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
     budgets: [],
     suppliers: [],
     stockMovements: [],
+    users: [],
     updateLeadStatus: vi.fn(),
     bulkUpdateClientStatus: vi.fn(),
     deleteClient: vi.fn(),
@@ -166,9 +183,9 @@ describe('CRMView Integration', () => {
     
     expect(screen.getByText('Qualifié')).toBeInTheDocument();
     
-    // Check for leads in columns
-    expect(screen.getByText('Acme Corp')).toBeInTheDocument();
-    expect(screen.getByText('Globex')).toBeInTheDocument();
+    // Check for leads in columns (may appear multiple times in kanban)
+    expect(screen.getAllByText('Acme Corp').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Globex').length).toBeGreaterThan(0);
   });
 
   it('switches to list view', async () => {
@@ -186,7 +203,7 @@ describe('CRMView Integration', () => {
     const searchInput = screen.getByPlaceholderText(/Rechercher/i);
     fireEvent.change(searchInput, { target: { value: 'Acme' } });
     
-    expect(screen.getByText('Acme Corp')).toBeInTheDocument();
+    expect(screen.getAllByText('Acme Corp').length).toBeGreaterThan(0);
     expect(screen.queryByText('Globex')).not.toBeInTheDocument();
   });
 
@@ -215,7 +232,7 @@ describe('CRMView Integration', () => {
     expect(screen.getByText('Base Clients')).toBeInTheDocument();
     // Wait for clients to be rendered as there might be a useEffect delay
     await waitFor(() => {
-        expect(screen.getByText('Client A')).toBeInTheDocument();
+        expect(screen.getAllByText('Client A').length).toBeGreaterThan(0);
     });
     // Email is not a visible column by default, check for contact name instead
     expect(screen.getByText('Alice')).toBeInTheDocument();

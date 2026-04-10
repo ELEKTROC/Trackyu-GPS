@@ -79,6 +79,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
     const [isSaving, setIsSaving] = useState(false);
 
+    // Sprint 2: Check if payment requires approval (hooks before early return)
+    const needsApproval = useMemo(() =>
+        requiresApproval({ amount: paymentForm.amount }, tenantId),
+        [paymentForm.amount, tenantId]
+    );
+
+    const approvalConfig = useMemo(() =>
+        getApprovalConfig(tenantId),
+        [tenantId]
+    );
+
     if (!isOpen) return null;
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -90,17 +101,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             setIsSaving(false);
         }
     };
-
-    // Sprint 2: Check if payment requires approval
-    const needsApproval = useMemo(() => 
-        requiresApproval({ amount: paymentForm.amount }, tenantId),
-        [paymentForm.amount, tenantId]
-    );
-    
-    const approvalConfig = useMemo(() => 
-        getApprovalConfig(tenantId),
-        [tenantId]
-    );
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 backdrop-blur-sm">
@@ -202,14 +202,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
                     {/* METHOD SPECIFIC FIELDS */}
                     {(paymentForm.method === 'CHEQUE' || paymentForm.method === 'VIREMENT' || paymentForm.method === 'MOBILE_MONEY') && (
-                        <div className="grid grid-cols-2 gap-4 p-3 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="grid grid-cols-2 gap-4 p-3 bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)] border border-[var(--primary)] dark:border-[var(--primary)]/50 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
                             {paymentForm.method === 'CHEQUE' && (
                                 <>
                                     <div>
-                                        <label className="block text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">N° du Chèque</label>
+                                        <label className="block text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-1">N° du Chèque</label>
                                         <input 
                                             type="text" 
-                                            className="w-full p-2 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
+                                            className="w-full p-2 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
                                             value={paymentForm.checkNumber || ''}
                                             onChange={e => setPaymentForm(prev => ({ ...prev, checkNumber: e.target.value }))}
                                             placeholder="Ex: 1234567"
@@ -217,10 +217,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">Banque émettrice</label>
+                                        <label className="block text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-1">Banque émettrice</label>
                                         <input 
                                             type="text" 
-                                            className="w-full p-2 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
+                                            className="w-full p-2 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
                                             value={paymentForm.bankName || ''}
                                             onChange={e => setPaymentForm(prev => ({ ...prev, bankName: e.target.value }))}
                                             placeholder="Ex: NSIA, SIB..."
@@ -232,12 +232,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                             {(paymentForm.method === 'VIREMENT' || paymentForm.method === 'MOBILE_MONEY') && (
                                 <>
                                     <div>
-                                        <label className="block text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">
+                                        <label className="block text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-1">
                                             {paymentForm.method === 'VIREMENT' ? 'Banque / Origine' : 'Opérateur'}
                                         </label>
                                         <input 
                                             type="text" 
-                                            className="w-full p-2 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
+                                            className="w-full p-2 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
                                             value={paymentForm.bankName || ''}
                                             onChange={e => setPaymentForm(prev => ({ ...prev, bankName: e.target.value }))}
                                             placeholder={paymentForm.method === 'VIREMENT' ? "Ex: BOA, ECOBANK..." : "Ex: Orange Money, MTN..."}
@@ -245,12 +245,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-1">
+                                        <label className="block text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-1">
                                             {paymentForm.method === 'VIREMENT' ? 'Référence Virement' : 'ID Transaction'}
                                         </label>
                                         <input 
                                             type="text" 
-                                            className="w-full p-2 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
+                                            className="w-full p-2 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white text-sm"
                                             value={paymentForm.transactionId || ''}
                                             onChange={e => setPaymentForm(prev => ({ ...prev, transactionId: e.target.value }))}
                                             placeholder="Ex: TRX-998877"
@@ -290,7 +290,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                 type="button"
                                 onClick={onAddAllocation}
                                 disabled={!selectedInvoiceToAdd}
-                                className="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 disabled:opacity-50"
+                                className="p-2 bg-[var(--primary-dim)] text-[var(--primary)] rounded-lg hover:bg-[var(--primary-dim)] disabled:opacity-50"
                             >
                                 <Plus className="w-5 h-5" />
                             </button>
@@ -316,7 +316,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                                                     <td className="px-3 py-2">
                                                         <input 
                                                             type="number" 
-                                                            className="w-full text-right bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-blue-500 outline-none"
+                                                            className="w-full text-right bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-[var(--primary)] outline-none"
                                                             value={alloc.amount}
                                                             onChange={e => onUpdateAllocationAmount(alloc.invoiceId, parseFloat(e.target.value))}
                                                         />
@@ -434,7 +434,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                         <button
                             type="submit"
                             disabled={isSaving || paymentForm.amount <= 0 || !paymentForm.clientId}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-bold transition-colors shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             {isSaving ? (
                                 <><Loader2 className="w-4 h-4 animate-spin" /> Enregistrement...</>

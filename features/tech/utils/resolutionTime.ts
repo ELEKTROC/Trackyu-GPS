@@ -1,4 +1,4 @@
-import { Intervention } from '../../../types';
+import type { Intervention } from '../../../types';
 
 /**
  * Calcule le temps de résolution d'une intervention en minutes

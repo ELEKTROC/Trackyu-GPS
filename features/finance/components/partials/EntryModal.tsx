@@ -129,7 +129,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                                     <tr key={index}>
                                         <td className="px-3 py-2">
                                             <select 
-                                                className="w-full bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-blue-500 outline-none font-mono text-xs"
+                                                className="w-full bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-[var(--primary)] outline-none font-mono text-xs"
                                                 value={line.account}
                                                 onChange={e => onUpdateLine(index, 'account', e.target.value)}
                                                 required
@@ -146,7 +146,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                                             <input 
                                                 type="text" 
                                                 list={`suggestions-${index}`}
-                                                className="w-full bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-blue-500 outline-none"
+                                                className="w-full bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-[var(--primary)] outline-none"
                                                 value={line.label}
                                                 onChange={e => onUpdateLine(index, 'label', e.target.value)}
                                                 placeholder={entryForm.label || "Libellé..."}
@@ -160,7 +160,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                                         <td className="px-3 py-2">
                                             <input 
                                                 type="number" 
-                                                className="w-full text-right bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-blue-500 outline-none font-mono"
+                                                className="w-full text-right bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-[var(--primary)] outline-none font-mono"
                                                 value={line.debit || ''}
                                                 onChange={e => onUpdateLine(index, 'debit', parseFloat(e.target.value) || 0)}
                                                 disabled={line.credit > 0}
@@ -169,7 +169,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                                         <td className="px-3 py-2">
                                             <input 
                                                 type="number" 
-                                                className="w-full text-right bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-blue-500 outline-none font-mono"
+                                                className="w-full text-right bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-[var(--primary)] outline-none font-mono"
                                                 value={line.credit || ''}
                                                 onChange={e => onUpdateLine(index, 'credit', parseFloat(e.target.value) || 0)}
                                                 disabled={line.debit > 0}
@@ -225,7 +225,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
                         <button
                             type="submit"
                             disabled={isSaving || !isBalanced || entryForm.lines.length === 0}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-bold transition-colors shadow-lg shadow-blue-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
                             {isSaving ? (
                                 <><Loader2 className="w-4 h-4 animate-spin" /> Enregistrement...</>

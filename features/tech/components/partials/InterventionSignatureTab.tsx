@@ -7,7 +7,7 @@ import React from 'react';
 import { 
     FileText, Camera, Trash2
 } from 'lucide-react';
-import { Intervention, Invoice } from '../../../../types';
+import type { Intervention, Invoice } from '../../../../types';
 import { TOAST } from '../../../../constants/toastMessages';
 import { SignaturePad } from '../../../../components/SignaturePad';
 import { useCurrency } from '../../../../hooks/useCurrency';
@@ -40,14 +40,14 @@ export const InterventionSignatureTab: React.FC<SignatureTabProps> = ({
                     <h4 className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
                         <FileText className="w-4 h-4"/> Facturation
                     </h4>
-                    <label className="flex items-center gap-2 cursor-pointer bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-800">
+                    <label className="flex items-center gap-2 cursor-pointer bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] px-3 py-1 rounded-full border border-[var(--primary)] dark:border-[var(--primary)]">
                         <input 
                             type="checkbox" 
                             checked={formData.updateContract || false} 
                             onChange={e => setFormData({...formData, updateContract: e.target.checked})} 
-                            className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500" 
+                            className="w-4 h-4 text-[var(--primary)] rounded border-slate-300 focus:ring-[var(--primary)]" 
                         />
-                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Mise à jour Contrat</span>
+                        <span className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase">Mise à jour Contrat</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full border border-green-100 dark:border-green-800">
                         <input 
@@ -105,7 +105,7 @@ export const InterventionSignatureTab: React.FC<SignatureTabProps> = ({
                             <tfoot className="bg-slate-50 dark:bg-slate-900 font-bold">
                                 <tr>
                                     <td colSpan={3} className="p-3 text-right">Total HT</td>
-                                    <td className="p-3 text-right text-blue-600">{formatPrice(formData.cost || 0)}</td>
+                                    <td className="p-3 text-right text-[var(--primary)]">{formatPrice(formData.cost || 0)}</td>
                                     <td></td>
                                 </tr>
                             </tfoot>

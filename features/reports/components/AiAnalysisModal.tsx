@@ -31,7 +31,7 @@ export const AiAnalysisModal: React.FC<AiAnalysisModalProps> = ({
 
                 {isAnalyzing ? (
                     <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                        <Loader2 className="w-12 h-12 text-[var(--primary)] animate-spin" />
                         <p className="text-slate-600 dark:text-slate-300 font-medium animate-pulse">Analyse en cours...</p>
                         <p className="text-xs text-slate-400">Cela peut prendre quelques secondes.</p>
                     </div>

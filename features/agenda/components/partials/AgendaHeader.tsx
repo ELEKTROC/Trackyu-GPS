@@ -52,7 +52,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Rechercher..."
-                        className="w-full sm:min-w-[160px] pl-8 pr-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="w-full sm:min-w-[160px] pl-8 pr-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)]"
                     />
                 </div>
 
@@ -60,19 +60,19 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                 <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
                     <button
                         onClick={() => setFilter('ALL')}
-                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'ALL' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'ALL' ? 'bg-white dark:bg-slate-700 shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         Tout
                     </button>
                     <button
                         onClick={() => setFilter('TECH')}
-                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'TECH' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'TECH' ? 'bg-white dark:bg-slate-700 shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         Tech
                     </button>
                     <button
                         onClick={() => setFilter('BUSINESS')}
-                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'BUSINESS' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                        className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'BUSINESS' ? 'bg-white dark:bg-slate-700 shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         Comm.
                     </button>
@@ -84,7 +84,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                     <select
                         value={selectedAgentId}
                         onChange={(e) => setSelectedAgentId(e.target.value)}
-                        className="pl-8 pr-8 py-2 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg appearance-none cursor-pointer focus:ring-2 focus:ring-blue-500 min-w-[150px]"
+                        className="pl-8 pr-8 py-2 text-xs font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg appearance-none cursor-pointer focus:ring-2 focus:ring-[var(--primary)] min-w-[150px]"
                     >
                         <option value="ALL">Tous les agents</option>
                         {agents.map(agent => (
@@ -99,7 +99,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                 <div className="relative" ref={dropdownRef}>
                     <button
                         onClick={() => setDropdownOpen(o => !o)}
-                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm transition-all active:scale-95"
+                        className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] shadow-sm transition-all active:scale-95"
                     >
                         <Plus className="w-4 h-4" />
                         <span className="text-sm font-medium">Nouveau</span>

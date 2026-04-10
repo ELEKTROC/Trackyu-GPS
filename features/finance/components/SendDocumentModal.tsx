@@ -167,14 +167,14 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
         <Modal isOpen={isOpen} onClose={onClose} title={`Enregistrer et Envoyer — ${docLabel}`} maxWidth="max-w-xl">
             <div className="p-5 space-y-4">
                 {/* Document summary */}
-                <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-3 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
                     <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm font-semibold text-blue-800 dark:text-blue-300">
+                        <FileText className="w-4 h-4 text-[var(--primary)] dark:text-[var(--primary)]" />
+                        <span className="text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)]">
                             {docLabel} {docNumber}
                         </span>
                     </div>
-                    <div className="flex gap-4 mt-1 text-xs text-blue-600 dark:text-blue-400">
+                    <div className="flex gap-4 mt-1 text-xs text-[var(--primary)] dark:text-[var(--primary)]">
                         <span>Client: {client?.name || documentData?.clientName || '—'}</span>
                         <span>Montant: {formatPrice(documentData?.amount || 0)}</span>
                     </div>
@@ -191,7 +191,7 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
                             onClick={() => setChannel('EMAIL')}
                             className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all ${
                                 channel === 'EMAIL'
-                                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300'
+                                    ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
                                     : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'
                             }`}
                         >
@@ -309,7 +309,7 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
                         disabled={sending || (channel === 'EMAIL' ? !emailTo : !whatsappTo)}
                         className={`px-6 py-2 text-white rounded-lg font-bold shadow-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${
                             channel === 'EMAIL'
-                                ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-500/30'
+                                ? 'bg-[var(--primary)] hover:bg-[var(--primary-light)] shadow-blue-500/30'
                                 : 'bg-green-600 hover:bg-green-700 shadow-green-500/30'
                         }`}
                     >

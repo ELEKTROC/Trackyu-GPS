@@ -1,3 +1,4 @@
+// @ts-expect-error - togpx has no TypeScript declarations
 import togpx from 'togpx';
 
 export interface GPSPoint {

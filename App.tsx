@@ -566,7 +566,7 @@ const AppContent: React.FC = () => {
               <button
                 onClick={handleGlobalRefresh}
                 disabled={isRefreshing}
-                className={`p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full transition-colors haptic-feedback ${isRefreshing ? 'text-blue-500' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700'}`}
+                className={`p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full transition-colors haptic-feedback ${isRefreshing ? 'text-[var(--primary)]' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700'}`}
                 title="Rafraîchir toutes les données"
               >
                 <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -574,7 +574,7 @@ const AppContent: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsNotificationOpen(true)}
-                  className={`p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full relative transition-colors haptic-feedback ${isNotificationOpen ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700'}`}
+                  className={`p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full relative transition-colors haptic-feedback ${isNotificationOpen ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700'}`}
                 >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
@@ -663,7 +663,7 @@ const AppContent: React.FC = () => {
           className={`p-3 lg:p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center ${
             isChatOpen
               ? 'bg-slate-800 dark:bg-slate-700 text-white rotate-90'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-[var(--primary)] text-white hover:bg-[var(--primary-light)]'
           }`}
           title="Ouvrir l'assistant"
         >

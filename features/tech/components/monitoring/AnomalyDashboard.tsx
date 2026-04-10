@@ -3,7 +3,8 @@ import { Card } from '../../../../components/Card';
 import { MobileCard, MobileCardList, MobileCardAction } from '../../../../components/MobileCard';
 import { AlertTriangle, Battery, Zap, Radio, Activity, Wrench, MessageSquare, Fuel, Clock } from 'lucide-react';
 import { useToast } from '../../../../contexts/ToastContext';
-import { Anomaly, type Ticket } from '../../../../types';
+import type { Anomaly} from '../../../../types';
+import { type Ticket } from '../../../../types';
 import { useDataContext } from '../../../../contexts/DataContext';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
@@ -42,7 +43,7 @@ export const AnomalyDashboard: React.FC = () => {
     switch (code) {
       case 'BATTERY_LOW': return <Battery className="w-5 h-5 text-orange-500" />;
       case 'POWER_CUT': return <Zap className="w-5 h-5 text-yellow-500" />;
-      case 'GPS_JUMP': return <Activity className="w-5 h-5 text-blue-500" />;
+      case 'GPS_JUMP': return <Activity className="w-5 h-5 text-[var(--primary)]" />;
       case 'JAMMING': return <Radio className="w-5 h-5 text-red-500" />;
       case 'FUEL_SUSPECT_LOSS': return <Fuel className="w-5 h-5 text-red-600" />;
       case 'LONG_IDLE': return <Clock className="w-5 h-5 text-slate-500" />;
@@ -54,7 +55,7 @@ export const AnomalyDashboard: React.FC = () => {
     switch (severity) {
       case 'CRITICAL': return 'bg-red-100 text-red-800 border-red-200';
       case 'WARNING': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'INFO': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'INFO': return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
       default: return 'bg-slate-100 text-slate-800 border-slate-200';
     }
   };
@@ -152,7 +153,7 @@ export const AnomalyDashboard: React.FC = () => {
                 {displayAnomalies.filter(a => a.code === 'GPS_JUMP').length}
               </h3>
             </div>
-            <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+            <div className="p-2 bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
               <Activity className="w-5 h-5" />
             </div>
           </div>
@@ -163,7 +164,7 @@ export const AnomalyDashboard: React.FC = () => {
       <Card className="lg:col-span-2 flex flex-col overflow-hidden">
         <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
           <h3 className="font-bold text-slate-700 flex items-center gap-2">
-            <Activity className="w-5 h-5 text-blue-600" />
+            <Activity className="w-5 h-5 text-[var(--primary)]" />
             Détection d'Anomalies
           </h3>
           <span className="text-xs text-slate-500">Dernière analyse: {lastAnalysisTime ? getTimeAgo(lastAnalysisTime) : 'Aucune donnée'}</span>
@@ -244,7 +245,7 @@ export const AnomalyDashboard: React.FC = () => {
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => handleAction('DIAGNOSTIC', anomaly)}
-                        className="p-1.5 hover:bg-blue-50 text-blue-600 rounded disabled:opacity-50" 
+                        className="p-1.5 hover:bg-[var(--primary-dim)] text-[var(--primary)] rounded disabled:opacity-50" 
                         title="Lancer Diagnostic"
                         disabled={loadingAction === `DIAGNOSTIC-${anomaly.id}`}
                       >
@@ -316,9 +317,9 @@ export const AnomalyDashboard: React.FC = () => {
                 const batteryAnomalies = displayAnomalies.filter(a => a.code === 'BATTERY_LOW');
                 if (batteryAnomalies.length === 0) return null;
                 return (
-                    <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                        <h4 className="text-sm font-bold text-blue-800 mb-1">Maintenance Préventive</h4>
-                        <p className="text-xs text-blue-700">
+                    <div className="p-3 bg-[var(--primary-dim)] border border-[var(--primary)] rounded-lg">
+                        <h4 className="text-sm font-bold text-[var(--primary)] mb-1">Maintenance Préventive</h4>
+                        <p className="text-xs text-[var(--primary)]">
                             {batteryAnomalies.length} véhicule{batteryAnomalies.length > 1 ? 's' : ''} présente{batteryAnomalies.length > 1 ? 'nt' : ''} des signes de batterie faible ({batteryAnomalies.map(a => a.vehicleName).join(', ')}). Planifiez un remplacement avant panne.
                         </p>
                     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Upload, AlertCircle, CheckCircle, FileText, X } from 'lucide-react';
 import { Modal } from './Modal';
-import { parseCSV, ImportResult } from '../services/importService';
+import type { ImportResult } from '../services/importService';
+import { parseCSV } from '../services/importService';
 import { logger } from '../utils/logger';
 
 interface ImportModalProps<T> {
@@ -67,10 +68,10 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
         {/* File Upload Area */}
         {!file ? (
           <div 
-            className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+            className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 transition-colors cursor-pointer"
             onClick={() => fileInputRef.current?.click()}
           >
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center mb-4">
               <Upload className="w-6 h-6" />
             </div>
             <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Cliquez pour sélectionner un fichier CSV</h4>
@@ -136,7 +137,7 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
         {/* Template Download */}
         {sampleData && !file && (
           <div className="text-center">
-            <button onClick={downloadTemplate} className="text-xs text-blue-600 hover:underline font-medium">
+            <button onClick={downloadTemplate} className="text-xs text-[var(--primary)] hover:underline font-medium">
               Télécharger un modèle CSV
             </button>
           </div>
@@ -154,7 +155,7 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
         <button 
           onClick={handleConfirm}
           disabled={!result || result.meta.success === 0}
-          className="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+          className="px-4 py-2 text-sm font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-light)] rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
         >
           <CheckCircle className="w-4 h-4" />
           Importer {result?.meta.success ? `${result.meta.success} éléments` : ''}

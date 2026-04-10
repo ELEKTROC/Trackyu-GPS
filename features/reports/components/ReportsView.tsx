@@ -44,8 +44,8 @@ const CATALOG: ReportSection[] = [
   {
     id: 'activity', label: 'Activité', tab: 'activity',
     description: 'Suivi des trajets, arrêts, vitesse et inactivité de la flotte',
-    color: 'bg-blue-500', textColor: 'text-blue-600 dark:text-blue-400',
-    borderColor: 'border-blue-200 dark:border-blue-800', bgLight: 'bg-blue-50 dark:bg-blue-900/10',
+    color: 'bg-[var(--primary-dim)]0', textColor: 'text-[var(--primary)] dark:text-[var(--primary)]',
+    borderColor: 'border-[var(--border)] dark:border-[var(--primary)]', bgLight: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]',
     sectionIcon: Activity,
     items: [
       { id: 'summary', label: "Synthèse d'activité", description: 'Vue globale : distance, temps conduite, arrêts', icon: Activity },
@@ -231,7 +231,7 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
             placeholder="Rechercher un rapport…"
             value={catalogSearch}
             onChange={e => setCatalogSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
           />
         </div>
 
@@ -287,13 +287,13 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
                   <button
                     key={item.id}
                     onClick={() => navigateTo(section.tab, item.id)}
-                    className="group text-left p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all duration-150"
+                    className="group text-left p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-[var(--primary)] dark:hover:border-[var(--primary)] hover:shadow-md transition-all duration-150"
                   >
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className={`w-8 h-8 rounded-lg ${section.bgLight} flex items-center justify-center shrink-0`}>
                         <Icon className={`w-4 h-4 ${section.textColor}`} />
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors shrink-0 mt-0.5" />
+                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary)] transition-colors shrink-0 mt-0.5" />
                     </div>
                     <p className="text-sm font-semibold text-slate-800 dark:text-white leading-tight mb-1">{item.label}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{item.description}</p>

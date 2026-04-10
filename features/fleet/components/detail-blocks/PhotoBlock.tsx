@@ -119,10 +119,10 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
           ) : (
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="w-full h-40 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors"
+              className="w-full h-40 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/20 transition-colors"
             >
               {isUploading ? (
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
               ) : (
                 <>
                   <div className="p-3 bg-slate-100 dark:bg-slate-700 rounded-full mb-2">
@@ -146,7 +146,7 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
           {previewUrl && (
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="mt-2 w-full py-2 text-xs text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors flex items-center justify-center gap-1"
+              className="mt-2 w-full py-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg transition-colors flex items-center justify-center gap-1"
             >
               <Upload className="w-3 h-3" /> Changer la photo
             </button>

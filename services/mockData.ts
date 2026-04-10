@@ -1,4 +1,4 @@
-import { Client, Contract, Invoice, Quote, Ticket, Intervention, SystemUser, Lead, Alert, Vehicle, Tier, Anomaly, UserActivity, DeviceStock, Role } from '../types';
+import type { Client, Contract, Invoice, Quote, Ticket, Intervention, SystemUser, Lead, Alert, Vehicle, Tier, Anomaly, UserActivity, DeviceStock, Role } from '../types';
 
 // --- HELPERS ---
 const getRandomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];

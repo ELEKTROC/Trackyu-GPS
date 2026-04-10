@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { LucideIcon, ChevronRight } from 'lucide-react';
+import type { LucideIcon} from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 export interface TabItem {
   id: string;

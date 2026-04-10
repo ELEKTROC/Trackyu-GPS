@@ -126,15 +126,15 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                             onClick={() => setSelectedClassFilter(selectedClassFilter === cl.id ? null : cl.id)}
                             className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${
                                 selectedClassFilter === cl.id 
-                                    ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-500 ring-2 ring-blue-500/30' 
-                                    : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700 hover:bg-blue-50 dark:hover:bg-slate-800'
+                                    ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] ring-2 ring-[var(--primary-dim)]' 
+                                    : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-700 hover:bg-[var(--primary-dim)] dark:hover:bg-slate-800'
                             }`}
                         >
                             <div className="flex items-center gap-3">
                                 <div className={`w-8 h-8 rounded flex items-center justify-center font-bold text-white ${
                                     selectedClassFilter === cl.id ? 'ring-2 ring-white' : ''
                                 } ${
-                                    i < 5 ? 'bg-blue-500' : i === 5 ? 'bg-red-500' : 'bg-green-500'
+                                    i < 5 ? 'bg-[var(--primary-dim)]0' : i === 5 ? 'bg-red-500' : 'bg-green-500'
                                 }`}>
                                     {cl.id}
                                 </div>
@@ -147,11 +147,11 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                     ))}
                 </div>
                 {selectedClassFilter && (
-                    <div className="mt-3 flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                    <div className="mt-3 flex items-center gap-2 text-sm text-[var(--primary)] dark:text-[var(--primary)]">
                         <span className="font-medium">📊 Filtre actif: Classe {selectedClassFilter}</span>
                         <button 
                             onClick={() => setSelectedClassFilter(null)}
-                            className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 rounded-full transition-colors"
+                            className="text-xs px-2 py-1 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/50 rounded-full transition-colors"
                         >
                             ✕ Effacer
                         </button>
@@ -163,13 +163,13 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden flex flex-col flex-1 min-h-[300px]">
                 <div className="p-3 sm:p-4 border-b border-slate-200 dark:border-slate-700 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 bg-slate-50 dark:bg-slate-800">
                     <div className="flex items-center gap-2">
-                        <FileSpreadsheet className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <FileSpreadsheet className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)]" />
                         <h3 className="font-bold text-slate-800 dark:text-white">Journal Général</h3>
                     </div>
                     <div className="flex gap-2 flex-wrap sm:flex-nowrap">
                         <button 
                             onClick={onOpenEntryModal}
-                            className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors"
+                            className="flex items-center gap-2 px-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg text-sm font-bold transition-colors"
                         >
                             <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Nouvelle Écriture</span>
                         </button>
@@ -178,7 +178,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                             <input 
                                 type="text" 
                                 placeholder="Rechercher..." 
-                                className="pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
@@ -218,7 +218,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                         <div className="relative" ref={columnMenuRef}>
                             <button 
                                 onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                                className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-blue-500/20' : ''}`}
+                                className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary-dim)]' : ''}`}
                                 title="Gérer les colonnes"
                             >
                                 <LayoutTemplate className="w-4 h-4" />
@@ -235,7 +235,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                                                     type="checkbox" 
                                                     checked={visibleColumns.includes(col.id)}
                                                     onChange={() => toggleColumn(col.id)}
-                                                    className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 bg-white dark:bg-slate-900"
+                                                    className="rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)] bg-white dark:bg-slate-900"
                                                 />
                                                 <span className="text-slate-700 dark:text-slate-200">{col.label}</span>
                                             </label>
@@ -270,13 +270,13 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                                 </tr>
                             )}
                             {sortedEntries.map((entry, i) => (
-                                <tr key={i} className="hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors">
+                                <tr key={i} className="hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/10 transition-colors">
                                     {visibleColumns.includes('date') && <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{entry.date}</td>}
                                     {visibleColumns.includes('ref') && <td className="px-4 py-2 font-mono text-xs text-slate-500 dark:text-slate-400">{entry.ref}</td>}
                                     {visibleColumns.includes('reseller') && (
                                         <td className="px-4 py-2">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-5 h-5 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                                <div className="w-5 h-5 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                                                     {(resellers?.find(r => r.tenantId === entry.tenantId)?.slug || '??').substring(0, 2)}
                                                 </div>
                                                 <span className="text-xs text-slate-600 dark:text-slate-300">

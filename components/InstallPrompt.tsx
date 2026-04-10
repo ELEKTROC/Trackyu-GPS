@@ -161,15 +161,15 @@ export const InstallPrompt: React.FC = () => {
             
             <ol className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">1</span>
                 <span>Appuyez sur le bouton <strong>Partager</strong> (icône carré avec flèche vers le haut)</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">2</span>
                 <span>Faites défiler et appuyez sur <strong>"Sur l'écran d'accueil"</strong></span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">3</span>
                 <span>Appuyez sur <strong>"Ajouter"</strong> en haut à droite</span>
               </li>
             </ol>
@@ -177,7 +177,7 @@ export const InstallPrompt: React.FC = () => {
 
           <button
             onClick={handleDismiss}
-            className="w-full mt-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+            className="w-full mt-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white font-medium rounded-xl transition-colors"
           >
             J'ai compris
           </button>
@@ -216,7 +216,7 @@ export const InstallPrompt: React.FC = () => {
           </button>
           <button
             onClick={handleInstall}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white text-sm font-medium rounded-xl transition-colors shadow-sm"
           >
             <Download className="w-4 h-4" />
             <span className="hidden sm:inline">Installer</span>

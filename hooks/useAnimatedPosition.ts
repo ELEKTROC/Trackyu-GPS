@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Coordinate } from '../types';
+import type { Coordinate } from '../types';
 
 interface AnimatedPosition {
   lat: number;

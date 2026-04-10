@@ -5,8 +5,8 @@ export const AboutView: React.FC = () => {
     return (
         <div className="p-6 w-full space-y-8 animate-in fade-in duration-500">
             <div className="text-center space-y-4">
-                <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <Info className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+                <div className="w-20 h-20 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <Info className="w-10 h-10 text-[var(--primary)] dark:text-[var(--primary)]" />
                 </div>
                 <h2 className="text-3xl font-bold text-slate-800 dark:text-white">À propos de Trackyu GPS</h2>
                 <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
@@ -30,7 +30,7 @@ export const AboutView: React.FC = () => {
                     </p>
                 </div>
                 <div className="p-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-                    <Globe className="w-8 h-8 text-blue-500 mb-4" />
+                    <Globe className="w-8 h-8 text-[var(--primary)] mb-4" />
                     <h3 className="font-bold text-slate-800 dark:text-white mb-2">Support 24/7</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                         Une équipe dédiée disponible à tout moment pour vous assister dans vos opérations critiques.
@@ -52,7 +52,7 @@ export const AboutView: React.FC = () => {
                     </p>
                     <div className="flex items-center gap-2 pt-4">
                         <Mail className="w-4 h-4" />
-                        <a href="mailto:contact@trackyu.com" className="text-blue-600 hover:underline">contact@trackyu.com</a>
+                        <a href="mailto:contact@trackyu.com" className="text-[var(--primary)] hover:underline">contact@trackyu.com</a>
                     </div>
                 </div>
             </div>

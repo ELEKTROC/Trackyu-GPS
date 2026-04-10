@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Vehicle, VehicleStatus } from '../../../types';
+import type { Vehicle} from '../../../types';
+import { VehicleStatus } from '../../../types';
 import { CheckSquare, Square, Signal, Key, Truck, Car, Bike, Bus, Hammer, User, Battery, Pencil, Lock, Wrench } from 'lucide-react';
 
 export interface VehicleCardConfig {
@@ -117,10 +118,10 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(({
             onClick={() => onFocus(vehicle)} 
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className={`relative px-4 py-3 border-l-4 border-b border-slate-50 dark:border-slate-700 transition-all cursor-pointer flex gap-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${isFocused ? 'border-l-blue-500 bg-blue-50/30 dark:bg-blue-900/20' : 'border-l-transparent'}`}
+            className={`relative px-4 py-3 border-l-4 border-b border-slate-50 dark:border-slate-700 transition-all cursor-pointer flex gap-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${isFocused ? 'border-l-blue-500 bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'border-l-transparent'}`}
         >
             <div className="flex items-start pt-1" onClick={(e) => onToggleSelection(vehicle.id, e)}>
-                {isSelected ? <CheckSquare className="w-4 h-4 text-blue-600 cursor-pointer" /> : <Square className="w-4 h-4 text-slate-300 dark:text-slate-600 hover:text-slate-400 cursor-pointer" />}
+                {isSelected ? <CheckSquare className="w-4 h-4 text-[var(--primary)] cursor-pointer" /> : <Square className="w-4 h-4 text-slate-300 dark:text-slate-600 hover:text-slate-400 cursor-pointer" />}
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
@@ -128,11 +129,11 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(({
                         <VehicleIcon className="w-3.5 h-3.5 text-slate-400" />
                         <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-2">
-                                <span className={`font-bold text-sm truncate leading-tight ${isFocused ? 'text-blue-700 dark:text-blue-400' : 'text-slate-700 dark:text-slate-200'}`}>{getDisplayName()}</span>
+                                <span className={`font-bold text-sm truncate leading-tight ${isFocused ? 'text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-700 dark:text-slate-200'}`}>{getDisplayName()}</span>
                                 {isHovered && onEdit && (
                                     <button 
                                         onClick={(e) => { e.stopPropagation(); onEdit(vehicle); }}
-                                        className="p-1 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                                        className="p-1 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded transition-colors"
                                         title="Modifier le véhicule"
                                     >
                                         <Pencil className="w-3 h-3" />

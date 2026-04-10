@@ -270,7 +270,7 @@ export const FAQView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <BookOpen className="w-8 h-8 text-blue-600" />
+          <BookOpen className="w-8 h-8 text-[var(--primary)]" />
           <div>
             <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Base de Connaissances (FAQ)</h1>
             <p className="text-sm text-slate-500">{articles.filter(a => a.is_published).length} articles publiés</p>
@@ -280,7 +280,7 @@ export const FAQView: React.FC = () => {
           <button onClick={() => openCategoryModal()} className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 flex items-center gap-2">
             <Plus className="w-4 h-4" /> Catégorie
           </button>
-          <button onClick={() => openArticleModal()} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+          <button onClick={() => openArticleModal()} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] flex items-center gap-2">
             <Plus className="w-4 h-4" /> Article
           </button>
         </div>
@@ -300,7 +300,7 @@ export const FAQView: React.FC = () => {
               onKeyDown={e => e.key === 'Enter' && performSearch()}
             />
           </div>
-          <button onClick={performSearch} className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          <button onClick={performSearch} className="px-6 py-3 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]">
             Rechercher
           </button>
         </div>
@@ -315,7 +315,7 @@ export const FAQView: React.FC = () => {
             <button
               onClick={() => { setSelectedCategory(null); loadArticles(); }}
               className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
-                !selectedCategory ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                !selectedCategory ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)]' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
               <span className="flex items-center gap-2 font-medium">
@@ -328,7 +328,7 @@ export const FAQView: React.FC = () => {
                 <button
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`flex-1 flex items-center justify-between p-3 rounded-lg transition-colors ${
-                    selectedCategory === cat.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                    selectedCategory === cat.id ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)]' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                   style={selectedCategory === cat.id ? { borderLeft: `4px solid ${cat.color}` } : {}}
                 >
@@ -376,11 +376,11 @@ export const FAQView: React.FC = () => {
                               className="flex items-center gap-2 text-left group"
                             >
                               {isExpanded ? (
-                                <ChevronDown className="w-5 h-5 text-blue-600" />
+                                <ChevronDown className="w-5 h-5 text-[var(--primary)]" />
                               ) : (
-                                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600" />
+                                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[var(--primary)]" />
                               )}
-                              <h3 className="text-lg font-bold text-slate-800 dark:text-white group-hover:text-blue-600">
+                              <h3 className="text-lg font-bold text-slate-800 dark:text-white group-hover:text-[var(--primary)]">
                                 {article.title}
                               </h3>
                             </button>
@@ -440,7 +440,7 @@ export const FAQView: React.FC = () => {
                             <div className="flex items-center gap-2 mt-4">
                               <Tag className="w-4 h-4 text-slate-400" />
                               {article.tags.map((tag, idx) => (
-                                <span key={idx} className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">
+                                <span key={idx} className="px-2 py-1 bg-[var(--primary-dim)] text-[var(--primary)] rounded text-xs">
                                   {tag}
                                 </span>
                               ))}
@@ -484,7 +484,7 @@ export const FAQView: React.FC = () => {
             <button onClick={() => setIsCategoryModalOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">
               Annuler
             </button>
-            <button onClick={saveCategoryHandler} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+            <button onClick={saveCategoryHandler} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] flex items-center gap-2">
               <Save className="w-4 h-4" /> Enregistrer
             </button>
           </>
@@ -543,7 +543,7 @@ export const FAQView: React.FC = () => {
             <button onClick={() => setIsArticleModalOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">
               Annuler
             </button>
-            <button onClick={saveArticleHandler} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+            <button onClick={saveArticleHandler} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] flex items-center gap-2">
               <Save className="w-4 h-4" /> Enregistrer
             </button>
           </>

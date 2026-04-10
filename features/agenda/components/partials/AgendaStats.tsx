@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card } from '../../../../components/Card';
 import { Wrench, Briefcase, Clock, Users } from 'lucide-react';
-import { Intervention, Task, User } from '../../../../types';
+import type { Intervention, Task, User } from '../../../../types';
 import { isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend } from 'date-fns';
 
 interface AgendaStatsProps {

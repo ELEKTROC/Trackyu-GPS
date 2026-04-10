@@ -4,7 +4,7 @@ import { Card } from '../../../components/Card';
 import { Modal } from '../../../components/Modal';
 import { TierForm } from './TierForm';
 import { TierList } from './TierList';
-import { Tier, TierType } from '../../../types';
+import type { Tier, TierType } from '../../../types';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
@@ -214,7 +214,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
             <div className="relative" ref={filterMenuRef}>
                 <button 
                     onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-                    className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isFilterMenuOpen || activeFilters.length > 0 ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-blue-500/20 text-blue-600 dark:text-blue-400' : ''}`}
+                    className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isFilterMenuOpen || activeFilters.length > 0 ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
                     title="Filtrer les résultats"
                 >
                     <Filter className="w-4 h-4"/>
@@ -237,7 +237,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
                                     className="w-full flex items-center justify-between px-3 py-2 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-md transition-colors"
                                 >
                                     <span>{opt.label}</span>
-                                    {activeFilters.includes(opt.id) && <Check className="w-3 h-3 text-blue-600"/>}
+                                    {activeFilters.includes(opt.id) && <Check className="w-3 h-3 text-[var(--primary)]"/>}
                                 </button>
                             ))}
                         </div>
@@ -249,7 +249,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
             <div className="hidden sm:block relative" ref={columnMenuRef}>
                 <button 
                     onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                    className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-blue-500/20 text-blue-600 dark:text-blue-400' : ''}`}
+                    className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
                     title="Gérer les colonnes"
                 >
                     <LayoutTemplate className="w-4 h-4"/>
@@ -262,7 +262,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
                         <div className="p-1 max-h-48 overflow-y-auto custom-scrollbar">
                             {['Nom', 'Type', 'Email', 'Téléphone', 'Ville', 'Statut', 'Date Création'].map(col => (
                                 <label key={col} className="flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" defaultChecked className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"/>
+                                    <input type="checkbox" defaultChecked className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"/>
                                     <span className="text-sm text-slate-600 dark:text-slate-300">{col}</span>
                                 </label>
                             ))}
@@ -286,7 +286,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
             <div className="hidden sm:block relative" ref={importMenuRef}>
                 <button 
                     onClick={() => setIsImportMenuOpen(!isImportMenuOpen)}
-                    className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isImportMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-blue-500/20 text-blue-600 dark:text-blue-400' : ''}`}
+                    className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isImportMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
                     title="Importer des données"
                 >
                     <Upload className="w-4 h-4"/>
@@ -313,7 +313,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
                             }}
                             className="w-full text-left px-4 py-3 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3 border-t border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
                         >
-                            <Download className="w-4 h-4 text-blue-600"/> 
+                            <Download className="w-4 h-4 text-[var(--primary)]"/> 
                             <span>Télécharger le modèle</span>
                         </button>
                     </div>
@@ -322,7 +322,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
 
             <button 
               onClick={handleCreate}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ml-2 shadow-sm shadow-blue-200 dark:shadow-none"
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors ml-2 shadow-sm shadow-blue-200 dark:shadow-none"
             >
               <Plus className="w-4 h-4" />
               <span className="hidden sm:inline">Nouveau Tiers</span>
@@ -339,7 +339,7 @@ export const TiersView: React.FC<{ onNavigate?: any, dateRange?: { start: string
               <p className="text-xs font-bold text-slate-500 uppercase">Clients Actifs</p>
               <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.activeClients} <span className="text-xs font-normal text-slate-400">/ {kpis.totalClients}</span></p>
             </div>
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
               <Users className="w-6 h-6" />
             </div>
           </div>

@@ -2,7 +2,8 @@ import React, { useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import type { Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SubUserSchema, SubUserFormData, ROLE_PERMISSION_PRESETS } from '../../../../schemas/subUserSchema';
+import type { SubUserFormData} from '../../../../schemas/subUserSchema';
+import { SubUserSchema, ROLE_PERMISSION_PRESETS } from '../../../../schemas/subUserSchema';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { 
   User, Building2, Car, Shield, 
@@ -294,12 +295,12 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               className="w-full p-3 bg-slate-100 dark:bg-slate-800 flex items-center justify-between hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
               <span className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-                <div className="p-1 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                  <Car className="w-4 h-4 text-blue-600 dark:text-blue-300" />
+                <div className="p-1 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                  <Car className="w-4 h-4 text-[var(--primary)] dark:text-[var(--primary)]" />
                 </div>
                 Véhicules accessibles
                 {!allVehicles && selectedVehicleIds.length > 0 && (
-                  <span className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-xs px-2 py-0.5 rounded-full font-medium">
+                  <span className="bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] text-xs px-2 py-0.5 rounded-full font-medium">
                     {selectedVehicleIds.length} sélectionné(s)
                   </span>
                 )}
@@ -320,13 +321,13 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   </p>
                 ) : (
                   <>
-                    <label className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl cursor-pointer">
+                    <label className="flex items-center gap-2 p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-xl cursor-pointer">
                       <input
                         type="checkbox"
                         {...register('allVehicles')}
-                        className="w-4 h-4 text-blue-600 rounded-lg"
+                        className="w-4 h-4 text-[var(--primary)] rounded-lg"
                       />
-                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                      <span className="text-sm font-medium text-[var(--primary)] dark:text-[var(--primary)]">
                         Accès à tous les véhicules du client
                       </span>
                     </label>
@@ -348,10 +349,10 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                               <button
                                 type="button"
                                 onClick={() => toggleVehicle(v.id)}
-                                className="text-slate-400 hover:text-blue-600"
+                                className="text-slate-400 hover:text-[var(--primary)]"
                               >
                                 {selectedVehicleIds.includes(v.id) ? (
-                                  <CheckSquare className="w-4 h-4 text-blue-600" />
+                                  <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                                 ) : (
                                   <Square className="w-4 h-4" />
                                 )}
@@ -414,7 +415,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                                   type="checkbox"
                                   checked={!!field.value}
                                   onChange={field.onChange}
-                                  className="w-4 h-4 text-blue-600 rounded-lg"
+                                  className="w-4 h-4 text-[var(--primary)] rounded-lg"
                                 />
                                 <span className="text-slate-600 dark:text-slate-400">
                                   {perm.label}

@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useDataContext } from '../../../contexts/DataContext';
-import { Task } from '../../../types';
+import type { Task } from '../../../types';
 import { Card } from '../../../components/Card';
 import { TaskForm } from './TaskForm';
 import { ListTodo, CheckCircle, Clock, AlertCircle, Search, Trash2, Edit, Bell, SearchX } from 'lucide-react';
@@ -53,7 +53,7 @@ export const TasksView: React.FC = () => {
       case 'URGENT': return 'text-purple-600 bg-purple-50 dark:bg-purple-900/20';
       case 'HIGH': return 'text-red-600 bg-red-50 dark:bg-red-900/20';
       case 'MEDIUM': return 'text-amber-600 bg-amber-50 dark:bg-amber-900/20';
-      case 'LOW': return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20';
+      case 'LOW': return 'text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]';
       default: return 'text-slate-600 bg-slate-50 dark:bg-slate-900/20';
     }
   };
@@ -97,14 +97,14 @@ export const TasksView: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <ListTodo className="w-8 h-8 text-blue-600" />
+            <ListTodo className="w-8 h-8 text-[var(--primary)]" />
             Gestion des Tâches
           </h2>
           <p className="text-slate-500">Suivez vos relances et actions commerciales</p>
         </div>
         <button
           onClick={() => { setEditingTask(undefined); setIsFormOpen(true); }}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 flex items-center gap-2"
+          className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-bold hover:bg-[var(--primary-light)] flex items-center gap-2"
         >
           <ListTodo className="w-4 h-4" /> Nouvelle Tâche
         </button>
@@ -117,7 +117,7 @@ export const TasksView: React.FC = () => {
           <input
             type="text"
             placeholder="Rechercher une tâche..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -156,7 +156,7 @@ export const TasksView: React.FC = () => {
               <div className="flex items-start gap-4">
                 <button
                   onClick={() => handleToggleStatus(task)}
-                  className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${task.status === 'DONE' ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 hover:border-blue-500'}`}
+                  className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${task.status === 'DONE' ? 'bg-green-500 border-green-500 text-white' : 'border-slate-300 hover:border-[var(--primary)]'}`}
                 >
                   {task.status === 'DONE' && <CheckCircle className="w-3 h-3" />}
                 </button>
@@ -181,7 +181,7 @@ export const TasksView: React.FC = () => {
                         </span>
                       )}
                       <div className="flex gap-1">
-                        <button onClick={() => handleEdit(task)} className="p-1 text-slate-400 hover:text-blue-600">
+                        <button onClick={() => handleEdit(task)} className="p-1 text-slate-400 hover:text-[var(--primary)]">
                           <Edit className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDelete(task.id)} className="p-1 text-slate-400 hover:text-red-600">

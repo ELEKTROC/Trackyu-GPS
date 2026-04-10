@@ -4,7 +4,8 @@ import {
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { useDataContext } from '../../../contexts/DataContext';
-import { useDateRange, PERIOD_PRESETS, PeriodPreset } from '../../../hooks/useDateRange';
+import type { PeriodPreset } from '../../../hooks/useDateRange';
+import { useDateRange, PERIOD_PRESETS } from '../../../hooks/useDateRange';
 
 export const TechTeamView: React.FC = () => {
     const { users, interventions } = useDataContext();
@@ -133,7 +134,7 @@ export const TechTeamView: React.FC = () => {
                                 value={periodPreset}
                                 onChange={(e) => setPeriodPreset(e.target.value as PeriodPreset)}
                                 title="Sélectionner la période"
-                                className="flex-1 sm:flex-none px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                className="flex-1 sm:flex-none px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm font-medium text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[var(--primary)] focus:outline-none"
                             >
                                 {Object.entries(PERIOD_PRESETS).map(([key, label]) => (
                                     <option key={key} value={key}>{label}</option>
@@ -179,7 +180,7 @@ export const TechTeamView: React.FC = () => {
                         <p className="text-[10px] md:text-xs font-bold text-slate-500 uppercase">Total</p>
                         <p className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">{globalStats.total}</p>
                     </div>
-                    <Briefcase className="w-6 h-6 md:w-8 md:h-8 text-blue-400 dark:text-blue-600" />
+                    <Briefcase className="w-6 h-6 md:w-8 md:h-8 text-[var(--primary)] dark:text-[var(--primary)]" />
                 </Card>
                 <Card className="p-3 md:p-4 border-l-4 border-l-yellow-500 flex items-center justify-between">
                     <div className="min-w-0 flex-1">
@@ -232,7 +233,7 @@ export const TechTeamView: React.FC = () => {
                                         <td className="px-3 sm:px-4 py-2 font-medium">{s.name}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right font-bold">{s.total}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right text-slate-500">{s.percentTotal}%</td>
-                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-blue-600">{formatTime(s.avgTimeGlobal)}</td>
+                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-[var(--primary)]">{formatTime(s.avgTimeGlobal)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -242,7 +243,7 @@ export const TechTeamView: React.FC = () => {
 
                     {/* TABLE 2: INSTALLATIONS */}
                     <Card className="p-0 border-slate-200 dark:border-slate-700 overflow-hidden h-fit">
-                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800 font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+                        <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-b border-[var(--primary)] dark:border-[var(--primary)] font-bold text-[var(--primary)] dark:text-[var(--primary)] flex items-center gap-2">
                             <Briefcase className="w-4 h-4" /> Installations
                         </div>
                         <div className="overflow-x-auto">
@@ -264,7 +265,7 @@ export const TechTeamView: React.FC = () => {
                                         <td className="px-3 sm:px-4 py-2 font-medium">{s.name}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right font-bold">{s.installs}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right text-slate-500">{s.percentInstalls}%</td>
-                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-blue-600">{formatTime(s.avgTimeInstall)}</td>
+                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-[var(--primary)]">{formatTime(s.avgTimeInstall)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -296,7 +297,7 @@ export const TechTeamView: React.FC = () => {
                                         <td className="px-3 sm:px-4 py-2 font-medium">{s.name}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right font-bold">{s.repairs}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right text-slate-500">{s.percentRepairs}%</td>
-                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-blue-600">{formatTime(s.avgTimeRepair)}</td>
+                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-[var(--primary)]">{formatTime(s.avgTimeRepair)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -327,7 +328,7 @@ export const TechTeamView: React.FC = () => {
                                     <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                         <td className="px-3 sm:px-4 py-2 font-medium">{s.name}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right font-mono text-slate-700 dark:text-slate-300">{formatTime(s.avgTimeGlobal)}</td>
-                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-blue-600">{formatTime(s.avgTimeInstall)}</td>
+                                        <td className="px-3 sm:px-4 py-2 text-right font-mono text-[var(--primary)]">{formatTime(s.avgTimeInstall)}</td>
                                         <td className="px-3 sm:px-4 py-2 text-right font-mono text-orange-600">{formatTime(s.avgTimeRepair)}</td>
                                     </tr>
                                 ))}

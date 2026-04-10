@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Tier, TierType } from '../../../types';
+import type { Tier, TierType } from '../../../types';
 import { Save, X, Building2, User, Truck, CreditCard, Globe, Shield, MapPin } from 'lucide-react';
 import { FormField, FormSection, FormGrid, Input, Select } from '../../../components/form';
 import { useToast } from '../../../contexts/ToastContext';
@@ -113,7 +113,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
                 <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
                     <div className="flex items-center gap-4">
                         <div className={`p-2 rounded-lg ${
-                            formData.type === 'CLIENT' ? 'bg-blue-100 text-blue-600' : 
+                            formData.type === 'CLIENT' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 
                             formData.type === 'RESELLER' ? 'bg-purple-100 text-purple-600' : 
                             'bg-orange-100 text-orange-600'
                         }`}>
@@ -140,7 +140,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
                                         key={t}
                                         type="button"
                                         onClick={() => setFormData({...formData, type: t})}
-                                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${formData.type === t ? 'bg-slate-100 dark:bg-slate-700 text-blue-600 dark:text-blue-400' : 'text-slate-500 hover:text-slate-700'}`}
+                                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${formData.type === t ? 'bg-slate-100 dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-500 hover:text-slate-700'}`}
                                     >
                                         {t}
                                     </button>
@@ -533,13 +533,13 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
 
                         {/* Account Creation */}
                         {formData.type === 'CLIENT' && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
+                            <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-xl border border-[var(--primary)] dark:border-[var(--primary)]">
                                 <label className="flex items-center gap-3 cursor-pointer">
                                     <input 
                                         type="checkbox" 
                                         checked={formData.createUserAccount !== false}
                                         onChange={e => setFormData({...formData, createUserAccount: e.target.checked})}
-                                        className="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" 
+                                        className="w-5 h-5 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" 
                                     />
                                     <div>
                                         <span className="block text-sm font-bold text-slate-800 dark:text-white">Créer un compte utilisateur</span>
@@ -562,7 +562,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
                     </button>
                     <button 
                         onClick={handleSubmit}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)] transition-colors flex items-center gap-2"
                     >
                         <Save className="w-4 h-4" />
                         Enregistrer

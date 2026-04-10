@@ -5,7 +5,8 @@ import {
   FileText, Users, DollarSign, Wrench, Package, Headset,
   ShieldCheck, Plus, LogOut, X, Smartphone
 } from 'lucide-react';
-import { Vehicle, View } from '../types';
+import type { Vehicle} from '../types';
+import { View } from '../types';
 
 interface CommandPaletteProps {
   isOpen: boolean;

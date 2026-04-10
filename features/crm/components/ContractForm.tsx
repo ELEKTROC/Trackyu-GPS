@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Contract, Tier } from '../../../types';
+import type { Contract, Tier } from '../../../types';
 import { api } from '../../../services/api';
 import { Save, Calendar } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
@@ -123,7 +123,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
                   endDate: e.target.checked ? undefined : new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0],
                   autoRenew: e.target.checked ? true : formData.autoRenew,
                 })}
-                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
               <span className="text-xs font-medium text-slate-500">N'expire jamais</span>
             </label>
           </div>
@@ -159,7 +159,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
           <div className="flex items-center gap-2 self-end pb-2">
             <input type="checkbox" id="autoRenew" checked={!!formData.autoRenew}
               onChange={e => setFormData({ ...formData, autoRenew: e.target.checked })}
-              className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+              className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
             <label htmlFor="autoRenew" className="text-sm text-slate-700 dark:text-slate-300">
               Renouvellement automatique
             </label>
@@ -167,13 +167,13 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
         )}
 
         {/* Info abonnements */}
-        <div className="col-span-2 flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-          <svg className="w-4 h-4 mt-0.5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="col-span-2 flex items-start gap-3 p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-xl">
+          <svg className="w-4 h-4 mt-0.5 text-[var(--primary)] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <p className="text-xs font-bold text-blue-700 dark:text-blue-300">Véhicules et tarifs gérés via les Abonnements</p>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+            <p className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)]">Véhicules et tarifs gérés via les Abonnements</p>
+            <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] mt-0.5">
               Chaque véhicule est associé à un abonnement individuel avec son propre tarif et cycle de facturation.
             </p>
           </div>
@@ -194,7 +194,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
           Annuler
         </button>
         <button type="submit" disabled={isSaving}
-          className="px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-50">
+          className="px-4 py-2.5 bg-[var(--primary)] text-white font-bold rounded-xl hover:bg-[var(--primary-light)] transition-colors flex items-center gap-2 disabled:opacity-50">
           <Save className="w-4 h-4" />
           {isSaving ? 'Enregistrement…' : 'Enregistrer'}
         </button>

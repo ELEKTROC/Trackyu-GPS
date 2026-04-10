@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { EcoDrivingSchema } from '../../../../schemas/ecoDrivingSchema';
 import { Truck, Gauge, Car, RotateCcw, AlertTriangle } from 'lucide-react';
 import { FormField, Input, Select, FormGrid, FormSection } from '../../../../components/form';
-import { z } from 'zod';
+import type { z } from 'zod';
 
 export type EcoDrivingFormData = z.infer<typeof EcoDrivingSchema>;
 
@@ -35,7 +35,7 @@ interface BaseFormProps {
 
 export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ initialData, onFormSubmit, clients = [], resellers = [], vehicles = [] }, ref) => {
     const { register, handleSubmit, formState: { errors } } = useForm<EcoDrivingFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(EcoDrivingSchema),
         defaultValues: initialData || {
             statut: 'Actif',
@@ -85,17 +85,17 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>((
             {/* Véhicules concernés */}
             <div className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                 <div className="flex items-center gap-2 mb-4">
-                    <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <Truck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                        <Truck className="w-4 h-4 text-[var(--primary)] dark:text-[var(--primary)]" />
                     </div>
                     <span className="font-semibold text-sm text-slate-700 dark:text-slate-300">Véhicules concernés</span>
                 </div>
                 <label className="flex items-center gap-2 mb-3 cursor-pointer">
-                    <input type="checkbox" {...register('allVehicles')} id="allVehiclesEco" className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500" />
+                    <input type="checkbox" {...register('allVehicles')} id="allVehiclesEco" className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                     <span className="text-sm text-slate-600 dark:text-slate-400">Appliquer à tous les véhicules du client</span>
                 </label>
                 <FormField label="Ou sélectionner des véhicules" hint="Ctrl+Clic pour sélection multiple">
-                    <select {...register('vehicleIds')} multiple className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-sm h-24 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500">
+                    <select {...register('vehicleIds')} multiple className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-sm h-24 focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]">
                         {vehicles.map((v) => (
                             <option key={v.id} value={v.id}>
                                 {v.name || v.immatriculation} {v.immatriculation ? `(${v.immatriculation})` : ''}

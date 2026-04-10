@@ -240,31 +240,31 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                             <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2">
                                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase px-2 py-1">Affichage</p>
                                 <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" checked={visibleCharts.tech} onChange={() => toggleChart('tech')} className="rounded border-slate-300 text-blue-600" />
+                                    <input type="checkbox" checked={visibleCharts.tech} onChange={() => toggleChart('tech')} className="rounded border-slate-300 text-[var(--primary)]" />
                                     <span className="text-sm text-slate-700 dark:text-slate-200">Par Technicien</span>
                                 </label>
                                 <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" checked={visibleCharts.nature} onChange={() => toggleChart('nature')} className="rounded border-slate-300 text-blue-600" />
+                                    <input type="checkbox" checked={visibleCharts.nature} onChange={() => toggleChart('nature')} className="rounded border-slate-300 text-[var(--primary)]" />
                                     <span className="text-sm text-slate-700 dark:text-slate-200">Par Nature</span>
                                 </label>
                                 <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" checked={visibleCharts.material} onChange={() => toggleChart('material')} className="rounded border-slate-300 text-blue-600" />
+                                    <input type="checkbox" checked={visibleCharts.material} onChange={() => toggleChart('material')} className="rounded border-slate-300 text-[var(--primary)]" />
                                     <span className="text-sm text-slate-700 dark:text-slate-200">Par Matériel</span>
                                 </label>
                                 <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" checked={visibleCharts.vehicle} onChange={() => toggleChart('vehicle')} className="rounded border-slate-300 text-blue-600" />
+                                    <input type="checkbox" checked={visibleCharts.vehicle} onChange={() => toggleChart('vehicle')} className="rounded border-slate-300 text-[var(--primary)]" />
                                     <span className="text-sm text-slate-700 dark:text-slate-200">Par Engin</span>
                                 </label>
                                 <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" checked={visibleCharts.period} onChange={() => toggleChart('period')} className="rounded border-slate-300 text-blue-600" />
+                                    <input type="checkbox" checked={visibleCharts.period} onChange={() => toggleChart('period')} className="rounded border-slate-300 text-[var(--primary)]" />
                                     <span className="text-sm text-slate-700 dark:text-slate-200">Evolution</span>
                                 </label>
                                 <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" checked={visibleCharts.status} onChange={() => toggleChart('status')} className="rounded border-slate-300 text-blue-600" />
+                                    <input type="checkbox" checked={visibleCharts.status} onChange={() => toggleChart('status')} className="rounded border-slate-300 text-[var(--primary)]" />
                                     <span className="text-sm text-slate-700 dark:text-slate-200">Par Statut</span>
                                 </label>
                                 <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer">
-                                    <input type="checkbox" checked={visibleCharts.clients} onChange={() => toggleChart('clients')} className="rounded border-slate-300 text-blue-600" />
+                                    <input type="checkbox" checked={visibleCharts.clients} onChange={() => toggleChart('clients')} className="rounded border-slate-300 text-[var(--primary)]" />
                                     <span className="text-sm text-slate-700 dark:text-slate-200">Top Clients</span>
                                 </label>
                             </div>
@@ -275,7 +275,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                         value={statsPeriod} 
                         onChange={(e) => setStatsPeriod(e.target.value)}
                         title="Sélectionner la période"
-                        className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 dark:text-slate-200"
+                        className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)] text-slate-700 dark:text-slate-200"
                     >
                         <option value="TODAY">Aujourd'hui</option>
                         <option value="THIS_WEEK">Cette semaine</option>
@@ -293,7 +293,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                             <p className="text-xs text-slate-500 uppercase font-bold">Total</p>
                             <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{stats.totalInterventions}</p>
                         </div>
-                        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-blue-600"><Wrench className="w-5 h-5" /></div>
+                        <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded text-[var(--primary)]"><Wrench className="w-5 h-5" /></div>
                     </div>
                 </div>
                 <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">

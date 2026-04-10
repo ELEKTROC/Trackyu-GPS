@@ -1,4 +1,4 @@
-import { Vehicle } from "../types";
+import type { Vehicle } from "../types";
 import { API_BASE_URL } from "../utils/apiConfig";
 import { logger } from '../utils/logger';
 

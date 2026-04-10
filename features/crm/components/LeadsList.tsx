@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Lead } from '../../../types';
+import type { Lead } from '../../../types';
 import { Card } from '../../../components/Card';
 import { Pagination } from '../../../components/Pagination';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
@@ -114,7 +114,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
             case 'WON': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
             case 'LOST': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
             case 'PROPOSAL': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
-            case 'QUALIFIED': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+            case 'QUALIFIED': return 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]';
             case 'NEGOTIATION': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
             default: return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
         }
@@ -185,7 +185,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                     type="checkbox"
                                     checked={paginatedLeads.length > 0 && paginatedLeads.every(l => selectedLeadIds.has(l.id))}
                                     onChange={() => onToggleAllSelection(paginatedLeads)}
-                                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                    className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                                 />
                             </th>
                             {visibleColumns.has('company') && <SortableHeader label="Société" sortKey="companyName" currentSortKey={sortConfig.key} currentDirection={sortConfig.direction} onSort={handleSort} />}
@@ -216,7 +216,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                                         type="checkbox"
                                                         checked={visibleColumns.has(col.id)}
                                                         onChange={() => handleToggleColumn(col.id)}
-                                                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3 h-3"
+                                                        className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)] w-3 h-3"
                                                     />
                                                     <span className="text-xs text-slate-700 dark:text-slate-300">{col.label}</span>
                                                 </label>
@@ -248,14 +248,14 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                 <tr
                                     key={lead.id}
                                     onClick={() => onLeadClick(lead)}
-                                    className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${selectedLeadIds.has(lead.id) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                                    className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${selectedLeadIds.has(lead.id) ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}
                                 >
                                     <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
                                         <input
                                             type="checkbox"
                                             checked={selectedLeadIds.has(lead.id)}
                                             onChange={() => onToggleSelection(lead.id)}
-                                            className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                            className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                                         />
                                     </td>
                                     {visibleColumns.has('company') && (
@@ -264,8 +264,8 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                                 {lead.companyName}
                                                 {tasks.some(t => t.relatedTo?.id === lead.id && t.status !== 'DONE') && (
                                                     <span className="flex h-2 w-2 relative" title="Tâches en attente">
-                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary-dim)] opacity-75"></span>
+                                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--primary-dim)]0"></span>
                                                     </span>
                                                 )}
                                             </div>
@@ -318,10 +318,10 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                                 value={lead.status}
                                                 onClick={(e) => e.stopPropagation()}
                                                 onChange={(e) => onStatusChange(lead.id, e.target.value)}
-                                                className={`text-[10px] font-bold py-1 px-2 rounded-full border transition-colors outline-none ${lead.status === 'NEW' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                                className={`text-[10px] font-bold py-1 px-2 rounded-full border transition-colors outline-none ${lead.status === 'NEW' ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' :
                                                     lead.status === 'WON' ? 'bg-green-100 text-green-700 border-green-200' :
                                                         lead.status === 'LOST' ? 'bg-red-100 text-red-700 border-red-200' :
-                                                            'bg-blue-100 text-blue-700 border-blue-200'
+                                                            'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]'
                                                     }`}
                                             >
                                                 <option value="NEW">Nouveau</option>
@@ -356,7 +356,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                             {onAddTask && (
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onAddTask(lead); }}
-                                                    className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                                                    className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded transition-colors"
                                                     title="Planifier une tâche"
                                                 >
                                                     <Calendar className="w-4 h-4" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lead } from '../../../types';
+import type { Lead } from '../../../types';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import {
     Users,
@@ -31,7 +31,7 @@ interface LeadsKanbanProps {
 const KANBAN_COLUMNS = [
     { id: 'NEW', title: 'Nouveau Lead', color: 'bg-slate-50 dark:bg-slate-900/50', borderColor: 'border-slate-200 dark:border-slate-700', headerColor: 'border-t-slate-400', icon: Users },
     { id: 'CONTACTED', title: 'Contacté', color: 'bg-cyan-50/50 dark:bg-cyan-900/10', borderColor: 'border-cyan-200 dark:border-cyan-800', headerColor: 'border-t-cyan-500', icon: Phone },
-    { id: 'QUALIFIED', title: 'Qualifié', color: 'bg-blue-50/50 dark:bg-blue-900/10', borderColor: 'border-blue-200 dark:border-blue-800', headerColor: 'border-t-blue-500', icon: TrendingUp },
+    { id: 'QUALIFIED', title: 'Qualifié', color: 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]', borderColor: 'border-[var(--border)] dark:border-[var(--primary)]', headerColor: 'border-t-blue-500', icon: TrendingUp },
     { id: 'PROPOSAL', title: 'Proposition', color: 'bg-purple-50/50 dark:bg-purple-900/10', borderColor: 'border-purple-200 dark:border-purple-800', headerColor: 'border-t-purple-500', icon: FileText },
     { id: 'NEGOTIATION', title: 'Négociation', color: 'bg-amber-50/50 dark:bg-amber-900/10', borderColor: 'border-amber-200 dark:border-amber-800', headerColor: 'border-t-amber-500', icon: Handshake },
     { id: 'WON', title: 'Gagné', color: 'bg-green-50/50 dark:bg-green-900/10', borderColor: 'border-green-200 dark:border-green-800', headerColor: 'border-t-green-500', icon: CheckCircle },
@@ -109,7 +109,7 @@ export const LeadsKanban: React.FC<LeadsKanbanProps> = ({
                                                         e.stopPropagation();
                                                         onEditLead(lead);
                                                     }}
-                                                    className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400"
+                                                    className="text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)]"
                                                     title="Modifier"
                                                 >
                                                     <Edit className="w-4 h-4" />
@@ -130,8 +130,8 @@ export const LeadsKanban: React.FC<LeadsKanbanProps> = ({
                                             <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm">{lead.companyName}</h4>
                                             {tasks.some(t => t.relatedTo?.id === lead.id && t.status !== 'DONE') && (
                                                 <span className="flex h-2 w-2 relative" title="Tâches en attente">
-                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--primary-dim)] opacity-75"></span>
+                                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--primary-dim)]0"></span>
                                                 </span>
                                             )}
                                         </div>
@@ -141,7 +141,7 @@ export const LeadsKanban: React.FC<LeadsKanbanProps> = ({
                                                 <Calendar className="w-3 h-3" />
                                                 {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('fr-FR') : '-'}
                                             </p>
-                                            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                            <span className="text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)]">
                                                 {lead.resellerName || 'Global'}
                                             </span>
                                         </div>

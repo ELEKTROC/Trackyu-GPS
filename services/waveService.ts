@@ -155,7 +155,7 @@ class WaveService {
     if (!config) throw new Error('Wave non configuré');
 
     // Nettoyer le lien de base (enlever les paramètres existants)
-    let baseUrl = config.paymentLinkBase.split('?')[0];
+    const baseUrl = config.paymentLinkBase.split('?')[0];
     
     // Wave utilise des liens statiques, on ajoute juste une référence pour le suivi interne
     const link: WavePaymentLink = {

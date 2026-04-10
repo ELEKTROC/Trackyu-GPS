@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CatalogItem } from '../../../types';
+import type { CatalogItem } from '../../../types';
 import { useTableSort } from '../../../hooks/useTableSort';
 import { SortableHeader } from '../../../components/SortableHeader';
 import { Pagination } from '../../../components/Pagination';
@@ -201,7 +201,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                                         ${item.status !== 'ACTIVE' ? 'opacity-60' : ''}`}
                                 >
                                     {/* Top accent bar by type */}
-                                    <div className={`h-1 w-full ${item.type === 'Service' ? 'bg-purple-500' : 'bg-blue-500'}`} />
+                                    <div className={`h-1 w-full ${item.type === 'Service' ? 'bg-purple-500' : 'bg-[var(--primary-dim)]0'}`} />
 
                                     {/* Checkbox (top-left) */}
                                     <div
@@ -232,7 +232,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
 
                                         {/* Type + Category */}
                                         <div className="flex items-center gap-2 mb-3 flex-wrap">
-                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item.type === 'Service' ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`}>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item.type === 'Service' ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' : 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'}`}>
                                                 {item.type === 'Service' ? <Tag className="w-2.5 h-2.5" /> : <Package className="w-2.5 h-2.5" />}
                                                 {item.type}
                                             </span>
@@ -268,7 +268,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                                     >
                                         <button
                                             onClick={() => onEdit(item)}
-                                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                                            className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded transition-colors"
                                             title="Modifier"
                                         >
                                             <Edit2 className="w-3.5 h-3.5" />
@@ -348,7 +348,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                                     {visibleColumns.includes('name') && <td className="px-6 py-4 text-sm font-bold text-slate-800 dark:text-white">{item.name}</td>}
                                     {visibleColumns.includes('type') && (
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${item.type === 'Service' ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' : 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'}`}>
+                                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${item.type === 'Service' ? 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' : 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'}`}>
                                                 {item.type}
                                             </span>
                                         </td>
@@ -367,7 +367,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                                     {visibleColumns.includes('actions') && (
                                         <td className="px-6 py-4 text-right" onClick={e => e.stopPropagation()}>
                                             <div className="flex justify-end gap-1">
-                                                <button onClick={() => onEdit(item)} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors" title="Modifier">
+                                                <button onClick={() => onEdit(item)} className="p-2 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded transition-colors" title="Modifier">
                                                     <Edit2 className="w-4 h-4" />
                                                 </button>
                                                 <button onClick={() => onClone(item)} className="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors" title="Cloner">

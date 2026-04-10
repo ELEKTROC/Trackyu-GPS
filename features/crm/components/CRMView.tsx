@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Modal } from '../../../components/Modal';
 import { ImportModal } from '../../../components/ImportModal';
-import { Lead, Client, View, CatalogItem, Tier } from '../../../types';
+import type { Lead, Client, View, CatalogItem, Tier } from '../../../types';
 import type { LeadStatus } from '../../../types/crm';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useIsMobile } from '../../../hooks/useIsMobile';
@@ -419,7 +419,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
             {/* HEADER CONTROLS */}
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center shrink-0">
                 <h2 className="hidden sm:flex text-xl font-bold text-slate-800 dark:text-white items-center gap-2">
-                    {mode === 'LEADS' ? <Users className="w-6 h-6 text-blue-600" /> : mode === 'CLIENTS' ? <Briefcase className="w-6 h-6 text-green-600" /> : <ShoppingBag className="w-6 h-6 text-purple-600" />}
+                    {mode === 'LEADS' ? <Users className="w-6 h-6 text-[var(--primary)]" /> : mode === 'CLIENTS' ? <Briefcase className="w-6 h-6 text-green-600" /> : <ShoppingBag className="w-6 h-6 text-purple-600" />}
                     {mode === 'LEADS' ? 'Gestion des Pistes (CRM)' : mode === 'CLIENTS' ? 'Base Clients' : 'Catalogue Produits & Services'}
                 </h2>
                 <div className="flex flex-wrap gap-2 items-center">
@@ -429,7 +429,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                         <input
                             type="text"
                             placeholder="Rechercher..."
-                            className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none dark:text-white w-full sm:w-64"
+                            className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white w-full sm:w-64"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -441,7 +441,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                             <select
                                 value={selectedCompany}
                                 onChange={(e) => setSelectedCompany(e.target.value)}
-                                className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none dark:text-white appearance-none cursor-pointer min-w-[150px]"
+                                className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white appearance-none cursor-pointer min-w-[150px]"
                             >
                                 <option value="all">Toutes les sociétés</option>
                                 {uniqueCompanies.map(c => (
@@ -455,10 +455,10 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                     {/* View Mode Toggle — desktop only */}
                     {!isMobile && mode === 'LEADS' && (
                         <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
-                            <button onClick={() => setViewMode('KANBAN')} className={`p-1.5 rounded ${viewMode === 'KANBAN' ? 'bg-white dark:bg-slate-700 shadow text-blue-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`} title="Vue Kanban">
+                            <button onClick={() => setViewMode('KANBAN')} className={`p-1.5 rounded ${viewMode === 'KANBAN' ? 'bg-white dark:bg-slate-700 shadow text-[var(--primary)]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`} title="Vue Kanban">
                                 <LayoutGrid className="w-4 h-4" />
                             </button>
-                            <button onClick={() => setViewMode('LIST')} className={`p-1.5 rounded ${viewMode === 'LIST' ? 'bg-white dark:bg-slate-700 shadow text-blue-600' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`} title="Vue Liste">
+                            <button onClick={() => setViewMode('LIST')} className={`p-1.5 rounded ${viewMode === 'LIST' ? 'bg-white dark:bg-slate-700 shadow text-[var(--primary)]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`} title="Vue Liste">
                                 <List className="w-4 h-4" />
                             </button>
                         </div>
@@ -480,13 +480,13 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                                 <Plus className="w-4 h-4" />
                                 {!isMobile && 'Saisie rapide'}
                             </button>
-                            <button onClick={() => { setEditingLead({}); setIsLeadFormOpen(true); }} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
+                            <button onClick={() => { setEditingLead({}); setIsLeadFormOpen(true); }} className="bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
                                 <Plus className="w-4 h-4" /> {isMobile ? 'Lead' : 'Nouveau Lead'}
                             </button>
                         </>
                     )}
                     {mode === 'CLIENTS' && (
-                        <button onClick={() => { setEditingClient(null); setIsClientFormOpen(true); }} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
+                        <button onClick={() => { setEditingClient(null); setIsClientFormOpen(true); }} className="bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm">
                             <Plus className="w-4 h-4" /> {isMobile ? 'Client' : 'Nouveau Client'}
                         </button>
                     )}
@@ -648,14 +648,14 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-500 uppercase">Valeur Potentielle</label>
-                                <p className="font-bold text-blue-600">{(selectedLead.potentialValue ?? 0).toLocaleString('fr-FR')}</p>
+                                <p className="font-bold text-[var(--primary)]">{(selectedLead.potentialValue ?? 0).toLocaleString('fr-FR')}</p>
                             </div>
                             <div>
                                 <label className="text-xs font-bold text-slate-500 uppercase">Statut</label>
                                 <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
                                     selectedLead.status === 'WON' ? 'bg-green-100 text-green-700' : 
                                     selectedLead.status === 'LOST' ? 'bg-red-100 text-red-700' : 
-                                    'bg-blue-100 text-blue-700'
+                                    'bg-[var(--primary-dim)] text-[var(--primary)]'
                                 }`}>{selectedLead.status}</span>
                             </div>
                             <div>
@@ -737,7 +737,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                     <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Motif / Commentaire</label>
                         <textarea 
-                            className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                             rows={3}
                             value={statusChangeModal.reason}
                             onChange={e => setStatusChangeModal({...statusChangeModal, reason: e.target.value})}
@@ -752,7 +752,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                         <button 
                             onClick={confirmStatusChange} 
                             disabled={!statusChangeModal.reason.trim()}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Confirmer
                         </button>

@@ -1,7 +1,7 @@
 // DocumentPreview.tsx - Extracted from FinanceView.tsx
 import React, { useState, useEffect } from 'react';
 import { Edit2, Download, Mail, FileCheck, CheckCircle, Clock, Send, AlertTriangle, XCircle, Ban } from 'lucide-react';
-import { Invoice, Quote } from '../../../../types';
+import type { Invoice, Quote } from '../../../../types';
 import { useDataContext } from '../../../../contexts/DataContext';
 import { useCurrency } from '../../../../hooks/useCurrency';
 
@@ -46,7 +46,7 @@ const categoryLabels: Record<string, string> = {
 // Helper: status badge config
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
     'DRAFT': { label: 'Brouillon', color: 'bg-slate-100 text-slate-700 border-slate-300', icon: Clock },
-    'SENT': { label: 'Envoyée', color: 'bg-blue-100 text-blue-700 border-blue-300', icon: Send },
+    'SENT': { label: 'Envoyée', color: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]', icon: Send },
     'PAID': { label: 'Payée', color: 'bg-green-100 text-green-700 border-green-300', icon: CheckCircle },
     'PARTIAL': { label: 'Partielle', color: 'bg-amber-100 text-amber-700 border-amber-300', icon: AlertTriangle },
     'OVERDUE': { label: 'En retard', color: 'bg-red-100 text-red-700 border-red-300', icon: AlertTriangle },
@@ -222,7 +222,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
                     <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1">
                         {isInvoice ? (item as Invoice).invoiceType || 'FACTURE' : 'DEVIS'}
                     </h1>
-                    <p className="text-base md:text-lg font-mono text-blue-600">N° {isInvoice ? (item as Invoice).number : ((item as Quote).number || item.id)}</p>
+                    <p className="text-base md:text-lg font-mono text-[var(--primary)]">N° {isInvoice ? (item as Invoice).number : ((item as Quote).number || item.id)}</p>
                     {/* Status Badge */}
                     {item.status && (() => {
                         const cfg = statusConfig[item.status] || { label: item.status, color: 'bg-slate-100 text-slate-600 border-slate-300', icon: Clock };
@@ -373,7 +373,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
                     )}
                     <div className="flex justify-between pt-2 border-t mt-2 text-base">
                         <span className="font-bold">{effectiveVatRate > 0 ? 'Total TTC:' : 'Total:'}</span>
-                        <span className="font-bold text-blue-600 font-mono">{formatPrice(total)}</span>
+                        <span className="font-bold text-[var(--primary)] font-mono">{formatPrice(total)}</span>
                     </div>
                     {/* Paid amount & Balance — for invoices only */}
                     {isInvoice && (() => {

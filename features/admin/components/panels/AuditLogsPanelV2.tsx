@@ -111,7 +111,7 @@ interface AuditFilter {
 // Actions avec config
 const ACTION_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string; bgColor: string; barColor: string }> = {
   CREATE: { label: 'Création', icon: Plus, color: 'text-green-600', bgColor: 'bg-green-100', barColor: 'bg-green-500' },
-  UPDATE: { label: 'Modification', icon: Edit2, color: 'text-blue-600', bgColor: 'bg-blue-100', barColor: 'bg-blue-500' },
+  UPDATE: { label: 'Modification', icon: Edit2, color: 'text-[var(--primary)]', bgColor: 'bg-[var(--primary-dim)]', barColor: 'bg-[var(--primary-dim)]0' },
   DELETE: { label: 'Suppression', icon: Trash2, color: 'text-red-600', bgColor: 'bg-red-100', barColor: 'bg-red-500' },
   LOGIN: { label: 'Connexion', icon: LogIn, color: 'text-purple-600', bgColor: 'bg-purple-100', barColor: 'bg-purple-500' },
   LOGOUT: { label: 'Déconnexion', icon: LogOut, color: 'text-slate-600', bgColor: 'bg-slate-100', barColor: 'bg-slate-500' },
@@ -580,8 +580,8 @@ export const AuditLogsPanelV2: React.FC = () => {
         </Card>
         <Card className="p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Clock className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+              <Clock className="w-5 h-5 text-[var(--primary)]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.today}</p>

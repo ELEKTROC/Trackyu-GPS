@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Navigation, Clock, Phone, MapPin, ChevronDown, Plus } from 'lucide-react';
-import { Intervention, Client, Ticket, CatalogItem, Contract, Tier, Vehicle, Device } from '../../../types';
+import type { Intervention, Client, Ticket, CatalogItem, Contract, Vehicle, Device } from '../../../types';
+import { Tier } from '../../../types';
 import { INTERVENTION_NATURES } from '../constants';
 import { useInterventionTypes } from '../../../hooks/useInterventionTypes';
 import { useCurrency } from '../../../hooks/useCurrency';
@@ -136,7 +137,7 @@ export const InterventionRequestTab: React.FC<InterventionRequestTabProps> = ({
                             <button
                                 type="button"
                                 onClick={onOpenCreateTicket}
-                                className="p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                className="p-2.5 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors"
                                 title="Créer un nouveau ticket"
                             >
                                 <Plus className="w-5 h-5" />
@@ -300,7 +301,7 @@ export const InterventionRequestTab: React.FC<InterventionRequestTabProps> = ({
                             <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto p-2 custom-scrollbar">
                                 {catalogItems.filter(i => i.category === 'Matériel').map(item => (
                                     <label key={item.id} className="flex items-center gap-2 p-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer text-sm">
-                                        <input title={item.name} type="checkbox" checked={formData.material?.includes(item.name) || false} onChange={() => handleMaterialToggle(item.name)} className="rounded border-slate-300 text-blue-600" />
+                                        <input title={item.name} type="checkbox" checked={formData.material?.includes(item.name) || false} onChange={() => handleMaterialToggle(item.name)} className="rounded border-slate-300 text-[var(--primary)]" />
                                         <span className="text-slate-700 dark:text-slate-200">{item.name}</span>
                                     </label>
                                 ))}

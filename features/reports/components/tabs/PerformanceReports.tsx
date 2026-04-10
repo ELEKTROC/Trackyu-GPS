@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Vehicle } from '../../../../types';
+import type { Vehicle } from '../../../../types';
 import { ReportLayout } from '../ReportLayout';
 import { ReportTable } from '../ReportTable';
 import { ReportFilterBar } from '../ReportFilterBar';
@@ -192,7 +192,7 @@ export const PerformanceReports: React.FC<PerformanceReportsProps> = ({ vehicles
                 ) : activeItem === 'summary' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <Card title="Score de Flotte Moyen">
-                            <div className="text-3xl font-bold text-blue-600">{avgScore.toFixed(1)}/100</div>
+                            <div className="text-3xl font-bold text-[var(--primary)]">{avgScore.toFixed(1)}/100</div>
                             <p className="text-sm text-slate-500">Performance globale</p>
                         </Card>
                         <Card title="Heures Moteur Totales">

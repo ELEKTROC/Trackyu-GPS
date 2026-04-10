@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Client } from '../../../types';
+import type { Client } from '../../../types';
 import { Save, X } from 'lucide-react';
 import { ClientSchema } from '../../../schemas/clientSchema';
 import { z } from 'zod';
@@ -265,13 +265,13 @@ export const ClientForm: React.FC<ClientFormProps> = ({ initialData, onSave, onC
             </FormSection>
 
             {/* Account Creation */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
+            <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-xl border border-[var(--primary)] dark:border-[var(--primary)]">
                 <label className="flex items-center gap-3 cursor-pointer">
                     <input 
                         type="checkbox" 
                         checked={formData.createUserAccount !== false}
                         onChange={e => setFormData({...formData, createUserAccount: e.target.checked})}
-                        className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" 
+                        className="w-5 h-5 rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" 
                     />
                     <div>
                         <span className="block text-sm font-bold text-slate-800 dark:text-white">Créer un compte utilisateur</span>
@@ -290,7 +290,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ initialData, onSave, onC
                 </button>
                 <button 
                     type="submit" 
-                    className="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 flex items-center gap-2 transition-colors"
+                    className="px-4 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--primary-light)] flex items-center gap-2 transition-colors"
                 >
                     <Save className="w-4 h-4" /> Enregistrer
                 </button>

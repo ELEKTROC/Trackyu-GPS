@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     Truck, ClipboardCheck, AlertTriangle, Activity, Loader2, ChevronDown, MapPin
 } from 'lucide-react';
-import { Intervention } from '../../../../types';
+import type { Intervention } from '../../../../types';
 import { api } from '../../../../services/api';
 import { logger } from '../../../../utils/logger';
 
@@ -293,7 +293,7 @@ export const InterventionVehicleTab: React.FC<VehicleTabProps> = ({
                             <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto p-2 custom-scrollbar">
                                 {catalogItems.filter(i => i.category === 'Matériel').map(item => (
                                     <label key={item.id} className="flex items-center gap-2 p-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer text-sm">
-                                        <input title={item.name} type="checkbox" checked={formData.material?.includes(item.name) || false} onChange={() => handleMaterialToggle(item.name)} className="rounded border-slate-300 text-blue-600" />
+                                        <input title={item.name} type="checkbox" checked={formData.material?.includes(item.name) || false} onChange={() => handleMaterialToggle(item.name)} className="rounded border-slate-300 text-[var(--primary)]" />
                                         <span className="text-slate-700 dark:text-slate-200">{item.name}</span>
                                     </label>
                                 ))}
@@ -403,7 +403,7 @@ export const InterventionVehicleTab: React.FC<VehicleTabProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     {['checkStart', 'checkLights', 'checkDashboard', 'checkAC', 'checkAudio', 'checkBattery'].map((field) => (
                         <label key={field} className="flex items-center p-3 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors select-none">
-                            <input type="checkbox" checked={!!(formData as Record<string, unknown>)[field]} onChange={e => setFormData({...formData, [field]: e.target.checked})} className="w-5 h-5 text-blue-600 rounded border-slate-300 focus:ring-blue-500 bg-white dark:bg-slate-900" />
+                            <input type="checkbox" checked={!!(formData as Record<string, unknown>)[field]} onChange={e => setFormData({...formData, [field]: e.target.checked})} className="w-5 h-5 text-[var(--primary)] rounded border-slate-300 focus:ring-[var(--primary)] bg-white dark:bg-slate-900" />
                             <span className="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200">
                                 {field === 'checkStart' && 'Démarrage Moteur OK'}
                                 {field === 'checkLights' && 'Feux & Signalisations OK'}

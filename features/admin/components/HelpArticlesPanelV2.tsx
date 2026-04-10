@@ -56,7 +56,7 @@ interface Category {
 // Map statique des classes Tailwind par couleur
 const HELP_COLOR_CLASSES: Record<string, { bg100: string; text600: string; text700: string; darkBg: string }> = {
   amber:   { bg100: 'bg-amber-100',   text600: 'text-amber-600',   text700: 'text-amber-700',   darkBg: 'dark:bg-amber-900/30' },
-  blue:    { bg100: 'bg-blue-100',    text600: 'text-blue-600',    text700: 'text-blue-700',    darkBg: 'dark:bg-blue-900/30' },
+  blue:    { bg100: 'bg-[var(--primary-dim)]',    text600: 'text-[var(--primary)]',    text700: 'text-[var(--primary)]',    darkBg: 'dark:bg-[var(--primary-dim)]' },
   green:   { bg100: 'bg-green-100',   text600: 'text-green-600',   text700: 'text-green-700',   darkBg: 'dark:bg-green-900/30' },
   purple:  { bg100: 'bg-purple-100',  text600: 'text-purple-600',  text700: 'text-purple-700',  darkBg: 'dark:bg-purple-900/30' },
   cyan:    { bg100: 'bg-cyan-100',    text600: 'text-cyan-600',    text700: 'text-cyan-700',    darkBg: 'dark:bg-cyan-900/30' },
@@ -434,7 +434,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
       <div className="flex items-center justify-between shrink-0">
         <div>
           <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-blue-600" />
+            <BookOpen className="w-6 h-6 text-[var(--primary)]" />
             Centre d'Aide
           </h2>
           <p className="text-sm text-slate-500">
@@ -443,7 +443,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-bold hover:bg-[var(--primary-light)]"
         >
           <Plus className="w-4 h-4" />
           Nouvel Article
@@ -462,7 +462,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === tab.id
-                ? 'border-blue-600 text-blue-600'
+                ? 'border-[var(--primary)] text-[var(--primary)]'
                 : 'border-transparent text-slate-500 hover:text-slate-700'
             }`}
           >
@@ -515,14 +515,14 @@ export const HelpArticlesPanelV2: React.FC = () => {
               <div className="flex border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-blue-50 text-blue-600' : 'bg-white text-slate-500'}`}
+                  className={`p-2 ${viewMode === 'grid' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-slate-500'}`}
                   title="Vue grille"
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list' ? 'bg-blue-50 text-blue-600' : 'bg-white text-slate-500'}`}
+                  className={`p-2 ${viewMode === 'list' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-slate-500'}`}
                   title="Vue liste"
                 >
                   <List className="w-4 h-4" />
@@ -567,7 +567,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                             article.type === 'video' ? 'bg-purple-100 text-purple-700' :
                             article.type === 'faq' ? 'bg-green-100 text-green-700' :
                             article.type === 'tutorial' ? 'bg-amber-100 text-amber-700' :
-                            'bg-blue-100 text-blue-700'
+                            'bg-[var(--primary-dim)] text-[var(--primary)]'
                           }`}>
                             {typeConfig.label}
                           </span>
@@ -697,7 +697,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
             <Card 
               key={cat.id} 
               className={`p-4 cursor-pointer hover:shadow-lg transition-all ${
-                selectedCategory === cat.id ? 'ring-2 ring-blue-400' : ''
+                selectedCategory === cat.id ? 'ring-2 ring-[var(--primary-dim)]' : ''
               }`}
               onClick={() => { setSelectedCategory(cat.id); setActiveTab('articles'); }}
             >
@@ -770,7 +770,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
             <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg">
               Annuler
             </button>
-            <button onClick={handleSave} className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold flex items-center gap-2">
+            <button onClick={handleSave} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-bold flex items-center gap-2">
               <Save className="w-4 h-4" />
               Enregistrer
             </button>
@@ -923,10 +923,10 @@ export const HelpArticlesPanelV2: React.FC = () => {
             
             {previewArticle.type === 'video' && previewArticle.videoUrl && (
               <div className="mb-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center gap-3">
-                <Play className="w-8 h-8 text-blue-600" />
+                <Play className="w-8 h-8 text-[var(--primary)]" />
                 <div>
                   <p className="font-medium">Vidéo: {previewArticle.duration}</p>
-                  <a href={previewArticle.videoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 flex items-center gap-1">
+                  <a href={previewArticle.videoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--primary)] flex items-center gap-1">
                     Ouvrir <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>

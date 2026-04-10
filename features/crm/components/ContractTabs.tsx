@@ -4,7 +4,7 @@ import { Tabs } from '../../../components/Tabs';
 import { ContractsView } from './ContractsView';
 import { SubscriptionsView } from './SubscriptionsView';
 import { BillingForecastView } from './BillingForecastView';
-import { View } from '../../../types';
+import type { View } from '../../../types';
 
 interface ContractTabsProps {
   dateRange?: { start: string; end: string };

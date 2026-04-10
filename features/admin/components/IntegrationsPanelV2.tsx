@@ -9,12 +9,18 @@ import { Card } from '../../../components/Card';
 import { Modal } from '../../../components/Modal';
 import { useToast } from '../../../contexts/ToastContext';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
-import { telegramService, TelegramBotInfo, TelegramConfig } from '../../../services/telegramService';
-import { resendService, ResendConfig } from '../../../services/resendService';
-import { waveService, WaveTransaction, WaveConfig } from '../../../services/waveService';
-import { whatsappService, WhatsAppConfig } from '../../../services/whatsappService';
-import { orangeSmsService, OrangeSmsConfig } from '../../../services/orangeSmsService';
-import { integrationService, IntegrationStatusDetail, type IntegrationProvider as IntegrationProviderId } from '../../../services/integrationService';
+import type { TelegramBotInfo, TelegramConfig } from '../../../services/telegramService';
+import { telegramService } from '../../../services/telegramService';
+import type { ResendConfig } from '../../../services/resendService';
+import { resendService } from '../../../services/resendService';
+import type { WaveTransaction, WaveConfig } from '../../../services/waveService';
+import { waveService } from '../../../services/waveService';
+import type { WhatsAppConfig } from '../../../services/whatsappService';
+import { whatsappService } from '../../../services/whatsappService';
+import type { OrangeSmsConfig } from '../../../services/orangeSmsService';
+import { orangeSmsService } from '../../../services/orangeSmsService';
+import type { IntegrationStatusDetail} from '../../../services/integrationService';
+import { integrationService, type IntegrationProvider as IntegrationProviderId } from '../../../services/integrationService';
 import { useCurrency } from '../../../hooks/useCurrency';
 import { logger } from '../../../utils/logger';
 import { TOAST } from '../../../constants/toastMessages';
@@ -628,7 +634,7 @@ export const IntegrationsPanelV2: React.FC = () => {
             <>
               <button
                 onClick={() => handleTestConnection(provider)}
-                className="flex-1 py-2 px-3 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg text-sm font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2 px-3 bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] rounded-lg text-sm font-medium hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/50 transition-colors flex items-center justify-center gap-2"
               >
                 <TestTube className="w-4 h-4" />
                 Tester
@@ -651,7 +657,7 @@ export const IntegrationsPanelV2: React.FC = () => {
             <>
               <button
                 onClick={() => openConfigModal(provider)}
-                className="flex-1 py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                className="flex-1 py-2 px-4 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--primary-light)] transition-colors flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Configurer
@@ -834,7 +840,7 @@ export const IntegrationsPanelV2: React.FC = () => {
               href={selectedProvider.docsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              className="flex items-center gap-2 text-sm text-[var(--primary)] hover:text-[var(--primary)] dark:text-[var(--primary)]"
             >
               <ExternalLink className="w-4 h-4" />
               Voir la documentation
@@ -854,7 +860,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                     onChange={(e) => setConfigData({ ...configData, [field.key]: e.target.value })}
                     placeholder={field.placeholder}
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                   />
                 ) : (
                   <div className="relative">
@@ -863,7 +869,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                       value={configData[field.key] || ''}
                       onChange={(e) => setConfigData({ ...configData, [field.key]: e.target.value })}
                       placeholder={field.placeholder}
-                      className="w-full px-3 py-2 pr-10 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 pr-10 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                     />
                     {field.type === 'password' && (
                       <button
@@ -894,7 +900,7 @@ export const IntegrationsPanelV2: React.FC = () => {
             <button
               onClick={handleSaveConfig}
               disabled={isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -922,7 +928,7 @@ export const IntegrationsPanelV2: React.FC = () => {
           {/* Connection Status */}
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
-              <RefreshCw className="w-8 h-8 animate-spin text-blue-500" />
+              <RefreshCw className="w-8 h-8 animate-spin text-[var(--primary)]" />
             </div>
           ) : testResult ? (
             <div className={`p-4 rounded-lg ${testResult.success ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
@@ -977,7 +983,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                         onClick={() => setSelectedChatId(String(chat.id))}
                         className={`w-full p-3 text-left rounded-lg border transition-colors ${
                           selectedChatId === String(chat.id)
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                            ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
                             : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                         }`}
                       >

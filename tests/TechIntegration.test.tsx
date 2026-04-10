@@ -5,7 +5,22 @@ import { TechView } from '../features/tech/components/TechView';
 import { DataContext } from '../contexts/DataContext';
 import { ToastContext } from '../contexts/ToastContext';
 import { AuthContext } from '../contexts/AuthContext';
-import { Intervention, User, DeviceStock } from '../types';
+import type { Intervention, User, DeviceStock } from '../types';
+
+// Mock react-query to avoid QueryClientProvider dependency
+vi.mock('@tanstack/react-query', async () => {
+  const actual = await vi.importActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useQuery: () => ({ data: [], isLoading: false, error: null }),
+    useQueryClient: () => ({ invalidateQueries: vi.fn(), setQueryData: vi.fn(), getQueryData: vi.fn() }),
+  };
+});
+
+// Mock useTenantBranding to avoid QueryClientProvider dependency
+vi.mock('../hooks/useTenantBranding', () => ({
+  useTenantBranding: () => ({ branding: null, isLoading: false }),
+}));
 
 // Mock Data
 const mockInterventions: Intervention[] = [
@@ -60,6 +75,9 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
     clients: [],
     tickets: [],
     tiers: [],
+    branches: [],
+    invoices: [],
+    contracts: [],
     updateIntervention: vi.fn(),
     deleteIntervention: vi.fn(),
     addIntervention: vi.fn(),

@@ -108,15 +108,15 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
       >
         <div 
           className={`flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-200 ${
-            shouldTrigger || isRefreshing ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700' : ''
+            shouldTrigger || isRefreshing ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]' : ''
           }`}
         >
           <RefreshCw 
             className={`w-5 h-5 transition-all duration-200 ${
               isRefreshing 
-                ? 'animate-spin text-blue-600 dark:text-blue-400' 
+                ? 'animate-spin text-[var(--primary)] dark:text-[var(--primary)]' 
                 : shouldTrigger 
-                  ? 'text-blue-600 dark:text-blue-400' 
+                  ? 'text-[var(--primary)] dark:text-[var(--primary)]' 
                   : 'text-slate-400 dark:text-slate-500'
             }`}
             style={{ 
@@ -148,7 +148,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         >
           <span className={`text-xs font-medium px-3 py-1 rounded-full transition-colors ${
             shouldTrigger 
-              ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400' 
+              ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' 
               : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
           }`}>
             {shouldTrigger ? 'Relâchez pour rafraîchir' : 'Tirez pour rafraîchir'}

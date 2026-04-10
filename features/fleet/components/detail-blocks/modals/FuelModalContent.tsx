@@ -62,8 +62,8 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({ history = []
     <div className="p-6 space-y-8">
       {/* KPIs */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-          <div className="flex items-center gap-2 text-blue-600 mb-1">
+        <div className="bg-[var(--primary-dim)] p-4 rounded-xl border border-[var(--primary)]">
+          <div className="flex items-center gap-2 text-[var(--primary)] mb-1">
             <Droplet className="w-4 h-4" />
             <span className="text-sm font-bold">Conso. Moyenne</span>
           </div>

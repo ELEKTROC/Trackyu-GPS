@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lead, CatalogItem, Tier } from '../../../types';
+import type { Lead, CatalogItem, Tier } from '../../../types';
 import { Modal } from '../../../components/Modal';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
@@ -147,14 +147,14 @@ export const LeadFormModal: React.FC<LeadFormModalProps> = ({
                         <button
                             type="button"
                             onClick={() => setExpanded(true)}
-                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                            className="flex items-center gap-1 text-xs text-[var(--primary)] hover:text-[var(--primary)] font-medium"
                         >
                             Formulaire complet
                             <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                         <div className="flex gap-2">
                             <button onClick={onClose} className="px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Annuler</button>
-                            <button onClick={handleSave} disabled={isSaving} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-60">
+                            <button onClick={handleSave} disabled={isSaving} className="px-4 py-2 bg-[var(--primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--primary-light)] transition-colors disabled:opacity-60">
                                 {isSaving ? 'Enregistrement…' : 'Enregistrer'}
                             </button>
                         </div>
@@ -293,7 +293,7 @@ export const LeadFormModal: React.FC<LeadFormModalProps> = ({
                         </div>
                     </div>
                     <p className="text-xs text-slate-400 mt-1 text-right">
-                        Valeur estimée: <span className="font-bold text-blue-600">{(editingLead.interestedProducts?.reduce((sum, p) => sum + (p.price * (p.quantity || 1)), 0) || 0).toLocaleString()}</span>
+                        Valeur estimée: <span className="font-bold text-[var(--primary)]">{(editingLead.interestedProducts?.reduce((sum, p) => sum + (p.price * (p.quantity || 1)), 0) || 0).toLocaleString()}</span>
                     </p>
                 </FormField>
 
@@ -308,7 +308,7 @@ export const LeadFormModal: React.FC<LeadFormModalProps> = ({
 
                 <div className="flex justify-end gap-2 pt-2">
                     <button onClick={onClose} className="px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Annuler</button>
-                    <button onClick={handleSave} disabled={isSaving} className="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors disabled:opacity-60">
+                    <button onClick={handleSave} disabled={isSaving} className="px-4 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-bold hover:bg-[var(--primary-light)] transition-colors disabled:opacity-60">
                         {isSaving ? 'Enregistrement…' : 'Enregistrer'}
                     </button>
                 </div>

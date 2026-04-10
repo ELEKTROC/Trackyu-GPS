@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Invoice, Quote, Client, Vehicle, Tier, Tenant } from '../../../types';
+import type { Invoice, Quote, Client, Vehicle, Tier, Tenant } from '../../../types';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
@@ -7,7 +7,8 @@ import { InvoiceSchema, QuoteSchema } from '../../../schemas/financeSchema';
 import { z } from 'zod';
 import { Plus, Trash2, ChevronDown, ChevronUp, Save, X, Calculator, Check, Lock } from 'lucide-react';
 import { useCurrency } from '../../../hooks/useCurrency';
-import { usePreviewNumber, useGetNextNumber, useOrgTaxRate, NumberingModule } from '../../../services/numberingService';
+import type { NumberingModule } from '../../../services/numberingService';
+import { usePreviewNumber, useGetNextNumber, useOrgTaxRate } from '../../../services/numberingService';
 import { PAYMENT_TERMS } from '../constants';
 import { FormField, Input, Select, Textarea, FormSection, FormGrid } from '../../../components/form';
 
@@ -462,7 +463,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     
                     {/* Ligne 2 : Objet + Date */}
                     <FormField
-                        label={<>Objet{isNew && <span className="text-blue-500 text-[10px] ml-1">(Auto-généré, modifiable)</span>}</>}
+                        label={<>Objet{isNew && <span className="text-[var(--primary)] text-[10px] ml-1">(Auto-généré, modifiable)</span>}</>}
                         className="md:col-span-2"
                     >
                         <Input
@@ -570,7 +571,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                                 >
                                     <div className="flex-1 flex flex-wrap gap-1">
                                         {selectedPlates.length > 0 ? selectedPlates.map(plate => (
-                                            <span key={plate} className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+                                            <span key={plate} className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] text-xs rounded-full">
                                                 {plate}
                                                 <X 
                                                     className="w-3 h-3 cursor-pointer hover:text-red-500" 
@@ -614,9 +615,9 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                                                         <div
                                                             key={v.id}
                                                             onClick={() => togglePlate(plate)}
-                                                            className={`flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 ${isSelected ? 'bg-blue-50 dark:bg-blue-900/30' : ''}`}
+                                                            className={`flex items-center gap-2 p-2 text-xs cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 ${isSelected ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
                                                         >
-                                                            <div className={`w-4 h-4 border rounded flex items-center justify-center ${isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 dark:border-slate-600'}`}>
+                                                            <div className={`w-4 h-4 border rounded flex items-center justify-center ${isSelected ? 'bg-[var(--primary)] border-[var(--primary)] text-white' : 'border-slate-300 dark:border-slate-600'}`}>
                                                                 {isSelected && <Check className="w-3 h-3" />}
                                                             </div>
                                                             <span className="font-mono font-bold">{plate}</span>
@@ -701,7 +702,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                                             <div
                                                 key={ci.id}
                                                 onMouseDown={(e) => { e.preventDefault(); handleItemSelect(index, ci.name); setOpenCatalogIndex(null); setCatalogSearchTerm(''); }}
-                                                className={`p-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer text-xs flex justify-between ${item.description === ci.name ? 'bg-blue-50 dark:bg-blue-900/20 font-bold' : ''}`}
+                                                className={`p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 cursor-pointer text-xs flex justify-between ${item.description === ci.name ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] font-bold' : ''}`}
                                             >
                                                 <span>{ci.name}</span>
                                                 <span className="text-slate-400 font-mono">{formatPrice(ci.price)}</span>
@@ -724,7 +725,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                             </div>
                         </div>
                     ))}
-                    <button onClick={addItem} className="flex items-center gap-1 text-blue-600 text-xs font-bold mt-2"><Plus className="w-3 h-3" /> Ajouter une ligne</button>
+                    <button onClick={addItem} className="flex items-center gap-1 text-[var(--primary)] text-xs font-bold mt-2"><Plus className="w-3 h-3" /> Ajouter une ligne</button>
                 </div>
             </FormSection>
 
@@ -739,7 +740,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         <span className="text-slate-500">TVA (%):</span> 
                         <input type="number" value={formState.vatRate ?? 0} onChange={e => { const v = parseFloat(e.target.value); setFormState({...formState, vatRate: isNaN(v) ? 0 : v}); }} className="w-20 p-1.5 text-right border border-slate-200 dark:border-slate-600 rounded-lg dark:bg-slate-700 bg-white text-xs" />
                     </div>
-                    <div className="flex justify-between pt-2 border-t dark:border-slate-700"><span className="font-bold">Total TTC:</span><span className="font-bold text-blue-600 font-mono">{formatPrice(total)}</span></div>
+                    <div className="flex justify-between pt-2 border-t dark:border-slate-700"><span className="font-bold">Total TTC:</span><span className="font-bold text-[var(--primary)] font-mono">{formatPrice(total)}</span></div>
                 </div>
             </div>
 
@@ -756,7 +757,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
             <div className="flex justify-end gap-2 pt-4 border-t dark:border-slate-700">
                 <button onClick={onCancel} className="px-4 py-2 border rounded hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold">Annuler</button>
-                <button onClick={handleSave} disabled={isSaving} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"><Save className="w-4 h-4" /> {isSaving ? 'Enregistrement...' : 'Enregistrer'}</button>
+                <button onClick={handleSave} disabled={isSaving} className="px-4 py-2 bg-[var(--primary)] text-white rounded hover:bg-[var(--primary-light)] font-bold flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"><Save className="w-4 h-4" /> {isSaving ? 'Enregistrement...' : 'Enregistrer'}</button>
             </div>
         </div>
     );

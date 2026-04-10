@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Vehicle, VehicleStatus } from '../../../types';
+import type { Vehicle} from '../../../types';
+import { VehicleStatus } from '../../../types';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import {
   Truck, Car, X, Navigation, Lock, Bike, Bus, HardHat,
@@ -461,7 +462,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
       <div className="bg-slate-900 text-white shrink-0 p-4 shadow-md relative">
         <div className="flex justify-between items-start mb-3">
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg border border-white/10">
+                <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-lg border border-white/10">
                     {vehicle.type === 'TRUCK' || vehicle.type === 'VAN' ? <Truck className="w-5 h-5 text-white" /> : 
                      vehicle.type === 'MOTORCYCLE' ? <Bike className="w-5 h-5 text-white" /> :
                      vehicle.type === 'BUS' ? <Bus className="w-5 h-5 text-white" /> :
@@ -472,14 +473,14 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
                     <h2 className="text-lg font-bold leading-tight">{vehicle.name}</h2>
                     {vehicle.plate && <p className="text-slate-400 text-xs mt-0.5">{vehicle.plate}</p>}
                     <div className="flex items-center gap-1 mt-1">
-                      <MapPin className="w-3 h-3 text-blue-400 shrink-0" />
+                      <MapPin className="w-3 h-3 text-[var(--primary)] shrink-0" />
                       <span className="text-xs text-slate-300 truncate max-w-[160px]" title={vehicle.address || vehicle.geofence || ''}>
                         {vehicle.address || vehicle.geofence || `${vehicle.location?.lat?.toFixed(5)}, ${vehicle.location?.lng?.toFixed(5)}`}
                       </span>
                       <button
                         onClick={() => navigator.clipboard.writeText(`${vehicle.location?.lat},${vehicle.location?.lng}`)}
                         title="Copier les coordonnées"
-                        className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-blue-300 transition-colors shrink-0"
+                        className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-[var(--primary)] transition-colors shrink-0"
                       >
                         <Copy className="w-3 h-3" />
                       </button>
@@ -488,7 +489,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
                         target="_blank"
                         rel="noreferrer"
                         title="Ouvrir dans Google Maps"
-                        className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-blue-300 transition-colors shrink-0"
+                        className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-[var(--primary)] transition-colors shrink-0"
                       >
                         <ExternalLink className="w-3 h-3" />
                       </a>
@@ -498,7 +499,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
             <div className="flex gap-2">
                  <button 
                     onClick={() => setIsConfigMode(!isConfigMode)}
-                    className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-blue-600 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+                    className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
                     title="Configurer l'affichage"
                  >
                     <SlidersHorizontal className="w-4 h-4" />
@@ -524,7 +525,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
              
              {/* Kilométrage */}
              <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
-                 <Navigation className="w-3 h-3 text-blue-400" />
+                 <Navigation className="w-3 h-3 text-[var(--primary)]" />
                  <span>{(vehicle.mileage / 1000).toFixed(1)} km</span>
              </div>
 
@@ -540,7 +541,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
 
       {/* --- BARRE INFO CONFIG --- */}
       {isConfigMode && (
-          <div className="bg-blue-50 dark:bg-blue-900/30 border-b border-blue-100 dark:border-blue-800 px-4 py-2 text-xs text-blue-700 dark:text-blue-300 flex justify-between items-center">
+          <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-b border-[var(--primary)] dark:border-[var(--primary)] px-4 py-2 text-xs text-[var(--primary)] dark:text-[var(--primary)] flex justify-between items-center">
              <span><Info className="w-3 h-3 inline mr-1"/> Mode Config : Cliquez sur l'œil pour masquer les éléments ou les blocs.</span>
              <button onClick={() => setIsConfigMode(false)} className="font-bold hover:underline">Terminé</button>
           </div>

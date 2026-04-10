@@ -19,7 +19,7 @@ import {
     Save, X, Calendar, Truck, Wrench, PenTool,
     CheckCircle, PlayCircle, FileText
 } from 'lucide-react';
-import { Intervention, Invoice, Ticket } from '../../../types';
+import type { Intervention, Invoice, Ticket } from '../../../types';
 import type { SystemUser } from '../../../types/auth';
 import { TOAST } from '../../../constants/toastMessages';
 import { getStatusBgClass } from '../../../constants';
@@ -204,14 +204,14 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
                                 </span>
                             )}
                             {formData.nature && (
-                                <span className="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 px-2 py-0.5 rounded text-[10px] font-medium text-blue-700 dark:text-blue-300">
+                                <span className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--primary)] dark:border-[var(--primary)] px-2 py-0.5 rounded text-[10px] font-medium text-[var(--primary)] dark:text-[var(--primary)]">
                                     {formData.nature}
                                 </span>
                             )}
                         </div>
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
                             Créé le {new Date(formData.createdAt || Date.now()).toLocaleDateString('fr-FR')} •
-                            Ticket lié: <span className="font-mono text-blue-600">{formData.ticketId || 'N/A'}</span>
+                            Ticket lié: <span className="font-mono text-[var(--primary)]">{formData.ticketId || 'N/A'}</span>
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -232,7 +232,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
                             key={tab.id}
                             onClick={() => handleTabChange(tab.id)}
                             className={`py-3 sm:py-4 px-2 sm:px-4 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${activeTab === tab.id
-                                    ? 'border-blue-600 text-blue-600'
+                                    ? 'border-[var(--primary)] text-[var(--primary)]'
                                     : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                                 }`}
                         >
@@ -387,7 +387,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
                         {/* Save */}
                         <button
                             onClick={handleSubmit}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-bold flex items-center gap-2"
+                            className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] text-sm font-bold flex items-center gap-2"
                         >
                             <Save className="w-4 h-4" /> Enregistrer
                         </button>

@@ -25,7 +25,7 @@ import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
-import { DocumentTemplate } from '../../../types';
+import type { DocumentTemplate } from '../../../types';
 
 // Types de documents disponibles
 const DOCUMENT_TYPES = [
@@ -438,7 +438,7 @@ export const DocumentTemplatesPanelV2 = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
       </div>
     );
   }
@@ -453,7 +453,7 @@ export const DocumentTemplatesPanelV2 = () => {
         </div>
         <button
           onClick={() => openNewModal()}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
           Nouveau modèle
@@ -585,7 +585,7 @@ export const DocumentTemplatesPanelV2 = () => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
                 placeholder="Ex: Facture standard"
                 required
               />
@@ -601,7 +601,7 @@ export const DocumentTemplatesPanelV2 = () => {
                   type: e.target.value as DocumentTemplate['type'],
                   content: formData.content || DEFAULT_TEMPLATES[e.target.value] || ''
                 })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
               >
                 {DOCUMENT_TYPES.map(type => (
                   <option key={type.id} value={type.id}>{type.label}</option>
@@ -641,11 +641,11 @@ export const DocumentTemplatesPanelV2 = () => {
                           key={v.key}
                           type="button"
                           onClick={() => insertVariable(v.key)}
-                          className="flex items-center gap-2 p-2 text-left hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg group transition-colors"
+                          className="flex items-center gap-2 p-2 text-left hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 rounded-lg group transition-colors"
                         >
-                          <Code className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                          <Code className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
                           <div className="min-w-0">
-                            <p className="text-xs font-mono text-blue-600 dark:text-blue-400 truncate">{v.key}</p>
+                            <p className="text-xs font-mono text-[var(--primary)] dark:text-[var(--primary)] truncate">{v.key}</p>
                             <p className="text-xs text-slate-500 truncate">{v.label}</p>
                           </div>
                         </button>
@@ -670,7 +670,7 @@ export const DocumentTemplatesPanelV2 = () => {
                     setFormData({ ...formData, content: DEFAULT_TEMPLATES[formData.type] });
                   }
                 }}
-                className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                className="text-xs text-[var(--primary)] hover:text-[var(--primary)] flex items-center gap-1"
               >
                 <RefreshCw className="w-3 h-3" />
                 Réinitialiser
@@ -680,7 +680,7 @@ export const DocumentTemplatesPanelV2 = () => {
               ref={contentRef}
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full h-64 px-3 py-2 border rounded-lg font-mono text-xs dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-blue-500"
+              className="w-full h-64 px-3 py-2 border rounded-lg font-mono text-xs dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
               placeholder="<!DOCTYPE html>..."
             />
           </div>
@@ -709,7 +709,7 @@ export const DocumentTemplatesPanelV2 = () => {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                 {editingTemplate ? 'Mettre à jour' : 'Créer'}
