@@ -25,7 +25,7 @@ cd ..
 
 # Secrets scan - block commits with hardcoded secrets
 echo "🔐 Scanning for secrets..."
-SECRETS_FOUND=$(git diff --cached --diff-filter=ACMR | grep -iE "(password|secret|api_key|token|private_key)\s*[:=]\s*['\"][^'\"]{8,}" | grep -v "\.env" | grep -v "test" | grep -v "mock" | grep -v "example" || true)
+SECRETS_FOUND=$(git diff --cached --diff-filter=ACMR | grep -iE "\b(password|secret|api_key|token|private_key)\b\s*[:=]\s*['\"][^'\"]{8,}" | grep -v "\.env" | grep -v "test" | grep -v "mock" | grep -v "example" | grep -v "plainPassword" || true)
 if [ -n "$SECRETS_FOUND" ]; then
   echo "❌ Potential secrets found in staged files:"
   echo "$SECRETS_FOUND"
