@@ -593,8 +593,7 @@ input[type="number"]::-webkit-outer-spin-button {
     justify-content: center;
     gap: 0.5rem;
     font-family: var(--brand-font);
-    font-weight: 600;
-    border-radius: var(--radius-md);
+    font-weight: 700;
     transition: opacity 0.15s ease, transform 0.1s ease, background-color 0.15s ease;
     cursor: pointer;
     white-space: nowrap;
@@ -606,65 +605,69 @@ input[type="number"]::-webkit-outer-spin-button {
     box-shadow: 0 0 0 3px var(--primary-dim);
   }
   .btn:disabled {
-    opacity: 0.4;
+    opacity: 0.6;
     cursor: not-allowed;
   }
   .btn:not(:disabled):active {
     transform: scale(0.97);
+    opacity: 0.82;
   }
 
-  /* Tailles */
+  /* Tailles — identiques mobile (paddingV / paddingH / fontSize / borderRadius) */
   .btn-sm {
-    font-size: var(--font-size-xs);
-    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;     /* 13px */
+    padding: 0.4375rem 0.875rem; /* 7px 14px */
+    border-radius: var(--radius-sm); /* 8px */
     min-height: 32px;
   }
   .btn-md {
-    font-size: var(--font-size-sm);
-    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;      /* 14px */
+    padding: 0.75rem 1.25rem; /* 12px 20px */
+    border-radius: 0.625rem;  /* 10px — entre sm et md comme mobile */
     min-height: 44px;
   }
   .btn-lg {
-    font-size: var(--font-size-body);
-    padding: 0.875rem 1.75rem;
+    font-size: var(--font-size-body); /* 15px */
+    padding: 0.9375rem 1.5rem; /* 15px 24px */
+    border-radius: var(--radius-md); /* 12px */
     min-height: 52px;
   }
   .btn-full {
     width: 100%;
   }
 
-  /* Variantes */
+  /* Variantes — miroir exact Button.tsx mobile */
   .btn-primary {
     background-color: var(--primary);
-    color: var(--text-on-primary);
+    color: #ffffff;
   }
   .btn-primary:not(:disabled):hover {
     background-color: var(--primary-light);
   }
 
+  /* secondary : bordure 1.5px primary, texte primary, fond transparent */
   .btn-secondary {
-    background-color: var(--bg-elevated);
-    color: var(--text-primary);
-    border: 1px solid var(--border);
-  }
-  .btn-secondary:not(:disabled):hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-
-  .btn-ghost {
     background-color: transparent;
     color: var(--primary);
-    border: 1px solid transparent;
+    border: 1.5px solid var(--primary);
+  }
+  .btn-secondary:not(:disabled):hover {
+    background-color: var(--primary-dim);
+  }
+
+  /* ghost : transparent, texte text-secondary */
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid transparent;
   }
   .btn-ghost:not(:disabled):hover {
-    background-color: var(--primary-dim);
-    border-color: var(--primary-dim);
+    background-color: var(--bg-elevated);
   }
 
   .btn-danger {
     background-color: var(--color-error);
-    color: #FFFFFF;
+    color: #ffffff;
   }
   .btn-danger:not(:disabled):hover {
     opacity: 0.85;

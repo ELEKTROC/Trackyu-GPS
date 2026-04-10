@@ -138,19 +138,19 @@ const KPICard: React.FC<{
   return (
     <div
       onClick={onClick}
-      className={`bg-[var(--bg-surface)] p-4 rounded-xl border border-[var(--border)] shadow-sm hover:shadow-md transition-all duration-200 ${onClick ? 'cursor-pointer hover:border-[var(--primary)]' : ''}`}
+      className={`bg-[var(--bg-surface)] p-4 rounded-[14px] border border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-all duration-200 ${onClick ? 'cursor-pointer hover:border-[var(--primary)]' : ''}`}
     >
-      <div className="flex items-start justify-between mb-2">
-        <div className={`p-2 rounded-lg ${bgColor}`}>
+      <div className="flex items-start justify-between mb-3">
+        <div className={`p-2.5 rounded-[10px] ${bgColor}`}>
           <Icon className={`w-5 h-5 ${color}`} />
         </div>
         {trend && trend.value !== 0 && (
           <span
-            className={`flex items-center gap-0.5 text-xs font-semibold px-1.5 py-0.5 rounded-full ${
+            className={`flex items-center gap-0.5 text-[11px] font-bold px-1.5 py-0.5 rounded-full ${
               trend.trend === 'up'
-                ? 'bg-green-50 text-green-600'
+                ? 'bg-[rgba(34,197,94,0.12)] text-[var(--status-moving)]'
                 : trend.trend === 'down'
-                  ? 'bg-red-50 text-red-600'
+                  ? 'bg-[rgba(239,68,68,0.12)] text-[var(--status-stopped)]'
                   : 'text-[var(--text-muted)] bg-[var(--bg-elevated)]'
             }`}
           >
@@ -160,9 +160,9 @@ const KPICard: React.FC<{
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-[var(--text-primary)]">{displayValue}</p>
-      <p className="text-xs text-[var(--text-muted)] mt-0.5">{label}</p>
-      {subtitle && <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{subtitle}</p>}
+      <p className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{displayValue}</p>
+      <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-tight">{label}</p>
+      {subtitle && <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-tight">{subtitle}</p>}
     </div>
   );
 };
@@ -827,45 +827,42 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               label: 'En Route',
               value: fleet.moving,
               icon: Activity,
-              color: 'text-accent',
-              border: 'border-l-[var(--brand-accent)]',
-              bg: 'bg-accent-light',
+              color: 'text-[var(--status-moving)]',
+              accentColor: 'var(--status-moving)',
             },
             {
               label: 'Arrêté/Ralenti',
               value: fleet.stopped + fleet.idle,
               icon: PauseCircle,
-              color: 'text-orange-600',
-              border: 'border-l-orange-500',
-              bg: 'bg-orange-50',
+              color: 'text-[var(--status-idle)]',
+              accentColor: 'var(--status-idle)',
             },
             {
               label: 'Hors Ligne',
               value: fleet.offline,
               icon: WifiOff,
-              color: 'text-[var(--text-muted)]',
-              border: 'border-l-slate-400',
-              bg: 'bg-[var(--bg-elevated)]',
+              color: 'text-[var(--status-offline)]',
+              accentColor: 'var(--status-offline)',
             },
             {
               label: 'Alertes Véhicules',
               value: fleet.alertsCount,
               icon: AlertCircle,
-              color: fleet.alertsCount > 0 ? 'text-red-600' : 'text-green-600',
-              border: fleet.alertsCount > 0 ? 'border-l-red-500' : 'border-l-green-500',
-              bg: fleet.alertsCount > 0 ? 'bg-red-50 dark:bg-red-900/30' : 'bg-green-50 dark:bg-green-900/30',
+              color: fleet.alertsCount > 0 ? 'text-[var(--status-stopped)]' : 'text-[var(--status-moving)]',
+              accentColor: fleet.alertsCount > 0 ? 'var(--status-stopped)' : 'var(--status-moving)',
             },
           ].map((s, i) => (
             <div
               key={i}
-              className={`bg-[var(--bg-surface)] p-3 rounded-xl border border-[var(--border)] border-l-4 ${s.border}`}
+              className="bg-[var(--bg-surface)] rounded-[12px] border border-[var(--border)] overflow-hidden"
+              style={{ borderLeft: `4px solid ${s.accentColor}` }}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between p-3">
                 <div>
-                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase">{s.label}</p>
-                  <p className={`text-xl font-bold ${s.color}`}>{s.value}</p>
+                  <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide">{s.label}</p>
+                  <p className={`text-xl font-bold tabular-nums ${s.color}`}>{s.value}</p>
                 </div>
-                <div className={`p-2 rounded-full ${s.bg}`}>
+                <div className="p-2 rounded-full bg-[var(--bg-elevated)]">
                   <s.icon className={`w-4 h-4 ${s.color}`} />
                 </div>
               </div>
@@ -970,7 +967,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           <MiniStat
             label="MRR Contrats"
             value={fmt(business.mrr)}
-            color="text-blue-600"
+            color="text-[var(--primary)]"
             onClick={() => nav(View.CONTRACTS)}
           />
           <MiniStat
@@ -1000,7 +997,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           <MiniStat
             label="Leads Actifs"
             value={business.activeLeads}
-            color="text-blue-600"
+            color="text-[var(--primary)]"
             onClick={() => nav(View.LEADS)}
           />
           <MiniStat label="Leads Gagnés (période)" value={business.wonLeads} color="text-green-600" />
@@ -1017,7 +1014,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             color={support.open > 10 ? 'text-red-600' : 'text-[var(--text-primary)]'}
             onClick={() => nav(View.SUPPORT)}
           />
-          <MiniStat label="Tickets En Cours" value={support.inProgress} color="text-blue-600" />
+          <MiniStat label="Tickets En Cours" value={support.inProgress} color="text-[var(--primary)]" />
           <MiniStat
             label="Critiques"
             value={support.critical}
@@ -1033,7 +1030,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           <div className="grid grid-cols-3 gap-2 text-center">
             {[
               { label: 'En attente', value: tech.pending, color: 'text-amber-600' },
-              { label: 'En cours', value: tech.inProgress, color: 'text-blue-600' },
+              { label: 'En cours', value: tech.inProgress, color: 'text-[var(--primary)]' },
               { label: 'Terminées', value: tech.completed, color: 'text-green-600' },
             ].map((s, i) => (
               <div key={i} className="bg-[var(--bg-elevated)] rounded-lg p-2">
@@ -1072,8 +1069,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               <AreaChart data={activityData} margin={{ top: 5, right: 5, left: -25, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gSpeed" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#E8771A" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#E8771A" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGrid} />
@@ -1090,7 +1087,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                 <Area
                   type="monotone"
                   dataKey="speed"
-                  stroke="#3b82f6"
+                  stroke="#E8771A"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#gSpeed)"
@@ -1099,7 +1096,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                 <Area
                   type="monotone"
                   dataKey="active"
-                  stroke="#10b981"
+                  stroke="#22C55E"
                   strokeWidth={2}
                   fill="transparent"
                   name="Actifs"
@@ -1276,8 +1273,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           <StatusBadge
             count={stockStats.installed}
             label="Balises installées"
-            color="text-blue-600"
-            dotColor="bg-blue-500"
+            color="text-[var(--primary)]"
+            dotColor="bg-[var(--primary)]"
           />
           <StatusBadge
             count={stockStats.rma}
@@ -1308,7 +1305,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             </div>
             <div className="w-full h-2 bg-[var(--border-strong)] rounded-full overflow-hidden">
               <div
-                className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                className="h-full rounded-full transition-all duration-500"
+              style={{ backgroundColor: 'var(--primary)' }}
                 style={{ width: `${pct(stockStats.installed, stockStats.totalBoxes)}%` }}
               />
             </div>
@@ -1326,7 +1324,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                 className="flex items-center justify-between p-2 bg-[var(--bg-elevated)] rounded-lg"
               >
                 <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-6 rounded-full ${v.overdue ? 'bg-red-500' : 'bg-blue-500'}`} />
+                  <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: v.overdue ? 'var(--status-stopped)' : 'var(--primary)' }} />
                   <div>
                     <p className="text-xs font-bold text-[var(--text-primary)]">{v.name}</p>
                     <p className="text-[10px] text-[var(--text-muted)]">{v.plate || '-'}</p>
@@ -1352,20 +1350,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
 
       <Card>
         <SectionHeader title="Alertes Récentes" icon={AlertCircle} badge={recentAlerts.length || undefined} />
-        <div className="space-y-2 max-h-[280px] overflow-y-auto custom-scrollbar">
+        <div className="space-y-1.5 max-h-[280px] overflow-y-auto">
           {recentAlerts.length > 0 ? (
             recentAlerts.map((alert: Alert, i: number) => (
-              <div key={i} className="flex items-start gap-2 p-2 bg-[var(--bg-elevated)] rounded-lg">
-                <div className="p-1.5 bg-red-50 dark:bg-red-900/30 rounded-lg mt-0.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-red-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-[var(--text-primary)] truncate">
-                    {alert.vehicleName || alert.type || 'Alerte véhicule'}
-                  </p>
-                  <p className="text-[10px] text-[var(--text-muted)] truncate">{alert.message}</p>
-                  <p className="text-[10px] text-[var(--text-muted)] mt-0.5">
-                    {new Date(alert.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}{' '}
+              /* Barre latérale rouge — miroir Card accent mobile */
+              <div
+                key={i}
+                className="flex items-stretch rounded-[10px] border border-[var(--border)] overflow-hidden"
+                style={{ backgroundColor: 'var(--bg-elevated)' }}
+              >
+                <div className="w-1 shrink-0" style={{ backgroundColor: 'var(--status-stopped)' }} />
+                <div className="flex items-start gap-2 p-2.5 flex-1 min-w-0">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: 'var(--status-stopped)' }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-[var(--text-primary)] truncate">
+                      {alert.vehicleName || alert.type || 'Alerte véhicule'}
+                    </p>
+                    {alert.message && (
+                      <p className="text-[10px] text-[var(--text-muted)] truncate leading-tight">{alert.message}</p>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-[var(--text-muted)] shrink-0 tabular-nums">
                     {new Date(alert.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -1407,18 +1412,31 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         </div>
       )}
 
-      {/* HEADER */}
+      {/* HEADER — salutation contextuelle (inspiré mobile DashboardScreen) */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-bold text-[var(--text-primary)] hidden sm:block">
-            {roleFamily === 'CLIENT' ? 'Mon Parc' : roleFamily === 'TECH' ? 'Tableau de Bord Technique' : roleFamily === 'COMMERCIAL' ? 'Tableau de Bord Commercial' : roleFamily === 'FINANCE' ? 'Tableau de Bord Finance' : roleFamily === 'SUPPORT' ? 'Tableau de Bord Support' : 'Tableau de Bord'}
-          </h1>
-          <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1">
-            <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
-            {loading
-              ? 'Chargement...'
-              : lastRefresh.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-          </span>
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-[var(--text-primary)]">
+              {(() => {
+                const hour = new Date().getHours();
+                const greet = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
+                const first = user?.name?.split(' ')[0];
+                if (roleFamily === 'CLIENT') return `${greet}${first ? `, ${first}` : ''}`;
+                if (roleFamily === 'TECH') return 'Tableau Technique';
+                if (roleFamily === 'COMMERCIAL') return 'Tableau Commercial';
+                if (roleFamily === 'FINANCE') return 'Tableau Finance';
+                if (roleFamily === 'SUPPORT') return 'Tableau Support';
+                return 'Tableau de Bord';
+              })()}
+            </h1>
+            <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1">
+              <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
+              {loading ? 'Chargement...' : lastRefresh.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+          </div>
+          <p className="text-xs text-[var(--text-muted)] hidden sm:block">
+            {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <DateRangeSelector
@@ -1432,10 +1450,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             title={editMode ? 'Quitter le mode édition' : 'Personnaliser la disposition'}
             className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
               editMode
-                ? 'text-white bg-blue-600 hover:bg-blue-700 border border-blue-600'
+                ? 'text-white border border-[var(--primary)]'
                 : 'border border-[var(--border)] hover:bg-[var(--bg-elevated)]'
             }`}
-            style={editMode ? undefined : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
+            style={editMode ? { backgroundColor: 'var(--primary)' } : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
           >
             <Settings2 className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{editMode ? 'Terminer' : ''}</span>
@@ -1471,10 +1489,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
 
       {/* Edit mode banner */}
       {editMode && (
-        <div className="flex items-center gap-3 px-4 py-2.5 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-xl text-xs text-blue-700 dark:text-blue-300">
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs" style={{ backgroundColor: 'var(--primary-dim)', border: '1px solid var(--primary)', color: 'var(--primary)' }}>
           <Settings2 className="w-4 h-4 flex-shrink-0" />
-          <span className="font-medium">Mode édition</span>
-          <span className="text-blue-500 dark:text-blue-400">
+          <span className="font-bold">Mode édition</span>
+          <span style={{ opacity: 0.8 }}>
             — Glissez les sections pour réorganiser, cliquez sur l'œil pour masquer/afficher
           </span>
         </div>
