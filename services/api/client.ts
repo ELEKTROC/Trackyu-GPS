@@ -208,48 +208,43 @@ export const handleAuthError = (response: Response) => {
 
 // --- TOKEN REFRESH INTERCEPTOR ---
 
-let refreshPromise: Promise<string | null> | null = null;
+let refreshPromise: Promise<boolean> | null = null;
 
 /**
  * Attempt to refresh the access token using the httpOnly refresh_token cookie.
- * Returns the new access token, or null if refresh failed.
- * Deduplicates concurrent refresh attempts via a shared promise.
+ * Le backend pose le nouvel access_token en httpOnly cookie — rien en localStorage.
+ * Retourne true si le refresh a réussi, false sinon.
+ * Déduplication des appels simultanés via une promesse partagée.
  */
-async function refreshAccessToken(): Promise<string | null> {
+async function refreshAccessToken(): Promise<boolean> {
   if (refreshPromise) return refreshPromise;
 
   refreshPromise = (async () => {
     try {
       const response = await fetch(`${API_URL}/auth/refresh`, {
         method: 'POST',
-        credentials: 'include', // Send httpOnly cookie
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {
-        // Refresh failed — force logout
         logger.debug('[API] Refresh token invalide, déconnexion');
         localStorage.removeItem('fleet_user');
-        localStorage.removeItem('fleet_token');
         localStorage.removeItem('impersonate_tenant_id');
         localStorage.removeItem('impersonate_reseller_id');
         window.location.reload();
-        return null;
+        return false;
       }
 
       const data = await response.json();
-      const newToken = data.token;
-      if (newToken) {
-        localStorage.setItem('fleet_token', newToken);
-        // Update stored user if the server returned updated user info
-        if (data.user) {
-          localStorage.setItem('fleet_user', JSON.stringify(data.user));
-        }
+      // Mettre à jour le profil utilisateur si le backend en renvoie un
+      if (data.user) {
+        localStorage.setItem('fleet_user', JSON.stringify(data.user));
       }
-      return newToken;
+      return true;
     } catch (err) {
       logger.error('[API] Erreur lors du refresh token:', err);
-      return null;
+      return false;
     } finally {
       refreshPromise = null;
     }
@@ -260,19 +255,16 @@ async function refreshAccessToken(): Promise<string | null> {
 
 /**
  * Execute a fetch request with automatic token refresh on 401.
- * Retries once after a successful refresh.
+ * L'access_token voyage en httpOnly cookie — pas de Bearer injecté.
  */
 async function fetchWithRefresh(url: string, options: RequestInit): Promise<Response> {
   const response = await fetch(url, { ...options, credentials: 'include' });
 
   if (response.status === 401) {
-    // Try to refresh
-    const newToken = await refreshAccessToken();
-    if (newToken) {
-      // Retry original request with new token
-      const retryHeaders = { ...(options.headers as Record<string, string>) };
-      retryHeaders['Authorization'] = `Bearer ${newToken}`;
-      return fetch(url, { ...options, headers: retryHeaders, credentials: 'include' });
+    const refreshed = await refreshAccessToken();
+    if (refreshed) {
+      // Nouveau cookie posé — retry avec credentials (le cookie est envoyé automatiquement)
+      return fetch(url, { ...options, credentials: 'include' });
     }
   }
 
@@ -285,15 +277,13 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0
 const TENANT_ID_PATTERN = /^(tenant_)?[a-zA-Z0-9_-]{1,64}$/;
 
 export const getHeaders = () => {
-  const token = localStorage.getItem('fleet_token');
   const impersonateTenantId = localStorage.getItem('impersonate_tenant_id');
   const impersonateExpiry = localStorage.getItem('impersonate_expiry');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'Authorization': token ? `Bearer ${token}` : '',
     // Protection CSRF : ce header rend la requête "non-simple" → déclenche un preflight CORS
-    // Le backend peut aussi vérifier sa présence pour rejeter les requêtes cross-origin
     'X-Requested-With': 'XMLHttpRequest',
+    // Pas de Authorization: Bearer — l'access_token voyage en httpOnly cookie (C2 fix)
   };
 
   // Vérifier que l'impersonation est valide : format + non expirée

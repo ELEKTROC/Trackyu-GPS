@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Permission, User } from '../types';
+import type { Permission, User } from '../types';
 import { API_BASE_URL } from '../utils/apiConfig';
 import { pushNotificationService } from '../services/pushNotificationService';
 import { logger } from '../utils/logger';
@@ -108,25 +108,6 @@ const ROLE_DEFINITIONS: Record<string, Permission[]> = {
   CLIENT_ADMIN: ['VIEW_DASHBOARD', 'VIEW_MAP', 'VIEW_FLEET', 'VIEW_REPORTS', 'VIEW_SUPPORT', 'VIEW_FINANCE'],
 };
 
-// Helper: Decode JWT payload without external library
-const decodeJwtPayload = (token: string): { exp?: number } | null => {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-    return payload;
-  } catch {
-    return null;
-  }
-};
-
-// Helper: Check if JWT token is expired (with 60s buffer)
-const isTokenExpired = (token: string): boolean => {
-  const payload = decodeJwtPayload(token);
-  if (!payload?.exp) return true; // No exp claim = treat as expired
-  const now = Math.floor(Date.now() / 1000);
-  return payload.exp < now + 60; // 60s buffer before actual expiry
-};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -167,39 +148,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const storedUser = localStorage.getItem('fleet_user');
-    const storedToken = localStorage.getItem('fleet_token');
-    
-    if (storedUser && storedToken) {
-      // Check if JWT token is still valid before restoring session
-      if (USE_MOCK || !isTokenExpired(storedToken)) {
-        try {
-          const parsedUser = JSON.parse(storedUser);
-          // Migrate old sessions missing tenantId — decode from JWT payload
-          if (parsedUser.tenantId === undefined) {
-            try {
-              const payload = JSON.parse(atob(storedToken.split('.')[1]));
-              parsedUser.tenantId = payload.tenant_id || payload.tenantId || null;
-              localStorage.setItem('fleet_user', JSON.stringify(parsedUser));
-            } catch { /* ignore decode errors */ }
-          }
-          setUser(parsedUser);
-        } catch (e) {
-          logger.error("Session read error", e);
-          localStorage.removeItem('fleet_user');
-          localStorage.removeItem('fleet_token');
-        }
-      } else {
-        // Token expired — clear session silently
-        logger.debug('[Auth] Token expiré, session nettoyée');
+
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        // Restauration optimiste : l'access_token httpOnly cookie valide la session
+        // Le premier appel API échouera (401) si le cookie est expiré → refresh automatique
+        setUser(parsedUser);
+      } catch (e) {
+        logger.error("Session read error", e);
         localStorage.removeItem('fleet_user');
-        localStorage.removeItem('fleet_token');
-        localStorage.removeItem('impersonate_tenant_id');
-        localStorage.removeItem('impersonate_reseller_id');
-        localStorage.removeItem('impersonate_expiry');
       }
-    } else if (storedUser && !storedToken) {
-      // User without token = invalid state
-      localStorage.removeItem('fleet_user');
     }
     setIsLoading(false);
   }, []);
@@ -225,7 +184,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 permissions: ROLE_DEFINITIONS.SUPERADMIN
             };
             setUser(mockUser);
-            localStorage.setItem('fleet_token', 'mock-token-123');
             localStorage.setItem('fleet_user', JSON.stringify(mockUser));
             return;
         }
@@ -256,7 +214,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const data = await response.json();
-      const { token, user: apiUser } = data;
+      const { user: apiUser } = data; // token n'est plus dans le corps — httpOnly cookie uniquement
 
       // Normalize role lookup (Handle 'Superadmin' vs 'SUPERADMIN')
       let roleKey = apiUser.role ? apiUser.role.toUpperCase() : '';
@@ -291,7 +249,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
 
       setUser(mappedUser);
-      localStorage.setItem('fleet_token', token);
       localStorage.setItem('fleet_user', JSON.stringify(mappedUser));
       setRequirePasswordChange(!!apiUser.requirePasswordChange);
 
@@ -310,10 +267,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const changePassword = async (currentPassword: string | null, newPassword: string) => {
-    const token = localStorage.getItem('fleet_token');
     const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      credentials: 'include', // access_token httpOnly cookie
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ currentPassword, newPassword }),
     });
     if (!response.ok) {
@@ -341,7 +298,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setOriginalUser(null);
     localStorage.removeItem('fleet_user');
-    localStorage.removeItem('fleet_token');
     localStorage.removeItem('impersonate_tenant_id');
     localStorage.removeItem('impersonate_reseller_id');
     localStorage.removeItem('impersonate_expiry');
