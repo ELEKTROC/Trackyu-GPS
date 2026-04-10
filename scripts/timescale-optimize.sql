@@ -108,20 +108,27 @@ SELECT add_continuous_aggregate_policy(
 
 -- ─── 7. Paramètres PostgreSQL (via ALTER SYSTEM) ─────────────────────────────
 -- Ces paramètres nécessitent un RELOAD (pas de restart)
--- Adaptés pour un VPS 4 vCPU / 8 GB RAM typique
+-- Adaptés pour KVM2 (2 vCPU / 8 GB RAM) — cible 2000 devices / 300 users
+--
+-- Budget mémoire KVM2 :
+--   shared_buffers  2 GB  = 25% RAM (règle PostgreSQL)
+--   work_mem       32 MB  × 50 connexions max = 1.6 GB peak (acceptable)
+--   OS + Node.js        = ~2.5 GB
+--   Redis               = ~256 MB
+--   Marge               = ~1.6 GB  → headroom suffisant
 
 ALTER SYSTEM SET shared_buffers              = '2GB';
-ALTER SYSTEM SET effective_cache_size        = '6GB';
+ALTER SYSTEM SET effective_cache_size        = '5GB';
 ALTER SYSTEM SET work_mem                    = '32MB';
-ALTER SYSTEM SET maintenance_work_mem        = '512MB';
-ALTER SYSTEM SET max_connections             = '100';
+ALTER SYSTEM SET maintenance_work_mem        = '256MB';
+ALTER SYSTEM SET max_connections             = '50';
 ALTER SYSTEM SET checkpoint_completion_target = '0.9';
 ALTER SYSTEM SET wal_buffers                 = '64MB';
-ALTER SYSTEM SET max_wal_size                = '4GB';
-ALTER SYSTEM SET synchronous_commit          = 'off';   -- Perf GPS (acceptable pour positions)
-ALTER SYSTEM SET random_page_cost            = '1.1';   -- SSD
-ALTER SYSTEM SET effective_io_concurrency    = '200';   -- SSD
-ALTER SYSTEM SET timescaledb.max_background_workers = '8';
+ALTER SYSTEM SET max_wal_size                = '2GB';
+ALTER SYSTEM SET synchronous_commit          = 'off';   -- Perf GPS (positions non critiques)
+ALTER SYSTEM SET random_page_cost            = '1.1';   -- NVMe SSD
+ALTER SYSTEM SET effective_io_concurrency    = '200';   -- NVMe SSD
+ALTER SYSTEM SET timescaledb.max_background_workers = '4';
 
 -- Appliquer sans restart
 SELECT pg_reload_conf();
