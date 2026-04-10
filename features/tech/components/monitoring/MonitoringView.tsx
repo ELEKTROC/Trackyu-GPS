@@ -2,6 +2,11 @@
 // Vue de monitoring technique — Tableau de bord flotte + Pipeline GPS temps réel
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { AlertsConsole } from './AlertsConsole';
+import { OfflineTrackerList } from './OfflineTrackerList';
+import { AnomalyDashboard } from './AnomalyDashboard';
+import { SystemMetricsPanel } from './SystemMetricsPanel';
+import { UserMonitoring } from './UserMonitoring';
 import {
   Activity, AlertTriangle, CheckCircle, Cpu, RefreshCw,
   Server, Shield, Users, Wifi, WifiOff, XCircle, Zap
@@ -37,7 +42,7 @@ interface GpsPipelineStats {
   totals: { packets: number; valid: number; rejected: number; crcErrors: number };
 }
 
-type Tab = 'OVERVIEW' | 'PIPELINE_GPS' | 'ALERTS' | 'OFFLINE';
+type Tab = 'OVERVIEW' | 'PIPELINE_GPS' | 'ALERTS' | 'OFFLINE' | 'ANOMALIES' | 'SYSTEM' | 'USERS';
 
 const getHeaders = () => {
   const token = localStorage.getItem('token');
@@ -324,7 +329,7 @@ function OverviewTab() {
 }
 
 // ─── Composant principal MonitoringView ──────────────────────────────────────
-export default function MonitoringView() {
+export function MonitoringView() {
   const [activeTab, setActiveTab] = useState<Tab>('OVERVIEW');
 
   const tabs: { id: Tab; label: string; icon: React.ElementType; badge?: string }[] = [
@@ -332,6 +337,9 @@ export default function MonitoringView() {
     { id: 'PIPELINE_GPS', label: 'Pipeline GPS',   icon: Server },
     { id: 'ALERTS',       label: 'Alertes',        icon: AlertTriangle },
     { id: 'OFFLINE',      label: 'Hors ligne',     icon: WifiOff },
+    { id: 'ANOMALIES',    label: 'Anomalies',      icon: Zap },
+    { id: 'SYSTEM',       label: 'Système',        icon: Cpu },
+    { id: 'USERS',        label: 'Utilisateurs',   icon: Shield },
   ];
 
   return (
@@ -369,18 +377,11 @@ export default function MonitoringView() {
       <div className="flex-1 overflow-y-auto p-4">
         {activeTab === 'OVERVIEW'     && <OverviewTab />}
         {activeTab === 'PIPELINE_GPS' && <PipelineGpsTab />}
-        {activeTab === 'ALERTS'       && (
-          <div className="text-center py-16 text-gray-400">
-            <AlertTriangle className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p>Console d'alertes — Section existante</p>
-          </div>
-        )}
-        {activeTab === 'OFFLINE' && (
-          <div className="text-center py-16 text-gray-400">
-            <WifiOff className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p>Liste boîtiers hors ligne — Section existante</p>
-          </div>
-        )}
+        {activeTab === 'ALERTS'    && <AlertsConsole />}
+        {activeTab === 'OFFLINE'   && <OfflineTrackerList />}
+        {activeTab === 'ANOMALIES' && <AnomalyDashboard />}
+        {activeTab === 'SYSTEM'    && <SystemMetricsPanel />}
+        {activeTab === 'USERS'     && <UserMonitoring />}
       </div>
     </div>
   );
