@@ -172,15 +172,6 @@ export const StaffPanelV2: React.FC = () => {
   const clientTenants = (tenantsList as any[]).filter((t: any) => t.id !== 'tenant_default');
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
 
-  // Protection: Vérifier que le contexte est chargé
-  if (!updateUser || !addUser || !deleteUser) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   // Organisations (Resellers) pour les checkboxes
   const organizations = useMemo(() => (tiers || []).filter(t => t.type === 'RESELLER'), [tiers]);
   
@@ -222,9 +213,15 @@ export const StaffPanelV2: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   // Filtrage et tri
+  // Rôles internes uniquement — les clients (CLIENT / CLIENT_ADMIN) ont leur propre panel
+  const STAFF_ROLES = new Set([
+    'SUPERADMIN', 'ADMIN', 'MANAGER', 'TECH', 'COMMERCIAL',
+    'SUPPORT_AGENT', 'AGENT_TRACKING', 'COMPTABLE', 'RESELLER_ADMIN',
+  ]);
+
   const filteredUsers = useMemo(() => {
-    let result = [...users];
-    
+    let result = users.filter(u => STAFF_ROLES.has((u.role || '').toUpperCase()));
+
     // Recherche
     if (filters.search) {
       const search = filters.search.toLowerCase();
@@ -526,6 +523,15 @@ export const StaffPanelV2: React.FC = () => {
   };
 
   const isMobile = useIsMobile();
+
+  // Protection: Vérifier que le contexte est chargé (après tous les hooks)
+  if (!updateUser || !addUser || !deleteUser) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 h-full flex flex-col">
