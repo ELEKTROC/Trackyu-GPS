@@ -1,7 +1,20 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Activity, Lock, Mail, ArrowRight, Loader2, CheckCircle, User, Phone, X, Send, MessageSquare, Eye, EyeOff } from 'lucide-react';
+import {
+  Activity,
+  Lock,
+  Mail,
+  ArrowRight,
+  Loader2,
+  CheckCircle,
+  User,
+  Phone,
+  X,
+  Send,
+  MessageSquare,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
@@ -16,7 +29,9 @@ const INPUT_CLASS = `
   border border-[var(--border)]
   bg-[var(--bg-elevated)] text-[var(--text-primary)]
   placeholder:text-[var(--text-muted)]
-`.trim().replace(/\s+/g, ' ');
+`
+  .trim()
+  .replace(/\s+/g, ' ');
 
 export const LoginView: React.FC = () => {
   const { login } = useAuth();
@@ -59,7 +74,7 @@ export const LoginView: React.FC = () => {
           name: fullName,
           email,
           password,
-          phone: contact
+          phone: contact,
         }),
       });
 
@@ -69,13 +84,16 @@ export const LoginView: React.FC = () => {
       }
 
       setIsRegistering(false);
-      setSuccessMessage('Votre demande d\'inscription a été envoyée ! Vous recevrez un email une fois votre compte validé par notre équipe.');
+      setSuccessMessage(
+        "Votre demande d'inscription a été envoyée ! Vous recevrez un email une fois votre compte validé par notre équipe."
+      );
       setFullName('');
       setContact('');
       setPassword('');
       showToast(TOAST.AUTH.REGISTRATION_SENT, 'success');
     } catch (err: unknown) {
-      throw err;
+      const message = err instanceof Error ? err.message : "Erreur lors de l'inscription";
+      showToast(message, 'error');
     }
   };
 
@@ -116,7 +134,7 @@ export const LoginView: React.FC = () => {
         body: JSON.stringify({
           name: demoName,
           email: demoEmail,
-          message: demoMessage
+          message: demoMessage,
         }),
       });
 
@@ -157,8 +175,8 @@ export const LoginView: React.FC = () => {
 
       await login(email.trim(), password.trim());
     } catch (err: unknown) {
-      logger.error("Login error details:", err);
-      const message = err instanceof Error ? err.message : "Une erreur est survenue";
+      logger.error('Login error details:', err);
+      const message = err instanceof Error ? err.message : 'Une erreur est survenue';
       setError(message);
       setIsLoading(false);
     }
@@ -184,8 +202,8 @@ export const LoginView: React.FC = () => {
           </div>
           <h1 className="text-5xl font-bold mb-6 leading-tight">Le Futur de la Gestion de Flotte</h1>
           <p className="text-lg text-slate-300 mb-8 leading-relaxed">
-            Pilotez vos opérations logistiques avec la puissance de l'IA.
-            Optimisation des trajets, maintenance prédictive et sécurité en temps réel.
+            Pilotez vos opérations logistiques avec la puissance de l'IA. Optimisation des trajets, maintenance
+            prédictive et sécurité en temps réel.
           </p>
           <div className="flex gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur rounded-lg border border-white/10">
@@ -198,7 +216,10 @@ export const LoginView: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-20" style={{ backgroundColor: 'var(--primary)' }} />
+        <div
+          className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-20"
+          style={{ backgroundColor: 'var(--primary)' }}
+        />
         <div className="absolute -top-24 -left-24 w-64 h-64 bg-purple-600 rounded-full blur-3xl opacity-20" />
       </div>
 
@@ -214,7 +235,9 @@ export const LoginView: React.FC = () => {
               {isRegistering ? 'Créer un compte' : 'Bienvenue'}
             </h2>
             <p className="text-[var(--text-muted)] mt-2">
-              {isRegistering ? 'Remplissez le formulaire pour commencer.' : 'Entrez vos identifiants pour accéder au tableau de bord.'}
+              {isRegistering
+                ? 'Remplissez le formulaire pour commencer.'
+                : 'Entrez vos identifiants pour accéder au tableau de bord.'}
             </p>
           </div>
 
@@ -268,7 +291,7 @@ export const LoginView: React.FC = () => {
                 <div className="relative group">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -288,7 +311,8 @@ export const LoginView: React.FC = () => {
             </div>
 
             {error && (
-              <div className="p-3 rounded-lg border text-sm flex items-center gap-2"
+              <div
+                className="p-3 rounded-lg border text-sm flex items-center gap-2"
                 style={{
                   backgroundColor: 'rgba(239,68,68,0.08)',
                   borderColor: 'rgba(239,68,68,0.3)',
@@ -301,7 +325,8 @@ export const LoginView: React.FC = () => {
             )}
 
             {successMessage && (
-              <div className="p-3 rounded-lg border text-sm flex items-center gap-2"
+              <div
+                className="p-3 rounded-lg border text-sm flex items-center gap-2"
                 style={{
                   backgroundColor: 'rgba(16,185,129,0.08)',
                   borderColor: 'rgba(16,185,129,0.3)',
@@ -344,20 +369,22 @@ export const LoginView: React.FC = () => {
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <>{isRegistering ? "S'inscrire" : "Se connecter"} <ArrowRight className="w-4 h-4" /></>
+                <>
+                  {isRegistering ? "S'inscrire" : 'Se connecter'} <ArrowRight className="w-4 h-4" />
+                </>
               )}
             </button>
 
             <div className="text-center mt-4 space-y-3">
               <p className="text-sm text-[var(--text-secondary)]">
-                {isRegistering ? "Déjà un compte ?" : "Pas encore de compte ?"}
+                {isRegistering ? 'Déjà un compte ?' : 'Pas encore de compte ?'}
                 <button
                   type="button"
                   onClick={() => setIsRegistering(!isRegistering)}
                   className="ml-1 font-medium hover:underline focus:outline-none"
                   style={{ color: 'var(--primary)' }}
                 >
-                  {isRegistering ? "Se connecter" : "S'inscrire"}
+                  {isRegistering ? 'Se connecter' : "S'inscrire"}
                 </button>
               </p>
               {!isRegistering && (
@@ -377,9 +404,7 @@ export const LoginView: React.FC = () => {
             {/* Boutons téléchargement apps mobiles */}
             {!isRegistering && (
               <div className="mt-8 pt-6 border-t border-[var(--border)]">
-                <p className="text-center text-sm text-[var(--text-muted)] mb-4">
-                  Téléchargez l'application mobile
-                </p>
+                <p className="text-center text-sm text-[var(--text-muted)] mb-4">Téléchargez l'application mobile</p>
                 <div className="flex items-center justify-center gap-3">
                   <a href="/download.html" className="transition-transform hover:scale-105 active:scale-95">
                     <img src="/images/google-play-badge.svg" alt="Télécharger sur Google Play" className="h-10" />
@@ -476,7 +501,10 @@ export const LoginView: React.FC = () => {
                   {demoLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <><Send className="w-4 h-4" />Envoyer</>
+                    <>
+                      <Send className="w-4 h-4" />
+                      Envoyer
+                    </>
                   )}
                 </button>
               </div>
@@ -539,7 +567,10 @@ export const LoginView: React.FC = () => {
                   {forgotLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    <><Send className="w-4 h-4" />Envoyer</>
+                    <>
+                      <Send className="w-4 h-4" />
+                      Envoyer
+                    </>
                   )}
                 </button>
               </div>

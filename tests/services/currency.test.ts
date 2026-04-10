@@ -9,14 +9,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-  CURRENCIES,
-  CURRENCY_MAP,
-  DEFAULT_CURRENCY,
-  formatCurrency,
-  getCurrencyConfig,
-} from '../../lib/currencies';
-import type { CurrencyConfig } from '../../lib/currencies';
+import { CURRENCIES, CURRENCY_MAP, DEFAULT_CURRENCY, formatCurrency, getCurrencyConfig } from '../../lib/currencies';
 
 // ═════════════════════════════════════════════════════════════════════
 // Currency Registry
@@ -27,7 +20,7 @@ describe('Currency Registry', () => {
   });
 
   it('includes XOF, XAF, EUR, USD, MAD, GNF', () => {
-    const codes = CURRENCIES.map(c => c.code);
+    const codes = CURRENCIES.map((c) => c.code);
     expect(codes).toContain('XOF');
     expect(codes).toContain('XAF');
     expect(codes).toContain('EUR');
@@ -128,7 +121,7 @@ describe('formatCurrency()', () => {
 
   // EUR (2 decimals, fr-FR locale)
   it('formats EUR correctly', () => {
-    const result = formatCurrency(1500.50, 'EUR');
+    const result = formatCurrency(1500.5, 'EUR');
     // Should contain 2 decimal digits
     expect(result).toMatch(/50/);
     expect(result).toContain('1');

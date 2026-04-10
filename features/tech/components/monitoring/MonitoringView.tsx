@@ -72,7 +72,7 @@ function PipelineGpsTab() {
         setStats(await res.json());
         setLastRefresh(new Date());
       }
-    } catch {}
+    } catch { /* ignore fetch error */ }
     finally { setLoading(false); }
   }, []);
 
@@ -293,7 +293,7 @@ function OverviewTab() {
             unreadAlerts: data.unreadAlerts || 0,
           });
         }
-      } catch {}
+      } catch { /* ignore fetch error */ }
       setLoading(false);
     };
     load();

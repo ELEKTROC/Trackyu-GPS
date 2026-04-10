@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import { SupportViewV2 as SupportView } from '../features/support/components/SupportViewV2';
 import { DataContext } from '../contexts/DataContext';
 import { ToastContext } from '../contexts/ToastContext';
@@ -17,7 +17,8 @@ vi.mock('@tanstack/react-query', async () => {
       if (Array.isArray(queryKey) && queryKey[0] === 'tickets-paged') {
         return {
           data: { data: mockTickets, total: mockTickets.length, totalPages: 1 },
-          isLoading: false, error: null,
+          isLoading: false,
+          error: null,
         };
       }
       return { data: [], isLoading: false, error: null };
@@ -33,47 +34,72 @@ vi.mock('../hooks/useTenantBranding', () => ({
 
 // Mock Data
 const mockTickets: Ticket[] = [
-  { 
-    id: 'T-5001', 
-    tenantId: 'tenant_default', 
-    clientId: 'CLT-1001', 
-    subject: 'Technique - Panne GPS - TRK-001', 
-    status: 'OPEN', 
-    priority: 'HIGH', 
+  {
+    id: 'T-5001',
+    tenantId: 'tenant_default',
+    clientId: 'CLT-1001',
+    subject: 'Technique - Panne GPS - TRK-001',
+    status: 'OPEN',
+    priority: 'HIGH',
     category: 'Technique',
     createdAt: new Date('2023-01-01'),
     updatedAt: new Date('2023-01-01'),
     description: 'Le véhicule ne remonte plus de position.',
-    messages: []
+    messages: [],
   },
-  { 
-    id: 'T-5002', 
-    tenantId: 'tenant_default', 
-    clientId: 'CLT-1002', 
-    subject: 'Facturation - Erreur', 
-    status: 'RESOLVED', 
-    priority: 'MEDIUM', 
+  {
+    id: 'T-5002',
+    tenantId: 'tenant_default',
+    clientId: 'CLT-1002',
+    subject: 'Facturation - Erreur',
+    status: 'RESOLVED',
+    priority: 'MEDIUM',
     category: 'Facturation',
     createdAt: new Date('2023-01-02'),
     updatedAt: new Date('2023-01-02'),
     description: 'Erreur de montant.',
-    messages: []
-  }
+    messages: [],
+  },
 ];
 
 const mockClients: Client[] = [
-  { id: 'CLT-1001', name: 'Logistics Pro', type: 'B2B', status: 'ACTIVE', tenantId: 'tenant_default', createdAt: new Date(), updatedAt: new Date() },
-  { id: 'CLT-1002', name: 'Transport Express', type: 'B2B', status: 'ACTIVE', tenantId: 'tenant_default', createdAt: new Date(), updatedAt: new Date() }
+  {
+    id: 'CLT-1001',
+    name: 'Logistics Pro',
+    type: 'B2B',
+    status: 'ACTIVE',
+    tenantId: 'tenant_default',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'CLT-1002',
+    name: 'Transport Express',
+    type: 'B2B',
+    status: 'ACTIVE',
+    tenantId: 'tenant_default',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 ];
 
 const mockVehicles: Vehicle[] = [
-  { id: 'TRK-001', name: 'Scania R500', type: 'TRUCK', status: 'MOVING', plate: 'AB-123-CD', clientId: 'CLT-1001', createdAt: new Date(), updatedAt: new Date() }
+  {
+    id: 'TRK-001',
+    name: 'Scania R500',
+    type: 'TRUCK',
+    status: 'MOVING',
+    plate: 'AB-123-CD',
+    clientId: 'CLT-1001',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 ];
 
 // Helper to render with providers
 const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
   const mockShowToast = vi.fn();
-  
+
   const defaultContext = {
     tickets: mockTickets,
     clients: mockClients,
@@ -86,18 +112,18 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
     ticketCategories: [
       { id: 'cat-1', name: 'Technique' },
       { id: 'cat-2', name: 'Facturation' },
-      { id: 'cat-3', name: 'Commercial' }
+      { id: 'cat-3', name: 'Commercial' },
     ],
     ticketSubcategories: [
       { id: 'sub-1', categoryId: 'cat-1', name: 'Panne GPS' },
       { id: 'sub-2', categoryId: 'cat-1', name: 'Installation' },
-      { id: 'sub-3', categoryId: 'cat-2', name: 'Erreur montant' }
+      { id: 'sub-3', categoryId: 'cat-2', name: 'Erreur montant' },
     ],
     invoices: [],
     addTicket: vi.fn(),
     updateTicket: vi.fn(),
     addIntervention: vi.fn(),
-    ...contextValues
+    ...contextValues,
   };
 
   const defaultAuthContext = {
@@ -106,22 +132,20 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
     isLoading: false,
     login: vi.fn(),
     logout: vi.fn(),
-    hasPermission: vi.fn().mockReturnValue(true)
+    hasPermission: vi.fn().mockReturnValue(true),
   };
 
   return {
     ...render(
       <AuthContext.Provider value={defaultAuthContext}>
         <ToastContext.Provider value={{ showToast: mockShowToast, toasts: [], removeToast: vi.fn() }}>
-          <DataContext.Provider value={defaultContext as any}>
-            {ui}
-          </DataContext.Provider>
+          <DataContext.Provider value={defaultContext as any}>{ui}</DataContext.Provider>
         </ToastContext.Provider>
       </AuthContext.Provider>
     ),
     mockShowToast,
     mockAddTicket: defaultContext.addTicket,
-    mockUpdateTicket: defaultContext.updateTicket
+    mockUpdateTicket: defaultContext.updateTicket,
   };
 };
 
@@ -166,7 +190,7 @@ describe('SupportView Integration', () => {
   });
 
   it('creates a new ticket', async () => {
-    const { mockShowToast } = renderWithContext(<SupportView />);
+    renderWithContext(<SupportView />);
 
     // Open modal via button
     fireEvent.click(screen.getByRole('button', { name: /Nouveau Ticket/i }));

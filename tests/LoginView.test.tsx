@@ -1,15 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { LoginView } from '../features/auth/components/LoginView';
-import { AuthProvider } from '../contexts/AuthContext';
 
 // Mock AuthContext
 const mockLogin = vi.fn();
 vi.mock('../contexts/AuthContext', () => ({
   useAuth: () => ({
-    login: mockLogin
+    login: mockLogin,
   }),
-  AuthProvider: ({ children }: any) => <div>{children}</div>
+  AuthProvider: ({ children }: any) => <div>{children}</div>,
 }));
 
 // Mock ToastContext
@@ -27,7 +26,7 @@ describe('LoginView', () => {
 
   it('calls login on submit', async () => {
     render(<LoginView />);
-    
+
     const emailInput = screen.getByPlaceholderText('Saisissez votre compte');
     const passwordInput = screen.getByPlaceholderText('Entrez votre mot de passe');
     const submitButton = screen.getByText('Se connecter');

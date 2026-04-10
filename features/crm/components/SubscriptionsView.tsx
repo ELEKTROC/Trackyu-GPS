@@ -40,7 +40,6 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '../../../components/EmptyState';
 
-
 import { View } from '../../../types';
 import { VehicleStatus } from '../../../types/enums';
 
@@ -95,10 +94,14 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
 
 const toMonthlyEquivalent = (fee: number, cycle: string): number => {
   switch (cycle?.toUpperCase()) {
-    case 'ANNUAL': return fee / 12;
-    case 'SEMESTRIAL': return fee / 6;
-    case 'QUARTERLY': return fee / 3;
-    default: return fee;
+    case 'ANNUAL':
+      return fee / 12;
+    case 'SEMESTRIAL':
+      return fee / 6;
+    case 'QUARTERLY':
+      return fee / 3;
+    default:
+      return fee;
   }
 };
 
@@ -106,18 +109,23 @@ const calculateRenewalCount = (startDate: string, billingCycle: string): number 
   if (!startDate) return 0;
   const diffYears = (new Date().getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24 * 365);
   switch (billingCycle?.toUpperCase()) {
-    case 'ANNUAL': return Math.max(0, Math.floor(diffYears));
-    case 'SEMESTRIAL': return Math.max(0, Math.floor(diffYears * 2));
-    case 'QUARTERLY': return Math.max(0, Math.floor(diffYears * 4));
-    case 'MONTHLY': return Math.max(0, Math.floor(diffYears * 12));
-    default: return 0;
+    case 'ANNUAL':
+      return Math.max(0, Math.floor(diffYears));
+    case 'SEMESTRIAL':
+      return Math.max(0, Math.floor(diffYears * 2));
+    case 'QUARTERLY':
+      return Math.max(0, Math.floor(diffYears * 4));
+    case 'MONTHLY':
+      return Math.max(0, Math.floor(diffYears * 12));
+    default:
+      return 0;
   }
 };
 
 // Display model for the table
 interface VehicleSubscription {
-  id: string;                  // SUB-xxx (real subscription ID)
-  subscriptionNumber: string;  // ABO-xxx (vehicle_id)
+  id: string; // SUB-xxx (real subscription ID)
+  subscriptionNumber: string; // ABO-xxx (vehicle_id)
   vehicleId: string;
   licensePlate: string;
   vehicleName: string;
@@ -206,7 +214,13 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
   // Create state: first select contract + vehicle, then show form
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [step1ContractId, setStep1ContractId] = useState('');
-  const [createVehicle, setCreateVehicle] = useState<{ id: string; plate: string; name: string; contractId?: string; installationDate?: string } | null>(null);
+  const [createVehicle, setCreateVehicle] = useState<{
+    id: string;
+    plate: string;
+    name: string;
+    contractId?: string;
+    installationDate?: string;
+  } | null>(null);
 
   // Fetch subscriptions from API
   const fetchSubs = useCallback(async () => {
@@ -221,19 +235,25 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
     }
   }, [showToast]);
 
-  useEffect(() => { fetchSubs(); }, [fetchSubs]);
+  useEffect(() => {
+    fetchSubs();
+  }, [fetchSubs]);
 
   // Reseller name lookup: tenant_id → reseller name (from contracts)
   const resellerMap = useMemo(() => {
     const map = new Map<string, string>();
-    contracts.forEach(c => { if (c.tenantId && c.resellerName) map.set(c.tenantId, c.resellerName); });
+    contracts.forEach((c) => {
+      if (c.tenantId && c.resellerName) map.set(c.tenantId, c.resellerName);
+    });
     return map;
   }, [contracts]);
 
   // Invoice count per contract
   const invoiceCountByContract = useMemo(() => {
     const map = new Map<string, number>();
-    invoices.forEach(inv => { if (inv.contractId) map.set(inv.contractId, (map.get(inv.contractId) || 0) + 1); });
+    invoices.forEach((inv) => {
+      if (inv.contractId) map.set(inv.contractId, (map.get(inv.contractId) || 0) + 1);
+    });
     return map;
   }, [invoices]);
 
@@ -251,10 +271,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
         else if (daysUntilExpiry !== null && daysUntilExpiry <= 30) effectiveStatus = 'EXPIRING_SOON';
       }
       const vehicleName =
-        [s.vehicle_brand, s.vehicle_model].filter(Boolean).join(' ') ||
-        s.vehicle_name ||
-        s.vehicle_id;
-      const vehicle = vehicles.find(v => v.id === s.vehicle_id);
+        [s.vehicle_brand, s.vehicle_model].filter(Boolean).join(' ') || s.vehicle_name || s.vehicle_id;
+      const vehicle = vehicles.find((v) => v.id === s.vehicle_id);
       return {
         id: s.id,
         subscriptionNumber: s.vehicle_id,
@@ -288,27 +306,34 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
   // Resellers list for filter dropdown
   const resellers = useMemo(() => {
     const map = new Map<string, string>();
-    subscriptions.forEach(s => { if (s.tenantId && s.resellerName && s.resellerName !== '-') map.set(s.tenantId, s.resellerName); });
-    return Array.from(map.entries()).map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+    subscriptions.forEach((s) => {
+      if (s.tenantId && s.resellerName && s.resellerName !== '-') map.set(s.tenantId, s.resellerName);
+    });
+    return Array.from(map.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [subscriptions]);
 
   // Status filter
   const filteredByStatus = useMemo(() => {
     if (statusFilter === 'ALL') return subscriptions;
-    if (statusFilter === 'ACTIVE') return subscriptions.filter((s) => ['ACTIVE', 'EXPIRING_SOON'].includes(s.effectiveStatus));
-    return subscriptions.filter((s) => s.effectiveStatus === statusFilter || s.effectiveStatus.toLowerCase() === statusFilter.toLowerCase());
+    if (statusFilter === 'ACTIVE')
+      return subscriptions.filter((s) => ['ACTIVE', 'EXPIRING_SOON'].includes(s.effectiveStatus));
+    return subscriptions.filter(
+      (s) => s.effectiveStatus === statusFilter || s.effectiveStatus.toLowerCase() === statusFilter.toLowerCase()
+    );
   }, [subscriptions, statusFilter]);
 
   // Reseller filter
   const filteredByReseller = useMemo(() => {
     if (resellerFilter === 'ALL') return filteredByStatus;
-    return filteredByStatus.filter(s => s.tenantId === resellerFilter);
+    return filteredByStatus.filter((s) => s.tenantId === resellerFilter);
   }, [filteredByStatus, resellerFilter]);
 
   // Cycle filter
   const filteredByCycle = useMemo(() => {
     if (cycleFilter === 'ALL') return filteredByReseller;
-    return filteredByReseller.filter(s => (s.billingCycle || '').toUpperCase() === cycleFilter);
+    return filteredByReseller.filter((s) => (s.billingCycle || '').toUpperCase() === cycleFilter);
   }, [filteredByReseller, cycleFilter]);
 
   // Date range filter
@@ -376,11 +401,22 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
 
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    else { setSortField(field); setSortDir('asc'); }
+    else {
+      setSortField(field);
+      setSortDir('asc');
+    }
   };
 
   const toggleSelect = (id: string) =>
-    setSelectedIds((prev) => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    setSelectedIds((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) {
+        n.delete(id);
+      } else {
+        n.add(id);
+      }
+      return n;
+    });
 
   const toggleSelectAll = () => {
     if (selectedIds.size === paginatedSubscriptions.length) setSelectedIds(new Set());
@@ -425,7 +461,11 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
   const handleBulkRemove = async () => {
     const toRemove = [...selectedIds];
     for (const id of toRemove) {
-      try { await api.subscriptions.delete(id); } catch { /* continue */ }
+      try {
+        await api.subscriptions.delete(id);
+      } catch {
+        /* continue */
+      }
     }
     showToast(`${toRemove.length} abonnement(s) supprimé(s)`, 'success');
     setSelectedIds(new Set());
@@ -481,7 +521,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
   // Edit subscription
   const handleEditSubmit = async (data: SubscriptionFormData) => {
     if (!editingSub) return;
-    await api.subscriptions.update({ ...editingSub, ...data, id: editingSub.id } as unknown as Parameters<typeof api.subscriptions.update>[0]);
+    await api.subscriptions.update({ ...editingSub, ...data, id: editingSub.id } as unknown as Parameters<
+      typeof api.subscriptions.update
+    >[0]);
     showToast('Abonnement mis à jour', 'success');
     setEditingSub(null);
     fetchSubs();
@@ -503,8 +545,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
   }, [vehicles, rawSubs]);
 
   const getExpiryBadge = (sub: VehicleSubscription) => {
-    if (sub.daysUntilExpiry === null)
-      return <span className="text-green-600 dark:text-green-400 text-xs">∞</span>;
+    if (sub.daysUntilExpiry === null) return <span className="text-green-600 dark:text-green-400 text-xs">∞</span>;
     if (sub.daysUntilExpiry < 0)
       return (
         <span className="text-red-600 dark:text-red-400 text-xs font-medium flex items-center gap-1">
@@ -527,52 +568,54 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
   return (
     <div className="space-y-4 sm:h-full sm:flex sm:flex-col animate-in fade-in duration-300">
       {/* KPI Cards - hidden on mobile */}
-      {!isMobile && <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="p-3 border-l-4 border-l-blue-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
-              <Truck className="w-5 h-5" />
+      {!isMobile && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Card className="p-3 border-l-4 border-l-blue-500">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
+                <Truck className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase">Véhicules Actifs</p>
+                <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.totalVehicles}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase">Véhicules Actifs</p>
-              <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.totalVehicles}</p>
+          </Card>
+          <Card className="p-3 border-l-4 border-l-green-500">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg text-green-600">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase">MRR</p>
+                <p className="text-xl font-bold text-slate-800 dark:text-white">{formatPrice(kpis.mrr)}</p>
+              </div>
             </div>
-          </div>
-        </Card>
-        <Card className="p-3 border-l-4 border-l-green-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg text-green-600">
-              <TrendingUp className="w-5 h-5" />
+          </Card>
+          <Card className="p-3 border-l-4 border-l-amber-500">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-amber-600">
+                <RefreshCw className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase">Expire sous 30j</p>
+                <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.expiringSoon}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase">MRR</p>
-              <p className="text-xl font-bold text-slate-800 dark:text-white">{formatPrice(kpis.mrr)}</p>
+          </Card>
+          <Card className="p-3 border-l-4 border-l-red-500">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg text-red-600">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase">Expirés</p>
+                <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.expired}</p>
+              </div>
             </div>
-          </div>
-        </Card>
-        <Card className="p-3 border-l-4 border-l-amber-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-amber-600">
-              <RefreshCw className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase">Expire sous 30j</p>
-              <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.expiringSoon}</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-3 border-l-4 border-l-red-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg text-red-600">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase">Expirés</p>
-              <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.expired}</p>
-            </div>
-          </div>
-        </Card>
-      </div>}
+          </Card>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
@@ -582,7 +625,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             type="text"
             placeholder="Rechercher N° abonnement, véhicule, client, plaque..."
             value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
             className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
           />
         </div>
@@ -593,11 +639,25 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             className="relative flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-600 dark:text-slate-300"
           >
             <Search className="w-4 h-4" style={{ display: 'none' }} />
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+            </svg>
             Filtres
             {(statusFilter !== 'ALL' || resellerFilter !== 'ALL' || cycleFilter !== 'ALL') && (
               <span className="absolute -top-1.5 -right-1.5 bg-[var(--primary-dim)]0 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                {(statusFilter !== 'ALL' ? 1 : 0) + (resellerFilter !== 'ALL' ? 1 : 0) + (cycleFilter !== 'ALL' ? 1 : 0)}
+                {(statusFilter !== 'ALL' ? 1 : 0) +
+                  (resellerFilter !== 'ALL' ? 1 : 0) +
+                  (cycleFilter !== 'ALL' ? 1 : 0)}
               </span>
             )}
           </button>
@@ -605,7 +665,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
         {/* Desktop filters */}
         <select
           value={statusFilter}
-          onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setCurrentPage(1);
+          }}
           className="hidden sm:block px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
         >
           <option value="ALL">Tous les statuts</option>
@@ -617,17 +680,25 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
         </select>
         <select
           value={resellerFilter}
-          onChange={(e) => { setResellerFilter(e.target.value); setCurrentPage(1); }}
+          onChange={(e) => {
+            setResellerFilter(e.target.value);
+            setCurrentPage(1);
+          }}
           className="hidden sm:block px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
         >
           <option value="ALL">Tous les revendeurs</option>
-          {resellers.map(r => (
-            <option key={r.id} value={r.id}>{r.name}</option>
+          {resellers.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
           ))}
         </select>
         <select
           value={cycleFilter}
-          onChange={(e) => { setCycleFilter(e.target.value); setCurrentPage(1); }}
+          onChange={(e) => {
+            setCycleFilter(e.target.value);
+            setCurrentPage(1);
+          }}
           className="hidden sm:block px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
         >
           <option value="ALL">Toutes périodicités</option>
@@ -643,7 +714,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           title="Colonnes"
         />
         <span className="text-sm text-slate-500 ml-auto">
-          {loadingData ? 'Chargement…' : `${filteredSubscriptions.length} abonnement${filteredSubscriptions.length > 1 ? 's' : ''}`}
+          {loadingData
+            ? 'Chargement…'
+            : `${filteredSubscriptions.length} abonnement${filteredSubscriptions.length > 1 ? 's' : ''}`}
         </span>
         <button
           onClick={() => setShowCreateForm(true)}
@@ -675,7 +748,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
               <Trash2 className="w-3.5 h-3.5" />
               Supprimer
             </button>
-            <button onClick={() => setSelectedIds(new Set())} className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded">
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded"
+            >
               <X className="w-3.5 h-3.5 text-[var(--primary)]" />
             </button>
           </div>
@@ -686,411 +762,556 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
       {isMobile && (
         <MobileCardList className="pb-20">
           {paginatedSubscriptions.length === 0 ? (
-            subscriptions.length === 0
-              ? <EmptyState compact icon={CreditCard} title="Aucun abonnement" description="Aucun abonnement n'a encore été créé." />
-              : <EmptyState compact icon={SearchX} title="Aucun résultat" description="Aucun abonnement ne correspond aux filtres actifs." />
-          ) : paginatedSubscriptions.map(sub => {
-            const statusInfo = STATUS_LABELS[sub.effectiveStatus] || { label: sub.effectiveStatus, color: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300' };
-            const borderColor = sub.effectiveStatus === 'ACTIVE' ? 'border-l-green-500'
-              : sub.effectiveStatus === 'EXPIRING_SOON' ? 'border-l-amber-500'
-              : sub.effectiveStatus === 'EXPIRED' ? 'border-l-red-500'
-              : sub.effectiveStatus === 'SUSPENDED' ? 'border-l-orange-500'
-              : sub.effectiveStatus === 'CANCELLED' ? 'border-l-slate-400'
-              : 'border-l-blue-400';
-            return (
-              <MobileCard key={sub.id} borderColor={borderColor} onClick={() => setSelectedSubscription(sub)}>
-                {/* Primary: Client + Plaque + Montant */}
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold text-sm text-slate-800 dark:text-white truncate">{sub.clientName || '—'}</p>
-                    <span className="font-mono text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded">{sub.licensePlate || sub.vehicleName || '—'}</span>
+            subscriptions.length === 0 ? (
+              <EmptyState
+                compact
+                icon={CreditCard}
+                title="Aucun abonnement"
+                description="Aucun abonnement n'a encore été créé."
+              />
+            ) : (
+              <EmptyState
+                compact
+                icon={SearchX}
+                title="Aucun résultat"
+                description="Aucun abonnement ne correspond aux filtres actifs."
+              />
+            )
+          ) : (
+            paginatedSubscriptions.map((sub) => {
+              const statusInfo = STATUS_LABELS[sub.effectiveStatus] || {
+                label: sub.effectiveStatus,
+                color: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
+              };
+              const borderColor =
+                sub.effectiveStatus === 'ACTIVE'
+                  ? 'border-l-green-500'
+                  : sub.effectiveStatus === 'EXPIRING_SOON'
+                    ? 'border-l-amber-500'
+                    : sub.effectiveStatus === 'EXPIRED'
+                      ? 'border-l-red-500'
+                      : sub.effectiveStatus === 'SUSPENDED'
+                        ? 'border-l-orange-500'
+                        : sub.effectiveStatus === 'CANCELLED'
+                          ? 'border-l-slate-400'
+                          : 'border-l-blue-400';
+              return (
+                <MobileCard key={sub.id} borderColor={borderColor} onClick={() => setSelectedSubscription(sub)}>
+                  {/* Primary: Client + Plaque + Montant */}
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm text-slate-800 dark:text-white truncate">
+                        {sub.clientName || '—'}
+                      </p>
+                      <span className="font-mono text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded">
+                        {sub.licensePlate || sub.vehicleName || '—'}
+                      </span>
+                    </div>
+                    <p className="font-bold text-sm text-slate-800 dark:text-white shrink-0">
+                      {formatPrice(sub.periodicFee)}
+                    </p>
                   </div>
-                  <p className="font-bold text-sm text-slate-800 dark:text-white shrink-0">{formatPrice(sub.periodicFee)}</p>
-                </div>
-                {/* Secondary: Cycle + Statut + Prochaine facturation */}
-                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2 flex-wrap">
-                  <span>{BILLING_CYCLE_LABELS[sub.billingCycle] || sub.billingCycle}</span>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${statusInfo.color}`}>{statusInfo.label}</span>
-                  {sub.nextBillingDate && <span>Proch. {new Date(sub.nextBillingDate).toLocaleDateString('fr-FR')}</span>}
-                </div>
-                <div className="flex items-center gap-2">
-                  <MobileCardAction color="blue" onClick={(e) => { e.stopPropagation(); const raw = rawSubs.find(s => s.id === sub.id); if (raw) setEditingSub(raw); }}>Modifier</MobileCardAction>
-                </div>
-              </MobileCard>
-            );
-          })}
+                  {/* Secondary: Cycle + Statut + Prochaine facturation */}
+                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2 flex-wrap">
+                    <span>{BILLING_CYCLE_LABELS[sub.billingCycle] || sub.billingCycle}</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${statusInfo.color}`}>
+                      {statusInfo.label}
+                    </span>
+                    {sub.nextBillingDate && (
+                      <span>Proch. {new Date(sub.nextBillingDate).toLocaleDateString('fr-FR')}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MobileCardAction
+                      color="blue"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const raw = rawSubs.find((s) => s.id === sub.id);
+                        if (raw) setEditingSub(raw);
+                      }}
+                    >
+                      Modifier
+                    </MobileCardAction>
+                  </div>
+                </MobileCard>
+              );
+            })
+          )}
         </MobileCardList>
       )}
 
       {/* Table */}
-      {!isMobile && <Card className="flex-1 overflow-hidden">
-        <div className="overflow-x-auto h-full">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-900 sticky top-0 dark:text-white">
-              <tr>
-                <th className="px-3 py-3 w-10">
-                  <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[var(--primary)]">
-                    {selectedIds.size === paginatedSubscriptions.length && paginatedSubscriptions.length > 0
-                      ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
-                      : <Square className="w-4 h-4" />}
-                  </button>
-                </th>
-                {visibleColumns.includes('subscriptionNumber') && (
-                  <th onClick={() => handleSort('subscriptionNumber')} className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center gap-1">
-                      N° Abonnement <SortIcon sortField={sortField} sortDir={sortDir} field="subscriptionNumber" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('vehicleName') && (
-                  <th onClick={() => handleSort('vehicleName')} className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center gap-1">
-                      Véhicule <SortIcon sortField={sortField} sortDir={sortDir} field="vehicleName" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('licensePlate') && (
-                  <th onClick={() => handleSort('licensePlate')} className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center gap-1">
-                      Plaque <SortIcon sortField={sortField} sortDir={sortDir} field="licensePlate" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('clientName') && (
-                  <th onClick={() => handleSort('clientName')} className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center gap-1">
-                      Client <SortIcon sortField={sortField} sortDir={sortDir} field="clientName" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('contractNumber') && (
-                  <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Contrat</th>
-                )}
-                {visibleColumns.includes('resellerName') && (
-                  <th onClick={() => handleSort('resellerName')} className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center gap-1">Revendeur <SortIcon sortField={sortField} sortDir={sortDir} field="resellerName" /></div>
-                  </th>
-                )}
-                {visibleColumns.includes('effectiveStatus') && (
-                  <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Statut</th>
-                )}
-                {visibleColumns.includes('periodicFee') && (
-                  <th onClick={() => handleSort('periodicFee')} className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center justify-end gap-1">
-                      Tarif <SortIcon sortField={sortField} sortDir={sortDir} field="periodicFee" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('billingCycle') && (
-                  <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Périodicité</th>
-                )}
-                {visibleColumns.includes('nextBillingDate') && (
-                  <th onClick={() => handleSort('nextBillingDate')} className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center justify-center gap-1">
-                      Proch. Fact. <SortIcon sortField={sortField} sortDir={sortDir} field="nextBillingDate" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('installDate') && (
-                  <th onClick={() => handleSort('installDate')} className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center justify-center gap-1">Date install. <SortIcon sortField={sortField} sortDir={sortDir} field="installDate" /></div>
-                  </th>
-                )}
-                {visibleColumns.includes('invoiceCount') && (
-                  <th onClick={() => handleSort('invoiceCount')} className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center justify-center gap-1">Factures <SortIcon sortField={sortField} sortDir={sortDir} field="invoiceCount" /></div>
-                  </th>
-                )}
-                {visibleColumns.includes('gpsImei') && (
-                  <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Statut GPS</th>
-                )}
-                {visibleColumns.includes('renewalCount') && (
-                  <th onClick={() => handleSort('renewalCount')} className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center justify-center gap-1">
-                      Renouv. <SortIcon sortField={sortField} sortDir={sortDir} field="renewalCount" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('daysUntilExpiry') && (
-                  <th onClick={() => handleSort('daysUntilExpiry')} className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <div className="flex items-center justify-center gap-1">
-                      Expiration <SortIcon sortField={sortField} sortDir={sortDir} field="daysUntilExpiry" />
-                    </div>
-                  </th>
-                )}
-                {visibleColumns.includes('actions') && (
-                  <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Actions</th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-              {paginatedSubscriptions.length === 0 ? (
+      {!isMobile && (
+        <Card className="flex-1 overflow-hidden">
+          <div className="overflow-x-auto h-full">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-50 dark:bg-slate-900 sticky top-0 dark:text-white">
                 <tr>
-                  <td colSpan={visibleColumns.length + 1}>
-                    {subscriptions.length === 0
-                      ? <EmptyState icon={CreditCard} title="Aucun abonnement" description="Aucun abonnement n'a encore été créé." />
-                      : <EmptyState icon={SearchX} title="Aucun résultat" description="Aucun abonnement ne correspond aux filtres actifs." />
-                    }
-                  </td>
-                </tr>
-              ) : (
-                paginatedSubscriptions.map((sub) => {
-                  const isExpiringSoon = sub.effectiveStatus === 'EXPIRING_SOON';
-                  const isExpired = sub.effectiveStatus === 'EXPIRED';
-                  const statusStyle = STATUS_LABELS[sub.effectiveStatus] || STATUS_LABELS.ACTIVE;
-
-                  return (
-                    <tr
-                      key={sub.id}
-                      className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
-                        isExpired ? 'bg-red-50/50 dark:bg-red-900/10' : isExpiringSoon ? 'bg-amber-50/50 dark:bg-amber-900/10' : ''
-                      } ${selectedIds.has(sub.id) ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}
+                  <th className="px-3 py-3 w-10">
+                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[var(--primary)]">
+                      {selectedIds.size === paginatedSubscriptions.length && paginatedSubscriptions.length > 0 ? (
+                        <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
+                      ) : (
+                        <Square className="w-4 h-4" />
+                      )}
+                    </button>
+                  </th>
+                  {visibleColumns.includes('subscriptionNumber') && (
+                    <th
+                      onClick={() => handleSort('subscriptionNumber')}
+                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
                     >
-                      <td className="px-3 py-3">
-                        <button onClick={() => toggleSelect(sub.id)} className="text-slate-400 hover:text-[var(--primary)]">
-                          {selectedIds.has(sub.id)
-                            ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
-                            : <Square className="w-4 h-4" />}
-                        </button>
-                      </td>
-                      {visibleColumns.includes('subscriptionNumber') && (
-                        <td className="px-4 py-3">
+                      <div className="flex items-center gap-1">
+                        N° Abonnement <SortIcon sortField={sortField} sortDir={sortDir} field="subscriptionNumber" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('vehicleName') && (
+                    <th
+                      onClick={() => handleSort('vehicleName')}
+                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center gap-1">
+                        Véhicule <SortIcon sortField={sortField} sortDir={sortDir} field="vehicleName" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('licensePlate') && (
+                    <th
+                      onClick={() => handleSort('licensePlate')}
+                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center gap-1">
+                        Plaque <SortIcon sortField={sortField} sortDir={sortDir} field="licensePlate" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('clientName') && (
+                    <th
+                      onClick={() => handleSort('clientName')}
+                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center gap-1">
+                        Client <SortIcon sortField={sortField} sortDir={sortDir} field="clientName" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('contractNumber') && (
+                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Contrat</th>
+                  )}
+                  {visibleColumns.includes('resellerName') && (
+                    <th
+                      onClick={() => handleSort('resellerName')}
+                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center gap-1">
+                        Revendeur <SortIcon sortField={sortField} sortDir={sortDir} field="resellerName" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('effectiveStatus') && (
+                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Statut</th>
+                  )}
+                  {visibleColumns.includes('periodicFee') && (
+                    <th
+                      onClick={() => handleSort('periodicFee')}
+                      className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        Tarif <SortIcon sortField={sortField} sortDir={sortDir} field="periodicFee" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('billingCycle') && (
+                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Périodicité</th>
+                  )}
+                  {visibleColumns.includes('nextBillingDate') && (
+                    <th
+                      onClick={() => handleSort('nextBillingDate')}
+                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        Proch. Fact. <SortIcon sortField={sortField} sortDir={sortDir} field="nextBillingDate" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('installDate') && (
+                    <th
+                      onClick={() => handleSort('installDate')}
+                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        Date install. <SortIcon sortField={sortField} sortDir={sortDir} field="installDate" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('invoiceCount') && (
+                    <th
+                      onClick={() => handleSort('invoiceCount')}
+                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        Factures <SortIcon sortField={sortField} sortDir={sortDir} field="invoiceCount" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('gpsImei') && (
+                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Statut GPS</th>
+                  )}
+                  {visibleColumns.includes('renewalCount') && (
+                    <th
+                      onClick={() => handleSort('renewalCount')}
+                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        Renouv. <SortIcon sortField={sortField} sortDir={sortDir} field="renewalCount" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('daysUntilExpiry') && (
+                    <th
+                      onClick={() => handleSort('daysUntilExpiry')}
+                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                    >
+                      <div className="flex items-center justify-center gap-1">
+                        Expiration <SortIcon sortField={sortField} sortDir={sortDir} field="daysUntilExpiry" />
+                      </div>
+                    </th>
+                  )}
+                  {visibleColumns.includes('actions') && (
+                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Actions</th>
+                  )}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                {paginatedSubscriptions.length === 0 ? (
+                  <tr>
+                    <td colSpan={visibleColumns.length + 1}>
+                      {subscriptions.length === 0 ? (
+                        <EmptyState
+                          icon={CreditCard}
+                          title="Aucun abonnement"
+                          description="Aucun abonnement n'a encore été créé."
+                        />
+                      ) : (
+                        <EmptyState
+                          icon={SearchX}
+                          title="Aucun résultat"
+                          description="Aucun abonnement ne correspond aux filtres actifs."
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ) : (
+                  paginatedSubscriptions.map((sub) => {
+                    const isExpiringSoon = sub.effectiveStatus === 'EXPIRING_SOON';
+                    const isExpired = sub.effectiveStatus === 'EXPIRED';
+                    const statusStyle = STATUS_LABELS[sub.effectiveStatus] || STATUS_LABELS.ACTIVE;
+
+                    return (
+                      <tr
+                        key={sub.id}
+                        className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+                          isExpired
+                            ? 'bg-red-50/50 dark:bg-red-900/10'
+                            : isExpiringSoon
+                              ? 'bg-amber-50/50 dark:bg-amber-900/10'
+                              : ''
+                        } ${selectedIds.has(sub.id) ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}
+                      >
+                        <td className="px-3 py-3">
                           <button
-                            onClick={() => setSelectedSubscription(sub)}
-                            className="font-mono text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] hover:underline cursor-pointer"
+                            onClick={() => toggleSelect(sub.id)}
+                            className="text-slate-400 hover:text-[var(--primary)]"
                           >
-                            {sub.subscriptionNumber || '-'}
+                            {selectedIds.has(sub.id) ? (
+                              <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
+                            ) : (
+                              <Square className="w-4 h-4" />
+                            )}
                           </button>
                         </td>
-                      )}
-                      {visibleColumns.includes('vehicleName') && (
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-slate-100 dark:bg-slate-700 rounded dark:text-white">
-                              <Truck className="w-4 h-4 text-slate-500" />
-                            </div>
-                            <span className="font-medium text-slate-800 dark:text-white truncate max-w-[150px]">
-                              {sub.vehicleName}
-                            </span>
-                          </div>
-                        </td>
-                      )}
-                      {visibleColumns.includes('licensePlate') && (
-                        <td className="px-4 py-3">
-                          <span className="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded dark:text-white">
-                            {sub.licensePlate}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('clientName') && (
-                        <td className="px-4 py-3">
-                          <span className="text-slate-700 dark:text-slate-300 truncate max-w-[150px] block">
-                            {sub.clientName}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('contractNumber') && (
-                        <td className="px-4 py-3">
-                          <button
-                            onClick={() => handleViewContract(sub.contractId)}
-                            className="font-mono text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1"
-                          >
-                            {sub.contractNumber}
-                            <ExternalLink className="w-3 h-3" />
-                          </button>
-                        </td>
-                      )}
-                      {visibleColumns.includes('resellerName') && (
-                        <td className="px-4 py-3">
-                          <span className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
-                            <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
-                            {sub.resellerName}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('effectiveStatus') && (
-                        <td className="px-4 py-3 text-center">
-                          <span className={`text-xs px-2 py-1 rounded-full ${statusStyle.color}`}>
-                            {statusStyle.label}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('periodicFee') && (
-                        <td className="px-4 py-3 text-right">
-                          <span className="font-bold text-green-600 dark:text-green-400">
-                            {formatPrice(sub.periodicFee)}
-                          </span>
-                          <span className="text-[10px] text-slate-400 block">
-                            /{BILLING_CYCLE_LABELS[sub.billingCycle]?.toLowerCase() || sub.billingCycle}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('billingCycle') && (
-                        <td className="px-4 py-3 text-center">
-                          <span className="text-xs text-slate-600 dark:text-slate-400">
-                            {BILLING_CYCLE_LABELS[sub.billingCycle] || sub.billingCycle}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('nextBillingDate') && (
-                        <td className="px-4 py-3 text-center">
-                          <span
-                            className={`text-xs ${sub.nextBillingDate && new Date(sub.nextBillingDate) < new Date() ? 'text-red-600 font-medium' : 'text-slate-600 dark:text-slate-400'}`}
-                          >
-                            {formatDate(sub.nextBillingDate)}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('installDate') && (
-                        <td className="px-4 py-3 text-center">
-                          <span className="text-xs text-slate-600 dark:text-slate-400">
-                            {sub.installDate !== '-' ? formatDate(sub.installDate) : '—'}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('invoiceCount') && (
-                        <td className="px-4 py-3 text-center">
-                          <span className={`inline-flex items-center gap-1 text-xs font-medium ${sub.invoiceCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}>
-                            <FileText className="w-3 h-3" />
-                            {sub.invoiceCount}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('gpsImei') && (
-                        <td className="px-4 py-3 text-center">
-                          {sub.gpsImei ? (() => {
-                            const GPS_STATUS_CFG: Record<VehicleStatus, { label: string; dot: string; text: string; bg: string }> = {
-                              [VehicleStatus.MOVING]:  { label: 'En mouvement', dot: 'bg-green-500',  text: 'text-green-700 dark:text-green-400',  bg: 'bg-green-50 dark:bg-green-900/20' },
-                              [VehicleStatus.IDLE]:    { label: 'Ralenti',      dot: 'bg-orange-500', text: 'text-orange-700 dark:text-orange-400', bg: 'bg-orange-50 dark:bg-orange-900/20' },
-                              [VehicleStatus.STOPPED]: { label: 'Arrêté',       dot: 'bg-red-500',    text: 'text-red-700 dark:text-red-400',       bg: 'bg-red-50 dark:bg-red-900/20' },
-                              [VehicleStatus.OFFLINE]: { label: 'Hors ligne',   dot: 'bg-slate-400',  text: 'text-slate-500 dark:text-slate-400',   bg: 'bg-slate-100 dark:bg-slate-700/40' },
-                            };
-                            const cfg = sub.gpsStatus ? GPS_STATUS_CFG[sub.gpsStatus] : GPS_STATUS_CFG[VehicleStatus.OFFLINE];
-                            return (
-                              <div className="inline-flex flex-col items-center gap-0.5">
-                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${cfg.text} ${cfg.bg}`}>
-                                  <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot} ${sub.gpsStatus === VehicleStatus.MOVING ? 'animate-pulse' : ''}`} />
-                                  {cfg.label}
-                                </span>
-                                <span className="font-mono text-[10px] text-slate-400">{sub.gpsImei}</span>
+                        {visibleColumns.includes('subscriptionNumber') && (
+                          <td className="px-4 py-3">
+                            <button
+                              onClick={() => setSelectedSubscription(sub)}
+                              className="font-mono text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] hover:underline cursor-pointer"
+                            >
+                              {sub.subscriptionNumber || '-'}
+                            </button>
+                          </td>
+                        )}
+                        {visibleColumns.includes('vehicleName') && (
+                          <td className="px-4 py-3">
+                            <div className="flex items-center gap-2">
+                              <div className="p-1.5 bg-slate-100 dark:bg-slate-700 rounded dark:text-white">
+                                <Truck className="w-4 h-4 text-slate-500" />
                               </div>
-                            );
-                          })() : (
-                            <span className="inline-flex items-center gap-1 text-xs text-slate-400">
-                              <WifiOff className="w-3 h-3" />
-                              Non configuré
+                              <span className="font-medium text-slate-800 dark:text-white truncate max-w-[150px]">
+                                {sub.vehicleName}
+                              </span>
+                            </div>
+                          </td>
+                        )}
+                        {visibleColumns.includes('licensePlate') && (
+                          <td className="px-4 py-3">
+                            <span className="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded dark:text-white">
+                              {sub.licensePlate}
                             </span>
-                          )}
-                        </td>
-                      )}
-                      {visibleColumns.includes('renewalCount') && (
-                        <td className="px-4 py-3 text-center">
-                          <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-700 dark:text-slate-300">
-                            <RefreshCw className="w-3 h-3 text-green-500" />
-                            {sub.renewalCount}
-                          </span>
-                        </td>
-                      )}
-                      {visibleColumns.includes('daysUntilExpiry') && (
-                        <td className="px-4 py-3 text-center">
-                          {getExpiryBadge(sub)}
-                          {sub.endDate && (
-                            <span className="text-[10px] text-slate-400 block">{formatDate(sub.endDate)}</span>
-                          )}
-                        </td>
-                      )}
-                      {visibleColumns.includes('actions') && (
-                        <td className="px-4 py-3 text-center relative">
-                          <button
-                            onClick={() => setShowActionsFor(showActionsFor === sub.id ? null : sub.id)}
-                            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                          >
-                            <MoreVertical className="w-4 h-4 text-slate-500" />
-                          </button>
-                          {showActionsFor === sub.id && (
-                            <>
-                              <div className="fixed inset-0 z-10" onClick={() => setShowActionsFor(null)} />
-                              <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-20 py-1 dark:text-white">
-                                <button
-                                  onClick={() => { setSelectedSubscription(sub); setShowActionsFor(null); }}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
-                                >
-                                  <CreditCard className="w-4 h-4 text-indigo-500" />
-                                  Détail abonnement
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    const raw = rawSubs.find(s => s.id === sub.id);
-                                    if (raw) setEditingSub(raw);
-                                    setShowActionsFor(null);
-                                  }}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
-                                >
-                                  <Eye className="w-4 h-4 text-[var(--primary)]" />
-                                  Modifier
-                                </button>
-                                <button
-                                  onClick={() => handleViewContract(sub.contractId)}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
-                                >
-                                  <ExternalLink className="w-4 h-4 text-slate-500" />
-                                  Voir le contrat
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    const raw = rawSubs.find(s => s.id === sub.id);
-                                    if (raw) {
-                                      setGeneratingInvoiceFor(raw);
-                                      setInvoiceBillingDate(new Date().toISOString().split('T')[0]);
-                                      setInvoiceDueDate('');
-                                    }
-                                    setShowActionsFor(null);
-                                  }}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
-                                >
-                                  <Receipt className="w-4 h-4 text-green-500" />
-                                  Générer une facture
-                                </button>
-                                <hr className="my-1 border-slate-200 dark:border-slate-700" />
-                                {sub.effectiveStatus === 'ACTIVE' && (
+                          </td>
+                        )}
+                        {visibleColumns.includes('clientName') && (
+                          <td className="px-4 py-3">
+                            <span className="text-slate-700 dark:text-slate-300 truncate max-w-[150px] block">
+                              {sub.clientName}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('contractNumber') && (
+                          <td className="px-4 py-3">
+                            <button
+                              onClick={() => handleViewContract(sub.contractId)}
+                              className="font-mono text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1"
+                            >
+                              {sub.contractNumber}
+                              <ExternalLink className="w-3 h-3" />
+                            </button>
+                          </td>
+                        )}
+                        {visibleColumns.includes('resellerName') && (
+                          <td className="px-4 py-3">
+                            <span className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
+                              <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
+                              {sub.resellerName}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('effectiveStatus') && (
+                          <td className="px-4 py-3 text-center">
+                            <span className={`text-xs px-2 py-1 rounded-full ${statusStyle.color}`}>
+                              {statusStyle.label}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('periodicFee') && (
+                          <td className="px-4 py-3 text-right">
+                            <span className="font-bold text-green-600 dark:text-green-400">
+                              {formatPrice(sub.periodicFee)}
+                            </span>
+                            <span className="text-[10px] text-slate-400 block">
+                              /{BILLING_CYCLE_LABELS[sub.billingCycle]?.toLowerCase() || sub.billingCycle}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('billingCycle') && (
+                          <td className="px-4 py-3 text-center">
+                            <span className="text-xs text-slate-600 dark:text-slate-400">
+                              {BILLING_CYCLE_LABELS[sub.billingCycle] || sub.billingCycle}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('nextBillingDate') && (
+                          <td className="px-4 py-3 text-center">
+                            <span
+                              className={`text-xs ${sub.nextBillingDate && new Date(sub.nextBillingDate) < new Date() ? 'text-red-600 font-medium' : 'text-slate-600 dark:text-slate-400'}`}
+                            >
+                              {formatDate(sub.nextBillingDate)}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('installDate') && (
+                          <td className="px-4 py-3 text-center">
+                            <span className="text-xs text-slate-600 dark:text-slate-400">
+                              {sub.installDate !== '-' ? formatDate(sub.installDate) : '—'}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('invoiceCount') && (
+                          <td className="px-4 py-3 text-center">
+                            <span
+                              className={`inline-flex items-center gap-1 text-xs font-medium ${sub.invoiceCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}
+                            >
+                              <FileText className="w-3 h-3" />
+                              {sub.invoiceCount}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('gpsImei') && (
+                          <td className="px-4 py-3 text-center">
+                            {sub.gpsImei ? (
+                              (() => {
+                                const GPS_STATUS_CFG: Record<
+                                  VehicleStatus,
+                                  { label: string; dot: string; text: string; bg: string }
+                                > = {
+                                  [VehicleStatus.MOVING]: {
+                                    label: 'En mouvement',
+                                    dot: 'bg-green-500',
+                                    text: 'text-green-700 dark:text-green-400',
+                                    bg: 'bg-green-50 dark:bg-green-900/20',
+                                  },
+                                  [VehicleStatus.IDLE]: {
+                                    label: 'Ralenti',
+                                    dot: 'bg-orange-500',
+                                    text: 'text-orange-700 dark:text-orange-400',
+                                    bg: 'bg-orange-50 dark:bg-orange-900/20',
+                                  },
+                                  [VehicleStatus.STOPPED]: {
+                                    label: 'Arrêté',
+                                    dot: 'bg-red-500',
+                                    text: 'text-red-700 dark:text-red-400',
+                                    bg: 'bg-red-50 dark:bg-red-900/20',
+                                  },
+                                  [VehicleStatus.OFFLINE]: {
+                                    label: 'Hors ligne',
+                                    dot: 'bg-slate-400',
+                                    text: 'text-slate-500 dark:text-slate-400',
+                                    bg: 'bg-slate-100 dark:bg-slate-700/40',
+                                  },
+                                };
+                                const cfg = sub.gpsStatus
+                                  ? GPS_STATUS_CFG[sub.gpsStatus]
+                                  : GPS_STATUS_CFG[VehicleStatus.OFFLINE];
+                                return (
+                                  <div className="inline-flex flex-col items-center gap-0.5">
+                                    <span
+                                      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${cfg.text} ${cfg.bg}`}
+                                    >
+                                      <span
+                                        className={`w-1.5 h-1.5 rounded-full ${cfg.dot} ${sub.gpsStatus === VehicleStatus.MOVING ? 'animate-pulse' : ''}`}
+                                      />
+                                      {cfg.label}
+                                    </span>
+                                    <span className="font-mono text-[10px] text-slate-400">{sub.gpsImei}</span>
+                                  </div>
+                                );
+                              })()
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+                                <WifiOff className="w-3 h-3" />
+                                Non configuré
+                              </span>
+                            )}
+                          </td>
+                        )}
+                        {visibleColumns.includes('renewalCount') && (
+                          <td className="px-4 py-3 text-center">
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-700 dark:text-slate-300">
+                              <RefreshCw className="w-3 h-3 text-green-500" />
+                              {sub.renewalCount}
+                            </span>
+                          </td>
+                        )}
+                        {visibleColumns.includes('daysUntilExpiry') && (
+                          <td className="px-4 py-3 text-center">
+                            {getExpiryBadge(sub)}
+                            {sub.endDate && (
+                              <span className="text-[10px] text-slate-400 block">{formatDate(sub.endDate)}</span>
+                            )}
+                          </td>
+                        )}
+                        {visibleColumns.includes('actions') && (
+                          <td className="px-4 py-3 text-center relative">
+                            <button
+                              onClick={() => setShowActionsFor(showActionsFor === sub.id ? null : sub.id)}
+                              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                            >
+                              <MoreVertical className="w-4 h-4 text-slate-500" />
+                            </button>
+                            {showActionsFor === sub.id && (
+                              <>
+                                <div className="fixed inset-0 z-10" onClick={() => setShowActionsFor(null)} />
+                                <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-20 py-1 dark:text-white">
                                   <button
-                                    onClick={() => { handleSuspend(sub.id); setShowActionsFor(null); }}
-                                    className="w-full px-4 py-2 text-left text-sm hover:bg-orange-50 dark:hover:bg-orange-900/20 text-orange-600 flex items-center gap-2"
+                                    onClick={() => {
+                                      setSelectedSubscription(sub);
+                                      setShowActionsFor(null);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
                                   >
-                                    <PauseCircle className="w-4 h-4" />
-                                    Suspendre
+                                    <CreditCard className="w-4 h-4 text-indigo-500" />
+                                    Détail abonnement
                                   </button>
-                                )}
-                                {sub.effectiveStatus !== 'CANCELLED' && sub.effectiveStatus !== 'CANCELED' && (
                                   <button
-                                    onClick={() => { handleRésilier(sub.id); setShowActionsFor(null); }}
+                                    onClick={() => {
+                                      const raw = rawSubs.find((s) => s.id === sub.id);
+                                      if (raw) setEditingSub(raw);
+                                      setShowActionsFor(null);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                  >
+                                    <Eye className="w-4 h-4 text-[var(--primary)]" />
+                                    Modifier
+                                  </button>
+                                  <button
+                                    onClick={() => handleViewContract(sub.contractId)}
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                  >
+                                    <ExternalLink className="w-4 h-4 text-slate-500" />
+                                    Voir le contrat
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      const raw = rawSubs.find((s) => s.id === sub.id);
+                                      if (raw) {
+                                        setGeneratingInvoiceFor(raw);
+                                        setInvoiceBillingDate(new Date().toISOString().split('T')[0]);
+                                        setInvoiceDueDate('');
+                                      }
+                                      setShowActionsFor(null);
+                                    }}
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                  >
+                                    <Receipt className="w-4 h-4 text-green-500" />
+                                    Générer une facture
+                                  </button>
+                                  <hr className="my-1 border-slate-200 dark:border-slate-700" />
+                                  {sub.effectiveStatus === 'ACTIVE' && (
+                                    <button
+                                      onClick={() => {
+                                        handleSuspend(sub.id);
+                                        setShowActionsFor(null);
+                                      }}
+                                      className="w-full px-4 py-2 text-left text-sm hover:bg-orange-50 dark:hover:bg-orange-900/20 text-orange-600 flex items-center gap-2"
+                                    >
+                                      <PauseCircle className="w-4 h-4" />
+                                      Suspendre
+                                    </button>
+                                  )}
+                                  {sub.effectiveStatus !== 'CANCELLED' && sub.effectiveStatus !== 'CANCELED' && (
+                                    <button
+                                      onClick={() => {
+                                        handleRésilier(sub.id);
+                                        setShowActionsFor(null);
+                                      }}
+                                      className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                    >
+                                      <XCircle className="w-4 h-4" />
+                                      Résilier
+                                    </button>
+                                  )}
+                                  <hr className="my-1 border-slate-200 dark:border-slate-700" />
+                                  <button
+                                    onClick={() => handleDeleteSub(sub)}
                                     className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
                                   >
-                                    <XCircle className="w-4 h-4" />
-                                    Résilier
+                                    <Trash2 className="w-4 h-4" />
+                                    Supprimer l'abonnement
                                   </button>
-                                )}
-                                <hr className="my-1 border-slate-200 dark:border-slate-700" />
-                                <button
-                                  onClick={() => handleDeleteSub(sub)}
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Supprimer l'abonnement
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>}
+                                </div>
+                              </>
+                            )}
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </Card>
+      )}
 
       {/* Pagination — mb-20 pour éviter overlap avec le bouton AI flottant */}
       <Pagination
@@ -1118,7 +1339,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           nextBillingDate={selectedSubscription.nextBillingDate}
           onNavigate={onNavigate}
           onEdit={() => {
-            const raw = rawSubs.find(s => s.id === selectedSubscription.id);
+            const raw = rawSubs.find((s) => s.id === selectedSubscription.id);
             if (raw) setEditingSub(raw);
             setSelectedSubscription(null);
           }}
@@ -1133,16 +1354,22 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-bold text-slate-800 dark:text-white">Modifier l'abonnement</h2>
-              <button onClick={() => setEditingSub(null)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+              <button
+                onClick={() => setEditingSub(null)}
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <SubscriptionForm
               vehicleId={editingSub.vehicle_id}
               vehiclePlate={editingSub.vehicle_plate || '-'}
-              vehicleName={[editingSub.vehicle_brand, editingSub.vehicle_model].filter(Boolean).join(' ') || editingSub.vehicle_name}
+              vehicleName={
+                [editingSub.vehicle_brand, editingSub.vehicle_model].filter(Boolean).join(' ') ||
+                editingSub.vehicle_name
+              }
               contractId={editingSub.contract_id}
-              installationDate={vehicles.find(v => v.id === editingSub.vehicle_id)?.installDate ?? undefined}
+              installationDate={vehicles.find((v) => v.id === editingSub.vehicle_id)?.installDate ?? undefined}
               initialData={{
                 id: editingSub.id,
                 catalogItemId: (() => {
@@ -1150,7 +1377,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     const raw = editingSub.items;
                     const parsed = Array.isArray(raw) ? raw : JSON.parse(typeof raw === 'string' ? raw : '[]');
                     return Array.isArray(parsed) && parsed[0]?.catalog_item_id ? String(parsed[0].catalog_item_id) : '';
-                  } catch { return ''; }
+                  } catch {
+                    return '';
+                  }
                 })(),
                 monthlyFee: Number(editingSub.monthly_fee) || 0,
                 billingCycle: editingSub.billing_cycle as SubscriptionFormData['billingCycle'],
@@ -1175,14 +1404,19 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 <Receipt className="w-5 h-5 text-green-500" />
                 Générer une facture
               </h2>
-              <button onClick={() => setGeneratingInvoiceFor(null)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+              <button
+                onClick={() => setGeneratingInvoiceFor(null)}
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 space-y-4">
               <div className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-sm text-slate-600 dark:text-slate-300">
                 <p className="font-medium">{generatingInvoiceFor.vehicle_plate || generatingInvoiceFor.vehicle_id}</p>
-                <p className="text-xs text-slate-400 mt-0.5">{generatingInvoiceFor.client_name || generatingInvoiceFor.client_id}</p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {generatingInvoiceFor.client_name || generatingInvoiceFor.client_id}
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
@@ -1191,7 +1425,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 <input
                   type="date"
                   value={invoiceBillingDate}
-                  onChange={e => setInvoiceBillingDate(e.target.value)}
+                  onChange={(e) => setInvoiceBillingDate(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
                 />
               </div>
@@ -1202,7 +1436,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 <input
                   type="date"
                   value={invoiceDueDate}
-                  onChange={e => setInvoiceDueDate(e.target.value)}
+                  onChange={(e) => setInvoiceDueDate(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
                 />
               </div>
@@ -1218,7 +1452,11 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   disabled={!invoiceBillingDate || generatingInvoiceLoading}
                   className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-2"
                 >
-                  {generatingInvoiceLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Receipt className="w-4 h-4" />}
+                  {generatingInvoiceLoading ? (
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Receipt className="w-4 h-4" />
+                  )}
                   Générer
                 </button>
               </div>
@@ -1237,7 +1475,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 Sélectionner un véhicule
               </h2>
               <button
-                onClick={() => { setShowCreateForm(false); setCreateVehicle(null); }}
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setCreateVehicle(null);
+                }}
                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
               >
                 <X className="w-5 h-5" />
@@ -1262,7 +1503,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         <Truck className="w-4 h-4 text-slate-500" />
                       </div>
                       <div>
-                        <p className="font-mono text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)]">{v.id}</p>
+                        <p className="font-mono text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)]">
+                          {v.id}
+                        </p>
                         <p className="text-sm font-medium text-slate-800 dark:text-white">{v.plate}</p>
                         {v.name && <p className="text-xs text-slate-500">{v.name}</p>}
                       </div>
@@ -1285,7 +1528,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 Créer un abonnement
               </h2>
               <button
-                onClick={() => { setShowCreateForm(false); setCreateVehicle(null); }}
+                onClick={() => {
+                  setShowCreateForm(false);
+                  setCreateVehicle(null);
+                }}
                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
               >
                 <X className="w-5 h-5" />
@@ -1298,7 +1544,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
               contractId={createVehicle.contractId}
               installationDate={createVehicle.installationDate}
               onSubmit={handleCreateSubmit}
-              onCancel={() => { setShowCreateForm(false); setCreateVehicle(null); }}
+              onCancel={() => {
+                setShowCreateForm(false);
+                setCreateVehicle(null);
+              }}
             />
           </div>
         </div>
@@ -1308,52 +1557,126 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
       <MobileFilterSheet
         isOpen={mobileFilterOpen}
         onClose={() => setMobileFilterOpen(false)}
-        activeCount={(statusFilter !== 'ALL' ? 1 : 0) + (resellerFilter !== 'ALL' ? 1 : 0) + (cycleFilter !== 'ALL' ? 1 : 0)}
-        onReset={() => { setStatusFilter('ALL'); setResellerFilter('ALL'); setCycleFilter('ALL'); }}
-        tabs={[
-          {
-            id: 'status',
-            label: 'Statut',
-            activeCount: statusFilter !== 'ALL' ? 1 : 0,
-            content: (
-              <>
-                <FilterRadioRow value="ALL" label="Tous" checked={statusFilter === 'ALL'} onChange={() => setStatusFilter('ALL')} />
-                <FilterRadioRow value="ACTIVE" label="Actif" checked={statusFilter === 'ACTIVE'} onChange={() => setStatusFilter('ACTIVE')} />
-                <FilterRadioRow value="PENDING" label="En attente" checked={statusFilter === 'PENDING'} onChange={() => setStatusFilter('PENDING')} />
-                <FilterRadioRow value="EXPIRED" label="Expiré" checked={statusFilter === 'EXPIRED'} onChange={() => setStatusFilter('EXPIRED')} />
-                <FilterRadioRow value="SUSPENDED" label="Suspendu" checked={statusFilter === 'SUSPENDED'} onChange={() => setStatusFilter('SUSPENDED')} />
-                <FilterRadioRow value="CANCELLED" label="Résilié" checked={statusFilter === 'CANCELLED'} onChange={() => setStatusFilter('CANCELLED')} />
-              </>
-            ),
-          },
-          {
-            id: 'reseller',
-            label: 'Revendeur',
-            activeCount: resellerFilter !== 'ALL' ? 1 : 0,
-            content: (
-              <>
-                <FilterRadioRow value="ALL" label="Tous" checked={resellerFilter === 'ALL'} onChange={() => setResellerFilter('ALL')} />
-                {resellers.map(r => (
-                  <FilterRadioRow key={r.id} value={r.id} label={r.name} checked={resellerFilter === r.id} onChange={() => setResellerFilter(r.id)} />
-                ))}
-              </>
-            ),
-          },
-          {
-            id: 'cycle',
-            label: 'Périodicité',
-            activeCount: cycleFilter !== 'ALL' ? 1 : 0,
-            content: (
-              <>
-                <FilterRadioRow value="ALL" label="Toutes" checked={cycleFilter === 'ALL'} onChange={() => setCycleFilter('ALL')} />
-                <FilterRadioRow value="MONTHLY" label="Mensuel" checked={cycleFilter === 'MONTHLY'} onChange={() => setCycleFilter('MONTHLY')} />
-                <FilterRadioRow value="QUARTERLY" label="Trimestriel" checked={cycleFilter === 'QUARTERLY'} onChange={() => setCycleFilter('QUARTERLY')} />
-                <FilterRadioRow value="SEMESTRIAL" label="Semestriel" checked={cycleFilter === 'SEMESTRIAL'} onChange={() => setCycleFilter('SEMESTRIAL')} />
-                <FilterRadioRow value="ANNUAL" label="Annuel" checked={cycleFilter === 'ANNUAL'} onChange={() => setCycleFilter('ANNUAL')} />
-              </>
-            ),
-          },
-        ] as MobileFilterTab[]}
+        activeCount={
+          (statusFilter !== 'ALL' ? 1 : 0) + (resellerFilter !== 'ALL' ? 1 : 0) + (cycleFilter !== 'ALL' ? 1 : 0)
+        }
+        onReset={() => {
+          setStatusFilter('ALL');
+          setResellerFilter('ALL');
+          setCycleFilter('ALL');
+        }}
+        tabs={
+          [
+            {
+              id: 'status',
+              label: 'Statut',
+              activeCount: statusFilter !== 'ALL' ? 1 : 0,
+              content: (
+                <>
+                  <FilterRadioRow
+                    value="ALL"
+                    label="Tous"
+                    checked={statusFilter === 'ALL'}
+                    onChange={() => setStatusFilter('ALL')}
+                  />
+                  <FilterRadioRow
+                    value="ACTIVE"
+                    label="Actif"
+                    checked={statusFilter === 'ACTIVE'}
+                    onChange={() => setStatusFilter('ACTIVE')}
+                  />
+                  <FilterRadioRow
+                    value="PENDING"
+                    label="En attente"
+                    checked={statusFilter === 'PENDING'}
+                    onChange={() => setStatusFilter('PENDING')}
+                  />
+                  <FilterRadioRow
+                    value="EXPIRED"
+                    label="Expiré"
+                    checked={statusFilter === 'EXPIRED'}
+                    onChange={() => setStatusFilter('EXPIRED')}
+                  />
+                  <FilterRadioRow
+                    value="SUSPENDED"
+                    label="Suspendu"
+                    checked={statusFilter === 'SUSPENDED'}
+                    onChange={() => setStatusFilter('SUSPENDED')}
+                  />
+                  <FilterRadioRow
+                    value="CANCELLED"
+                    label="Résilié"
+                    checked={statusFilter === 'CANCELLED'}
+                    onChange={() => setStatusFilter('CANCELLED')}
+                  />
+                </>
+              ),
+            },
+            {
+              id: 'reseller',
+              label: 'Revendeur',
+              activeCount: resellerFilter !== 'ALL' ? 1 : 0,
+              content: (
+                <>
+                  <FilterRadioRow
+                    value="ALL"
+                    label="Tous"
+                    checked={resellerFilter === 'ALL'}
+                    onChange={() => setResellerFilter('ALL')}
+                  />
+                  {resellers.map((r) => (
+                    <FilterRadioRow
+                      key={r.id}
+                      value={r.id}
+                      label={r.name}
+                      checked={resellerFilter === r.id}
+                      onChange={() => setResellerFilter(r.id)}
+                    />
+                  ))}
+                </>
+              ),
+            },
+            {
+              id: 'cycle',
+              label: 'Périodicité',
+              activeCount: cycleFilter !== 'ALL' ? 1 : 0,
+              content: (
+                <>
+                  <FilterRadioRow
+                    value="ALL"
+                    label="Toutes"
+                    checked={cycleFilter === 'ALL'}
+                    onChange={() => setCycleFilter('ALL')}
+                  />
+                  <FilterRadioRow
+                    value="MONTHLY"
+                    label="Mensuel"
+                    checked={cycleFilter === 'MONTHLY'}
+                    onChange={() => setCycleFilter('MONTHLY')}
+                  />
+                  <FilterRadioRow
+                    value="QUARTERLY"
+                    label="Trimestriel"
+                    checked={cycleFilter === 'QUARTERLY'}
+                    onChange={() => setCycleFilter('QUARTERLY')}
+                  />
+                  <FilterRadioRow
+                    value="SEMESTRIAL"
+                    label="Semestriel"
+                    checked={cycleFilter === 'SEMESTRIAL'}
+                    onChange={() => setCycleFilter('SEMESTRIAL')}
+                  />
+                  <FilterRadioRow
+                    value="ANNUAL"
+                    label="Annuel"
+                    checked={cycleFilter === 'ANNUAL'}
+                    onChange={() => setCycleFilter('ANNUAL')}
+                  />
+                </>
+              ),
+            },
+          ] as MobileFilterTab[]
+        }
       />
     </div>
   );

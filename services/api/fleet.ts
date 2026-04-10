@@ -8,7 +8,7 @@ import {
   sleep,
   filterByTenant,
   getHeaders,
-  handleAuthError
+  handleAuthError,
 } from './client';
 import { logger } from '../../utils/logger';
 import type {
@@ -27,11 +27,10 @@ import type {
   FuelRecord,
   MaintenanceRecord,
   VehiclePositionHistory,
-  Branch
+  Branch,
 } from '../../types';
 
 export function createFleetApi(lazyApi: () => any) {
-
   // --- DRIVERS (local const for self-references) ---
   const driversApi = {
     getAll: async (): Promise<Driver[]> => {
@@ -58,7 +57,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/drivers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(driver)
+        body: JSON.stringify(driver),
       });
       return response.json();
     },
@@ -67,7 +66,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const drivers = await driversApi.getAll();
-        const index = drivers.findIndex(d => d.id === driver.id);
+        const index = drivers.findIndex((d) => d.id === driver.id);
         if (index !== -1) {
           drivers[index] = driver;
           localStorage.setItem(DB_KEYS.DRIVERS, JSON.stringify(drivers));
@@ -78,7 +77,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/drivers/${driver.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(driver)
+        body: JSON.stringify(driver),
       });
       return response.json();
     },
@@ -87,14 +86,14 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const drivers = await driversApi.getAll();
-        const filtered = drivers.filter(d => d.id !== id);
+        const filtered = drivers.filter((d) => d.id !== id);
         localStorage.setItem(DB_KEYS.DRIVERS, JSON.stringify(filtered));
         return;
       }
       await fetch(`${API_URL}/drivers/${id}`, { method: 'DELETE', headers: getHeaders() });
     },
     // Alias for compatibility
-    list: async (tenantId?: string): Promise<Driver[]> => driversApi.getAll()
+    list: async (tenantId?: string): Promise<Driver[]> => driversApi.getAll(),
   };
 
   // --- GROUPS (local const for self-references) ---
@@ -120,7 +119,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/groups`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(group)
+        body: JSON.stringify(group),
       });
       return response.json();
     },
@@ -129,7 +128,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const groups = await groupsApi.getAll();
-        const index = groups.findIndex(g => g.id === group.id);
+        const index = groups.findIndex((g) => g.id === group.id);
         if (index !== -1) {
           groups[index] = group;
           localStorage.setItem(DB_KEYS.GROUPS, JSON.stringify(groups));
@@ -140,7 +139,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/groups/${group.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(group)
+        body: JSON.stringify(group),
       });
       return response.json();
     },
@@ -149,12 +148,12 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const groups = await groupsApi.getAll();
-        const filtered = groups.filter(g => g.id !== id);
+        const filtered = groups.filter((g) => g.id !== id);
         localStorage.setItem(DB_KEYS.GROUPS, JSON.stringify(filtered));
         return;
       }
       await fetch(`${API_URL}/groups/${id}`, { method: 'DELETE', headers: getHeaders() });
-    }
+    },
   };
 
   // --- COMMANDS (local const for self-references) ---
@@ -172,7 +171,12 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const commands = await commandsApi.getAll();
-        const newCommand = { ...command, id: command.id || `CMD-${Date.now()}`, sentAt: new Date().toISOString(), status: 'SENT' as const };
+        const newCommand = {
+          ...command,
+          id: command.id || `CMD-${Date.now()}`,
+          sentAt: new Date().toISOString(),
+          status: 'SENT' as const,
+        };
         commands.push(newCommand);
         localStorage.setItem(DB_KEYS.COMMANDS, JSON.stringify(commands));
         return newCommand;
@@ -180,7 +184,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/commands`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify(command)
+        body: JSON.stringify(command),
       });
       if (!response.ok) throw new Error(`Failed to create command: ${response.status}`);
       return response.json();
@@ -189,7 +193,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const commands = await commandsApi.getAll();
-        const index = commands.findIndex(c => c.id === command.id);
+        const index = commands.findIndex((c) => c.id === command.id);
         if (index !== -1) {
           commands[index] = command;
           localStorage.setItem(DB_KEYS.COMMANDS, JSON.stringify(commands));
@@ -200,7 +204,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/commands/${command.id}`, {
         method: 'PUT',
         headers: getHeaders(),
-        body: JSON.stringify(command)
+        body: JSON.stringify(command),
       });
       if (!response.ok) throw new Error(`Failed to update command: ${response.status}`);
       return response.json();
@@ -209,12 +213,12 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const commands = await commandsApi.getAll();
-        const filtered = commands.filter(c => c.id !== id);
+        const filtered = commands.filter((c) => c.id !== id);
         localStorage.setItem(DB_KEYS.COMMANDS, JSON.stringify(filtered));
         return;
       }
       await fetch(`${API_URL}/commands/${id}`, { method: 'DELETE', headers: getHeaders() });
-    }
+    },
   };
 
   // --- POIS (local const for self-references) ---
@@ -240,7 +244,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/pois`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify(poi)
+        body: JSON.stringify(poi),
       });
       return response.json();
     },
@@ -248,7 +252,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const pois = await poisApi.getAll();
-        const index = pois.findIndex(p => p.id === poi.id);
+        const index = pois.findIndex((p) => p.id === poi.id);
         if (index !== -1) {
           pois[index] = poi;
           localStorage.setItem(DB_KEYS.POIS, JSON.stringify(pois));
@@ -259,7 +263,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/pois/${poi.id}`, {
         method: 'PUT',
         headers: getHeaders(),
-        body: JSON.stringify(poi)
+        body: JSON.stringify(poi),
       });
       return response.json();
     },
@@ -267,12 +271,12 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const pois = await poisApi.getAll();
-        const filtered = pois.filter(p => p.id !== id);
+        const filtered = pois.filter((p) => p.id !== id);
         localStorage.setItem(DB_KEYS.POIS, JSON.stringify(filtered));
         return;
       }
       await fetch(`${API_URL}/pois/${id}`, { method: 'DELETE', headers: getHeaders() });
-    }
+    },
   };
 
   // --- ALERT CONFIGS (local const for self-references) ---
@@ -313,7 +317,7 @@ export function createFleetApi(lazyApi: () => any) {
         isActive: r.is_active,
         status: r.is_active ? 'ACTIVE' : 'INACTIVE',
         createdAt: r.created_at,
-        updatedAt: r.updated_at
+        updatedAt: r.updated_at,
       }));
     },
     create: async (config: AlertConfig): Promise<AlertConfig> => {
@@ -346,12 +350,12 @@ export function createFleetApi(lazyApi: () => any) {
         notification_user_ids: config.notificationUserIds,
         custom_emails: config.customEmails,
         custom_phones: config.customPhones,
-        is_active: config.isActive ?? true
+        is_active: config.isActive ?? true,
       };
       const response = await fetch(`${API_URL}/monitoring/alert-configs`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
       if (!response.ok) throw new Error(`Failed to create alert config: ${response.status}`);
       const r = await response.json();
@@ -361,7 +365,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const configs = await alertConfigsApi.getAll();
-        const index = configs.findIndex(c => c.id === config.id);
+        const index = configs.findIndex((c) => c.id === config.id);
         if (index !== -1) {
           configs[index] = config;
           localStorage.setItem(DB_KEYS.ALERT_CONFIGS, JSON.stringify(configs));
@@ -394,7 +398,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/monitoring/alert-configs/${config.id}`, {
         method: 'PUT',
         headers: getHeaders(),
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
       if (!response.ok) throw new Error(`Failed to update alert config: ${response.status}`);
       return config;
@@ -403,13 +407,16 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const configs = await alertConfigsApi.getAll();
-        const filtered = configs.filter(c => c.id !== id);
+        const filtered = configs.filter((c) => c.id !== id);
         localStorage.setItem(DB_KEYS.ALERT_CONFIGS, JSON.stringify(filtered));
         return;
       }
-      const response = await fetch(`${API_URL}/monitoring/alert-configs/${id}`, { method: 'DELETE', headers: getHeaders() });
+      const response = await fetch(`${API_URL}/monitoring/alert-configs/${id}`, {
+        method: 'DELETE',
+        headers: getHeaders(),
+      });
       if (!response.ok) throw new Error(`Failed to delete alert config: ${response.status}`);
-    }
+    },
   };
 
   // --- MAINTENANCE RULES (local const for self-references) ---
@@ -435,7 +442,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/maintenance-rules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(rule)
+        body: JSON.stringify(rule),
       });
       return response.json();
     },
@@ -443,7 +450,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const rules = await maintenanceRulesApi.getAll();
-        const index = rules.findIndex(r => r.id === rule.id);
+        const index = rules.findIndex((r) => r.id === rule.id);
         if (index !== -1) {
           rules[index] = rule;
           localStorage.setItem(DB_KEYS.MAINTENANCE_RULES, JSON.stringify(rules));
@@ -454,7 +461,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/maintenance-rules/${rule.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(rule)
+        body: JSON.stringify(rule),
       });
       return response.json();
     },
@@ -462,12 +469,12 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const rules = await maintenanceRulesApi.getAll();
-        const filtered = rules.filter(r => r.id !== id);
+        const filtered = rules.filter((r) => r.id !== id);
         localStorage.setItem(DB_KEYS.MAINTENANCE_RULES, JSON.stringify(filtered));
         return;
       }
       await fetch(`${API_URL}/maintenance-rules/${id}`, { method: 'DELETE', headers: getHeaders() });
-    }
+    },
   };
 
   // --- SCHEDULE RULES (local const for self-references) ---
@@ -493,7 +500,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/schedule-rules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(rule)
+        body: JSON.stringify(rule),
       });
       return response.json();
     },
@@ -501,7 +508,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const rules = await scheduleRulesApi.getAll();
-        const index = rules.findIndex(r => r.id === rule.id);
+        const index = rules.findIndex((r) => r.id === rule.id);
         if (index !== -1) {
           rules[index] = rule;
           localStorage.setItem(DB_KEYS.SCHEDULE_RULES, JSON.stringify(rules));
@@ -512,7 +519,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/schedule-rules/${rule.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(rule)
+        body: JSON.stringify(rule),
       });
       return response.json();
     },
@@ -520,12 +527,12 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const rules = await scheduleRulesApi.getAll();
-        const filtered = rules.filter(r => r.id !== id);
+        const filtered = rules.filter((r) => r.id !== id);
         localStorage.setItem(DB_KEYS.SCHEDULE_RULES, JSON.stringify(filtered));
         return;
       }
       await fetch(`${API_URL}/schedule-rules/${id}`, { method: 'DELETE', headers: getHeaders() });
-    }
+    },
   };
 
   // --- ECO DRIVING PROFILES (local const for self-references) ---
@@ -551,7 +558,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/eco-driving-profiles`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
+        body: JSON.stringify(profile),
       });
       return response.json();
     },
@@ -559,7 +566,7 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const profiles = await ecoDrivingProfilesApi.getAll();
-        const index = profiles.findIndex(p => p.id === profile.id);
+        const index = profiles.findIndex((p) => p.id === profile.id);
         if (index !== -1) {
           profiles[index] = profile;
           localStorage.setItem(DB_KEYS.ECO_DRIVING_PROFILES, JSON.stringify(profiles));
@@ -570,7 +577,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/eco-driving-profiles/${profile.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile)
+        body: JSON.stringify(profile),
       });
       return response.json();
     },
@@ -578,12 +585,12 @@ export function createFleetApi(lazyApi: () => any) {
       if (USE_MOCK) {
         await sleep(NETWORK_DELAY);
         const profiles = await ecoDrivingProfilesApi.getAll();
-        const filtered = profiles.filter(p => p.id !== id);
+        const filtered = profiles.filter((p) => p.id !== id);
         localStorage.setItem(DB_KEYS.ECO_DRIVING_PROFILES, JSON.stringify(filtered));
         return;
       }
       await fetch(`${API_URL}/eco-driving-profiles/${id}`, { method: 'DELETE', headers: getHeaders() });
-    }
+    },
   };
 
   // --- ALERTS (local const for self-reference in getAlerts) ---
@@ -619,28 +626,28 @@ export function createFleetApi(lazyApi: () => any) {
     getAlerts: async (vehicleId?: string): Promise<Alert[]> => {
       const allAlerts = await alertsApi.list();
       if (vehicleId) {
-        return allAlerts.filter(a => a.vehicleId === vehicleId);
+        return allAlerts.filter((a) => a.vehicleId === vehicleId);
       }
       return allAlerts;
     },
     markAsRead: async (id: string): Promise<void> => {
       const response = await fetch(`${API_URL}/alerts/${id}/read`, {
         method: 'PUT',
-        headers: getHeaders()
+        headers: getHeaders(),
       });
       if (!response.ok) throw new Error('Failed to mark alert as read');
     },
     markAllAsRead: async (): Promise<void> => {
       const response = await fetch(`${API_URL}/alerts/read-all`, {
         method: 'PUT',
-        headers: getHeaders()
+        headers: getHeaders(),
       });
       if (!response.ok) throw new Error('Failed to mark all alerts as read');
     },
     delete: async (id: string): Promise<void> => {
       const response = await fetch(`${API_URL}/alerts/${id}`, {
         method: 'DELETE',
-        headers: getHeaders()
+        headers: getHeaders(),
       });
       if (!response.ok) throw new Error('Failed to delete alert');
     },
@@ -648,7 +655,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/alerts/${id}/comment`, {
         method: 'PUT',
         headers: getHeaders(),
-        body: JSON.stringify({ comment })
+        body: JSON.stringify({ comment }),
       });
       if (!response.ok) throw new Error('Failed to comment alert');
       return response.json();
@@ -657,11 +664,11 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/alerts/${id}/treat`, {
         method: 'PUT',
         headers: getHeaders(),
-        body: JSON.stringify({ treated })
+        body: JSON.stringify({ treated }),
       });
       if (!response.ok) throw new Error('Failed to treat alert');
       return response.json();
-    }
+    },
   };
 
   // --- BRANCHES (local const for self-references) ---
@@ -688,7 +695,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/branches`, {
         method: 'POST',
         headers: getHeaders(),
-        body: JSON.stringify(branch)
+        body: JSON.stringify(branch),
       });
       if (!response.ok) throw new Error('Failed to create branch');
       return response.json();
@@ -708,7 +715,7 @@ export function createFleetApi(lazyApi: () => any) {
       const response = await fetch(`${API_URL}/branches/${branch.id}`, {
         method: 'PUT',
         headers: getHeaders(),
-        body: JSON.stringify(branch)
+        body: JSON.stringify(branch),
       });
       if (!response.ok) throw new Error('Failed to update branch');
       return response.json();
@@ -722,7 +729,7 @@ export function createFleetApi(lazyApi: () => any) {
         return;
       }
       await fetch(`${API_URL}/branches/${id}`, { method: 'DELETE', headers: getHeaders() });
-    }
+    },
   };
 
   return {
@@ -749,9 +756,15 @@ export function createFleetApi(lazyApi: () => any) {
             return {
               // Spread ALL TrackedObject fields from API (preserves deviceStatus, entryDate, etc.)
               ...v,
-              
+
               // Parse dates
-              lastUpdated: v.lastUpdated ? new Date(v.lastUpdated) : (v.updatedAt ? new Date(v.updatedAt) : (v.createdAt ? new Date(v.createdAt) : new Date('2020-01-01'))),
+              lastUpdated: v.lastUpdated
+                ? new Date(v.lastUpdated)
+                : v.updatedAt
+                  ? new Date(v.updatedAt)
+                  : v.createdAt
+                    ? new Date(v.createdAt)
+                    : new Date('2020-01-01'),
 
               // Vehicle backward-compat aliases
               client: v.clientName || '',
@@ -823,7 +836,7 @@ export function createFleetApi(lazyApi: () => any) {
         if (USE_MOCK) {
           await sleep(NETWORK_DELAY);
           const vehicles = db.get(DB_KEYS.VEHICLES, [] as Vehicle[]);
-          const index = vehicles.findIndex(v => v.id === vehicle.id);
+          const index = vehicles.findIndex((v) => v.id === vehicle.id);
           if (index !== -1) {
             vehicles[index] = { ...vehicle, lastUpdated: new Date() };
             db.save(DB_KEYS.VEHICLES, vehicles);
@@ -831,80 +844,77 @@ export function createFleetApi(lazyApi: () => any) {
           }
           throw new Error('Vehicle not found');
         }
-        try {
-          const response = await fetch(`${API_URL}/objects/${vehicle.id}`, {
-            method: 'PUT',
-            headers: getHeaders(),
-            body: JSON.stringify({
-              ...vehicle,
-              vehicleType: vehicle.vehicleType || vehicle.type,
-              deviceModel: vehicle.deviceModel || vehicle.deviceType,
-            })
-          });
-          if (!response.ok) throw new Error('Failed to update vehicle');
-          const rawData = await response.json();
-          return {
+        const response = await fetch(`${API_URL}/objects/${vehicle.id}`, {
+          method: 'PUT',
+          headers: getHeaders(),
+          body: JSON.stringify({
             ...vehicle,
-            id: rawData.id || vehicle.id,
-            lastUpdated: rawData.updatedAt ? new Date(rawData.updatedAt) : new Date()
-          };
-        } catch (e) {
-          throw e;
-        }
+            vehicleType: vehicle.vehicleType || vehicle.type,
+            deviceModel: vehicle.deviceModel || vehicle.deviceType,
+          }),
+        });
+        if (!response.ok) throw new Error('Failed to update vehicle');
+        const rawData = await response.json();
+        return {
+          ...vehicle,
+          id: rawData.id || vehicle.id,
+          lastUpdated: rawData.updatedAt ? new Date(rawData.updatedAt) : new Date(),
+        };
       },
       create: async (vehicle: Vehicle): Promise<Vehicle> => {
         if (USE_MOCK) {
           await sleep(NETWORK_DELAY);
           const vehicles = db.get(DB_KEYS.VEHICLES, [] as Vehicle[]);
-          const newVehicle = { ...vehicle, id: `ABO-${Date.now().toString(36).toUpperCase().slice(-6)}`, lastUpdated: new Date() };
+          const newVehicle = {
+            ...vehicle,
+            id: `ABO-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+            lastUpdated: new Date(),
+          };
           vehicles.push(newVehicle);
           db.save(DB_KEYS.VEHICLES, vehicles);
           return newVehicle;
         }
-        try {
-          const response = await fetch(`${API_URL}/objects`, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({
-              ...vehicle,
-              vehicleType: vehicle.vehicleType || vehicle.type,
-              deviceModel: vehicle.deviceModel || vehicle.deviceType,
-            })
-          });
-          if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            throw new Error(err.message || 'Failed to create vehicle');
-          }
-          const rawData = await response.json();
-          // Fusionner les données frontend avec les valeurs réelles retournées par le backend
-          return {
+        const response = await fetch(`${API_URL}/objects`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({
             ...vehicle,
-            id: rawData.id,
-            plate: rawData.plate ?? vehicle.plate,
-            licensePlate: rawData.plate ?? vehicle.licensePlate,
-            imei: rawData.imei ?? vehicle.imei,
-            name: rawData.name ?? vehicle.name,
-            clientId: rawData.client_id ?? rawData.clientId ?? vehicle.clientId,
-            groupId: rawData.group_id ?? rawData.groupId ?? vehicle.groupId,
-            branchId: rawData.branch_id ?? rawData.branchId ?? vehicle.branchId,
-            resellerId: rawData.reseller_id ?? rawData.resellerId ?? vehicle.resellerId,
-            deviceType: rawData.device_model ?? rawData.deviceType ?? vehicle.deviceType,
-            lastUpdated: new Date(),
-          };
-        } catch (e) {
-          throw e;
+            vehicleType: vehicle.vehicleType || vehicle.type,
+            deviceModel: vehicle.deviceModel || vehicle.deviceType,
+          }),
+        });
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error(err.message || 'Failed to create vehicle');
         }
+        const rawData = await response.json();
+        // Fusionner les données frontend avec les valeurs réelles retournées par le backend
+        return {
+          ...vehicle,
+          id: rawData.id,
+          plate: rawData.plate ?? vehicle.plate,
+          licensePlate: rawData.plate ?? vehicle.licensePlate,
+          imei: rawData.imei ?? vehicle.imei,
+          name: rawData.name ?? vehicle.name,
+          clientId: rawData.client_id ?? rawData.clientId ?? vehicle.clientId,
+          groupId: rawData.group_id ?? rawData.groupId ?? vehicle.groupId,
+          branchId: rawData.branch_id ?? rawData.branchId ?? vehicle.branchId,
+          resellerId: rawData.reseller_id ?? rawData.resellerId ?? vehicle.resellerId,
+          deviceType: rawData.device_model ?? rawData.deviceType ?? vehicle.deviceType,
+          lastUpdated: new Date(),
+        };
       },
       getHistory: async (vehicleId: string, date: Date): Promise<VehiclePositionHistory[]> => {
         if (USE_MOCK) {
           const allHistory = db.get(DB_KEYS.POSITION_HISTORY, []) as VehiclePositionHistory[];
-          return allHistory.filter(h =>
-            h.vehicleId === vehicleId &&
-            new Date(h.timestamp).toDateString() === date.toDateString()
-          ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+          return allHistory
+            .filter((h) => h.vehicleId === vehicleId && new Date(h.timestamp).toDateString() === date.toDateString())
+            .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
         }
         const dateStr = date.toISOString().split('T')[0];
-        const response = await fetch(`${API_URL}/objects/${vehicleId}/history/snapped?date=${dateStr}`, { headers: getHeaders() });
+        const response = await fetch(`${API_URL}/objects/${vehicleId}/history/snapped?date=${dateStr}`, {
+          headers: getHeaders(),
+        });
         if (!response.ok) throw new Error('Failed to fetch vehicle history');
         return response.json();
       },
@@ -919,21 +929,19 @@ export function createFleetApi(lazyApi: () => any) {
       },
       toggleImmobilization: async (vehicleId: string, immobilize: boolean): Promise<void> => {
         if (USE_MOCK) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
           const vehicles = db.get(DB_KEYS.VEHICLES, [] as Vehicle[]) as Vehicle[];
-          const updatedVehicles = vehicles.map(v =>
-            v.id === vehicleId ? { ...v, isImmobilized: immobilize } : v
-          );
+          const updatedVehicles = vehicles.map((v) => (v.id === vehicleId ? { ...v, isImmobilized: immobilize } : v));
           db.set(DB_KEYS.VEHICLES, updatedVehicles);
           return;
         }
         const response = await fetch(`${API_URL}/objects/${vehicleId}/immobilize`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify({ immobilize })
+          body: JSON.stringify({ immobilize }),
         });
         if (!response.ok) throw new Error('Failed to toggle immobilization');
-      }
+      },
     },
 
     // --- TRACKED OBJECTS (unified Vehicle + Device BOX) ---
@@ -958,13 +966,19 @@ export function createFleetApi(lazyApi: () => any) {
       create: async (data: Partial<TrackedObject>): Promise<TrackedObject> => {
         if (USE_MOCK) {
           const all = db.get(DB_KEYS.VEHICLES, [] as any[]);
-          const obj = { ...data, id: `ABO-${Date.now().toString(36).toUpperCase().slice(-6)}`, createdAt: new Date().toISOString() };
+          const obj = {
+            ...data,
+            id: `ABO-${Date.now().toString(36).toUpperCase().slice(-6)}`,
+            createdAt: new Date().toISOString(),
+          };
           all.push(obj);
           db.save(DB_KEYS.VEHICLES, all);
           return obj as TrackedObject;
         }
         const response = await fetch(`${API_URL}/objects`, {
-          method: 'POST', headers: getHeaders(), body: JSON.stringify(data)
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify(data),
         });
         if (!response.ok) {
           const err = await response.json().catch(() => ({}));
@@ -976,11 +990,17 @@ export function createFleetApi(lazyApi: () => any) {
         if (USE_MOCK) {
           const all = db.get(DB_KEYS.VEHICLES, [] as any[]);
           const idx = all.findIndex((o: any) => o.id === id);
-          if (idx !== -1) { all[idx] = { ...all[idx], ...data }; db.save(DB_KEYS.VEHICLES, all); return all[idx]; }
+          if (idx !== -1) {
+            all[idx] = { ...all[idx], ...data };
+            db.save(DB_KEYS.VEHICLES, all);
+            return all[idx];
+          }
           throw new Error('Object not found');
         }
         const response = await fetch(`${API_URL}/objects/${id}`, {
-          method: 'PUT', headers: getHeaders(), body: JSON.stringify(data)
+          method: 'PUT',
+          headers: getHeaders(),
+          body: JSON.stringify(data),
         });
         if (!response.ok) throw new Error('Failed to update object');
         return response.json();
@@ -988,7 +1008,10 @@ export function createFleetApi(lazyApi: () => any) {
       delete: async (id: string): Promise<void> => {
         if (USE_MOCK) {
           const all = db.get(DB_KEYS.VEHICLES, [] as any[]);
-          db.save(DB_KEYS.VEHICLES, all.filter((o: any) => o.id !== id));
+          db.save(
+            DB_KEYS.VEHICLES,
+            all.filter((o: any) => o.id !== id)
+          );
           return;
         }
         const response = await fetch(`${API_URL}/objects/${id}`, { method: 'DELETE', headers: getHeaders() });
@@ -1003,20 +1026,26 @@ export function createFleetApi(lazyApi: () => any) {
       toggleImmobilization: async (id: string, immobilize: boolean): Promise<void> => {
         if (USE_MOCK) return;
         const response = await fetch(`${API_URL}/objects/${id}/immobilize`, {
-          method: 'POST', headers: getHeaders(), body: JSON.stringify({ immobilize })
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({ immobilize }),
         });
         if (!response.ok) throw new Error('Failed to toggle immobilization');
       },
       getHistory: async (id: string, date: Date): Promise<any[]> => {
         if (USE_MOCK) return [];
         const dateStr = date.toISOString().split('T')[0];
-        const response = await fetch(`${API_URL}/objects/${id}/history/snapped?date=${dateStr}`, { headers: getHeaders() });
+        const response = await fetch(`${API_URL}/objects/${id}/history/snapped?date=${dateStr}`, {
+          headers: getHeaders(),
+        });
         if (!response.ok) throw new Error('Failed to fetch history');
         return response.json();
       },
       getFuelHistory: async (id: string, duration?: string): Promise<any[]> => {
         if (USE_MOCK) return [];
-        const response = await fetch(`${API_URL}/objects/${id}/fuel/history?duration=${duration || '24h'}`, { headers: getHeaders() });
+        const response = await fetch(`${API_URL}/objects/${id}/fuel/history?duration=${duration || '24h'}`, {
+          headers: getHeaders(),
+        });
         if (!response.ok) throw new Error('Failed to fetch fuel history');
         return response.json();
       },
@@ -1040,7 +1069,9 @@ export function createFleetApi(lazyApi: () => any) {
         if (USE_MOCK) {
           const allRecords = db.get(DB_KEYS.FUEL_RECORDS, []) as FuelRecord[];
           if (vehicleId) {
-            return allRecords.filter(r => r.vehicleId === vehicleId).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            return allRecords
+              .filter((r) => r.vehicleId === vehicleId)
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           }
           return allRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         }
@@ -1060,7 +1091,7 @@ export function createFleetApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/objects/${record.vehicleId}/fuel`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify(record)
+          body: JSON.stringify(record),
         });
         if (!response.ok) throw new Error('Failed to add fuel record');
         return response.json();
@@ -1080,20 +1111,23 @@ export function createFleetApi(lazyApi: () => any) {
             else date.setDate(now.getDate() - (points - i));
 
             // Simulate consumption and occasional refill
-            if (Math.random() > 0.9) level = Math.min(100, level + 40); // Refill
-            else level = Math.max(0, level - (Math.random() * 5)); // Consumption
+            if (Math.random() > 0.9)
+              level = Math.min(100, level + 40); // Refill
+            else level = Math.max(0, level - Math.random() * 5); // Consumption
 
             history.push({
               date: date.toISOString(),
               level: Math.round(level),
               volume: Math.round(level * 5), // Assuming 500L tank
-              consumption: Math.random() * 10 // L/100km instant
+              consumption: Math.random() * 10, // L/100km instant
             });
           }
           return history;
         }
         // Real Backend Call
-        const response = await fetch(`${API_URL}/objects/${vehicleId}/fuel/history?duration=${duration}`, { headers: getHeaders() });
+        const response = await fetch(`${API_URL}/objects/${vehicleId}/fuel/history?duration=${duration}`, {
+          headers: getHeaders(),
+        });
         if (!response.ok) throw new Error('Failed to fetch fuel history');
         return response.json();
       },
@@ -1106,13 +1140,13 @@ export function createFleetApi(lazyApi: () => any) {
             totalCost: 1450, // Currency
             refillCount: 4,
             theftCount: 0,
-            idlingWaste: 45 // Liters wasted
+            idlingWaste: 45, // Liters wasted
           };
         }
         const response = await fetch(`${API_URL}/objects/${vehicleId}/fuel/stats`, { headers: getHeaders() });
         if (!response.ok) throw new Error('Failed to fetch fuel stats');
         return response.json();
-      }
+      },
     },
 
     // --- MAINTENANCE ---
@@ -1121,7 +1155,9 @@ export function createFleetApi(lazyApi: () => any) {
         if (USE_MOCK) {
           const allRecords = db.get(DB_KEYS.MAINTENANCE_RECORDS, []) as MaintenanceRecord[];
           if (vehicleId) {
-            return allRecords.filter(r => r.vehicleId === vehicleId).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            return allRecords
+              .filter((r) => r.vehicleId === vehicleId)
+              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
           }
           return allRecords.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         }
@@ -1141,11 +1177,11 @@ export function createFleetApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/objects/${record.vehicleId}/maintenance`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify(record)
+          body: JSON.stringify(record),
         });
         if (!response.ok) throw new Error('Failed to add maintenance record');
         return response.json();
-      }
+      },
     },
 
     // --- ALERTS ---
@@ -1156,7 +1192,7 @@ export function createFleetApi(lazyApi: () => any) {
       list: async (): Promise<Zone[]> => {
         await sleep(NETWORK_DELAY);
         return db.get(DB_KEYS.ZONES, [] as Zone[]);
-      }
+      },
     },
 
     // --- DRIVERS ---
@@ -1222,16 +1258,18 @@ export function createFleetApi(lazyApi: () => any) {
       analyzeTrips: async (vehicleId: string, date: string) => {
         const response = await fetch(`${API_URL}/fleet/vehicles/${vehicleId}/analyze?date=${date}`, {
           method: 'POST',
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to analyze trips');
         return response.json();
       },
       getDeviceHistory: async (vehicleId: string) => {
-        const response = await fetch(`${API_URL}/fleet/vehicles/${vehicleId}/device-history`, { headers: getHeaders() });
+        const response = await fetch(`${API_URL}/fleet/vehicles/${vehicleId}/device-history`, {
+          headers: getHeaders(),
+        });
         if (!response.ok) throw new Error('Failed to fetch device history');
         return response.json();
-      }
-    }
+      },
+    },
   };
 }

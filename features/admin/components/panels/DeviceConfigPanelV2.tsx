@@ -3,9 +3,30 @@
 // Onglets : DASHBOARD | DEVICE_HEALTH | RAW_DATA | GLOBAL_CONFIG | BULK_COMMANDS | APN_PROFILES | DISCOVERY
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Activity, AlertTriangle, Battery, Cpu, Eye, Radio, RefreshCw, Send, Settings, Shield, Wifi, WifiOff, Zap } from 'lucide-react';
+import {
+  Activity,
+  AlertTriangle,
+  Battery,
+  Cpu,
+  Eye,
+  Radio,
+  RefreshCw,
+  Send,
+  Settings,
+  Shield,
+  Wifi,
+  WifiOff,
+  Zap,
+} from 'lucide-react';
 
-type Tab = 'DASHBOARD' | 'DEVICE_HEALTH' | 'RAW_DATA' | 'GLOBAL_CONFIG' | 'BULK_COMMANDS' | 'APN_PROFILES' | 'DISCOVERY';
+type Tab =
+  | 'DASHBOARD'
+  | 'DEVICE_HEALTH'
+  | 'RAW_DATA'
+  | 'GLOBAL_CONFIG'
+  | 'BULK_COMMANDS'
+  | 'APN_PROFILES'
+  | 'DISCOVERY';
 
 interface GpsPipelineStats {
   timestamp: string;
@@ -55,21 +76,25 @@ interface DeviceDiagnostic {
 }
 
 const GT06_VARIANT_LABELS: Record<GT06Variant, { label: string; color: string; desc: string }> = {
-  CONCOX:    { label: 'Concox / JimiIoT', color: 'bg-[var(--primary-dim)] text-[var(--primary)]',   desc: 'CRC ISO-HDLC · proto 0x12' },
-  COBAN:     { label: 'Coban',             color: 'bg-purple-100 text-purple-700', desc: 'CRC IBM · proto 0x22' },
-  SINOTRACK: { label: 'Sinotrack',         color: 'bg-indigo-100 text-indigo-700', desc: 'CRC IBM · proto 0x22' },
-  V4:        { label: 'GT06 V4 (4G)',      color: 'bg-cyan-100 text-cyan-700',    desc: 'CRC ISO-HDLC · proto 0xA0' },
-  TELTONIKA: { label: 'Teltonika',         color: 'bg-green-100 text-green-700',  desc: 'Codec 8/8E' },
-  GENERIC:   { label: 'Générique',         color: 'bg-gray-100 text-gray-600',    desc: 'Détection auto' },
-  OTHER:     { label: 'Autre',             color: 'bg-yellow-100 text-yellow-700', desc: 'Manuel' },
+  CONCOX: {
+    label: 'Concox / JimiIoT',
+    color: 'bg-[var(--primary-dim)] text-[var(--primary)]',
+    desc: 'CRC ISO-HDLC · proto 0x12',
+  },
+  COBAN: { label: 'Coban', color: 'bg-purple-100 text-purple-700', desc: 'CRC IBM · proto 0x22' },
+  SINOTRACK: { label: 'Sinotrack', color: 'bg-indigo-100 text-indigo-700', desc: 'CRC IBM · proto 0x22' },
+  V4: { label: 'GT06 V4 (4G)', color: 'bg-cyan-100 text-cyan-700', desc: 'CRC ISO-HDLC · proto 0xA0' },
+  TELTONIKA: { label: 'Teltonika', color: 'bg-green-100 text-green-700', desc: 'Codec 8/8E' },
+  GENERIC: { label: 'Générique', color: 'bg-gray-100 text-gray-600', desc: 'Détection auto' },
+  OTHER: { label: 'Autre', color: 'bg-yellow-100 text-yellow-700', desc: 'Manuel' },
 };
 
 const SIGNAL_COLORS: Record<string, string> = {
   EXCELLENT: 'text-green-600 bg-green-50',
-  GOOD:      'text-[var(--primary)] bg-[var(--primary-dim)]',
-  FAIR:      'text-yellow-600 bg-yellow-50',
-  POOR:      'text-red-600 bg-red-50',
-  UNKNOWN:   'text-gray-500 bg-gray-50',
+  GOOD: 'text-[var(--primary)] bg-[var(--primary-dim)]',
+  FAIR: 'text-yellow-600 bg-yellow-50',
+  POOR: 'text-red-600 bg-red-50',
+  UNKNOWN: 'text-gray-500 bg-gray-50',
 };
 
 const getHeaders = () => {
@@ -86,7 +111,12 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: 'Boîtiers connectés', value: stats.pipeline.activeConnections, icon: Wifi, color: 'text-green-600' },
-          { label: 'Paquets reçus', value: stats.totals.packets.toLocaleString(), icon: Activity, color: 'text-[var(--primary)]' },
+          {
+            label: 'Paquets reçus',
+            value: stats.totals.packets.toLocaleString(),
+            icon: Activity,
+            color: 'text-[var(--primary)]',
+          },
           { label: 'IMEI inconnus', value: stats.unknownImeis.length, icon: AlertTriangle, color: 'text-orange-600' },
           { label: 'Erreurs CRC', value: stats.totals.crcErrors, icon: Shield, color: 'text-red-600' },
         ].map(({ label, value, icon: Icon, color }) => (
@@ -104,13 +134,14 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Taux de succès global</h3>
         {(() => {
-          const rate = stats.totals.packets > 0
-            ? Math.round(stats.totals.valid / stats.totals.packets * 100) : 0;
+          const rate = stats.totals.packets > 0 ? Math.round((stats.totals.valid / stats.totals.packets) * 100) : 0;
           const color = rate >= 95 ? 'bg-green-500' : rate >= 80 ? 'bg-yellow-500' : 'bg-red-500';
           return (
             <div>
               <div className="flex justify-between text-sm mb-1">
-                <span>{stats.totals.valid.toLocaleString()} valides / {stats.totals.packets.toLocaleString()} reçus</span>
+                <span>
+                  {stats.totals.valid.toLocaleString()} valides / {stats.totals.packets.toLocaleString()} reçus
+                </span>
                 <span className="font-bold">{rate}%</span>
               </div>
               <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
@@ -125,8 +156,11 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <h3 className="text-sm font-semibold text-gray-700 mb-3">Protocoles actifs</h3>
         <div className="flex flex-wrap gap-2">
-          {stats.pipeline.activeParsers.map(p => (
-            <span key={p} className="px-3 py-1 bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-medium rounded-full border border-[var(--border)]">
+          {stats.pipeline.activeParsers.map((p) => (
+            <span
+              key={p}
+              className="px-3 py-1 bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-medium rounded-full border border-[var(--border)]"
+            >
               {p}
             </span>
           ))}
@@ -180,7 +214,7 @@ function DeviceHealthTab() {
       });
       const data = await res.json();
       if (res.ok) {
-        setDiagnostic(prev => prev ? { ...prev, gt06Variant: variantEdit, gt06VariantSource: 'db' } : prev);
+        setDiagnostic((prev) => (prev ? { ...prev, gt06Variant: variantEdit, gt06VariantSource: 'db' } : prev));
         setVariantStatus('✅ Variant mis à jour');
         setVariantEdit(null);
       } else {
@@ -222,8 +256,8 @@ function DeviceHealthTab() {
             type="text"
             placeholder="Entrez l'IMEI (15 chiffres)"
             value={imeiInput}
-            onChange={e => setImeiInput(e.target.value.replace(/\D/g, '').slice(0, 16))}
-            onKeyDown={e => e.key === 'Enter' && fetchDiagnostic()}
+            onChange={(e) => setImeiInput(e.target.value.replace(/\D/g, '').slice(0, 16))}
+            onKeyDown={(e) => e.key === 'Enter' && fetchDiagnostic()}
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
             maxLength={16}
           />
@@ -247,8 +281,9 @@ function DeviceHealthTab() {
             <div>
               <div className="font-mono text-sm font-bold text-gray-800">{diagnostic.imei}</div>
               <div className="text-xs text-gray-500">
-                {diagnostic.vehicleName || 'Véhicule inconnu'} {diagnostic.vehiclePlate ? `· ${diagnostic.vehiclePlate}` : ''}
-                {(diagnostic.model || diagnostic.deviceModel) ? ` · ${diagnostic.model || diagnostic.deviceModel}` : ''}
+                {diagnostic.vehicleName || 'Véhicule inconnu'}{' '}
+                {diagnostic.vehiclePlate ? `· ${diagnostic.vehiclePlate}` : ''}
+                {diagnostic.model || diagnostic.deviceModel ? ` · ${diagnostic.model || diagnostic.deviceModel}` : ''}
                 {diagnostic.operator ? ` · ${diagnostic.operator}` : ''}
               </div>
             </div>
@@ -281,12 +316,12 @@ function DeviceHealthTab() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.color || 'bg-gray-100 text-gray-600'}`}>
+                    <span
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.color || 'bg-gray-100 text-gray-600'}`}
+                    >
                       {GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.label || diagnostic.gt06Variant}
                     </span>
-                    <span className="text-xs text-gray-400">
-                      {GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.desc}
-                    </span>
+                    <span className="text-xs text-gray-400">{GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.desc}</span>
                   </div>
                 </div>
               </div>
@@ -302,11 +337,13 @@ function DeviceHealthTab() {
               <div className="mt-3 flex gap-2 items-center">
                 <select
                   value={variantEdit}
-                  onChange={e => setVariantEdit(e.target.value as GT06Variant)}
+                  onChange={(e) => setVariantEdit(e.target.value as GT06Variant)}
                   className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm"
                 >
-                  {(Object.keys(GT06_VARIANT_LABELS) as GT06Variant[]).map(v => (
-                    <option key={v} value={v}>{GT06_VARIANT_LABELS[v].label} — {GT06_VARIANT_LABELS[v].desc}</option>
+                  {(Object.keys(GT06_VARIANT_LABELS) as GT06Variant[]).map((v) => (
+                    <option key={v} value={v}>
+                      {GT06_VARIANT_LABELS[v].label} — {GT06_VARIANT_LABELS[v].desc}
+                    </option>
                   ))}
                 </select>
                 <button
@@ -318,20 +355,34 @@ function DeviceHealthTab() {
                 </button>
               </div>
             )}
-            {variantStatus && (
-              <p className="mt-2 text-xs text-gray-700">{variantStatus}</p>
-            )}
+            {variantStatus && <p className="mt-2 text-xs text-gray-700">{variantStatus}</p>}
           </div>
 
           {/* Métriques */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-gray-100">
             {[
               { label: 'Protocole', value: diagnostic.protocol || '—', icon: Radio },
-              { label: 'Paquets aujourd\'hui', value: diagnostic.packetsToday.toLocaleString(), icon: Activity },
-              { label: 'Satellites', value: diagnostic.satellites !== null ? `${diagnostic.satellites} sats` : '—', icon: Radio },
-              { label: 'Batterie', value: diagnostic.batteryMv !== null ? `${(diagnostic.batteryMv / 1000).toFixed(2)} V` : '—', icon: Battery },
-              { label: 'Vitesse', value: diagnostic.lastSpeed !== null ? `${diagnostic.lastSpeed} km/h` : '—', icon: Zap },
-              { label: 'Dernier fix', value: diagnostic.lastFix ? new Date(diagnostic.lastFix).toLocaleString('fr-FR') : '—', icon: Activity },
+              { label: "Paquets aujourd'hui", value: diagnostic.packetsToday.toLocaleString(), icon: Activity },
+              {
+                label: 'Satellites',
+                value: diagnostic.satellites !== null ? `${diagnostic.satellites} sats` : '—',
+                icon: Radio,
+              },
+              {
+                label: 'Batterie',
+                value: diagnostic.batteryMv !== null ? `${(diagnostic.batteryMv / 1000).toFixed(2)} V` : '—',
+                icon: Battery,
+              },
+              {
+                label: 'Vitesse',
+                value: diagnostic.lastSpeed !== null ? `${diagnostic.lastSpeed} km/h` : '—',
+                icon: Zap,
+              },
+              {
+                label: 'Dernier fix',
+                value: diagnostic.lastFix ? new Date(diagnostic.lastFix).toLocaleString('fr-FR') : '—',
+                icon: Activity,
+              },
             ].map(({ label, value, icon: Icon }) => (
               <div key={label} className="bg-white px-4 py-3">
                 <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-0.5">
@@ -365,7 +416,7 @@ function DeviceHealthTab() {
               <div className="flex gap-2">
                 <select
                   value={commandType}
-                  onChange={e => setCommandType(e.target.value)}
+                  onChange={(e) => setCommandType(e.target.value)}
                   className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
                 >
                   <option value="PING">PING — Demande de statut</option>
@@ -381,9 +432,7 @@ function DeviceHealthTab() {
                   Envoyer
                 </button>
               </div>
-              {commandStatus && (
-                <p className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2">{commandStatus}</p>
-              )}
+              {commandStatus && <p className="text-sm text-gray-700 bg-gray-50 rounded px-3 py-2">{commandStatus}</p>}
             </div>
           )}
         </div>
@@ -412,7 +461,9 @@ function GlobalConfigTab() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {}
+    } catch {
+      /* ignore fetch error */
+    }
   };
 
   return (
@@ -423,7 +474,7 @@ function GlobalConfigTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {[
           { label: 'Intervalle en mouvement (s)', key: 'movingIntervalSec', min: 5, max: 300, step: 5 },
-          { label: 'Intervalle à l\'arrêt (s)', key: 'stoppedIntervalSec', min: 10, max: 3600, step: 10 },
+          { label: "Intervalle à l'arrêt (s)", key: 'stoppedIntervalSec', min: 10, max: 3600, step: 10 },
           { label: 'Intervalle heartbeat (s)', key: 'heartbeatIntervalSec', min: 30, max: 3600, step: 30 },
           { label: 'Rate limit max (paquets/sec)', key: 'rateLimitPerSec', min: 1, max: 100, step: 1 },
         ].map(({ label, key, min, max, step }) => (
@@ -431,9 +482,11 @@ function GlobalConfigTab() {
             <label className="block text-xs text-gray-600 mb-1">{label}</label>
             <input
               type="number"
-              min={min} max={max} step={step}
+              min={min}
+              max={max}
+              step={step}
               value={(config as any)[key]}
-              onChange={e => setConfig(c => ({ ...c, [key]: parseInt(e.target.value) }))}
+              onChange={(e) => setConfig((c) => ({ ...c, [key]: parseInt(e.target.value) }))}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
             />
           </div>
@@ -442,7 +495,7 @@ function GlobalConfigTab() {
           <label className="block text-xs text-gray-600 mb-1">Précision GPS</label>
           <select
             value={config.gpsAccuracy}
-            onChange={e => setConfig(c => ({ ...c, gpsAccuracy: e.target.value as any }))}
+            onChange={(e) => setConfig((c) => ({ ...c, gpsAccuracy: e.target.value as any }))}
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
           >
             <option value="high">Haute (HDOP ≤ 2)</option>
@@ -472,8 +525,11 @@ export default function DeviceConfigPanelV2() {
     try {
       const res = await fetch('/api/admin/gps-stats', { headers: getHeaders() });
       if (res.ok) setStats(await res.json());
-    } catch {}
-    finally { setLoadingStats(false); }
+    } catch {
+      /* ignore fetch error */
+    } finally {
+      setLoadingStats(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -483,9 +539,9 @@ export default function DeviceConfigPanelV2() {
   }, [fetchStats]);
 
   const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
-    { id: 'DASHBOARD',     label: 'Vue globale',     icon: Activity },
-    { id: 'DEVICE_HEALTH', label: 'Santé boîtier',   icon: Cpu },
-    { id: 'GLOBAL_CONFIG', label: 'Configuration',   icon: Settings },
+    { id: 'DASHBOARD', label: 'Vue globale', icon: Activity },
+    { id: 'DEVICE_HEALTH', label: 'Santé boîtier', icon: Cpu },
+    { id: 'GLOBAL_CONFIG', label: 'Configuration', icon: Settings },
   ];
 
   return (
@@ -523,7 +579,7 @@ export default function DeviceConfigPanelV2() {
 
       {/* Contenu */}
       <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
-        {activeTab === 'DASHBOARD'     && <DashboardTab stats={stats} />}
+        {activeTab === 'DASHBOARD' && <DashboardTab stats={stats} />}
         {activeTab === 'DEVICE_HEALTH' && <DeviceHealthTab />}
         {activeTab === 'GLOBAL_CONFIG' && <GlobalConfigTab />}
       </div>

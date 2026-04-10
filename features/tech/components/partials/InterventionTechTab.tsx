@@ -5,8 +5,20 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Activity, Smartphone, Server, Ruler, AlertCircle, Plus, Wifi, WifiOff, Signal, 
-    MessageSquare, Radio, Phone, Copy, Check
+  Activity,
+  Smartphone,
+  Server,
+  Ruler,
+  AlertCircle,
+  Plus,
+  Wifi,
+  WifiOff,
+  Signal,
+  MessageSquare,
+  Radio,
+  Phone,
+  Copy,
+  Check,
 } from 'lucide-react';
 import type { Intervention, Vehicle } from '../../../../types';
 import { TOAST } from '../../../../constants/toastMessages';
@@ -16,924 +28,1053 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 interface TechTabProps {
-    formData: Partial<Intervention>;
-    setFormData: (data: Partial<Intervention>) => void;
-    isTestLoading: string | null;
-    testResult: string | null;
-    hasMaterial: (keyword: string) => boolean;
-    hasTracker: () => boolean;
-    hasSim: () => boolean;
-    hasSensor: () => boolean;
-    handleSimulateTest: (type: string, options?: { mode: 'TCP' | 'SMS'; phoneNumber?: string }) => void;
-    showToast: (msg: string, type: 'success' | 'error' | 'info') => void;
-    selectedVehicle?: Vehicle;
-    stock?: Array<{ id: string; type: string; assignedVehicleId?: string; phoneNumber?: string; iccid?: string; serialNumber?: string }>;
-    currentNatureConfig?: any;
+  formData: Partial<Intervention>;
+  setFormData: (data: Partial<Intervention>) => void;
+  isTestLoading: string | null;
+  testResult: string | null;
+  hasMaterial: (keyword: string) => boolean;
+  hasTracker: () => boolean;
+  hasSim: () => boolean;
+  hasSensor: () => boolean;
+  handleSimulateTest: (type: string, options?: { mode: 'TCP' | 'SMS'; phoneNumber?: string }) => void;
+  showToast: (msg: string, type: 'success' | 'error' | 'info') => void;
+  selectedVehicle?: Vehicle;
+  stock?: Array<{
+    id: string;
+    type: string;
+    assignedVehicleId?: string;
+    phoneNumber?: string;
+    iccid?: string;
+    serialNumber?: string;
+  }>;
+  currentNatureConfig?: any;
 }
 
 type CommandMode = 'TCP' | 'SMS';
 
 // Helper to determine connection status - Simplified to just Online/Offline (10 min threshold)
 const getConnectionStatus = (vehicle?: Vehicle) => {
-    if (!vehicle) return { connected: false, label: 'Aucun véhicule', color: 'slate' };
-    
-    // Support both camelCase (type) and snake_case (from API)
-    const lastUpdate = vehicle.lastUpdated;
-    const lastUpdateTime = lastUpdate ? new Date(lastUpdate).getTime() : 0;
-    const now = Date.now();
-    const diffMinutes = (now - lastUpdateTime) / (1000 * 60);
+  if (!vehicle) return { connected: false, label: 'Aucun véhicule', color: 'slate' };
 
-    // Simplified: < 10 min = En ligne, > 10 min = Hors ligne
-    if (diffMinutes < 10) {
-        return { connected: true, label: 'En ligne', color: 'green', status: vehicle.status };
-    } else {
-        return { connected: false, label: 'Hors ligne', color: 'red', status: 'OFFLINE' };
-    }
+  // Support both camelCase (type) and snake_case (from API)
+  const lastUpdate = vehicle.lastUpdated;
+  const lastUpdateTime = lastUpdate ? new Date(lastUpdate).getTime() : 0;
+  const now = Date.now();
+  const diffMinutes = (now - lastUpdateTime) / (1000 * 60);
+
+  // Simplified: < 10 min = En ligne, > 10 min = Hors ligne
+  if (diffMinutes < 10) {
+    return { connected: true, label: 'En ligne', color: 'green', status: vehicle.status };
+  } else {
+    return { connected: false, label: 'Hors ligne', color: 'red', status: 'OFFLINE' };
+  }
 };
 
 export const InterventionTechTab: React.FC<TechTabProps> = ({
-    formData,
-    setFormData,
-    isTestLoading,
-    testResult,
-    hasMaterial,
-    hasTracker,
-    hasSim,
-    hasSensor,
-    handleSimulateTest,
-    showToast,
-    selectedVehicle,
-    stock = [],
-    currentNatureConfig
+  formData,
+  setFormData,
+  isTestLoading,
+  testResult,
+  hasMaterial,
+  hasTracker,
+  hasSim,
+  hasSensor,
+  handleSimulateTest,
+  showToast,
+  selectedVehicle,
+  stock = [],
+  currentNatureConfig,
 }) => {
-    const connectionStatus = getConnectionStatus(selectedVehicle);
-    
-    // Command mode state - auto-select SMS if device offline
-    const [commandMode, setCommandMode] = useState<CommandMode>(connectionStatus.connected ? 'TCP' : 'SMS');
-    const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
-    const [smsPreview, setSmsPreview] = useState<string | null>(null);
-    const [isSendingSms, setIsSendingSms] = useState(false);
+  const connectionStatus = getConnectionStatus(selectedVehicle);
 
-    // Get SIM phone number from vehicle or stock
-    const getSimPhoneNumber = (): string => {
-        // Priority 1: Vehicle.sim field (direct phone number)
-        if (selectedVehicle?.sim) {
-            return selectedVehicle.sim;
-        }
-        // Priority 2: Find SIM device assigned to this vehicle in stock
-        if (selectedVehicle?.id && stock.length > 0) {
-            const simDevice = stock.find(d => 
-                d.type === 'SIM' && 
-                d.assignedVehicleId === selectedVehicle.id &&
-                d.phoneNumber
-            );
-            if (simDevice?.phoneNumber) {
-                return simDevice.phoneNumber;
-            }
-        }
-        // Priority 3: formData.simNumber if previously set
-        if ((formData as Partial<Intervention> & { simNumber?: string }).simNumber) {
-            return (formData as Partial<Intervention> & { simNumber?: string }).simNumber;
-        }
-        return '';
+  // Command mode state - auto-select SMS if device offline
+  const [commandMode, setCommandMode] = useState<CommandMode>(connectionStatus.connected ? 'TCP' : 'SMS');
+  const [copiedCommand, setCopiedCommand] = useState<string | null>(null);
+  const [smsPreview, setSmsPreview] = useState<string | null>(null);
+  const [isSendingSms, setIsSendingSms] = useState(false);
+
+  // Get SIM phone number from vehicle or stock
+  const getSimPhoneNumber = (): string => {
+    // Priority 1: Vehicle.sim field (direct phone number)
+    if (selectedVehicle?.sim) {
+      return selectedVehicle.sim;
+    }
+    // Priority 2: Find SIM device assigned to this vehicle in stock
+    if (selectedVehicle?.id && stock.length > 0) {
+      const simDevice = stock.find(
+        (d) => d.type === 'SIM' && d.assignedVehicleId === selectedVehicle.id && d.phoneNumber
+      );
+      if (simDevice?.phoneNumber) {
+        return simDevice.phoneNumber;
+      }
+    }
+    // Priority 3: formData.simNumber if previously set
+    if ((formData as Partial<Intervention> & { simNumber?: string }).simNumber) {
+      return (formData as Partial<Intervention> & { simNumber?: string }).simNumber;
+    }
+    return '';
+  };
+
+  const [simPhoneNumber, setSimPhoneNumber] = useState<string>(getSimPhoneNumber());
+
+  // Update simPhoneNumber when vehicle changes
+  useEffect(() => {
+    const newNumber = getSimPhoneNumber();
+    if (newNumber && newNumber !== simPhoneNumber) {
+      setSimPhoneNumber(newNumber);
+    }
+  }, [selectedVehicle?.id, selectedVehicle?.sim, stock]);
+
+  // Auto-compose technical report when relevant fields change
+  useEffect(() => {
+    // Only auto-compose if notes is empty or was previously auto-generated
+    const currentNotes = formData.notes || '';
+    // Skip if user has edited the notes (check if it doesn't start with standard patterns)
+    const isAutoGenerated =
+      currentNotes === '' ||
+      currentNotes.startsWith('Intervention') ||
+      currentNotes.startsWith('Demande') ||
+      currentNotes.startsWith('Installation') ||
+      currentNotes.startsWith('Dépannage') ||
+      currentNotes.startsWith('Maintenance') ||
+      currentNotes.startsWith('Mutation') ||
+      currentNotes.startsWith('Retrait');
+
+    if (!isAutoGenerated) return; // User has written custom notes, don't overwrite
+
+    const typeLabels: Record<string, string> = {
+      INSTALLATION: 'Installation',
+      DEPANNAGE: 'Dépannage',
     };
 
-    const [simPhoneNumber, setSimPhoneNumber] = useState<string>(getSimPhoneNumber());
+    // Build simple text
+    const typeLabel = typeLabels[formData.type || ''] || formData.type || '';
+    const nature = formData.nature || '';
+    const plate =
+      formData.licensePlate ||
+      selectedVehicle?.plate ||
+      selectedVehicle?.licensePlate ||
+      formData.wwPlate ||
+      selectedVehicle?.wwPlate ||
+      '';
+    const vehicleInfo = [formData.vehicleBrand, formData.vehicleModel].filter(Boolean).join(' ');
+    const clientName = formData.contactName || '';
 
-    // Update simPhoneNumber when vehicle changes
-    useEffect(() => {
-        const newNumber = getSimPhoneNumber();
-        if (newNumber && newNumber !== simPhoneNumber) {
-            setSimPhoneNumber(newNumber);
-        }
-    }, [selectedVehicle?.id, selectedVehicle?.sim, stock]);
+    // Date formatting
+    const interventionDate = formData.scheduledDate
+      ? format(new Date(formData.scheduledDate), 'dd/MM/yyyy à HH:mm', { locale: fr })
+      : format(new Date(), 'dd/MM/yyyy à HH:mm', { locale: fr });
 
-    // Auto-compose technical report when relevant fields change
-    useEffect(() => {
-        // Only auto-compose if notes is empty or was previously auto-generated
-        const currentNotes = formData.notes || '';
-        // Skip if user has edited the notes (check if it doesn't start with standard patterns)
-        const isAutoGenerated = currentNotes === '' || 
-            currentNotes.startsWith('Intervention') || 
-            currentNotes.startsWith('Demande') ||
-            currentNotes.startsWith('Installation') ||
-            currentNotes.startsWith('Dépannage') ||
-            currentNotes.startsWith('Maintenance') ||
-            currentNotes.startsWith('Mutation') ||
-            currentNotes.startsWith('Retrait');
-        
-        if (!isAutoGenerated) return; // User has written custom notes, don't overwrite
+    // Build the text line by line
+    const parts: string[] = [];
 
-        const typeLabels: Record<string, string> = {
-            'INSTALLATION': 'Installation',
-            'DEPANNAGE': 'Dépannage'
-        };
+    // Main line: Type + Nature + Vehicle + Client
+    let mainLine = `${typeLabel}`;
+    if (nature) mainLine += ` (${nature})`;
+    mainLine += ` sur véhicule ${plate || 'N/A'}`;
+    if (vehicleInfo) mainLine += ` ${vehicleInfo}`;
+    if (clientName) mainLine += ` (Client: ${clientName})`;
+    mainLine += ` le ${interventionDate}.`;
+    parts.push(mainLine);
 
-        // Build simple text
-        const typeLabel = typeLabels[formData.type || ''] || formData.type || '';
-        const nature = formData.nature || '';
-        const plate = formData.licensePlate || selectedVehicle?.plate || selectedVehicle?.licensePlate || formData.wwPlate || selectedVehicle?.wwPlate || '';
-        const vehicleInfo = [formData.vehicleBrand, formData.vehicleModel].filter(Boolean).join(' ');
-        const clientName = formData.contactName || '';
-        
-        // Date formatting
-        const interventionDate = formData.scheduledDate 
-            ? format(new Date(formData.scheduledDate), 'dd/MM/yyyy à HH:mm', { locale: fr })
-            : format(new Date(), 'dd/MM/yyyy à HH:mm', { locale: fr });
+    // Material
+    if (formData.material && formData.material.length > 0) {
+      parts.push(`${formData.material.join(', ')}.`);
+    }
 
-        // Build the text line by line
-        const parts: string[] = [];
-        
-        // Main line: Type + Nature + Vehicle + Client
-        let mainLine = `${typeLabel}`;
-        if (nature) mainLine += ` (${nature})`;
-        mainLine += ` sur véhicule ${plate || 'N/A'}`;
-        if (vehicleInfo) mainLine += ` ${vehicleInfo}`;
-        if (clientName) mainLine += ` (Client: ${clientName})`;
-        mainLine += ` le ${interventionDate}.`;
-        parts.push(mainLine);
-        
-        // Material
-        if (formData.material && formData.material.length > 0) {
-            parts.push(`${formData.material.join(', ')}.`);
-        }
-        
-        // IMEI
-        if (formData.imei) {
-            parts.push(`IMEI ${formData.imei}.`);
-        }
-        
-        // Test result if any
-        if (testResult) {
-            parts.push(`${testResult}.`);
-        }
+    // IMEI
+    if (formData.imei) {
+      parts.push(`IMEI ${formData.imei}.`);
+    }
 
-        const newNotes = parts.join('\n');
-        
-        // Only update if content actually changed
-        if (newNotes !== currentNotes) {
-            setFormData({ ...formData, notes: newNotes });
-        }
+    // Test result if any
+    if (testResult) {
+      parts.push(`${testResult}.`);
+    }
+
+    const newNotes = parts.join('\n');
+
+    // Only update if content actually changed
+    if (newNotes !== currentNotes) {
+      setFormData({ ...formData, notes: newNotes });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        formData.type, 
-        formData.nature, 
-        formData.material, 
-        formData.licensePlate, 
-        formData.vehicleBrand,
-        formData.vehicleModel,
-        formData.imei,
-        formData.scheduledDate,
-        formData.contactName,
-        selectedVehicle?.plate,
-        selectedVehicle?.licensePlate,
-        selectedVehicle?.wwPlate,
-        testResult
-    ]);
+  }, [
+    formData.type,
+    formData.nature,
+    formData.material,
+    formData.licensePlate,
+    formData.vehicleBrand,
+    formData.vehicleModel,
+    formData.imei,
+    formData.scheduledDate,
+    formData.contactName,
+    selectedVehicle?.plate,
+    selectedVehicle?.licensePlate,
+    selectedVehicle?.wwPlate,
+    testResult,
+  ]);
 
-    // Auto-switch to SMS when device goes offline
-    useEffect(() => {
-        if (!connectionStatus.connected && commandMode === 'TCP') {
-            setCommandMode('SMS');
-        }
-    }, [connectionStatus.connected]);
+  // Auto-switch to SMS when device goes offline
+  useEffect(() => {
+    if (!connectionStatus.connected && commandMode === 'TCP') {
+      setCommandMode('SMS');
+    }
+  }, [connectionStatus.connected]);
 
-    // Preview SMS command
-    const previewSmsCommand = async (type: string) => {
-        try {
-            const protocol = selectedVehicle?.protocol || 'GT06';
-            const { data } = await api.post('/devices/sms/preview', {
-                protocol,
-                commandType: type === 'LOC' ? 'PING' : 
-                             type === 'IMMOB' ? 'CUT_ENGINE' : 
-                             type === 'APN' ? 'CONFIGURE_APN' : 
-                             type === 'IP' ? 'CONFIGURE_SERVER' : type,
-                params: type === 'APN' ? { apn: DEFAULT_APN, apnUser: '', apnPass: '' } :
-                        type === 'IP' ? { serverIp: GPS_SERVER_IP, serverPort: String(GPS_SERVER_PORT) } : {}
-            });
-            setSmsPreview(data.command || data.error);
-        } catch {
-            showToast(TOAST.CRUD.ERROR_CREATE('commande'), 'error');
-        }
-    };
+  // Preview SMS command
+  const previewSmsCommand = async (type: string) => {
+    try {
+      const protocol = selectedVehicle?.protocol || 'GT06';
+      const { data } = await api.post('/devices/sms/preview', {
+        protocol,
+        commandType:
+          type === 'LOC'
+            ? 'PING'
+            : type === 'IMMOB'
+              ? 'CUT_ENGINE'
+              : type === 'APN'
+                ? 'CONFIGURE_APN'
+                : type === 'IP'
+                  ? 'CONFIGURE_SERVER'
+                  : type,
+        params:
+          type === 'APN'
+            ? { apn: DEFAULT_APN, apnUser: '', apnPass: '' }
+            : type === 'IP'
+              ? { serverIp: GPS_SERVER_IP, serverPort: String(GPS_SERVER_PORT) }
+              : {},
+      });
+      setSmsPreview(data.command || data.error);
+    } catch {
+      showToast(TOAST.CRUD.ERROR_CREATE('commande'), 'error');
+    }
+  };
 
-    // Send SMS command
-    const sendSmsCommand = async (type: string) => {
-        if (!simPhoneNumber || simPhoneNumber.length < 8) {
-            showToast(TOAST.VALIDATION.INVALID_FORMAT('numéro SIM'), 'error');
-            return;
-        }
-        setIsSendingSms(true);
-        try {
-            const protocol = selectedVehicle?.protocol || 'GT06';
-            const { data } = await api.post(`/devices/sms/${encodeURIComponent(simPhoneNumber)}/command`, {
-                protocol,
-                commandType: type === 'LOC' ? 'PING' : 
-                             type === 'IMMOB' ? 'CUT_ENGINE' : 
-                             type === 'APN' ? 'CONFIGURE_APN' : 
-                             type === 'IP' ? 'CONFIGURE_SERVER' : type,
-                params: type === 'APN' ? { apn: DEFAULT_APN, apnUser: '', apnPass: '' } :
-                        type === 'IP' ? { serverIp: GPS_SERVER_IP, serverPort: String(GPS_SERVER_PORT) } : {}
-            });
-            if (data.success) {
-                showToast(TOAST.COMM.SMS_COMMAND_SENT(data.command), 'success');
-            } else {
-                showToast(data.error || TOAST.COMM.SMS_ERROR, 'error');
-            }
-        } catch {
-            showToast(TOAST.COMM.SMS_ERROR, 'error');
-        } finally {
-            setIsSendingSms(false);
-        }
-    };
+  // Send SMS command
+  const sendSmsCommand = async (type: string) => {
+    if (!simPhoneNumber || simPhoneNumber.length < 8) {
+      showToast(TOAST.VALIDATION.INVALID_FORMAT('numéro SIM'), 'error');
+      return;
+    }
+    setIsSendingSms(true);
+    try {
+      const protocol = selectedVehicle?.protocol || 'GT06';
+      const { data } = await api.post(`/devices/sms/${encodeURIComponent(simPhoneNumber)}/command`, {
+        protocol,
+        commandType:
+          type === 'LOC'
+            ? 'PING'
+            : type === 'IMMOB'
+              ? 'CUT_ENGINE'
+              : type === 'APN'
+                ? 'CONFIGURE_APN'
+                : type === 'IP'
+                  ? 'CONFIGURE_SERVER'
+                  : type,
+        params:
+          type === 'APN'
+            ? { apn: DEFAULT_APN, apnUser: '', apnPass: '' }
+            : type === 'IP'
+              ? { serverIp: GPS_SERVER_IP, serverPort: String(GPS_SERVER_PORT) }
+              : {},
+      });
+      if (data.success) {
+        showToast(TOAST.COMM.SMS_COMMAND_SENT(data.command), 'success');
+      } else {
+        showToast(data.error || TOAST.COMM.SMS_ERROR, 'error');
+      }
+    } catch {
+      showToast(TOAST.COMM.SMS_ERROR, 'error');
+    } finally {
+      setIsSendingSms(false);
+    }
+  };
 
-    // Wrapper to handle both TCP and SMS modes
-    const handleCommand = (type: string) => {
-        if (commandMode === 'SMS') {
-            sendSmsCommand(type);
-        } else {
-            handleSimulateTest(type, { mode: 'TCP' });
-        }
-    };
+  // Wrapper to handle both TCP and SMS modes
+  const handleCommand = (type: string) => {
+    if (commandMode === 'SMS') {
+      sendSmsCommand(type);
+    } else {
+      handleSimulateTest(type, { mode: 'TCP' });
+    }
+  };
 
-    // Copy command to clipboard
-    const copyToClipboard = (text: string, label: string) => {
-        navigator.clipboard.writeText(text);
-        setCopiedCommand(label);
-        setTimeout(() => setCopiedCommand(null), 2000);
-        showToast(TOAST.CLIPBOARD.COPIED, 'success');
-    };
+  // Copy command to clipboard
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedCommand(label);
+    setTimeout(() => setCopiedCommand(null), 2000);
+    showToast(TOAST.CLIPBOARD.COPIED, 'success');
+  };
 
-    return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-            {/* Connection Status Banner - Only if Tracker or SIM is involved */}
-            {(hasTracker() || hasSim()) && (
-                <div className={`p-4 rounded-xl border flex items-center justify-between ${
-                    connectionStatus.color === 'green' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' :
-                    connectionStatus.color === 'red' ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' :
-                    'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                }`}>
-                <div className="flex items-center gap-3">
-                    {connectionStatus.connected ? (
-                        <div className="relative">
-                            <Wifi className="w-6 h-6 text-green-600" />
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                        </div>
-                    ) : (
-                        <WifiOff className="w-6 h-6 text-red-500" />
-                    )}
-                    <div>
-                        <p className={`font-bold text-sm ${
-                            connectionStatus.color === 'green' ? 'text-green-700 dark:text-green-400' :
-                            connectionStatus.color === 'red' ? 'text-red-700 dark:text-red-400' :
-                            'text-slate-700 dark:text-slate-300'
-                        }`}>
-                            Statut Boîtier: {connectionStatus.label}
-                        </p>
-                        {selectedVehicle && (
-                            <p className="text-xs text-slate-500">
-                                IMEI: {formData.imei || selectedVehicle.imei || 'Non assigné'} 
-                                {(selectedVehicle.lastUpdated) && ` • Dernière comm: ${new Date(selectedVehicle.lastUpdated).toLocaleString('fr-FR')}`}
-                            </p>
-                        )}
-                    </div>
-                </div>
-                {connectionStatus.status && (
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                        connectionStatus.status === 'MOVING' ? 'bg-green-100 text-green-700' :
-                        connectionStatus.status === 'STOPPED' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' :
-                        connectionStatus.status === 'IDLE' ? 'bg-yellow-100 text-yellow-700' :
-                        connectionStatus.status === 'ALERT' ? 'bg-red-100 text-red-700' :
-                        'bg-slate-100 text-slate-700'
-                    }`}>
-                        {connectionStatus.status === 'MOVING' ? 'En mouvement' :
-                         connectionStatus.status === 'STOPPED' ? 'Arrêté' :
-                         connectionStatus.status === 'IDLE' ? 'Ralenti' :
-                         connectionStatus.status === 'ALERT' ? 'Alerte' :
-                         connectionStatus.status === 'OFFLINE' ? 'Hors ligne' : connectionStatus.status}
-                    </span>
-                )}
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+      {/* Connection Status Banner - Only if Tracker or SIM is involved */}
+      {(hasTracker() || hasSim()) && (
+        <div
+          className={`p-4 rounded-xl border flex items-center justify-between ${
+            connectionStatus.color === 'green'
+              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+              : connectionStatus.color === 'red'
+                ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            {connectionStatus.connected ? (
+              <div className="relative">
+                <Wifi className="w-6 h-6 text-green-600" />
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+              </div>
+            ) : (
+              <WifiOff className="w-6 h-6 text-red-500" />
+            )}
+            <div>
+              <p
+                className={`font-bold text-sm ${
+                  connectionStatus.color === 'green'
+                    ? 'text-green-700 dark:text-green-400'
+                    : connectionStatus.color === 'red'
+                      ? 'text-red-700 dark:text-red-400'
+                      : 'text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                Statut Boîtier: {connectionStatus.label}
+              </p>
+              {selectedVehicle && (
+                <p className="text-xs text-slate-500">
+                  IMEI: {formData.imei || selectedVehicle.imei || 'Non assigné'}
+                  {selectedVehicle.lastUpdated &&
+                    ` • Dernière comm: ${new Date(selectedVehicle.lastUpdated).toLocaleString('fr-FR')}`}
+                </p>
+              )}
             </div>
-            )}
-
-            {/* Command Mode Selector - Only if Tracker or SIM */}
-            {(hasTracker() || hasSim()) && (
-                <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h4 className="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2">
-                    <Radio className="w-4 h-4" /> Mode d'envoi des commandes
-                </h4>
-                <div className="flex gap-3">
-                    {/* TCP Mode */}
-                    <button
-                        onClick={() => connectionStatus.connected && setCommandMode('TCP')}
-                        disabled={!connectionStatus.connected}
-                        className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
-                            commandMode === 'TCP' 
-                                ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' 
-                                : connectionStatus.connected
-                                    ? 'border-slate-200 dark:border-slate-600 hover:border-[var(--primary)] text-slate-600'
-                                    : 'border-slate-200 dark:border-slate-700 text-slate-400 cursor-not-allowed opacity-50'
-                        }`}
-                    >
-                        <Wifi className="w-5 h-5" />
-                        <div className="text-left">
-                            <p className="font-bold text-sm">TCP (Temps réel)</p>
-                            <p className="text-[10px] opacity-70">Boîtier connecté requis</p>
-                        </div>
-                    </button>
-
-                    {/* SMS Mode */}
-                    <button
-                        onClick={() => setCommandMode('SMS')}
-                        className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
-                            commandMode === 'SMS' 
-                                ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' 
-                                : 'border-slate-200 dark:border-slate-600 hover:border-orange-300 text-slate-600'
-                        }`}
-                    >
-                        <MessageSquare className="w-5 h-5" />
-                        <div className="text-left">
-                            <p className="font-bold text-sm">SMS</p>
-                            <p className="text-[10px] opacity-70">Config initiale / Hors ligne</p>
-                        </div>
-                    </button>
-                </div>
-
-                {/* SMS Phone Number Input */}
-                {commandMode === 'SMS' && (
-                    <div className="mt-4 animate-in fade-in slide-in-from-top-2 space-y-3">
-                        <div className="flex gap-2">
-                            <div className="flex-1">
-                                <label className="text-xs font-bold text-slate-500 uppercase mb-1 flex items-center justify-between">
-                                    <span>
-                                        <Phone className="w-3 h-3 inline mr-1" />
-                                        Numéro SIM du boîtier
-                                    </span>
-                                    {getSimPhoneNumber() && (
-                                        <span className="text-green-600 text-[10px] font-normal flex items-center gap-1">
-                                            <Check className="w-3 h-3" /> Depuis la base de données
-                                        </span>
-                                    )}
-                                </label>
-                                <input
-                                    type="tel"
-                                    value={simPhoneNumber}
-                                    onChange={(e) => setSimPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                                    placeholder="+225 07XXXXXXXX"
-                                    className={`w-full p-2.5 border rounded-lg text-sm ${
-                                        getSimPhoneNumber() 
-                                            ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20' 
-                                            : 'border-orange-200 dark:border-orange-800 bg-white dark:bg-slate-900'
-                                    }`}
-                                />
-                            </div>
-                        </div>
-                        {!getSimPhoneNumber() ? (
-                            <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 p-2 rounded border border-amber-200 dark:border-amber-800">
-                                ⚠️ Aucun numéro SIM trouvé dans la base. Entrez le numéro manuellement pour envoyer les commandes SMS.
-                            </p>
-                        ) : (
-                            <p className="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
-                                ✅ Numéro SIM pré-rempli depuis le véhicule / stock. Vous pouvez le modifier si nécessaire.
-                            </p>
-                        )}
-                    </div>
-                )}
-            </div>
-            )}
-
-            {/* Warning if offline and TCP selected */}
-            {!connectionStatus.connected && commandMode === 'TCP' && (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 rounded-lg flex items-start gap-2">
-                    <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                    <div>
-                        <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Boîtier non connecté</p>
-                        <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
-                            Les commandes TCP ne peuvent pas être envoyées. Passez en mode SMS ci-dessus.
-                        </p>
-                    </div>
-                </div>
-            )}
-
-            {/* Tests & Configuration Section - Only if Tracker or SIM */}
-            {(hasTracker() || hasSim()) && (
-                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h4 className="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
-                    <Activity className="w-4 h-4" /> Tests & Configuration
-                    {commandMode === 'SMS' && <span className="text-orange-500 text-[10px] ml-2 px-2 py-0.5 bg-orange-50 rounded-full">Mode SMS</span>}
-                </h4>
-                <div className="space-y-4">
-                    {/* Location Test */}
-                    <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700">
-                        <div>
-                            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Test de Localisation</span>
-                            {commandMode === 'SMS' && smsPreview && (
-                                <p className="text-[10px] text-slate-400 font-mono mt-1">{smsPreview}</p>
-                            )}
-                        </div>
-                        <div className="flex gap-2">
-                            {commandMode === 'SMS' && (
-                                <button 
-                                    onClick={() => previewSmsCommand('LOC')} 
-                                    className="text-xs text-slate-500 hover:text-slate-700"
-                                    title="Prévisualiser"
-                                >
-                                    Voir CMD
-                                </button>
-                            )}
-                            <button 
-                                onClick={() => handleCommand('LOC')} 
-                                disabled={isTestLoading === 'LOC' || isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
-                                className={`text-sm font-medium px-3 py-1 rounded ${
-                                    commandMode === 'SMS' 
-                                        ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' 
-                                        : 'text-[var(--primary)] hover:underline'
-                                }`}
-                            >
-                                {isTestLoading === 'LOC' || isSendingSms ? 'Envoi...' : commandMode === 'SMS' ? 'Envoyer SMS' : 'Ping Position'}
-                            </button>
-                        </div>
-                    </div>
-                    {testResult && testResult.includes("Position") && (
-                        <p className="text-xs text-green-600 font-medium bg-green-50 p-2 rounded">{testResult}</p>
-                    )}
-
-                    {/* Immobilization Test */}
-                    <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700">
-                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Test Immobilisation</span>
-                        <button 
-                            onClick={() => handleCommand('IMMOB')} 
-                            disabled={isTestLoading === 'IMMOB' || isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
-                            className={`px-3 py-1.5 border rounded text-xs font-bold ${
-                                commandMode === 'SMS'
-                                    ? 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100'
-                                    : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
-                            }`}
-                        >
-                            {isTestLoading === 'IMMOB' || isSendingSms ? 'Envoi...' : 'Couper Moteur'}
-                        </button>
-                    </div>
-                    {testResult && testResult.includes("Moteur") && (
-                        <p className="text-xs text-green-600 font-medium bg-green-50 p-2 rounded">{testResult}</p>
-                    )}
-
-                    {/* Config Buttons */}
-                    <div className="flex gap-3 pt-2">
-                        <button 
-                            onClick={() => handleCommand('APN')} 
-                            disabled={isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
-                            className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
-                                commandMode === 'SMS'
-                                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
-                                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
-                            }`}
-                        >
-                            <Smartphone className="w-4 h-4" /> Config APN
-                        </button>
-                        <button 
-                            onClick={() => handleCommand('IP')} 
-                            disabled={isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
-                            className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
-                                commandMode === 'SMS'
-                                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
-                                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
-                            }`}
-                        >
-                            <Server className="w-4 h-4" /> Config IP/Port
-                        </button>
-                    </div>
-
-                    {/* SMS Commands Quick Reference */}
-                    {commandMode === 'SMS' && (
-                        <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
-                            <p className="text-xs font-bold text-slate-500 uppercase mb-2">Commandes manuelles (copier-coller)</p>
-                            <div className="space-y-2 text-xs font-mono">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-600">Position:</span>
-                                    <button onClick={() => copyToClipboard('smslink123456', 'LOC')} className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]">
-                                        smslink123456 {copiedCommand === 'LOC' ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
-                                    </button>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-600">APN Orange:</span>
-                                    <button onClick={() => copyToClipboard('APN,orange.ci,,#', 'APN')} className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]">
-                                        APN,orange.ci,,# {copiedCommand === 'APN' ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
-                                    </button>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-600">Serveur:</span>
-                                    <button onClick={() => copyToClipboard('SERVER,0,148.230.126.62,5000,0#', 'IP')} className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]">
-                                        SERVER,0,148.230.126.62,5000,0# {copiedCommand === 'IP' ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
-            )}
-
-            {/* Fuel Gauge Configuration (conditional - show for sonde material OR Recalibrage sonde nature) */}
-            {(hasMaterial('sonde') || (formData.nature as string) === 'Recalibrage sonde') && (
-                <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-6 rounded-xl border border-[var(--border)] dark:border-[var(--primary)] shadow-sm animate-in fade-in">
-                    <h4 className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-4 flex items-center gap-2">
-                        <Ruler className="w-4 h-4" /> Configuration Jauge Carburant
-                    </h4>
-                    
-                    {/* Row 1: Sensor Type, Tank Capacity, Tank Shape */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Type de Capteur *</label>
-                            <select
-                                title="Type de Capteur"
-                                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
-                                value={formData.fuelSensorType || 'CAPACITIVE'}
-                                onChange={e => setFormData({ ...formData, fuelSensorType: e.target.value as 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' })}
-                            >
-                                <option value="CANBUS">CANBUS (Origine véhicule)</option>
-                                <option value="CAPACITIVE">Sonde Capacitive</option>
-                                <option value="ULTRASONIC">Sonde Ultrason</option>
-                            </select>
-                        </div>
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Capacité Réservoir (L) *</label>
-                            <input
-                                type="number"
-                                title="Capacité Réservoir"
-                                placeholder="Ex: 120"
-                                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
-                                value={formData.tankCapacity || ''}
-                                onChange={e => setFormData({ ...formData, tankCapacity: parseFloat(e.target.value) })}
-                                min={1}
-                                max={10000}
-                            />
-                        </div>
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Forme du Réservoir</label>
-                            <select
-                                title="Forme du Réservoir"
-                                className={`w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg text-sm ${
-                                    formData.fuelSensorType === 'CANBUS' 
-                                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
-                                        : 'bg-white dark:bg-slate-900'
-                                }`}
-                                value={formData.tankShape || 'RECTANGULAR'}
-                                onChange={e => setFormData({ ...formData, tankShape: e.target.value as Intervention['tankShape'] })}
-                                disabled={formData.fuelSensorType === 'CANBUS'}
-                            >
-                                <option value="RECTANGULAR">Rectangulaire (Parallélépipède)</option>
-                                <option value="CYLINDRICAL_H">Cylindrique Horizontal</option>
-                                <option value="CYLINDRICAL_V">Cylindrique Vertical</option>
-                                <option value="L_SHAPE">Forme en L</option>
-                                <option value="D_SHAPE">Forme en D (Semi-cylindrique)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Row 2: Probe Info (only if not CANBUS) */}
-                    {formData.fuelSensorType !== 'CANBUS' && (
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 animate-in fade-in">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Marque Sonde</label>
-                                <input
-                                    type="text"
-                                    title="Marque Sonde"
-                                    placeholder="Ex: Escort, Technoton"
-                                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
-                                    value={formData.gaugeBrand || ''}
-                                    onChange={e => setFormData({ ...formData, gaugeBrand: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Modèle Sonde</label>
-                                <input
-                                    type="text"
-                                    title="Modèle Sonde"
-                                    placeholder="Ex: TD-BLE, DUT-E"
-                                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
-                                    value={formData.gaugeModel || ''}
-                                    onChange={e => setFormData({ ...formData, gaugeModel: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">N° Série Sonde</label>
-                                <input
-                                    type="text"
-                                    title="Numéro Série Sonde"
-                                    placeholder="Ex: SN123456789"
-                                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm font-mono"
-                                    value={formData.gaugeSerial || ''}
-                                    onChange={e => setFormData({ ...formData, gaugeSerial: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Row 3: Alert Thresholds */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Seuil Alerte Remplissage (%)</label>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="range"
-                                    title="Seuil Remplissage"
-                                    min={5}
-                                    max={50}
-                                    step={5}
-                                    className="flex-1 h-2 bg-[var(--primary-dim)] rounded-lg appearance-none cursor-pointer accent-blue-600"
-                                    value={formData.refillThreshold || 20}
-                                    onChange={e => setFormData({ ...formData, refillThreshold: parseInt(e.target.value) })}
-                                />
-                                <span className="w-12 text-center text-sm font-bold text-[var(--primary)] bg-[var(--primary-dim)] rounded px-2 py-1">
-                                    {formData.refillThreshold || 20}%
-                                </span>
-                            </div>
-                            <p className="text-[10px] text-[var(--primary)]">Alerte quand le niveau descend sous ce seuil</p>
-                        </div>
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Seuil Détection Vol (%)</label>
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="range"
-                                    title="Seuil Vol"
-                                    min={5}
-                                    max={30}
-                                    step={5}
-                                    className="flex-1 h-2 bg-red-200 rounded-lg appearance-none cursor-pointer accent-red-600"
-                                    value={formData.theftThreshold || 10}
-                                    onChange={e => setFormData({ ...formData, theftThreshold: parseInt(e.target.value) })}
-                                />
-                                <span className="w-12 text-center text-sm font-bold text-red-700 bg-red-100 rounded px-2 py-1">
-                                    {formData.theftThreshold || 10}%
-                                </span>
-                            </div>
-                            <p className="text-[10px] text-red-500">Alerte si chute brusque supérieure à ce %</p>
-                        </div>
-                    </div>
-
-                    {/* Tank Dimensions & Calibration (only if not CANBUS) */}
-                    {formData.fuelSensorType !== 'CANBUS' && (
-                        <div className="space-y-4 animate-in fade-in border-t border-[var(--border)] dark:border-[var(--primary)] pt-4 mt-4">
-                            <h5 className="text-xs font-bold text-[var(--primary)] uppercase">Dimensions & Calibration</h5>
-                            
-                            {/* Dimensions */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Hauteur (mm) *</label>
-                                    <input 
-                                        type="number" 
-                                        title="Hauteur" 
-                                        placeholder="Ex: 400" 
-                                        className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" 
-                                        value={formData.tankHeight || ''} 
-                                        onChange={e => setFormData({ ...formData, tankHeight: parseFloat(e.target.value) })} 
-                                        min={50}
-                                        max={2000}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
-                                        {formData.tankShape?.includes('CYLINDRICAL') ? 'Diamètre (mm)' : 'Longueur (mm)'}
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        title="Longueur/Diamètre" 
-                                        placeholder={formData.tankShape?.includes('CYLINDRICAL') ? 'Ex: 500' : 'Ex: 800'} 
-                                        className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" 
-                                        value={formData.tankLength || ''} 
-                                        onChange={e => setFormData({ ...formData, tankLength: parseFloat(e.target.value) })} 
-                                        min={50}
-                                        max={3000}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
-                                        {formData.tankShape?.includes('CYLINDRICAL') ? 'Longueur (mm)' : 'Largeur (mm)'}
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        title="Largeur" 
-                                        placeholder="Ex: 600" 
-                                        className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" 
-                                        value={formData.tankWidth || ''} 
-                                        onChange={e => setFormData({ ...formData, tankWidth: parseFloat(e.target.value) })} 
-                                        min={50}
-                                        max={3000}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Calculated Volume Info */}
-                            {formData.tankHeight && formData.tankLength && formData.tankWidth && (
-                                <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-sm animate-in fade-in">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[var(--primary)] dark:text-[var(--primary)]">Volume calculé (théorique):</span>
-                                        <span className="font-bold text-[var(--primary)] dark:text-[var(--primary)]">
-                                            {(() => {
-                                                const h = formData.tankHeight;
-                                                const l = formData.tankLength;
-                                                const w = formData.tankWidth;
-                                                let vol = 0;
-                                                switch(formData.tankShape) {
-                                                    case 'CYLINDRICAL_H':
-                                                        vol = Math.PI * Math.pow(l/2, 2) * w / 1000000; // Diamètre=l, Longueur=w
-                                                        break;
-                                                    case 'CYLINDRICAL_V':
-                                                        vol = Math.PI * Math.pow(l/2, 2) * h / 1000000;
-                                                        break;
-                                                    case 'D_SHAPE':
-                                                        vol = (Math.PI * Math.pow(h/2, 2) / 2 + h * w) * l / 1000000;
-                                                        break;
-                                                    default: // RECTANGULAR
-                                                        vol = h * l * w / 1000000;
-                                                }
-                                                return `${Math.round(vol)} L`;
-                                            })()}
-                                        </span>
-                                    </div>
-                                    {formData.tankCapacity && Math.abs((() => {
-                                        const h = formData.tankHeight;
-                                        const l = formData.tankLength;
-                                        const w = formData.tankWidth;
-                                        let vol = 0;
-                                        switch(formData.tankShape) {
-                                            case 'CYLINDRICAL_H': vol = Math.PI * Math.pow(l/2, 2) * w / 1000000; break;
-                                            case 'CYLINDRICAL_V': vol = Math.PI * Math.pow(l/2, 2) * h / 1000000; break;
-                                            case 'D_SHAPE': vol = (Math.PI * Math.pow(h/2, 2) / 2 + h * w) * l / 1000000; break;
-                                            default: vol = h * l * w / 1000000;
-                                        }
-                                        return vol;
-                                    })() - formData.tankCapacity) > formData.tankCapacity * 0.2 && (
-                                        <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                                            <AlertCircle className="w-3 h-3" />
-                                            Écart &gt;20% avec la capacité déclarée. Vérifiez les dimensions.
-                                        </p>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Calibration Table */}
-                            <div className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Table de Calibration</label>
-                                    <div className="flex gap-2">
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                if (!formData.tankHeight || !formData.tankCapacity) {
-                                                    showToast(TOAST.TECH.CALIBRATION_FIELDS_REQUIRED, "error");
-                                                    return;
-                                                }
-                                                const steps = 20;
-                                                const h = formData.tankHeight;
-                                                const capacity = formData.tankCapacity;
-                                                const shape = formData.tankShape || 'RECTANGULAR';
-                                                const diameter = formData.tankLength || h; // For cylindrical
-                                                
-                                                let table = "";
-                                                for (let i = 0; i <= steps; i++) {
-                                                    const height = Math.round((h / steps) * i);
-                                                    let volume = 0;
-                                                    
-                                                    switch(shape) {
-                                                        case 'CYLINDRICAL_H': {
-                                                            // Segment de cercle horizontal
-                                                            const r = diameter / 2;
-                                                            const theta = 2 * Math.acos((r - height) / r);
-                                                            const area = (r * r / 2) * (theta - Math.sin(theta));
-                                                            volume = (area / (Math.PI * r * r)) * capacity;
-                                                            break;
-                                                        }
-                                                        case 'CYLINDRICAL_V':
-                                                            // Linéaire pour cylindrique vertical
-                                                            volume = (height / h) * capacity;
-                                                            break;
-                                                        case 'D_SHAPE': {
-                                                            // Semi-cylindrique + rectangle
-                                                            const ratio = height / h;
-                                                            volume = ratio * capacity * (ratio < 0.5 ? 0.8 : 1.1); // Approximation
-                                                            break;
-                                                        }
-                                                        default: // RECTANGULAR - Linéaire
-                                                            volume = (height / h) * capacity;
-                                                    }
-                                                    
-                                                    table += `${height},${Math.round(Math.max(0, Math.min(capacity, volume)))}\n`;
-                                                }
-                                                setFormData({ ...formData, calibrationTable: table.trim() });
-                                                showToast(TOAST.TECH.CALIBRATION_TABLE_GENERATED(shape === 'RECTANGULAR' ? 'Linéaire' : 'Courbe ' + shape), 'success');
-                                            }}
-                                            className="text-[10px] bg-[var(--primary)] text-white px-3 py-1.5 rounded hover:bg-[var(--primary-light)] font-medium"
-                                        >
-                                            Générer Auto
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, calibrationTable: '' })}
-                                            className="text-[10px] bg-slate-200 text-slate-600 px-2 py-1.5 rounded hover:bg-slate-300"
-                                        >
-                                            Effacer
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div className="border border-[var(--border)] dark:border-[var(--primary)] rounded-lg overflow-hidden">
-                                    <div className="grid grid-cols-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] p-2 border-b border-[var(--border)] dark:border-[var(--primary)]">
-                                        <div>Hauteur (mm)</div>
-                                        <div>Volume (L)</div>
-                                    </div>
-                                    <div className="max-h-48 overflow-y-auto bg-white dark:bg-slate-900">
-                                        {(formData.calibrationTable || '').split('\n').filter(l => l.trim()).map((line, idx) => {
-                                            const [h, v] = line.split(',');
-                                            return (
-                                                <div key={idx} className="grid grid-cols-2 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]">
-                                                    <input
-                                                        type="number"
-                                                        title={`Hauteur ligne ${idx + 1}`}
-                                                        className="w-full p-2 text-sm border-r border-slate-100 dark:border-slate-800 bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
-                                                        value={h || ''}
-                                                        placeholder="mm"
-                                                        onChange={(e) => {
-                                                            const lines = (formData.calibrationTable || '').split('\n');
-                                                            lines[idx] = `${e.target.value},${v || ''}`;
-                                                            setFormData({ ...formData, calibrationTable: lines.join('\n') });
-                                                        }}
-                                                    />
-                                                    <input
-                                                        type="number"
-                                                        title={`Volume ligne ${idx + 1}`}
-                                                        className="w-full p-2 text-sm bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
-                                                        value={v || ''}
-                                                        placeholder="L"
-                                                        onChange={(e) => {
-                                                            const lines = (formData.calibrationTable || '').split('\n');
-                                                            lines[idx] = `${h || ''},${e.target.value}`;
-                                                            setFormData({ ...formData, calibrationTable: lines.join('\n') });
-                                                        }}
-                                                    />
-                                                </div>
-                                            );
-                                        })}
-                                        {!(formData.calibrationTable || '').trim() && (
-                                            <div className="p-4 text-center text-sm text-slate-400">
-                                                Aucune donnée. Cliquez sur "Générer Auto" ou ajoutez manuellement.
-                                            </div>
-                                        )}
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, calibrationTable: (formData.calibrationTable || '') + '\n,' })}
-                                        className="w-full p-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] flex items-center justify-center gap-1 border-t border-[var(--border)] dark:border-[var(--primary)] font-medium"
-                                    >
-                                        <Plus className="w-3 h-3" /> Ajouter une ligne
-                                    </button>
-                                </div>
-                                
-                                {/* Calibration count info */}
-                                {formData.calibrationTable && (
-                                    <p className="text-[10px] text-[var(--primary)]">
-                                        {(formData.calibrationTable || '').split('\n').filter(l => l.trim() && l.includes(',')).length} points de calibration
-                                    </p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* CANBUS Info */}
-                    {formData.fuelSensorType === 'CANBUS' && (
-                        <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm text-slate-600 dark:text-slate-400 animate-in fade-in">
-                            <p className="flex items-center gap-2">
-                                <Signal className="w-4 h-4" />
-                                Mode CANBUS : Le niveau carburant est lu directement depuis le véhicule. Pas de calibration nécessaire.
-                            </p>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Technical Report Section */}
-            <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h4 className="text-xs font-bold text-slate-400 uppercase mb-2">Rapport Technique Final</h4>
-                <textarea className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-sm min-h-[120px] resize-none" placeholder="Détaillez les opérations..." value={formData.notes || ''} onChange={e => setFormData({ ...formData, notes: e.target.value })} />
-            </div>
-
-            {/* Contract Update Summary (for Removal - read-only, derived from Onglet 1) */}
-            {formData.nature === 'Retrait' && formData.removalReason && (
-                <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 dark:border-red-800 shadow-sm">
-                    <h4 className="text-xs font-bold text-red-700 dark:text-red-400 uppercase mb-2 flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" /> Résumé des actions à la clôture
-                    </h4>
-                    <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
-                        <li>• Matériel : <span className="font-bold">{formData.removedMaterialStatus === 'FAULTY' ? 'Retour SAV (Défectueux)' : 'Retour Stock (Fonctionnel)'}</span></li>
-                        {formData.removeFromContract && (
-                            <li>• Contrat : <span className="font-bold">Véhicule retiré du contrat</span> ({formData.contractRemovalReason})</li>
-                        )}
-                        {!formData.removeFromContract && (
-                            <li>• Contrat : <span className="font-bold">Aucun changement</span></li>
-                        )}
-                    </ul>
-                </div>
-            )}
+          </div>
+          {connectionStatus.status && (
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-bold ${
+                connectionStatus.status === 'MOVING'
+                  ? 'bg-green-100 text-green-700'
+                  : connectionStatus.status === 'STOPPED'
+                    ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
+                    : connectionStatus.status === 'IDLE'
+                      ? 'bg-yellow-100 text-yellow-700'
+                      : connectionStatus.status === 'ALERT'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-slate-100 text-slate-700'
+              }`}
+            >
+              {connectionStatus.status === 'MOVING'
+                ? 'En mouvement'
+                : connectionStatus.status === 'STOPPED'
+                  ? 'Arrêté'
+                  : connectionStatus.status === 'IDLE'
+                    ? 'Ralenti'
+                    : connectionStatus.status === 'ALERT'
+                      ? 'Alerte'
+                      : connectionStatus.status === 'OFFLINE'
+                        ? 'Hors ligne'
+                        : connectionStatus.status}
+            </span>
+          )}
         </div>
-    );
+      )}
+
+      {/* Command Mode Selector - Only if Tracker or SIM */}
+      {(hasTracker() || hasSim()) && (
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <h4 className="text-xs font-bold text-slate-400 uppercase mb-3 flex items-center gap-2">
+            <Radio className="w-4 h-4" /> Mode d'envoi des commandes
+          </h4>
+          <div className="flex gap-3">
+            {/* TCP Mode */}
+            <button
+              onClick={() => connectionStatus.connected && setCommandMode('TCP')}
+              disabled={!connectionStatus.connected}
+              className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                commandMode === 'TCP'
+                  ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
+                  : connectionStatus.connected
+                    ? 'border-slate-200 dark:border-slate-600 hover:border-[var(--primary)] text-slate-600'
+                    : 'border-slate-200 dark:border-slate-700 text-slate-400 cursor-not-allowed opacity-50'
+              }`}
+            >
+              <Wifi className="w-5 h-5" />
+              <div className="text-left">
+                <p className="font-bold text-sm">TCP (Temps réel)</p>
+                <p className="text-[10px] opacity-70">Boîtier connecté requis</p>
+              </div>
+            </button>
+
+            {/* SMS Mode */}
+            <button
+              onClick={() => setCommandMode('SMS')}
+              className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
+                commandMode === 'SMS'
+                  ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                  : 'border-slate-200 dark:border-slate-600 hover:border-orange-300 text-slate-600'
+              }`}
+            >
+              <MessageSquare className="w-5 h-5" />
+              <div className="text-left">
+                <p className="font-bold text-sm">SMS</p>
+                <p className="text-[10px] opacity-70">Config initiale / Hors ligne</p>
+              </div>
+            </button>
+          </div>
+
+          {/* SMS Phone Number Input */}
+          {commandMode === 'SMS' && (
+            <div className="mt-4 animate-in fade-in slide-in-from-top-2 space-y-3">
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase mb-1 flex items-center justify-between">
+                    <span>
+                      <Phone className="w-3 h-3 inline mr-1" />
+                      Numéro SIM du boîtier
+                    </span>
+                    {getSimPhoneNumber() && (
+                      <span className="text-green-600 text-[10px] font-normal flex items-center gap-1">
+                        <Check className="w-3 h-3" /> Depuis la base de données
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    type="tel"
+                    value={simPhoneNumber}
+                    onChange={(e) => setSimPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                    placeholder="+225 07XXXXXXXX"
+                    className={`w-full p-2.5 border rounded-lg text-sm ${
+                      getSimPhoneNumber()
+                        ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
+                        : 'border-orange-200 dark:border-orange-800 bg-white dark:bg-slate-900'
+                    }`}
+                  />
+                </div>
+              </div>
+              {!getSimPhoneNumber() ? (
+                <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 p-2 rounded border border-amber-200 dark:border-amber-800">
+                  ⚠️ Aucun numéro SIM trouvé dans la base. Entrez le numéro manuellement pour envoyer les commandes SMS.
+                </p>
+              ) : (
+                <p className="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
+                  ✅ Numéro SIM pré-rempli depuis le véhicule / stock. Vous pouvez le modifier si nécessaire.
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Warning if offline and TCP selected */}
+      {!connectionStatus.connected && commandMode === 'TCP' && (
+        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 rounded-lg flex items-start gap-2">
+          <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Boîtier non connecté</p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+              Les commandes TCP ne peuvent pas être envoyées. Passez en mode SMS ci-dessus.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Tests & Configuration Section - Only if Tracker or SIM */}
+      {(hasTracker() || hasSim()) && (
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <h4 className="text-xs font-bold text-slate-400 uppercase mb-4 flex items-center gap-2">
+            <Activity className="w-4 h-4" /> Tests & Configuration
+            {commandMode === 'SMS' && (
+              <span className="text-orange-500 text-[10px] ml-2 px-2 py-0.5 bg-orange-50 rounded-full">Mode SMS</span>
+            )}
+          </h4>
+          <div className="space-y-4">
+            {/* Location Test */}
+            <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700">
+              <div>
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Test de Localisation</span>
+                {commandMode === 'SMS' && smsPreview && (
+                  <p className="text-[10px] text-slate-400 font-mono mt-1">{smsPreview}</p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                {commandMode === 'SMS' && (
+                  <button
+                    onClick={() => previewSmsCommand('LOC')}
+                    className="text-xs text-slate-500 hover:text-slate-700"
+                    title="Prévisualiser"
+                  >
+                    Voir CMD
+                  </button>
+                )}
+                <button
+                  onClick={() => handleCommand('LOC')}
+                  disabled={isTestLoading === 'LOC' || isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
+                  className={`text-sm font-medium px-3 py-1 rounded ${
+                    commandMode === 'SMS'
+                      ? 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                      : 'text-[var(--primary)] hover:underline'
+                  }`}
+                >
+                  {isTestLoading === 'LOC' || isSendingSms
+                    ? 'Envoi...'
+                    : commandMode === 'SMS'
+                      ? 'Envoyer SMS'
+                      : 'Ping Position'}
+                </button>
+              </div>
+            </div>
+            {testResult && testResult.includes('Position') && (
+              <p className="text-xs text-green-600 font-medium bg-green-50 p-2 rounded">{testResult}</p>
+            )}
+
+            {/* Immobilization Test */}
+            <div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700">
+              <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Test Immobilisation</span>
+              <button
+                onClick={() => handleCommand('IMMOB')}
+                disabled={isTestLoading === 'IMMOB' || isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
+                className={`px-3 py-1.5 border rounded text-xs font-bold ${
+                  commandMode === 'SMS'
+                    ? 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100'
+                    : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                }`}
+              >
+                {isTestLoading === 'IMMOB' || isSendingSms ? 'Envoi...' : 'Couper Moteur'}
+              </button>
+            </div>
+            {testResult && testResult.includes('Moteur') && (
+              <p className="text-xs text-green-600 font-medium bg-green-50 p-2 rounded">{testResult}</p>
+            )}
+
+            {/* Config Buttons */}
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => handleCommand('APN')}
+                disabled={isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
+                className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
+                  commandMode === 'SMS'
+                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
+                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                <Smartphone className="w-4 h-4" /> Config APN
+              </button>
+              <button
+                onClick={() => handleCommand('IP')}
+                disabled={isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
+                className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
+                  commandMode === 'SMS'
+                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
+                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                <Server className="w-4 h-4" /> Config IP/Port
+              </button>
+            </div>
+
+            {/* SMS Commands Quick Reference */}
+            {commandMode === 'SMS' && (
+              <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Commandes manuelles (copier-coller)</p>
+                <div className="space-y-2 text-xs font-mono">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600">Position:</span>
+                    <button
+                      onClick={() => copyToClipboard('smslink123456', 'LOC')}
+                      className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]"
+                    >
+                      smslink123456{' '}
+                      {copiedCommand === 'LOC' ? (
+                        <Check className="w-3 h-3 text-green-500" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600">APN Orange:</span>
+                    <button
+                      onClick={() => copyToClipboard('APN,orange.ci,,#', 'APN')}
+                      className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]"
+                    >
+                      APN,orange.ci,,#{' '}
+                      {copiedCommand === 'APN' ? (
+                        <Check className="w-3 h-3 text-green-500" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-600">Serveur:</span>
+                    <button
+                      onClick={() => copyToClipboard('SERVER,0,148.230.126.62,5000,0#', 'IP')}
+                      className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]"
+                    >
+                      SERVER,0,148.230.126.62,5000,0#{' '}
+                      {copiedCommand === 'IP' ? (
+                        <Check className="w-3 h-3 text-green-500" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Fuel Gauge Configuration (conditional - show for sonde material OR Recalibrage sonde nature) */}
+      {(hasMaterial('sonde') || (formData.nature as string) === 'Recalibrage sonde') && (
+        <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-6 rounded-xl border border-[var(--border)] dark:border-[var(--primary)] shadow-sm animate-in fade-in">
+          <h4 className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-4 flex items-center gap-2">
+            <Ruler className="w-4 h-4" /> Configuration Jauge Carburant
+          </h4>
+
+          {/* Row 1: Sensor Type, Tank Capacity, Tank Shape */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Type de Capteur *</label>
+              <select
+                title="Type de Capteur"
+                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
+                value={formData.fuelSensorType || 'CAPACITIVE'}
+                onChange={(e) =>
+                  setFormData({ ...formData, fuelSensorType: e.target.value as 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' })
+                }
+              >
+                <option value="CANBUS">CANBUS (Origine véhicule)</option>
+                <option value="CAPACITIVE">Sonde Capacitive</option>
+                <option value="ULTRASONIC">Sonde Ultrason</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Capacité Réservoir (L) *</label>
+              <input
+                type="number"
+                title="Capacité Réservoir"
+                placeholder="Ex: 120"
+                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
+                value={formData.tankCapacity || ''}
+                onChange={(e) => setFormData({ ...formData, tankCapacity: parseFloat(e.target.value) })}
+                min={1}
+                max={10000}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Forme du Réservoir</label>
+              <select
+                title="Forme du Réservoir"
+                className={`w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg text-sm ${
+                  formData.fuelSensorType === 'CANBUS'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                    : 'bg-white dark:bg-slate-900'
+                }`}
+                value={formData.tankShape || 'RECTANGULAR'}
+                onChange={(e) => setFormData({ ...formData, tankShape: e.target.value as Intervention['tankShape'] })}
+                disabled={formData.fuelSensorType === 'CANBUS'}
+              >
+                <option value="RECTANGULAR">Rectangulaire (Parallélépipède)</option>
+                <option value="CYLINDRICAL_H">Cylindrique Horizontal</option>
+                <option value="CYLINDRICAL_V">Cylindrique Vertical</option>
+                <option value="L_SHAPE">Forme en L</option>
+                <option value="D_SHAPE">Forme en D (Semi-cylindrique)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Row 2: Probe Info (only if not CANBUS) */}
+          {formData.fuelSensorType !== 'CANBUS' && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 animate-in fade-in">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Marque Sonde</label>
+                <input
+                  type="text"
+                  title="Marque Sonde"
+                  placeholder="Ex: Escort, Technoton"
+                  className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
+                  value={formData.gaugeBrand || ''}
+                  onChange={(e) => setFormData({ ...formData, gaugeBrand: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Modèle Sonde</label>
+                <input
+                  type="text"
+                  title="Modèle Sonde"
+                  placeholder="Ex: TD-BLE, DUT-E"
+                  className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
+                  value={formData.gaugeModel || ''}
+                  onChange={(e) => setFormData({ ...formData, gaugeModel: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">N° Série Sonde</label>
+                <input
+                  type="text"
+                  title="Numéro Série Sonde"
+                  placeholder="Ex: SN123456789"
+                  className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm font-mono"
+                  value={formData.gaugeSerial || ''}
+                  onChange={(e) => setFormData({ ...formData, gaugeSerial: e.target.value })}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Row 3: Alert Thresholds */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
+                Seuil Alerte Remplissage (%)
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  title="Seuil Remplissage"
+                  min={5}
+                  max={50}
+                  step={5}
+                  className="flex-1 h-2 bg-[var(--primary-dim)] rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  value={formData.refillThreshold || 20}
+                  onChange={(e) => setFormData({ ...formData, refillThreshold: parseInt(e.target.value) })}
+                />
+                <span className="w-12 text-center text-sm font-bold text-[var(--primary)] bg-[var(--primary-dim)] rounded px-2 py-1">
+                  {formData.refillThreshold || 20}%
+                </span>
+              </div>
+              <p className="text-[10px] text-[var(--primary)]">Alerte quand le niveau descend sous ce seuil</p>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Seuil Détection Vol (%)</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  title="Seuil Vol"
+                  min={5}
+                  max={30}
+                  step={5}
+                  className="flex-1 h-2 bg-red-200 rounded-lg appearance-none cursor-pointer accent-red-600"
+                  value={formData.theftThreshold || 10}
+                  onChange={(e) => setFormData({ ...formData, theftThreshold: parseInt(e.target.value) })}
+                />
+                <span className="w-12 text-center text-sm font-bold text-red-700 bg-red-100 rounded px-2 py-1">
+                  {formData.theftThreshold || 10}%
+                </span>
+              </div>
+              <p className="text-[10px] text-red-500">Alerte si chute brusque supérieure à ce %</p>
+            </div>
+          </div>
+
+          {/* Tank Dimensions & Calibration (only if not CANBUS) */}
+          {formData.fuelSensorType !== 'CANBUS' && (
+            <div className="space-y-4 animate-in fade-in border-t border-[var(--border)] dark:border-[var(--primary)] pt-4 mt-4">
+              <h5 className="text-xs font-bold text-[var(--primary)] uppercase">Dimensions & Calibration</h5>
+
+              {/* Dimensions */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Hauteur (mm) *</label>
+                  <input
+                    type="number"
+                    title="Hauteur"
+                    placeholder="Ex: 400"
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
+                    value={formData.tankHeight || ''}
+                    onChange={(e) => setFormData({ ...formData, tankHeight: parseFloat(e.target.value) })}
+                    min={50}
+                    max={2000}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
+                    {formData.tankShape?.includes('CYLINDRICAL') ? 'Diamètre (mm)' : 'Longueur (mm)'}
+                  </label>
+                  <input
+                    type="number"
+                    title="Longueur/Diamètre"
+                    placeholder={formData.tankShape?.includes('CYLINDRICAL') ? 'Ex: 500' : 'Ex: 800'}
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
+                    value={formData.tankLength || ''}
+                    onChange={(e) => setFormData({ ...formData, tankLength: parseFloat(e.target.value) })}
+                    min={50}
+                    max={3000}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
+                    {formData.tankShape?.includes('CYLINDRICAL') ? 'Longueur (mm)' : 'Largeur (mm)'}
+                  </label>
+                  <input
+                    type="number"
+                    title="Largeur"
+                    placeholder="Ex: 600"
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
+                    value={formData.tankWidth || ''}
+                    onChange={(e) => setFormData({ ...formData, tankWidth: parseFloat(e.target.value) })}
+                    min={50}
+                    max={3000}
+                  />
+                </div>
+              </div>
+
+              {/* Calculated Volume Info */}
+              {formData.tankHeight && formData.tankLength && formData.tankWidth && (
+                <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-sm animate-in fade-in">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[var(--primary)] dark:text-[var(--primary)]">
+                      Volume calculé (théorique):
+                    </span>
+                    <span className="font-bold text-[var(--primary)] dark:text-[var(--primary)]">
+                      {(() => {
+                        const h = formData.tankHeight;
+                        const l = formData.tankLength;
+                        const w = formData.tankWidth;
+                        let vol: number;
+                        switch (formData.tankShape) {
+                          case 'CYLINDRICAL_H':
+                            vol = (Math.PI * Math.pow(l / 2, 2) * w) / 1000000; // Diamètre=l, Longueur=w
+                            break;
+                          case 'CYLINDRICAL_V':
+                            vol = (Math.PI * Math.pow(l / 2, 2) * h) / 1000000;
+                            break;
+                          case 'D_SHAPE':
+                            vol = (((Math.PI * Math.pow(h / 2, 2)) / 2 + h * w) * l) / 1000000;
+                            break;
+                          default: // RECTANGULAR
+                            vol = (h * l * w) / 1000000;
+                        }
+                        return `${Math.round(vol)} L`;
+                      })()}
+                    </span>
+                  </div>
+                  {formData.tankCapacity &&
+                    Math.abs(
+                      (() => {
+                        const h = formData.tankHeight;
+                        const l = formData.tankLength;
+                        const w = formData.tankWidth;
+                        let vol: number;
+                        switch (formData.tankShape) {
+                          case 'CYLINDRICAL_H':
+                            vol = (Math.PI * Math.pow(l / 2, 2) * w) / 1000000;
+                            break;
+                          case 'CYLINDRICAL_V':
+                            vol = (Math.PI * Math.pow(l / 2, 2) * h) / 1000000;
+                            break;
+                          case 'D_SHAPE':
+                            vol = (((Math.PI * Math.pow(h / 2, 2)) / 2 + h * w) * l) / 1000000;
+                            break;
+                          default:
+                            vol = (h * l * w) / 1000000;
+                        }
+                        return vol;
+                      })() - formData.tankCapacity
+                    ) >
+                      formData.tankCapacity * 0.2 && (
+                      <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3 h-3" />
+                        Écart &gt;20% avec la capacité déclarée. Vérifiez les dimensions.
+                      </p>
+                    )}
+                </div>
+              )}
+
+              {/* Calibration Table */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Table de Calibration</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!formData.tankHeight || !formData.tankCapacity) {
+                          showToast(TOAST.TECH.CALIBRATION_FIELDS_REQUIRED, 'error');
+                          return;
+                        }
+                        const steps = 20;
+                        const h = formData.tankHeight;
+                        const capacity = formData.tankCapacity;
+                        const shape = formData.tankShape || 'RECTANGULAR';
+                        const diameter = formData.tankLength || h; // For cylindrical
+
+                        let table = '';
+                        for (let i = 0; i <= steps; i++) {
+                          const height = Math.round((h / steps) * i);
+                          let volume: number;
+
+                          switch (shape) {
+                            case 'CYLINDRICAL_H': {
+                              // Segment de cercle horizontal
+                              const r = diameter / 2;
+                              const theta = 2 * Math.acos((r - height) / r);
+                              const area = ((r * r) / 2) * (theta - Math.sin(theta));
+                              volume = (area / (Math.PI * r * r)) * capacity;
+                              break;
+                            }
+                            case 'CYLINDRICAL_V':
+                              // Linéaire pour cylindrique vertical
+                              volume = (height / h) * capacity;
+                              break;
+                            case 'D_SHAPE': {
+                              // Semi-cylindrique + rectangle
+                              const ratio = height / h;
+                              volume = ratio * capacity * (ratio < 0.5 ? 0.8 : 1.1); // Approximation
+                              break;
+                            }
+                            default: // RECTANGULAR - Linéaire
+                              volume = (height / h) * capacity;
+                          }
+
+                          table += `${height},${Math.round(Math.max(0, Math.min(capacity, volume)))}\n`;
+                        }
+                        setFormData({ ...formData, calibrationTable: table.trim() });
+                        showToast(
+                          TOAST.TECH.CALIBRATION_TABLE_GENERATED(
+                            shape === 'RECTANGULAR' ? 'Linéaire' : 'Courbe ' + shape
+                          ),
+                          'success'
+                        );
+                      }}
+                      className="text-[10px] bg-[var(--primary)] text-white px-3 py-1.5 rounded hover:bg-[var(--primary-light)] font-medium"
+                    >
+                      Générer Auto
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, calibrationTable: '' })}
+                      className="text-[10px] bg-slate-200 text-slate-600 px-2 py-1.5 rounded hover:bg-slate-300"
+                    >
+                      Effacer
+                    </button>
+                  </div>
+                </div>
+
+                <div className="border border-[var(--border)] dark:border-[var(--primary)] rounded-lg overflow-hidden">
+                  <div className="grid grid-cols-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] p-2 border-b border-[var(--border)] dark:border-[var(--primary)]">
+                    <div>Hauteur (mm)</div>
+                    <div>Volume (L)</div>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto bg-white dark:bg-slate-900">
+                    {(formData.calibrationTable || '')
+                      .split('\n')
+                      .filter((l) => l.trim())
+                      .map((line, idx) => {
+                        const [h, v] = line.split(',');
+                        return (
+                          <div
+                            key={idx}
+                            className="grid grid-cols-2 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
+                          >
+                            <input
+                              type="number"
+                              title={`Hauteur ligne ${idx + 1}`}
+                              className="w-full p-2 text-sm border-r border-slate-100 dark:border-slate-800 bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
+                              value={h || ''}
+                              placeholder="mm"
+                              onChange={(e) => {
+                                const lines = (formData.calibrationTable || '').split('\n');
+                                lines[idx] = `${e.target.value},${v || ''}`;
+                                setFormData({ ...formData, calibrationTable: lines.join('\n') });
+                              }}
+                            />
+                            <input
+                              type="number"
+                              title={`Volume ligne ${idx + 1}`}
+                              className="w-full p-2 text-sm bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
+                              value={v || ''}
+                              placeholder="L"
+                              onChange={(e) => {
+                                const lines = (formData.calibrationTable || '').split('\n');
+                                lines[idx] = `${h || ''},${e.target.value}`;
+                                setFormData({ ...formData, calibrationTable: lines.join('\n') });
+                              }}
+                            />
+                          </div>
+                        );
+                      })}
+                    {!(formData.calibrationTable || '').trim() && (
+                      <div className="p-4 text-center text-sm text-slate-400">
+                        Aucune donnée. Cliquez sur "Générer Auto" ou ajoutez manuellement.
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({ ...formData, calibrationTable: (formData.calibrationTable || '') + '\n,' })
+                    }
+                    className="w-full p-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] flex items-center justify-center gap-1 border-t border-[var(--border)] dark:border-[var(--primary)] font-medium"
+                  >
+                    <Plus className="w-3 h-3" /> Ajouter une ligne
+                  </button>
+                </div>
+
+                {/* Calibration count info */}
+                {formData.calibrationTable && (
+                  <p className="text-[10px] text-[var(--primary)]">
+                    {(formData.calibrationTable || '').split('\n').filter((l) => l.trim() && l.includes(',')).length}{' '}
+                    points de calibration
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* CANBUS Info */}
+          {formData.fuelSensorType === 'CANBUS' && (
+            <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm text-slate-600 dark:text-slate-400 animate-in fade-in">
+              <p className="flex items-center gap-2">
+                <Signal className="w-4 h-4" />
+                Mode CANBUS : Le niveau carburant est lu directement depuis le véhicule. Pas de calibration nécessaire.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Technical Report Section */}
+      <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <h4 className="text-xs font-bold text-slate-400 uppercase mb-2">Rapport Technique Final</h4>
+        <textarea
+          className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-sm min-h-[120px] resize-none"
+          placeholder="Détaillez les opérations..."
+          value={formData.notes || ''}
+          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+        />
+      </div>
+
+      {/* Contract Update Summary (for Removal - read-only, derived from Onglet 1) */}
+      {formData.nature === 'Retrait' && formData.removalReason && (
+        <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 dark:border-red-800 shadow-sm">
+          <h4 className="text-xs font-bold text-red-700 dark:text-red-400 uppercase mb-2 flex items-center gap-2">
+            <AlertCircle className="w-4 h-4" /> Résumé des actions à la clôture
+          </h4>
+          <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+            <li>
+              • Matériel :{' '}
+              <span className="font-bold">
+                {formData.removedMaterialStatus === 'FAULTY' ? 'Retour SAV (Défectueux)' : 'Retour Stock (Fonctionnel)'}
+              </span>
+            </li>
+            {formData.removeFromContract && (
+              <li>
+                • Contrat : <span className="font-bold">Véhicule retiré du contrat</span> (
+                {formData.contractRemovalReason})
+              </li>
+            )}
+            {!formData.removeFromContract && (
+              <li>
+                • Contrat : <span className="font-bold">Aucun changement</span>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
 };

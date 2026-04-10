@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
@@ -110,8 +109,8 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
 
   return {
     ...render(
-      <AuthContext.Provider value={defaultAuthContext}>
-        <ToastContext.Provider value={{ showToast: mockShowToast, toasts: [], removeToast: vi.fn() }}>
+      <AuthContext.Provider value={defaultAuthContext as any}>
+        <ToastContext.Provider value={{ showToast: mockShowToast } as any}>
           <DataContext.Provider value={defaultContext as any}>{ui}</DataContext.Provider>
         </ToastContext.Provider>
       </AuthContext.Provider>

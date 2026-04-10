@@ -14,7 +14,14 @@ interface ImportModalProps<T> {
   sampleData?: string; // CSV string for template
 }
 
-export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, requiredColumns, sampleData }: ImportModalProps<T>) => {
+export const ImportModal = <T,>({
+  isOpen,
+  onClose,
+  onImport,
+  title,
+  requiredColumns,
+  sampleData,
+}: ImportModalProps<T>) => {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<ImportResult<T> | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -30,7 +37,7 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
       const res = await parseCSV<T>(selectedFile, requiredColumns);
       setResult(res);
     } catch (error) {
-      logger.error("Import error:", error);
+      logger.error('Import error:', error);
       // Handle error
     } finally {
       setIsProcessing(false);
@@ -64,25 +71,20 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={title}>
       <div className="p-6 space-y-6">
-        
         {/* File Upload Area */}
         {!file ? (
-          <div 
+          <div
             className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 transition-colors cursor-pointer"
             onClick={() => fileInputRef.current?.click()}
           >
             <div className="w-12 h-12 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center mb-4">
               <Upload className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">Cliquez pour sélectionner un fichier CSV</h4>
+            <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">
+              Cliquez pour sélectionner un fichier CSV
+            </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400">ou glissez-déposez votre fichier ici</p>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className="hidden" 
-              accept=".csv" 
-              onChange={handleFileChange} 
-            />
+            <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleFileChange} />
           </div>
         ) : (
           <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 flex items-center justify-between">
@@ -95,7 +97,13 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
                 <p className="text-xs text-slate-500 dark:text-slate-400">{(file.size / 1024).toFixed(1)} KB</p>
               </div>
             </div>
-            <button onClick={() => { setFile(null); setResult(null); }} className="text-slate-400 hover:text-red-500">
+            <button
+              onClick={() => {
+                setFile(null);
+                setResult(null);
+              }}
+              className="text-slate-400 hover:text-red-500"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -126,7 +134,9 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
                 </h5>
                 <ul className="space-y-1">
                   {result.errors.map((err, i) => (
-                    <li key={i} className="text-xs text-red-600 font-mono">• {err}</li>
+                    <li key={i} className="text-xs text-red-600 font-mono">
+                      • {err}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -146,13 +156,13 @@ export const ImportModal = <T extends any>({ isOpen, onClose, onImport, title, r
 
       {/* Footer */}
       <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
-        <button 
+        <button
           onClick={handleClose}
           className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
         >
           Annuler
         </button>
-        <button 
+        <button
           onClick={handleConfirm}
           disabled={!result || result.meta.success === 0}
           className="px-4 py-2 text-sm font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-light)] rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"

@@ -295,7 +295,6 @@ export const AlertsConsole: React.FC = () => {
   };
 
   // ── Alert Config handlers ──
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSaveAlertConfig = async (data: any) => {
     try {
       if (editingConfig) {

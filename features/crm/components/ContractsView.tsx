@@ -9,11 +9,31 @@ import type { Invoice } from '../../../types';
 import { useDataContext } from '../../../contexts/DataContext';
 import { api } from '../../../services/api';
 import {
-  Search, Plus, Filter, Calendar, CreditCard,
-  Edit2, Trash2, FileText, Eye, MoreVertical,
-  RefreshCw, DollarSign, Users, Loader2,
-  ArrowUpDown, ArrowUp, ArrowDown, Download, X, Building2,
-  CheckSquare, Square, Play, Pause, XCircle
+  Search,
+  Plus,
+  Filter,
+  Calendar,
+  CreditCard,
+  Edit2,
+  Trash2,
+  FileText,
+  Eye,
+  MoreVertical,
+  RefreshCw,
+  DollarSign,
+  Users,
+  Loader2,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Download,
+  X,
+  Building2,
+  CheckSquare,
+  Square,
+  Play,
+  Pause,
+  XCircle,
 } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
@@ -51,7 +71,9 @@ const BILLING_CYCLE_LABELS: Record<string, string> = {
 type SortField = 'clientName' | 'startDate' | 'endDate' | 'monthlyFee' | 'vehicleCount' | 'status' | 'billingCycle';
 type SortDir = 'asc' | 'desc';
 
-export const ContractsView: React.FC<{ dateRange?: { start: string; end: string } }> = ({ dateRange: externalDateRange }) => {
+export const ContractsView: React.FC<{ dateRange?: { start: string; end: string } }> = ({
+  dateRange: externalDateRange,
+}) => {
   const isMobile = useIsMobile();
   const { contracts, invoices, vehicles, tiers, addContract, updateContract, deleteContract } = useDataContext();
   const { showToast } = useToast();
@@ -59,29 +81,29 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   const { formatPrice } = useCurrency();
 
   // --- DATE LOGIC ---
-  const { 
-      periodPreset, 
-      setPeriodPreset, 
-      customDateRange, 
-      setCustomDateRange, 
-      dateRange: internalDateRange 
+  const {
+    periodPreset,
+    setPeriodPreset,
+    customDateRange,
+    setCustomDateRange,
+    dateRange: internalDateRange,
   } = useDateRange('ALL');
 
   const dateRange = externalDateRange || internalDateRange;
 
   const filteredContractsByDate = useMemo(() => {
-      if (!dateRange) return contracts;
-      const rangeStart = new Date(dateRange.start);
-      const rangeEnd = new Date(dateRange.end);
-      return contracts.filter(c => {
-          if (!c.startDate) return true;
-          const startDate = new Date(c.startDate);
-          if (isNaN(startDate.getTime())) return true;
-          // Contrat actif pendant la période : a démarré avant la fin de plage
-          // ET (pas de fin OU se termine après le début de plage)
-          const endDate = c.endDate ? new Date(c.endDate) : null;
-          return startDate <= rangeEnd && (endDate === null || endDate >= rangeStart);
-      });
+    if (!dateRange) return contracts;
+    const rangeStart = new Date(dateRange.start);
+    const rangeEnd = new Date(dateRange.end);
+    return contracts.filter((c) => {
+      if (!c.startDate) return true;
+      const startDate = new Date(c.startDate);
+      if (isNaN(startDate.getTime())) return true;
+      // Contrat actif pendant la période : a démarré avant la fin de plage
+      // ET (pas de fin OU se termine après le début de plage)
+      const endDate = c.endDate ? new Date(c.endDate) : null;
+      return startDate <= rangeEnd && (endDate === null || endDate >= rangeStart);
+    });
   }, [contracts, dateRange]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -114,108 +136,138 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   }, []);
 
   // --- Resolve client name ---
-  const getClientName = useCallback((contract: Contract): string => {
-    if (contract.clientName) return contract.clientName;
-    const tier = tiers.find(t => t.id === contract.clientId);
-    return tier?.name || contract.clientId;
-  }, [tiers]);
+  const getClientName = useCallback(
+    (contract: Contract): string => {
+      if (contract.clientName) return contract.clientName;
+      const tier = tiers.find((t) => t.id === contract.clientId);
+      return tier?.name || contract.clientId;
+    },
+    [tiers]
+  );
 
   // --- Generate Invoice from Contract (via api.ts) ---
-  const handleGenerateInvoice = useCallback(async (contract: Contract) => {
-    const contractRef = contract.contractNumber || contract.id.slice(0, 8).toUpperCase();
-    if (!await confirm({
-      message: `Générer une facture BROUILLON pour le contrat ${contractRef} ?\n\nLa facture sera créée en mode brouillon pour vérification avant envoi.`,
-      variant: 'info', title: 'Générer une facture', confirmLabel: 'Générer'
-    })) return;
+  const handleGenerateInvoice = useCallback(
+    async (contract: Contract) => {
+      const contractRef = contract.contractNumber || contract.id.slice(0, 8).toUpperCase();
+      if (
+        !(await confirm({
+          message: `Générer une facture BROUILLON pour le contrat ${contractRef} ?\n\nLa facture sera créée en mode brouillon pour vérification avant envoi.`,
+          variant: 'info',
+          title: 'Générer une facture',
+          confirmLabel: 'Générer',
+        }))
+      )
+        return;
 
-    setGeneratingInvoice(contract.id);
-    try {
-      const tier = tiers.find(t => t.id === contract.clientId || t.id === (contract as Contract & { tierId?: string }).tierId);
+      setGeneratingInvoice(contract.id);
+      try {
+        const tier = tiers.find(
+          (t) => t.id === contract.clientId || t.id === (contract as Contract & { tierId?: string }).tierId
+        );
 
-      // Charger les abonnements actifs pour ce contrat
-      const allSubs = await api.subscriptions.list() as unknown[];
-      const subs: any[] = allSubs.filter((s: any) =>
-        (s.contract_id === contract.id || s.contractId === contract.id) &&
-        (s.status || '').toUpperCase() === 'ACTIVE'
-      );
+        // Charger les abonnements actifs pour ce contrat
+        const allSubs = (await api.subscriptions.list()) as unknown[];
+        const subs: any[] = allSubs.filter(
+          (s: any) =>
+            (s.contract_id === contract.id || s.contractId === contract.id) &&
+            (s.status || '').toUpperCase() === 'ACTIVE'
+        );
 
-      const today = new Date();
-      const dueDate = new Date(today);
-      dueDate.setDate(dueDate.getDate() + 30);
-      const billingCycle = (contract.billingCycle || 'ANNUAL').toUpperCase();
-      const year = today.getFullYear().toString();
-      const CYCLE_LABEL: Record<string, string> = {
-        MONTHLY: 'MENSUEL', QUARTERLY: 'TRIMESTRIEL', SEMESTRIAL: 'SEMESTRIEL', ANNUAL: 'ANNUEL', YEARLY: 'ANNUEL'
-      };
+        const today = new Date();
+        const dueDate = new Date(today);
+        dueDate.setDate(dueDate.getDate() + 30);
+        const billingCycle = (contract.billingCycle || 'ANNUAL').toUpperCase();
+        const year = today.getFullYear().toString();
+        const CYCLE_LABEL: Record<string, string> = {
+          MONTHLY: 'MENSUEL',
+          QUARTERLY: 'TRIMESTRIEL',
+          SEMESTRIAL: 'SEMESTRIEL',
+          ANNUAL: 'ANNUEL',
+          YEARLY: 'ANNUEL',
+        };
 
-      let items: any[] = [];
-      let totalHT = 0;
-      let effectiveTaxRate = tenantTaxRate;
-      const plates: string[] = [];
+        let items: any[] = [];
+        let totalHT = 0;
+        let effectiveTaxRate = tenantTaxRate;
+        const plates: string[] = [];
 
-      if (subs.length > 0) {
-        // Grouper par (catalog_item_id + unit_price) — même logique que recurringInvoiceService
-        const groups = new Map<string, { subs: any[]; catalogItem: any; unitPrice: number; taxRate: number }>();
-        for (const s of subs) {
-          const plate = s.vehicle_plate || s.vehiclePlate || s.vehicle_id || s.vehicleId || '?';
-          plates.push(plate);
-          const subItems = s.items ? (typeof s.items === 'string' ? JSON.parse(s.items) : s.items) : null;
-          const catalogItem = Array.isArray(subItems) && subItems.length > 0 ? subItems[0] : null;
-          const unitPrice = catalogItem?.unit_price ?? parseFloat(s.monthly_fee || s.monthlyFee || 0);
-          const taxRate = catalogItem?.tax_rate ?? tenantTaxRate;
-          const key = `${catalogItem?.catalog_item_id || ''}::${unitPrice}`;
-          if (!groups.has(key)) groups.set(key, { subs: [], catalogItem, unitPrice, taxRate });
-          groups.get(key)!.subs.push({ ...s, _plate: plate });
+        if (subs.length > 0) {
+          // Grouper par (catalog_item_id + unit_price) — même logique que recurringInvoiceService
+          const groups = new Map<string, { subs: any[]; catalogItem: any; unitPrice: number; taxRate: number }>();
+          for (const s of subs) {
+            const plate = s.vehicle_plate || s.vehiclePlate || s.vehicle_id || s.vehicleId || '?';
+            plates.push(plate);
+            const subItems = s.items ? (typeof s.items === 'string' ? JSON.parse(s.items) : s.items) : null;
+            const catalogItem = Array.isArray(subItems) && subItems.length > 0 ? subItems[0] : null;
+            const unitPrice = catalogItem?.unit_price ?? parseFloat(s.monthly_fee || s.monthlyFee || 0);
+            const taxRate = catalogItem?.tax_rate ?? tenantTaxRate;
+            const key = `${catalogItem?.catalog_item_id || ''}::${unitPrice}`;
+            if (!groups.has(key)) groups.set(key, { subs: [], catalogItem, unitPrice, taxRate });
+            groups.get(key)!.subs.push({ ...s, _plate: plate });
+          }
+          for (const grp of groups.values()) {
+            const groupPlates = grp.subs.map((s: any) => s._plate).join(', ');
+            const baseDesc =
+              grp.catalogItem?.description || `Abonnement ${CYCLE_LABEL[billingCycle] || billingCycle} ${year}`;
+            const qty = grp.subs.length;
+            totalHT += grp.unitPrice * qty;
+            effectiveTaxRate = grp.taxRate;
+            items.push({ description: `${baseDesc} — ${groupPlates}`, quantity: qty, unit_price: grp.unitPrice });
+          }
+        } else {
+          // Fallback sans abonnements
+          totalHT = contract.monthlyFee || 0;
+          items = [
+            {
+              description: `Abonnement ${CYCLE_LABEL[billingCycle] || billingCycle} ${year} — ${contractRef}`,
+              quantity: 1,
+              unit_price: totalHT,
+            },
+          ];
         }
-        for (const grp of groups.values()) {
-          const groupPlates = grp.subs.map((s: any) => s._plate).join(', ');
-          const baseDesc = grp.catalogItem?.description || `Abonnement ${CYCLE_LABEL[billingCycle] || billingCycle} ${year}`;
-          const qty = grp.subs.length;
-          totalHT += grp.unitPrice * qty;
-          effectiveTaxRate = grp.taxRate;
-          items.push({ description: `${baseDesc} — ${groupPlates}`, quantity: qty, unit_price: grp.unitPrice });
-        }
-      } else {
-        // Fallback sans abonnements
-        totalHT = contract.monthlyFee || 0;
-        items = [{ description: `Abonnement ${CYCLE_LABEL[billingCycle] || billingCycle} ${year} — ${contractRef}`, quantity: 1, unit_price: totalHT }];
+
+        const subject =
+          plates.length > 0
+            ? `REABONNEMENT ${CYCLE_LABEL[billingCycle] || billingCycle} ${year} — ${plates.join(', ')}`
+            : `REABONNEMENT ${CYCLE_LABEL[billingCycle] || billingCycle} ${year} — ${contractRef}`;
+
+        const amountTTC = totalHT * (1 + effectiveTaxRate / 100);
+
+        await api.invoices.create({
+          tier_id: tier?.id || contract.clientId,
+          client_id: tier?.id || contract.clientId,
+          subject,
+          date: today.toISOString().split('T')[0],
+          due_date: dueDate.toISOString().split('T')[0],
+          amount: amountTTC,
+          vat_rate: effectiveTaxRate,
+          items,
+          notes: `Facture générée manuellement — contrat ${contractRef}`,
+          status: 'DRAFT',
+          category: 'ABONNEMENT',
+          contract_id: contract.id,
+          license_plate: plates.join(', ') || null,
+          subscription_number:
+            subs
+              .map((s: any) => s.vehicle_id || s.vehicleId)
+              .filter(Boolean)
+              .join(', ') || null,
+        } as unknown as Invoice);
+
+        showToast(TOAST.CRM.CONTRACT_INVOICE_GENERATED, 'success');
+      } catch (error: unknown) {
+        showToast(mapError(error, 'facture'), 'error');
+      } finally {
+        setGeneratingInvoice(null);
       }
-
-      const subject = plates.length > 0
-        ? `REABONNEMENT ${CYCLE_LABEL[billingCycle] || billingCycle} ${year} — ${plates.join(', ')}`
-        : `REABONNEMENT ${CYCLE_LABEL[billingCycle] || billingCycle} ${year} — ${contractRef}`;
-
-      const amountTTC = totalHT * (1 + effectiveTaxRate / 100);
-
-      await api.invoices.create({
-        tier_id: tier?.id || contract.clientId,
-        client_id: tier?.id || contract.clientId,
-        subject,
-        date: today.toISOString().split('T')[0],
-        due_date: dueDate.toISOString().split('T')[0],
-        amount: amountTTC,
-        vat_rate: effectiveTaxRate,
-        items,
-        notes: `Facture générée manuellement — contrat ${contractRef}`,
-        status: 'DRAFT',
-        category: 'ABONNEMENT',
-        contract_id: contract.id,
-        license_plate: plates.join(', ') || null,
-        subscription_number: subs.map((s: any) => s.vehicle_id || s.vehicleId).filter(Boolean).join(', ') || null,
-      } as unknown as Invoice);
-
-      showToast(TOAST.CRM.CONTRACT_INVOICE_GENERATED, 'success');
-    } catch (error: unknown) {
-      showToast(mapError(error, 'facture'), 'error');
-    } finally {
-      setGeneratingInvoice(null);
-    }
-  }, [tiers, showToast, tenantTaxRate, confirm]);
+    },
+    [tiers, showToast, tenantTaxRate, confirm]
+  );
 
   // --- KPIs Calculation ---
   const kpis = useMemo(() => {
-    const activeContracts = filteredContractsByDate.filter(c => c.status === 'ACTIVE');
-    
+    const activeContracts = filteredContractsByDate.filter((c) => c.status === 'ACTIVE');
+
     // MRR normalisé: ramener tous les montants à un équivalent mensuel
     const getMRRFromContract = (c: Contract) => {
       const fee = c.monthlyFee || 0;
@@ -230,29 +282,32 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       return totalContractFee; // monthly
     };
     const totalMRR = activeContracts.reduce((sum, c) => sum + getMRRFromContract(c), 0);
-    
+
     // Véhicules couverts: compter les véhicules dont le client a un contrat actif
     // 1. Récupérer les ID des tiers (clients) qui ont au moins un contrat actif
-    const tiersWithActiveContract = new Set(activeContracts.map(c => c.clientId).filter(Boolean));
+    const tiersWithActiveContract = new Set(activeContracts.map((c) => c.clientId).filter(Boolean));
     // 2. Compter les véhicules appartenant à ces clients
-    const totalVehicles = vehicles.filter(v => v.clientId && tiersWithActiveContract.has(v.clientId)).length;
-    
+    const totalVehicles = vehicles.filter((v) => v.clientId && tiersWithActiveContract.has(v.clientId)).length;
+
     // Calcul réel de la durée moyenne des contrats
-    const contractsWithEnd = activeContracts.filter(c => c.endDate);
-    const avgDuration = contractsWithEnd.length > 0 
-        ? Math.round(contractsWithEnd.reduce((sum, c) => {
-            const start = new Date(c.startDate);
-            const end = new Date(c.endDate!);
-            return sum + Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30));
-        }, 0) / contractsWithEnd.length)
+    const contractsWithEnd = activeContracts.filter((c) => c.endDate);
+    const avgDuration =
+      contractsWithEnd.length > 0
+        ? Math.round(
+            contractsWithEnd.reduce((sum, c) => {
+              const start = new Date(c.startDate);
+              const end = new Date(c.endDate!);
+              return sum + Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30));
+            }, 0) / contractsWithEnd.length
+          )
         : 12;
-    
+
     // Renewals in next 30 days (contrats à renouveler)
     const today = new Date();
     const next30Days = new Date();
     next30Days.setDate(today.getDate() + 30);
-    
-    const renewals = filteredContractsByDate.filter(c => {
+
+    const renewals = filteredContractsByDate.filter((c) => {
       if (c.status !== 'ACTIVE' || !c.endDate) return false;
       const endDate = new Date(c.endDate);
       return endDate >= today && endDate <= next30Days;
@@ -263,7 +318,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       mrr: totalMRR,
       vehiclesCovered: totalVehicles,
       renewalsUpcoming: renewals,
-      avgDuration
+      avgDuration,
     };
   }, [filteredContractsByDate, vehicles]);
 
@@ -277,8 +332,6 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
     setShowForm(true);
   };
 
-
-
   const handleView = (contract: Contract) => {
     setSelectedContract(contract);
     setShowDetail(true);
@@ -287,16 +340,16 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   const [statusMenuId, setStatusMenuId] = useState<string | null>(null);
   const [renewingContract, setRenewingContract] = useState<Contract | null>(null);
   const [renewEndDate, setRenewEndDate] = useState('');
-  const [vehicleConflicts, setVehicleConflicts] = useState<{ vehicleId: string; contractNumber: string }[] | null>(null);
+  const [vehicleConflicts, setVehicleConflicts] = useState<{ vehicleId: string; contractNumber: string }[] | null>(
+    null
+  );
   const [showBulkEndDateModal, setShowBulkEndDateModal] = useState(false);
   const [bulkEndDate, setBulkEndDate] = useState('');
   const [bulkNeverExpires, setBulkNeverExpires] = useState(false);
 
   // Transitions de statut autorisées
   const STATUS_TRANSITIONS: Record<string, { value: string; label: string; color: string }[]> = {
-    DRAFT: [
-      { value: 'ACTIVE', label: 'Activer', color: 'text-green-600' },
-    ],
+    DRAFT: [{ value: 'ACTIVE', label: 'Activer', color: 'text-green-600' }],
     ACTIVE: [
       { value: 'SUSPENDED', label: 'Suspendre', color: 'text-yellow-600' },
       { value: 'TERMINATED', label: 'Résilier', color: 'text-red-600' },
@@ -309,20 +362,26 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       { value: 'ACTIVE', label: 'Renouveler', color: 'text-green-600' },
       { value: 'TERMINATED', label: 'Résilier', color: 'text-red-600' },
     ],
-    TERMINATED: [
-      { value: 'ACTIVE', label: 'Réactiver', color: 'text-green-600' },
-    ],
+    TERMINATED: [{ value: 'ACTIVE', label: 'Réactiver', color: 'text-green-600' }],
   };
 
   const handleStatusChange = async (contract: Contract, newStatus: string) => {
     setStatusMenuId(null);
-    const statusLabels: Record<string, string> = { ACTIVE: 'Actif', SUSPENDED: 'Suspendu', EXPIRED: 'Expiré', TERMINATED: 'Résilié', DRAFT: 'Brouillon' };
+    const statusLabels: Record<string, string> = {
+      ACTIVE: 'Actif',
+      SUSPENDED: 'Suspendu',
+      EXPIRED: 'Expiré',
+      TERMINATED: 'Résilié',
+      DRAFT: 'Brouillon',
+    };
 
     // Renewal: show dedicated modal to collect new end date
     if (newStatus === 'ACTIVE' && contract.status === 'EXPIRED') {
       setRenewEndDate(
         contract.endDate
-          ? new Date(new Date(contract.endDate).setFullYear(new Date(contract.endDate).getFullYear() + 1)).toISOString().split('T')[0]
+          ? new Date(new Date(contract.endDate).setFullYear(new Date(contract.endDate).getFullYear() + 1))
+              .toISOString()
+              .split('T')[0]
           : new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0]
       );
       setRenewingContract(contract);
@@ -333,7 +392,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       title: 'Changer le statut',
       message: `Passer le contrat ${contract.contractNumber || contract.id.slice(0, 8)} de "${statusLabels[contract.status] || contract.status}" à "${statusLabels[newStatus] || newStatus}" ?`,
       confirmLabel: 'Confirmer',
-      variant: newStatus === 'TERMINATED' ? 'danger' : 'info'
+      variant: newStatus === 'TERMINATED' ? 'danger' : 'info',
     });
     if (!confirmed) return;
     try {
@@ -347,34 +406,64 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
     }
   };
 
-  const toggleSelect = (id: string) => setSelectedIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const toggleSelectAll = () => setSelectedIds(prev => prev.size === paginatedContracts.length ? new Set() : new Set(paginatedContracts.map(c => c.id)));
+  const toggleSelect = (id: string) =>
+    setSelectedIds((prev) => {
+      const n = new Set(prev);
+      if (n.has(id)) {
+        n.delete(id);
+      } else {
+        n.add(id);
+      }
+      return n;
+    });
+  const toggleSelectAll = () =>
+    setSelectedIds((prev) =>
+      prev.size === paginatedContracts.length ? new Set() : new Set(paginatedContracts.map((c) => c.id))
+    );
 
   const handleBulkStatus = async (newStatus: Contract['status']) => {
-    const targets = filteredContracts.filter(c => selectedIds.has(c.id));
+    const targets = filteredContracts.filter((c) => selectedIds.has(c.id));
     for (const c of targets) {
       try {
         if (newStatus === 'TERMINATED') await api.contracts.terminate(c.id, { reason: 'Résiliation groupée' });
         await updateContract({ ...c, status: newStatus });
-      } catch { /* continue */ }
+      } catch {
+        /* continue */
+      }
     }
     showToast(`${targets.length} contrat(s) mis à jour`, 'success');
     setSelectedIds(new Set());
   };
 
   const handleBulkDelete = async () => {
-    const confirmed = await confirm({ title: 'Supprimer', message: `Supprimer ${selectedIds.size} contrat(s) ?`, confirmLabel: 'Supprimer', variant: 'danger' });
+    const confirmed = await confirm({
+      title: 'Supprimer',
+      message: `Supprimer ${selectedIds.size} contrat(s) ?`,
+      confirmLabel: 'Supprimer',
+      variant: 'danger',
+    });
     if (!confirmed) return;
-    for (const id of selectedIds) { try { await api.contracts.delete(id); deleteContract(id); } catch { /* continue */ } }
+    for (const id of selectedIds) {
+      try {
+        await api.contracts.delete(id);
+        deleteContract(id);
+      } catch {
+        /* continue */
+      }
+    }
     showToast(`${selectedIds.size} contrat(s) supprimés`, 'success');
     setSelectedIds(new Set());
   };
 
   const handleBulkEndDate = async () => {
-    const targets = filteredContracts.filter(c => selectedIds.has(c.id));
+    const targets = filteredContracts.filter((c) => selectedIds.has(c.id));
     const newEndDate = bulkNeverExpires ? null : bulkEndDate;
     for (const c of targets) {
-      try { await updateContract({ ...c, endDate: newEndDate ?? undefined }); } catch { /* continue */ }
+      try {
+        await updateContract({ ...c, endDate: newEndDate ?? undefined });
+      } catch {
+        /* continue */
+      }
     }
     showToast(`Date de fin mise à jour sur ${targets.length} contrat(s)`, 'success');
     setShowBulkEndDateModal(false);
@@ -384,8 +473,14 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   };
 
   const handleBulkGenerateInvoices = async () => {
-    const targets = filteredContracts.filter(c => selectedIds.has(c.id) && c.status === 'ACTIVE');
-    for (const c of targets) { try { await handleGenerateInvoice(c); } catch { /* continue */ } }
+    const targets = filteredContracts.filter((c) => selectedIds.has(c.id) && c.status === 'ACTIVE');
+    for (const c of targets) {
+      try {
+        await handleGenerateInvoice(c);
+      } catch {
+        /* continue */
+      }
+    }
     setSelectedIds(new Set());
   };
 
@@ -393,7 +488,11 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
     if (!renewingContract) return;
     try {
       await api.contracts.renew(renewingContract.id, { newEndDate: renewEndDate || undefined });
-      await updateContract({ ...renewingContract, status: 'ACTIVE', endDate: renewEndDate || renewingContract.endDate });
+      await updateContract({
+        ...renewingContract,
+        status: 'ACTIVE',
+        endDate: renewEndDate || renewingContract.endDate,
+      });
       showToast(TOAST.CRM.CONTRACT_STATUS_CHANGED('Actif'), 'success');
       setRenewingContract(null);
     } catch (err) {
@@ -402,7 +501,14 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   };
 
   const handleDelete = async (id: string) => {
-    if (await confirm({ message: 'Êtes-vous sûr de vouloir supprimer ce contrat ?', variant: 'danger', title: 'Confirmer la suppression', confirmLabel: 'Supprimer' })) {
+    if (
+      await confirm({
+        message: 'Êtes-vous sûr de vouloir supprimer ce contrat ?',
+        variant: 'danger',
+        title: 'Confirmer la suppression',
+        confirmLabel: 'Supprimer',
+      })
+    ) {
       deleteContract(id);
       showToast(TOAST.CRM.CONTRACT_DELETED, 'success');
     }
@@ -430,22 +536,30 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'ACTIVE': return 'bg-green-100 text-green-800 border-green-200';
-      case 'DRAFT': return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
-      case 'SUSPENDED': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'EXPIRED': return 'bg-red-100 text-red-800 border-red-200';
-      case 'TERMINATED': return 'bg-slate-100 text-slate-800 border-slate-200';
-      default: return 'bg-slate-100 text-slate-800 border-slate-200';
+      case 'ACTIVE':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'DRAFT':
+        return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
+      case 'SUSPENDED':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'EXPIRED':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'TERMINATED':
+        return 'bg-slate-100 text-slate-800 border-slate-200';
+      default:
+        return 'bg-slate-100 text-slate-800 border-slate-200';
     }
   };
 
   // --- Unique resellers for filter ---
   const resellers = useMemo(() => {
     const map = new Map<string, string>();
-    contracts.forEach(c => {
+    contracts.forEach((c) => {
       if (c.resellerName && c.tenantId) map.set(c.tenantId, c.resellerName);
     });
-    return Array.from(map.entries()).map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+    return Array.from(map.entries())
+      .map(([id, name]) => ({ id, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [contracts]);
 
   // --- Search + filter + sort ---
@@ -454,24 +568,25 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
 
     // Status filter
     if (statusFilter !== 'ALL') {
-      result = result.filter(c => c.status === statusFilter);
+      result = result.filter((c) => c.status === statusFilter);
     }
 
     // Reseller filter (by tenantId for reliability)
     if (resellerFilter !== 'ALL') {
-      result = result.filter(c => c.tenantId === resellerFilter);
+      result = result.filter((c) => c.tenantId === resellerFilter);
     }
 
     // Search (by client name, ID, subject, status, amount)
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(c =>
-        c.id.toLowerCase().includes(term) ||
-        (c.contractNumber || '').toLowerCase().includes(term) ||
-        getClientName(c).toLowerCase().includes(term) ||
-        (c.subject || '').toLowerCase().includes(term) ||
-        (STATUS_LABELS[c.status] || c.status).toLowerCase().includes(term) ||
-        String(c.monthlyFee).includes(term)
+      result = result.filter(
+        (c) =>
+          c.id.toLowerCase().includes(term) ||
+          (c.contractNumber || '').toLowerCase().includes(term) ||
+          getClientName(c).toLowerCase().includes(term) ||
+          (c.subject || '').toLowerCase().includes(term) ||
+          (STATUS_LABELS[c.status] || c.status).toLowerCase().includes(term) ||
+          String(c.monthlyFee).includes(term)
       );
     }
 
@@ -479,13 +594,30 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
     result = [...result].sort((a, b) => {
       let cmp = 0;
       switch (sortField) {
-        case 'clientName': cmp = getClientName(a).localeCompare(getClientName(b)); break;
-        case 'startDate': cmp = (a.startDate ? new Date(a.startDate).getTime() : 0) - (b.startDate ? new Date(b.startDate).getTime() : 0); break;
-        case 'endDate': cmp = (a.endDate ? new Date(a.endDate).getTime() : Infinity) - (b.endDate ? new Date(b.endDate).getTime() : Infinity); break;
-        case 'monthlyFee': cmp = (a.monthlyFee || 0) - (b.monthlyFee || 0); break;
-        case 'vehicleCount': cmp = (a.vehicleIds?.length || a.vehicleCount || 0) - (b.vehicleIds?.length || b.vehicleCount || 0); break;
-        case 'billingCycle': cmp = (a.billingCycle || '').localeCompare(b.billingCycle || ''); break;
-        case 'status': cmp = (a.status || '').localeCompare(b.status || ''); break;
+        case 'clientName':
+          cmp = getClientName(a).localeCompare(getClientName(b));
+          break;
+        case 'startDate':
+          cmp =
+            (a.startDate ? new Date(a.startDate).getTime() : 0) - (b.startDate ? new Date(b.startDate).getTime() : 0);
+          break;
+        case 'endDate':
+          cmp =
+            (a.endDate ? new Date(a.endDate).getTime() : Infinity) -
+            (b.endDate ? new Date(b.endDate).getTime() : Infinity);
+          break;
+        case 'monthlyFee':
+          cmp = (a.monthlyFee || 0) - (b.monthlyFee || 0);
+          break;
+        case 'vehicleCount':
+          cmp = (a.vehicleIds?.length || a.vehicleCount || 0) - (b.vehicleIds?.length || b.vehicleCount || 0);
+          break;
+        case 'billingCycle':
+          cmp = (a.billingCycle || '').localeCompare(b.billingCycle || '');
+          break;
+        case 'status':
+          cmp = (a.status || '').localeCompare(b.status || '');
+          break;
       }
       return sortDir === 'desc' ? -cmp : cmp;
     });
@@ -494,17 +626,16 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   }, [filteredContractsByDate, statusFilter, resellerFilter, searchTerm, sortField, sortDir, getClientName]);
 
   const totalPages = Math.ceil(filteredContracts.length / itemsPerPage);
-  const paginatedContracts = filteredContracts.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const paginatedContracts = filteredContracts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // Reset page on filter change
-  React.useEffect(() => { setCurrentPage(1); }, [searchTerm, statusFilter, resellerFilter, sortField, sortDir]);
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, resellerFilter, sortField, sortDir]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
     } else {
       setSortField(field);
       setSortDir('asc');
@@ -518,8 +649,19 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
 
   // --- Export CSV ---
   const handleExportCSV = () => {
-    const headers = ['Réf.', 'Client', 'Revendeur', 'Début', 'Fin', 'Prix Unitaire', 'Véhicules', 'Total', 'Cycle', 'Statut'];
-    const rows = filteredContracts.map(c => [
+    const headers = [
+      'Réf.',
+      'Client',
+      'Revendeur',
+      'Début',
+      'Fin',
+      'Prix Unitaire',
+      'Véhicules',
+      'Total',
+      'Cycle',
+      'Statut',
+    ];
+    const rows = filteredContracts.map((c) => [
       c.contractNumber || c.id.slice(0, 8),
       getClientName(c),
       c.resellerName || '',
@@ -529,10 +671,10 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       c.vehicleIds?.length || c.vehicleCount || 0,
       (c.monthlyFee || 0) * (c.vehicleIds?.length || c.vehicleCount || 0),
       BILLING_CYCLE_LABELS[c.billingCycle] || c.billingCycle,
-      STATUS_LABELS[c.status] || c.status
+      STATUS_LABELS[c.status] || c.status,
     ]);
 
-    const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+    const csv = [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -547,77 +689,77 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
     <div className="space-y-4 sm:space-y-6 sm:h-full sm:flex sm:flex-col animate-in fade-in duration-500">
       {/* Header - only shown when standalone (not embedded in SalesView) */}
       {!externalDateRange && (
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Abonnements & Contrats</h2>
-          <p className="text-slate-500">Gestion centralisée des revenus récurrents (SaaS)</p>
-        </div>
-        <div className="flex items-center gap-4">
-            <DateRangeSelector 
-                periodPreset={periodPreset}
-                setPeriodPreset={setPeriodPreset}
-                customDateRange={customDateRange}
-                setCustomDateRange={setCustomDateRange}
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Abonnements & Contrats</h2>
+            <p className="text-slate-500">Gestion centralisée des revenus récurrents (SaaS)</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <DateRangeSelector
+              periodPreset={periodPreset}
+              setPeriodPreset={setPeriodPreset}
+              customDateRange={customDateRange}
+              setCustomDateRange={setCustomDateRange}
             />
-            <button 
-            onClick={handleCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors shadow-sm"
+            <button
+              onClick={handleCreate}
+              className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors shadow-sm"
             >
-            <Plus className="w-4 h-4" />
-            Nouveau Contrat
+              <Plus className="w-4 h-4" />
+              Nouveau Contrat
             </button>
+          </div>
         </div>
-      </div>
       )}
 
       {/* KPI CARDS - Hidden on mobile */}
       {!isMobile && (
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 border-l-4 border-l-blue-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase">Contrats Actifs</p>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.activeCount}</p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className="p-4 border-l-4 border-l-blue-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase">Contrats Actifs</p>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.activeCount}</p>
+              </div>
+              <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
+                <FileText className="w-6 h-6" />
+              </div>
             </div>
-            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
-              <FileText className="w-6 h-6" />
+          </Card>
+          <Card className="p-4 border-l-4 border-l-green-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase">MRR</p>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{formatPrice(kpis.mrr)}</p>
+              </div>
+              <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+                <DollarSign className="w-6 h-6" />
+              </div>
             </div>
-          </div>
-        </Card>
-        <Card className="p-4 border-l-4 border-l-green-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase">MRR</p>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{formatPrice(kpis.mrr)}</p>
+          </Card>
+          <Card className="p-4 border-l-4 border-l-purple-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase">Véhicules Couverts</p>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.vehiclesCovered}</p>
+              </div>
+              <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+                <Users className="w-6 h-6" />
+              </div>
             </div>
-            <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
-              <DollarSign className="w-6 h-6" />
+          </Card>
+          <Card className="p-4 border-l-4 border-l-orange-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold text-slate-500 uppercase">Renouvellements (30j)</p>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.renewalsUpcoming}</p>
+              </div>
+              <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
+                <RefreshCw className="w-6 h-6" />
+              </div>
             </div>
-          </div>
-        </Card>
-        <Card className="p-4 border-l-4 border-l-purple-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase">Véhicules Couverts</p>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.vehiclesCovered}</p>
-            </div>
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
-              <Users className="w-6 h-6" />
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4 border-l-4 border-l-orange-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase">Renouvellements (30j)</p>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.renewalsUpcoming}</p>
-            </div>
-            <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
-              <RefreshCw className="w-6 h-6" />
-            </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
       )}
 
       <Card className="flex-1 flex flex-col min-h-0 border-slate-200 dark:border-slate-700 shadow-sm">
@@ -629,7 +771,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               placeholder="Rechercher (client, réf., statut, montant)..."
               className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="flex gap-2 items-center flex-wrap sm:flex-nowrap">
@@ -650,7 +792,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             )}
             {/* Status filter pills — desktop only */}
             <div className="hidden sm:flex gap-1 overflow-x-auto pb-0.5 max-w-full">
-              {['ALL', 'ACTIVE', 'DRAFT', 'SUSPENDED', 'EXPIRED', 'TERMINATED'].map(st => (
+              {['ALL', 'ACTIVE', 'DRAFT', 'SUSPENDED', 'EXPIRED', 'TERMINATED'].map((st) => (
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
@@ -670,26 +812,28 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                 <Building2 className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                 <select
                   value={resellerFilter}
-                  onChange={e => setResellerFilter(e.target.value)}
+                  onChange={(e) => setResellerFilter(e.target.value)}
                   className="pl-8 pr-3 py-1.5 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 appearance-none cursor-pointer"
                 >
                   <option value="ALL">Tous revendeurs</option>
-                  {resellers.map(r => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
+                  {resellers.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
                   ))}
                 </select>
               </div>
             )}
-            <button 
+            <button
               onClick={handleExportCSV}
               className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 hover:text-green-600 hover:border-green-300 transition-colors"
               title="Exporter CSV"
             >
-              <Download className="w-4 h-4"/>
+              <Download className="w-4 h-4" />
             </button>
             {/* Nouveau Contrat button - shown here when in SalesView context */}
             {externalDateRange && (
-              <button 
+              <button
                 onClick={handleCreate}
                 className="flex items-center gap-2 px-3 py-1.5 bg-[var(--primary)] text-white text-xs font-bold rounded-lg hover:bg-[var(--primary-light)] transition-colors"
               >
@@ -707,7 +851,14 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             {searchTerm || statusFilter !== 'ALL' || resellerFilter !== 'ALL' ? (
               <>
                 <p className="text-slate-500 font-medium">Aucun contrat ne correspond aux filtres</p>
-                <button onClick={() => { setSearchTerm(''); setStatusFilter('ALL'); setResellerFilter('ALL'); }} className="mt-2 text-sm text-[var(--primary)] hover:underline flex items-center gap-1">
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStatusFilter('ALL');
+                    setResellerFilter('ALL');
+                  }}
+                  className="mt-2 text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
+                >
                   <X className="w-3 h-3" /> Réinitialiser les filtres
                 </button>
               </>
@@ -715,7 +866,10 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               <>
                 <p className="text-slate-500 font-medium">Aucun contrat trouvé</p>
                 <p className="text-xs text-slate-400 mt-1">Créez votre premier contrat pour commencer</p>
-                <button onClick={handleCreate} className="mt-3 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm hover:bg-[var(--primary-light)] flex items-center gap-2">
+                <button
+                  onClick={handleCreate}
+                  className="mt-3 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm hover:bg-[var(--primary-light)] flex items-center gap-2"
+                >
                   <Plus className="w-4 h-4" /> Nouveau Contrat
                 </button>
               </>
@@ -730,25 +884,50 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               {selectedIds.size} sélectionné{selectedIds.size > 1 ? 's' : ''}
             </span>
             <div className="flex gap-2 ml-auto flex-wrap">
-              <button onClick={() => handleBulkStatus('ACTIVE')} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-green-200 dark:border-green-800 text-green-700 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20">
+              <button
+                onClick={() => handleBulkStatus('ACTIVE')}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-green-200 dark:border-green-800 text-green-700 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20"
+              >
                 <Play className="w-3.5 h-3.5" /> Activer
               </button>
-              <button onClick={() => handleBulkStatus('SUSPENDED')} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-orange-200 dark:border-orange-800 text-orange-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20">
+              <button
+                onClick={() => handleBulkStatus('SUSPENDED')}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-orange-200 dark:border-orange-800 text-orange-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20"
+              >
                 <Pause className="w-3.5 h-3.5" /> Suspendre
               </button>
-              <button onClick={() => handleBulkStatus('TERMINATED')} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
+              <button
+                onClick={() => handleBulkStatus('TERMINATED')}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
                 <XCircle className="w-3.5 h-3.5" /> Résilier
               </button>
-              <button onClick={() => { setBulkEndDate(''); setBulkNeverExpires(false); setShowBulkEndDateModal(true); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]">
+              <button
+                onClick={() => {
+                  setBulkEndDate('');
+                  setBulkNeverExpires(false);
+                  setShowBulkEndDateModal(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
+              >
                 <Calendar className="w-3.5 h-3.5" /> Date de fin
               </button>
-              <button onClick={handleBulkGenerateInvoices} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
+              <button
+                onClick={handleBulkGenerateInvoices}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+              >
                 <DollarSign className="w-3.5 h-3.5 text-green-500" /> Générer factures
               </button>
-              <button onClick={handleBulkDelete} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
+              <button
+                onClick={handleBulkDelete}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+              >
                 <Trash2 className="w-3.5 h-3.5" /> Supprimer
               </button>
-              <button onClick={() => setSelectedIds(new Set())} className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded">
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded"
+              >
                 <X className="w-3.5 h-3.5 text-[var(--primary)]" />
               </button>
             </div>
@@ -758,33 +937,64 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
         {/* Mobile cards */}
         {filteredContracts.length > 0 && isMobile && (
           <MobileCardList bordered={false} className="pb-20">
-            {paginatedContracts.map(contract => {
-              const borderColor = contract.status === 'ACTIVE' ? 'border-l-green-500'
-                : contract.status === 'DRAFT' ? 'border-l-blue-500'
-                : contract.status === 'SUSPENDED' ? 'border-l-orange-500'
-                : contract.status === 'EXPIRED' ? 'border-l-red-500'
-                : 'border-l-slate-400';
-              const totalMensuel = (contract.monthlyFee || 0) * (contract.vehicleIds?.length || contract.vehicleCount || 1);
+            {paginatedContracts.map((contract) => {
+              const borderColor =
+                contract.status === 'ACTIVE'
+                  ? 'border-l-green-500'
+                  : contract.status === 'DRAFT'
+                    ? 'border-l-blue-500'
+                    : contract.status === 'SUSPENDED'
+                      ? 'border-l-orange-500'
+                      : contract.status === 'EXPIRED'
+                        ? 'border-l-red-500'
+                        : 'border-l-slate-400';
+              const totalMensuel =
+                (contract.monthlyFee || 0) * (contract.vehicleIds?.length || contract.vehicleCount || 1);
               return (
                 <MobileCard key={contract.id} borderColor={borderColor} onClick={() => handleView(contract)}>
                   {/* Primary: Client + Ref + Total */}
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="min-w-0 flex-1">
-                      <p className="font-bold text-sm text-slate-800 dark:text-white truncate">{getClientName(contract)}</p>
-                      <span className="font-mono text-xs text-[var(--primary)] dark:text-[var(--primary)]">{contract.contractNumber || contract.id.slice(0, 8).toUpperCase()}</span>
+                      <p className="font-bold text-sm text-slate-800 dark:text-white truncate">
+                        {getClientName(contract)}
+                      </p>
+                      <span className="font-mono text-xs text-[var(--primary)] dark:text-[var(--primary)]">
+                        {contract.contractNumber || contract.id.slice(0, 8).toUpperCase()}
+                      </span>
                     </div>
-                    <p className="font-bold text-sm text-slate-800 dark:text-white shrink-0">{formatPrice(totalMensuel)}<span className="text-xs font-normal text-slate-400">/mois</span></p>
+                    <p className="font-bold text-sm text-slate-800 dark:text-white shrink-0">
+                      {formatPrice(totalMensuel)}
+                      <span className="text-xs font-normal text-slate-400">/mois</span>
+                    </p>
                   </div>
                   {/* Secondary: Nb véhicules + Statut */}
                   <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mb-2">
                     <span>{contract.vehicleIds?.length || contract.vehicleCount || 0} véh.</span>
-                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border uppercase ${getStatusColor(contract.status)}`}>
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-bold border uppercase ${getStatusColor(contract.status)}`}
+                    >
                       {STATUS_LABELS[contract.status] || contract.status}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MobileCardAction color="blue" onClick={(e) => { e.stopPropagation(); handleEdit(contract); }}>Modifier</MobileCardAction>
-                    <MobileCardAction color="red" onClick={(e) => { e.stopPropagation(); handleDelete(contract.id); }}>Supprimer</MobileCardAction>
+                    <MobileCardAction
+                      color="blue"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(contract);
+                      }}
+                    >
+                      Modifier
+                    </MobileCardAction>
+                    <MobileCardAction
+                      color="red"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(contract.id);
+                      }}
+                    >
+                      Supprimer
+                    </MobileCardAction>
                   </div>
                 </MobileCard>
               );
@@ -794,52 +1004,85 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
 
         {/* Table — desktop only */}
         {filteredContracts.length > 0 && !isMobile && (
-        <div className="flex-1 overflow-auto custom-scrollbar">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 uppercase font-bold text-xs sticky top-0 z-10 shadow-sm">
-              <tr>
-                <th className="px-3 py-3 w-10">
-                  <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[var(--primary)]">
-                    {selectedIds.size === paginatedContracts.length && paginatedContracts.length > 0
-                      ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
-                      : <Square className="w-4 h-4" />}
-                  </button>
-                </th>
-                <th className="px-6 py-3">Réf. Contrat</th>
-                <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('clientName')}>
-                  <span className="flex items-center gap-1">Client <SortIcon field="clientName" /></span>
-                </th>
-                <th className="px-6 py-3">Revendeur</th>
-                <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('startDate')}>
-                  <span className="flex items-center gap-1">Début <SortIcon field="startDate" /></span>
-                </th>
-                <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('endDate')}>
-                  <span className="flex items-center gap-1">Fin <SortIcon field="endDate" /></span>
-                </th>
-                <th className="px-6 py-3 text-right cursor-pointer select-none" onClick={() => handleSort('monthlyFee')}>
-                  <span className="flex items-center gap-1 justify-end">Prix Unit. <SortIcon field="monthlyFee" /></span>
-                </th>
-                <th className="px-6 py-3 text-center cursor-pointer select-none" onClick={() => handleSort('vehicleCount')}>
-                  <span className="flex items-center gap-1 justify-center">Véhicules <SortIcon field="vehicleCount" /></span>
-                </th>
-                <th className="px-6 py-3 text-right">Total</th>
-                <th className="px-6 py-3 text-center cursor-pointer select-none" onClick={() => handleSort('billingCycle')}>
-                  <span className="flex items-center gap-1 justify-center">Cycle <SortIcon field="billingCycle" /></span>
-                </th>
-                <th className="px-6 py-3 text-center cursor-pointer select-none" onClick={() => handleSort('status')}>
-                  <span className="flex items-center gap-1 justify-center">Statut <SortIcon field="status" /></span>
-                </th>
-                <th className="px-6 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-900">
-              {paginatedContracts.map(contract => (
-                  <tr key={contract.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group ${selectedIds.has(contract.id) ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}>
+          <div className="flex-1 overflow-auto custom-scrollbar">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 uppercase font-bold text-xs sticky top-0 z-10 shadow-sm">
+                <tr>
+                  <th className="px-3 py-3 w-10">
+                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[var(--primary)]">
+                      {selectedIds.size === paginatedContracts.length && paginatedContracts.length > 0 ? (
+                        <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
+                      ) : (
+                        <Square className="w-4 h-4" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="px-6 py-3">Réf. Contrat</th>
+                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('clientName')}>
+                    <span className="flex items-center gap-1">
+                      Client <SortIcon field="clientName" />
+                    </span>
+                  </th>
+                  <th className="px-6 py-3">Revendeur</th>
+                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('startDate')}>
+                    <span className="flex items-center gap-1">
+                      Début <SortIcon field="startDate" />
+                    </span>
+                  </th>
+                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('endDate')}>
+                    <span className="flex items-center gap-1">
+                      Fin <SortIcon field="endDate" />
+                    </span>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-right cursor-pointer select-none"
+                    onClick={() => handleSort('monthlyFee')}
+                  >
+                    <span className="flex items-center gap-1 justify-end">
+                      Prix Unit. <SortIcon field="monthlyFee" />
+                    </span>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-center cursor-pointer select-none"
+                    onClick={() => handleSort('vehicleCount')}
+                  >
+                    <span className="flex items-center gap-1 justify-center">
+                      Véhicules <SortIcon field="vehicleCount" />
+                    </span>
+                  </th>
+                  <th className="px-6 py-3 text-right">Total</th>
+                  <th
+                    className="px-6 py-3 text-center cursor-pointer select-none"
+                    onClick={() => handleSort('billingCycle')}
+                  >
+                    <span className="flex items-center gap-1 justify-center">
+                      Cycle <SortIcon field="billingCycle" />
+                    </span>
+                  </th>
+                  <th className="px-6 py-3 text-center cursor-pointer select-none" onClick={() => handleSort('status')}>
+                    <span className="flex items-center gap-1 justify-center">
+                      Statut <SortIcon field="status" />
+                    </span>
+                  </th>
+                  <th className="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-900">
+                {paginatedContracts.map((contract) => (
+                  <tr
+                    key={contract.id}
+                    className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group ${selectedIds.has(contract.id) ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}
+                  >
                     <td className="px-3 py-4">
-                      <button onClick={() => toggleSelect(contract.id)} className="text-slate-400 hover:text-[var(--primary)]">
-                        {selectedIds.has(contract.id)
-                          ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
-                          : <Square className="w-4 h-4" />}
+                      <button
+                        onClick={() => toggleSelect(contract.id)}
+                        className="text-slate-400 hover:text-[var(--primary)]"
+                      >
+                        {selectedIds.has(contract.id) ? (
+                          <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
                       </button>
                     </td>
                     <td className="px-6 py-4 font-mono text-xs font-bold text-[var(--primary)]">
@@ -848,7 +1091,9 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                     <td className="px-6 py-4">
                       <div>
                         <p className="font-medium text-slate-800 dark:text-white">{getClientName(contract)}</p>
-                        {contract.subject && <p className="text-xs text-slate-400 truncate max-w-[200px]">{contract.subject}</p>}
+                        {contract.subject && (
+                          <p className="text-xs text-slate-400 truncate max-w-[200px]">{contract.subject}</p>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -863,14 +1108,16 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                     </td>
                     <td className="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">
                       <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3"/>
+                        <Calendar className="w-3 h-3" />
                         {new Date(contract.startDate).toLocaleDateString('fr-FR')}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-xs whitespace-nowrap">
-                      {contract.endDate
-                        ? <span className="text-slate-600">{new Date(contract.endDate).toLocaleDateString('fr-FR')}</span>
-                        : <span className="text-emerald-600 font-medium">∞ Sans fin</span>}
+                      {contract.endDate ? (
+                        <span className="text-slate-600">{new Date(contract.endDate).toLocaleDateString('fr-FR')}</span>
+                      ) : (
+                        <span className="text-emerald-600 font-medium">∞ Sans fin</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 font-bold text-slate-800 dark:text-white text-right">
                       {formatPrice(contract.monthlyFee ?? 0)}
@@ -881,7 +1128,9 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                       </span>
                     </td>
                     <td className="px-6 py-4 font-bold text-green-700 dark:text-green-400 text-right">
-                      {formatPrice((contract.monthlyFee || 0) * (contract.vehicleIds?.length || contract.vehicleCount || 0))}
+                      {formatPrice(
+                        (contract.monthlyFee || 0) * (contract.vehicleIds?.length || contract.vehicleCount || 0)
+                      )}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="text-xs text-slate-600 dark:text-slate-400">
@@ -891,7 +1140,10 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                     <td className="px-6 py-4 text-center">
                       <div className="relative inline-block">
                         <button
-                          onClick={(e) => { e.stopPropagation(); setStatusMenuId(statusMenuId === contract.id ? null : contract.id); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setStatusMenuId(statusMenuId === contract.id ? null : contract.id);
+                          }}
                           className={`px-2 py-1 rounded text-[10px] font-bold border uppercase cursor-pointer hover:ring-2 hover:ring-[var(--primary-dim)] transition-all ${getStatusColor(contract.status)}`}
                           title="Cliquer pour changer le statut"
                         >
@@ -901,11 +1153,16 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                           <>
                             <div className="fixed inset-0 z-40" onClick={() => setStatusMenuId(null)} />
                             <div className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl py-1 min-w-[160px] animate-in fade-in zoom-in-95 duration-150">
-                              <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase">Changer statut</div>
-                              {STATUS_TRANSITIONS[contract.status].map(t => (
+                              <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase">
+                                Changer statut
+                              </div>
+                              {STATUS_TRANSITIONS[contract.status].map((t) => (
                                 <button
                                   key={t.value}
-                                  onClick={(e) => { e.stopPropagation(); handleStatusChange(contract, t.value); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleStatusChange(contract, t.value);
+                                  }}
                                   className={`w-full text-left px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${t.color}`}
                                 >
                                   {t.label} → {STATUS_LABELS[t.value]}
@@ -918,7 +1175,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button 
+                        <button
                           onClick={() => handleGenerateInvoice(contract)}
                           disabled={generatingInvoice === contract.id || contract.status !== 'ACTIVE'}
                           className="p-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 rounded text-slate-400 hover:text-green-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -930,21 +1187,21 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                             <DollarSign className="w-4 h-4" />
                           )}
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleView(contract)}
                           className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-slate-600 transition-colors"
                           title="Détails"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleEdit(contract)}
                           className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded text-slate-400 hover:text-[var(--primary)] transition-colors"
                           title="Modifier"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDelete(contract.id)}
                           className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-slate-400 hover:text-red-600 transition-colors"
                           title="Supprimer"
@@ -955,39 +1212,52 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                     </td>
                   </tr>
                 ))}
-            </tbody>
-          </table>
-        </div>
+              </tbody>
+            </table>
+          </div>
         )}
-        
+
         {/* PAGINATION */}
         {filteredContracts.length > 0 && (
-        <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex justify-between items-center text-xs">
+          <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex justify-between items-center text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-slate-500 dark:text-slate-400">{filteredContracts.length} contrat(s) — Lignes:</span>
-              <select 
-                  value={itemsPerPage} 
-                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                  className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 p-1"
+              <span className="text-slate-500 dark:text-slate-400">
+                {filteredContracts.length} contrat(s) — Lignes:
+              </span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 p-1"
               >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
               </select>
             </div>
-            <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages || 1}
-                onPageChange={setCurrentPage}
-            />
-        </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages || 1} onPageChange={setCurrentPage} />
+          </div>
         )}
       </Card>
 
-      <Modal isOpen={showForm} onClose={() => setShowForm(false)} title={editingContract ? "Modifier le Contrat" : "Nouveau Contrat"} maxWidth="max-w-4xl">
+      <Modal
+        isOpen={showForm}
+        onClose={() => setShowForm(false)}
+        title={editingContract ? 'Modifier le Contrat' : 'Nouveau Contrat'}
+        maxWidth="max-w-4xl"
+      >
         <ContractForm
-          initialData={editingContract ? { ...editingContract, billingCycle: (editingContract.billingCycle || 'MONTHLY').toUpperCase().replace('SEMI_ANNUAL', 'SEMESTRIAL').replace('YEARLY', 'ANNUAL') as Contract['billingCycle'] } : undefined}
+          initialData={
+            editingContract
+              ? {
+                  ...editingContract,
+                  billingCycle: (editingContract.billingCycle || 'MONTHLY')
+                    .toUpperCase()
+                    .replace('SEMI_ANNUAL', 'SEMESTRIAL')
+                    .replace('YEARLY', 'ANNUAL') as Contract['billingCycle'],
+                }
+              : undefined
+          }
           onSubmit={handleSubmit}
           onCancel={() => setShowForm(false)}
         />
@@ -995,48 +1265,52 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
 
       {selectedContract && (
         <ContractDetailModal
-            contract={selectedContract}
-            isOpen={showDetail}
-            onClose={() => setShowDetail(false)}
-            client={tiers.find(t => t.id === selectedContract.clientId)}
-            invoices={invoices}
-            vehicles={vehicles}
-            onStatusChange={async (c, status) => {
-                try {
-                    await updateContract({ ...c, status });
-                    setSelectedContract({ ...c, status });
-                    showToast(TOAST.CRM.CONTRACT_STATUS_CHANGED(STATUS_LABELS[status] || status), 'success');
-                } catch (err: unknown) {
-                    showToast(mapError(err, 'contrat'), 'error');
-                }
-            }}
-            onEdit={() => {
-                setShowDetail(false);
-                handleEdit(selectedContract);
-            }}
+          contract={selectedContract}
+          isOpen={showDetail}
+          onClose={() => setShowDetail(false)}
+          client={tiers.find((t) => t.id === selectedContract.clientId)}
+          invoices={invoices}
+          vehicles={vehicles}
+          onStatusChange={async (c, status) => {
+            try {
+              await updateContract({ ...c, status });
+              setSelectedContract({ ...c, status });
+              showToast(TOAST.CRM.CONTRACT_STATUS_CHANGED(STATUS_LABELS[status] || status), 'success');
+            } catch (err: unknown) {
+              showToast(mapError(err, 'contrat'), 'error');
+            }
+          }}
+          onEdit={() => {
+            setShowDetail(false);
+            handleEdit(selectedContract);
+          }}
         />
       )}
       <ConfirmDialogComponent />
 
       {/* Renew Modal */}
       {vehicleConflicts && (
-        <Modal isOpen={true} onClose={() => setVehicleConflicts(null)} title="Véhicules déjà assignés" maxWidth="max-w-lg">
+        <Modal
+          isOpen={true}
+          onClose={() => setVehicleConflicts(null)}
+          title="Véhicules déjà assignés"
+          maxWidth="max-w-lg"
+        >
           <div className="space-y-4 p-2">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Les véhicules suivants sont déjà assignés à des contrats actifs. Retirez-les du contrat ou résiliez les contrats existants avant de continuer.
+              Les véhicules suivants sont déjà assignés à des contrats actifs. Retirez-les du contrat ou résiliez les
+              contrats existants avant de continuer.
             </p>
             <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
               {vehicleConflicts.map((c, i) => {
-                const veh = vehicles.find(v => v.id === c.vehicleId);
+                const veh = vehicles.find((v) => v.id === c.vehicleId);
                 return (
                   <div key={i} className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800">
                     <div>
                       <div className="text-sm font-medium text-slate-800 dark:text-white">
                         {veh?.licensePlate || veh?.name || c.vehicleId.slice(0, 8).toUpperCase()}
                       </div>
-                      {veh?.name && veh.licensePlate && (
-                        <div className="text-xs text-slate-500">{veh.name}</div>
-                      )}
+                      {veh?.name && veh.licensePlate && <div className="text-xs text-slate-500">{veh.name}</div>}
                     </div>
                     <div className="text-xs font-mono bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-1 rounded">
                       {c.contractNumber}
@@ -1046,7 +1320,10 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               })}
             </div>
             <div className="flex justify-end pt-2">
-              <button onClick={() => setVehicleConflicts(null)} className="px-4 py-2 text-sm bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-700">
+              <button
+                onClick={() => setVehicleConflicts(null)}
+                className="px-4 py-2 text-sm bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-700"
+              >
                 Fermer
               </button>
             </div>
@@ -1055,10 +1332,16 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       )}
 
       {showBulkEndDateModal && (
-        <Modal isOpen={true} onClose={() => setShowBulkEndDateModal(false)} title={`Modifier la date de fin — ${selectedIds.size} contrat(s)`} maxWidth="max-w-md">
+        <Modal
+          isOpen={true}
+          onClose={() => setShowBulkEndDateModal(false)}
+          title={`Modifier la date de fin — ${selectedIds.size} contrat(s)`}
+          maxWidth="max-w-md"
+        >
           <div className="space-y-4 p-2">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Choisissez la nouvelle date de fin qui sera appliquée aux <span className="font-bold">{selectedIds.size}</span> contrat(s) sélectionné(s).
+              Choisissez la nouvelle date de fin qui sera appliquée aux{' '}
+              <span className="font-bold">{selectedIds.size}</span> contrat(s) sélectionné(s).
             </p>
 
             {/* Option N'expire jamais */}
@@ -1066,7 +1349,10 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               <input
                 type="checkbox"
                 checked={bulkNeverExpires}
-                onChange={e => { setBulkNeverExpires(e.target.checked); if (e.target.checked) setBulkEndDate(''); }}
+                onChange={(e) => {
+                  setBulkNeverExpires(e.target.checked);
+                  if (e.target.checked) setBulkEndDate('');
+                }}
                 className="w-4 h-4 rounded accent-blue-600"
               />
               <div>
@@ -1078,18 +1364,23 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             {/* Date picker — masqué si "N'expire jamais" */}
             {!bulkNeverExpires && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nouvelle date de fin</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  Nouvelle date de fin
+                </label>
                 <input
                   type="date"
                   value={bulkEndDate}
-                  onChange={e => setBulkEndDate(e.target.value)}
+                  onChange={(e) => setBulkEndDate(e.target.value)}
                   className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[var(--primary)] outline-none"
                 />
               </div>
             )}
 
             <div className="flex justify-end gap-3 pt-2 border-t dark:border-slate-700">
-              <button onClick={() => setShowBulkEndDateModal(false)} className="px-4 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+              <button
+                onClick={() => setShowBulkEndDateModal(false)}
+                className="px-4 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
                 Annuler
               </button>
               <button
@@ -1105,25 +1396,43 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       )}
 
       {renewingContract && (
-        <Modal isOpen={true} onClose={() => setRenewingContract(null)} title="Renouveler le contrat" maxWidth="max-w-md">
+        <Modal
+          isOpen={true}
+          onClose={() => setRenewingContract(null)}
+          title="Renouveler le contrat"
+          maxWidth="max-w-md"
+        >
           <div className="space-y-4 p-2">
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Contrat <span className="font-bold">{renewingContract.contractNumber || renewingContract.id.slice(0, 8).toUpperCase()}</span> — choisissez la nouvelle date de fin.
+              Contrat{' '}
+              <span className="font-bold">
+                {renewingContract.contractNumber || renewingContract.id.slice(0, 8).toUpperCase()}
+              </span>{' '}
+              — choisissez la nouvelle date de fin.
             </p>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nouvelle date de fin</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Nouvelle date de fin
+              </label>
               <input
                 type="date"
                 value={renewEndDate}
-                onChange={e => setRenewEndDate(e.target.value)}
+                onChange={(e) => setRenewEndDate(e.target.value)}
                 className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[var(--primary)] outline-none"
               />
             </div>
             <div className="flex justify-end gap-3 pt-2">
-              <button onClick={() => setRenewingContract(null)} className="px-4 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+              <button
+                onClick={() => setRenewingContract(null)}
+                className="px-4 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
                 Annuler
               </button>
-              <button onClick={handleRenewSubmit} disabled={!renewEndDate} className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2">
+              <button
+                onClick={handleRenewSubmit}
+                disabled={!renewEndDate}
+                className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+              >
                 <RefreshCw className="w-4 h-4" /> Renouveler
               </button>
             </div>
@@ -1136,40 +1445,56 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
         isOpen={mobileFilterOpen}
         onClose={() => setMobileFilterOpen(false)}
         activeCount={(statusFilter !== 'ALL' ? 1 : 0) + (resellerFilter !== 'ALL' ? 1 : 0)}
-        onReset={() => { setStatusFilter('ALL'); setResellerFilter('ALL'); }}
-        tabs={[
-          {
-            id: 'status',
-            label: 'Statut',
-            activeCount: statusFilter !== 'ALL' ? 1 : 0,
-            content: (
-              <>
-                {['ALL', 'ACTIVE', 'DRAFT', 'SUSPENDED', 'EXPIRED', 'TERMINATED'].map(st => (
+        onReset={() => {
+          setStatusFilter('ALL');
+          setResellerFilter('ALL');
+        }}
+        tabs={
+          [
+            {
+              id: 'status',
+              label: 'Statut',
+              activeCount: statusFilter !== 'ALL' ? 1 : 0,
+              content: (
+                <>
+                  {['ALL', 'ACTIVE', 'DRAFT', 'SUSPENDED', 'EXPIRED', 'TERMINATED'].map((st) => (
+                    <FilterRadioRow
+                      key={st}
+                      value={st}
+                      label={st === 'ALL' ? 'Tous' : STATUS_LABELS[st]}
+                      checked={statusFilter === st}
+                      onChange={() => setStatusFilter(st)}
+                    />
+                  ))}
+                </>
+              ),
+            },
+            {
+              id: 'reseller',
+              label: 'Revendeur',
+              activeCount: resellerFilter !== 'ALL' ? 1 : 0,
+              content: (
+                <>
                   <FilterRadioRow
-                    key={st}
-                    value={st}
-                    label={st === 'ALL' ? 'Tous' : STATUS_LABELS[st]}
-                    checked={statusFilter === st}
-                    onChange={() => setStatusFilter(st)}
+                    value="ALL"
+                    label="Tous"
+                    checked={resellerFilter === 'ALL'}
+                    onChange={() => setResellerFilter('ALL')}
                   />
-                ))}
-              </>
-            ),
-          },
-          {
-            id: 'reseller',
-            label: 'Revendeur',
-            activeCount: resellerFilter !== 'ALL' ? 1 : 0,
-            content: (
-              <>
-                <FilterRadioRow value="ALL" label="Tous" checked={resellerFilter === 'ALL'} onChange={() => setResellerFilter('ALL')} />
-                {resellers.map(r => (
-                  <FilterRadioRow key={r.id} value={r.id} label={r.name} checked={resellerFilter === r.id} onChange={() => setResellerFilter(r.id)} />
-                ))}
-              </>
-            ),
-          },
-        ] as MobileFilterTab[]}
+                  {resellers.map((r) => (
+                    <FilterRadioRow
+                      key={r.id}
+                      value={r.id}
+                      label={r.name}
+                      checked={resellerFilter === r.id}
+                      onChange={() => setResellerFilter(r.id)}
+                    />
+                  ))}
+                </>
+              ),
+            },
+          ] as MobileFilterTab[]
+        }
       />
     </div>
   );

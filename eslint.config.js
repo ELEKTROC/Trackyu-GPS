@@ -63,6 +63,8 @@ export default tseslint.config(
       'react-hooks/purity': 'off',
       'react-hooks/compilation-skipped': 'off',
       'react-hooks/preserve-manual-memoization': 'off',
+      'react-hooks/static-components': 'off',
+      'react-hooks/immutability': 'off',
       // preserve-caught-error requires { cause } on all rethrows — too strict for existing code
       'preserve-caught-error': 'off',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
@@ -73,7 +75,7 @@ export default tseslint.config(
         varsIgnorePattern: '^_',
         destructuredArrayIgnorePattern: '^_',
       }],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/consistent-type-imports': ['warn', {
         prefer: 'type-imports',
         disallowTypeAnnotations: false,

@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { 
-  X, Bell, AlertTriangle, Fuel, MapPin, Navigation, 
-  AlertCircle, Zap, Siren 
-} from 'lucide-react';
+import { X, Bell, AlertTriangle, Fuel, MapPin, Navigation, AlertCircle, Zap, Siren } from 'lucide-react';
 
 // ============================================================
 // TrackYu GPS - NotificationToast Component
@@ -34,13 +31,20 @@ interface NotificationToastProps {
 // Icône selon le type d'alerte
 const getAlertIcon = (type?: string) => {
   switch (type) {
-    case 'SPEEDING': return Navigation;
-    case 'GEOFENCE': return MapPin;
-    case 'FUEL_LEVEL': return Fuel;
-    case 'FUEL_THEFT': return Fuel;
-    case 'MAINTENANCE': return AlertCircle;
-    case 'SOS': return Siren;
-    default: return Bell;
+    case 'SPEEDING':
+      return Navigation;
+    case 'GEOFENCE':
+      return MapPin;
+    case 'FUEL_LEVEL':
+      return Fuel;
+    case 'FUEL_THEFT':
+      return Fuel;
+    case 'MAINTENANCE':
+      return AlertCircle;
+    case 'SOS':
+      return Siren;
+    default:
+      return Bell;
   }
 };
 
@@ -103,6 +107,13 @@ const ToastItem: React.FC<{
   const styles = getSeverityStyles(notification.severity);
   const Icon = getAlertIcon(notification.type);
 
+  const handleDismiss = useCallback(() => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onDismiss();
+    }, 300);
+  }, [onDismiss]);
+
   // Auto-dismiss avec progress bar
   useEffect(() => {
     if (duration <= 0) return;
@@ -119,14 +130,7 @@ const ToastItem: React.FC<{
     }, 50);
 
     return () => clearInterval(interval);
-  }, [duration]);
-
-  const handleDismiss = useCallback(() => {
-    setIsExiting(true);
-    setTimeout(() => {
-      onDismiss();
-    }, 300);
-  }, [onDismiss]);
+  }, [duration, handleDismiss]);
 
   const handleClick = () => {
     if (onClick) {
@@ -161,25 +165,19 @@ const ToastItem: React.FC<{
         {/* Text */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className={`font-bold text-sm ${styles.text} truncate`}>
-              {notification.title}
-            </h4>
+            <h4 className={`font-bold text-sm ${styles.text} truncate`}>{notification.title}</h4>
             {notification.severity === 'CRITICAL' && (
               <span className="animate-pulse">
                 <Zap className="w-4 h-4 text-yellow-300" />
               </span>
             )}
           </div>
-          
+
           {notification.vehicleName && (
-            <p className={`text-xs font-medium ${styles.subtext} opacity-80`}>
-              {notification.vehicleName}
-            </p>
+            <p className={`text-xs font-medium ${styles.subtext} opacity-80`}>{notification.vehicleName}</p>
           )}
-          
-          <p className={`text-sm ${styles.subtext} mt-1 line-clamp-2`}>
-            {notification.message}
-          </p>
+
+          <p className={`text-sm ${styles.subtext} mt-1 line-clamp-2`}>{notification.message}</p>
 
           {notification.timestamp && (
             <p className={`text-[10px] ${styles.subtext} opacity-60 mt-1`}>
@@ -289,13 +287,13 @@ export const useToastNotifications = () => {
       id,
       timestamp: notification.timestamp ?? new Date(),
     };
-    
-    setToasts(prev => [toast, ...prev]);
+
+    setToasts((prev) => [toast, ...prev]);
     return id;
   }, []);
 
   const dismissToast = useCallback((id: string | number) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   const dismissAllToasts = useCallback(() => {
