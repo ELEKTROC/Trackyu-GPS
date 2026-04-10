@@ -5,7 +5,7 @@ import { ReportTable } from '../ReportTable';
 import { ReportFilterBar } from '../ReportFilterBar';
 import { Fuel, Droplets, AlertTriangle, TrendingUp, BarChart3, Activity } from 'lucide-react';
 import { Card } from '../../../../components/Card';
-import { generatePDF } from '../../../../services/pdfService';
+import { generateTablePDF } from '../../../../services/pdfServiceV2';
 import { useTenantBranding } from '../../../../hooks/useTenantBranding';
 import { exportReportData } from '../../../../services/exportService';
 import { useDataContext } from '../../../../contexts/DataContext';
@@ -179,10 +179,13 @@ export const FuelReports: React.FC<FuelReportsProps> = ({ vehicles, onAiAnalysis
     };
 
     const handleExport = (title: string, columns: string[], data: string[][]) => {
-        generatePDF(`Rapport : ${title}`, columns,
-            data.map(row => { const obj: Record<string, string> = {}; columns.forEach((col, i) => { obj[col] = row[i]; }); return obj; }),
-            `rapport_${activeItem}_${new Date().toISOString().slice(0, 10)}.pdf`, { branding }
-        );
+        generateTablePDF({
+            title: `Rapport : ${title}`,
+            headers: columns,
+            rows: data,
+            filename: `rapport_${activeItem}_${new Date().toISOString().slice(0, 10)}.pdf`,
+            branding,
+        });
     };
 
     const handleGenerate = (mode: 'view' | 'csv' | 'excel' | 'pdf') => {

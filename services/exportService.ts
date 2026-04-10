@@ -2,6 +2,7 @@
  * Service centralisé pour les exports (CSV, Excel, PDF)
  * Unifie les exports à travers toute l'application
  */
+import * as XLSX from 'xlsx';
 
 // Types
 export interface ExportColumn {
@@ -99,47 +100,59 @@ export const exportToCSV = <T extends Record<string, any>>(
 };
 
 /**
- * Export vers Excel (TSV compatible ou vrai XLSX si xlsx installé)
+ * Export vers Excel (vrai XLSX via SheetJS)
  */
 export const exportToExcel = <T extends Record<string, any>>(
   data: T[],
   config: ExportConfig,
-  options: ExcelExportOptions = {}
+  _options: ExcelExportOptions = {}
 ): void => {
-  // Version TSV (compatible Excel nativement)
-  // Pour un vrai XLSX, installer: npm install xlsx
-  
-  let content = UTF8_BOM;
-  
-  // Headers
-  content += config.columns.map(col => col.header).join('\t') + '\n';
-  
-  // Data
-  data.forEach(row => {
-    const values = config.columns.map(col => {
+  const wb = XLSX.utils.book_new();
+
+  // Build rows: header + data
+  const headerRow = config.columns.map(col => col.header);
+
+  const dataRows = data.map(row =>
+    config.columns.map(col => {
       const value = row[col.key];
       if (value === null || value === undefined) return '';
-      
-      // Format dates
+
       if (col.format === 'date' && value) {
-        const date = new Date(value);
-        return date.toLocaleDateString('fr-FR');
+        if (value instanceof Date) return value.toLocaleDateString('fr-FR');
+        return new Date(value).toLocaleDateString('fr-FR');
       }
-      
-      // Format numbers
+
       if (col.format === 'currency' || col.format === 'number') {
         const num = typeof value === 'number' ? value : parseFloat(value);
-        return isNaN(num) ? '0' : num.toString();
+        return isNaN(num) ? 0 : num;
       }
-      
-      // Escape tabs and newlines
-      return String(value).replace(/\t/g, ' ').replace(/\n/g, ' ');
-    });
-    content += values.join('\t') + '\n';
+
+      return String(value);
+    })
+  );
+
+  const ws = XLSX.utils.aoa_to_sheet([headerRow, ...dataRows]);
+
+  // Column widths
+  ws['!cols'] = config.columns.map(col => ({
+    wch: col.width ?? Math.max(col.header.length + 2, 12),
+  }));
+
+  // Bold header style
+  const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+  for (let c = range.s.c; c <= range.e.c; c++) {
+    const cellAddr = XLSX.utils.encode_cell({ r: 0, c });
+    if (!ws[cellAddr]) continue;
+    ws[cellAddr].s = { font: { bold: true }, fill: { fgColor: { rgb: 'D9E1F2' } } };
+  }
+
+  XLSX.utils.book_append_sheet(wb, ws, config.sheetName || 'Export');
+
+  const wbOut = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([wbOut], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   });
-  
-  const blob = new Blob([content], { type: 'application/vnd.ms-excel;charset=utf-8;' });
-  downloadBlob(blob, `${config.filename}.xls`);
+  downloadBlob(blob, `${config.filename}.xlsx`);
 };
 
 /**

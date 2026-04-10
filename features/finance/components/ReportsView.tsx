@@ -3,6 +3,7 @@ import { useDataContext } from '../../../contexts/DataContext';
 import { Card } from '../../../components/Card';
 import { FileText, Download, Calendar, Filter, PieChart, Scale } from 'lucide-react';
 import { generateFEC } from '../../../services/fecService';
+import { exportReportData } from '../../../services/exportService';
 import { useCurrency } from '../../../hooks/useCurrency';
 import { useTableSort } from '../../../hooks/useTableSort';
 import { SortableHeader } from '../../../components/SortableHeader';
@@ -56,16 +57,10 @@ export const ReportsView: React.FC<ReportsViewProps> = ({
       generateFEC(filteredEntries, `FEC_${startDate}_${endDate}.csv`);
   };
 
-  const exportToCSV = (data: any[], filename: string) => {
-    const csvContent = "data:text/csv;charset=utf-8," 
-        + data.map(e => Object.values(e).join(";")).join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const exportToCSV = (rows: string[][], filename: string) => {
+    // rows[0] = en-têtes, rows[1..] = données
+    const filenameBase = filename.replace(/\.csv$/i, '');
+    exportReportData(rows[0], rows.slice(1), filenameBase, 'csv');
   };
 
   const renderTrialBalance = () => {

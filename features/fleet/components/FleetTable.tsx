@@ -9,7 +9,8 @@ import { Pagination } from '../../../components/Pagination';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
-import { generatePDF } from '../../../services/pdfService';
+import { generateTablePDF } from '../../../services/pdfServiceV2';
+import { exportToExcel } from '../../../services/exportService';
 import { useTenantBranding } from '../../../hooks/useTenantBranding';
 import { useDataContext } from '../../../contexts/DataContext';
 import { ImportModal } from '../../../components/ImportModal';
@@ -624,7 +625,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({ vehicles: vehiclesProp =
 
 
 
-  const handleExport = () => {
+  const handleExport = async () => {
       try {
           const vehiclesToExport = selectedIds.size > 0 
             ? vehicles.filter(v => selectedIds.has(v.id))
@@ -642,26 +643,54 @@ export const FleetTable: React.FC<FleetTableProps> = ({ vehicles: vehiclesProp =
               'Kilométrage': `${v.mileage} km`
           }));
           
-          generatePDF(
-              'Flotte de Véhicules',
-              columns,
-              data,
-              `flotte_${new Date().toISOString().split('T')[0]}.pdf`,
-              { orientation: 'landscape', branding }
-          );
+          const rows = vehiclesToExport.map(v => [
+              v.id,
+              v.name,
+              v.plate || '-',
+              v.client,
+              v.driver,
+              v.status,
+              `${v.fuelLevel}%`,
+              `${v.mileage} km`,
+          ]);
+          await generateTablePDF({
+              title: 'Flotte de Véhicules',
+              headers: columns,
+              rows,
+              filename: `flotte_${new Date().toISOString().split('T')[0]}.pdf`,
+              orientation: 'landscape',
+              branding,
+          });
           showToast(TOAST.IO.EXPORT_SUCCESS('PDF', vehiclesToExport.length), 'success');
       } catch (e) {
           showToast(mapError(e, TOAST.IO.EXPORT_ERROR('PDF')), 'error');
       }
   };
 
-  // SPRINT 3: Export Excel
   const handleExportExcel = () => {
     try {
-      // Utilisation de l'export Excel Pro du backend
-      const url = api.fleet.getExportExcelUrl();
-      window.open(url, '_blank');
-      showToast('Génération du rapport Excel en cours...', 'success');
+      const vehiclesToExport = selectedIds.size > 0
+        ? vehicles.filter(v => selectedIds.has(v.id))
+        : filteredVehicles;
+
+      const exportColumns = [
+        { key: 'id',       header: 'Code ABO',    format: 'text' as const },
+        { key: 'name',     header: 'Nom',          format: 'text' as const },
+        { key: 'plate',    header: 'Plaque',       format: 'text' as const },
+        { key: 'client',   header: 'Client',       format: 'text' as const },
+        { key: 'driver',   header: 'Conducteur',   format: 'text' as const },
+        { key: 'status',   header: 'Statut',       format: 'text' as const },
+        { key: 'fuelLevel',header: 'Carburant (%)', format: 'number' as const },
+        { key: 'mileage',  header: 'Kilométrage',  format: 'number' as const },
+      ];
+
+      exportToExcel(vehiclesToExport, {
+        filename: `flotte_${new Date().toISOString().split('T')[0]}`,
+        title: 'Flotte de Véhicules',
+        columns: exportColumns,
+        sheetName: 'Flotte',
+      });
+      showToast(TOAST.IO.EXPORT_SUCCESS('Excel', vehiclesToExport.length), 'success');
     } catch (e) {
       showToast(mapError(e, "Erreur lors de l'export Excel"), 'error');
     }

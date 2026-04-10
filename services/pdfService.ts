@@ -1,3 +1,7 @@
+/**
+ * @deprecated Ce service est remplacé par pdfServiceV2.ts.
+ * Utiliser generateTablePDF / generateInvoicePDF depuis pdfServiceV2 à la place.
+ */
 import type jsPDF from 'jspdf';
 import { loadPDFLibraries } from './pdfLoader';
 import { Payment, Client, Invoice } from '../types';
