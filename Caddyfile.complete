@@ -3,6 +3,30 @@ sms.abidjangps.com {
 }
 
 trackyugps.com, www.trackyugps.com {
+    # Security headers (production)
+    header {
+        # Anti-clickjacking (X-Frame-Options + frame-ancestors dans CSP)
+        X-Frame-Options "DENY"
+
+        # Content Security Policy complète
+        Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://trackyugps.com https://live.trackyugps.com wss://trackyugps.com wss://live.trackyugps.com; media-src 'self' blob:; worker-src blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+
+        # HSTS — force HTTPS pour 1 an, éligible au preload list
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+        # Empêche le MIME-sniffing
+        X-Content-Type-Options "nosniff"
+
+        # Referrer limité à l'origine
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # Désactiver les APIs navigateur non utilisées
+        Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+
+        # Supprimer X-Powered-By si présent côté backend
+        -X-Powered-By
+    }
+
     # API requests -> backend (port 3001)
     handle /api* {
         reverse_proxy 172.17.0.1:3001
