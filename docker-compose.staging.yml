@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  postgres_staging:
+    image: timescale/timescaledb:latest-pg16
+    container_name: staging_postgres
+    environment:
+      POSTGRES_USER: fleet_user
+      POSTGRES_PASSWORD: fleet_password
+      POSTGRES_DB: fleet_db_staging
+    ports:
+      - "5433:5432"
+    volumes:
+      - staging_pgdata:/var/lib/postgresql/data
+    networks:
+      - staging_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fleet_user -d fleet_db_staging"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis_staging:
+    image: redis:7-alpine
+    container_name: staging_redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - staging_redis:/data
+    networks:
+      - staging_network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  backend_staging:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: staging_backend
+    environment:
+      - NODE_ENV=staging
+      - PORT=3001
+      - DATABASE_URL=postgresql://fleet_user:fleet_password@postgres_staging:5432/fleet_db_staging
+      - REDIS_URL=redis://redis_staging:6379
+      - JWT_SECRET=${JWT_SECRET}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - GPS_PORT=5000
+    ports:
+      - "3002:3001"
+      - "5002:5000"
+    depends_on:
+      postgres_staging:
+        condition: service_healthy
+      redis_staging:
+        condition: service_healthy
+    networks:
+      - staging_network
+    restart: unless-stopped
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend_staging:
+    image: nginx:alpine
+    container_name: staging_frontend
+    volumes:
+      - /var/www/trackyu-gps-staging/dist:/usr/share/nginx/html
+      - /var/www/trackyu-gps-staging/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8081:80"
+    networks:
+      - staging_network
+    restart: unless-stopped
+
+networks:
+  staging_network:
+    driver: bridge
+
+volumes:
+  staging_pgdata:
+  staging_redis:

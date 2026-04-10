@@ -1,0 +1,12 @@
+dist
+build
+node_modules
+backend
+android
+trackyu-mobile
+Archives
+monitoring
+mosquitto
+website
+*.min.js
+*.min.css

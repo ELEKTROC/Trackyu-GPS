@@ -1,0 +1,42 @@
+# Configuration Prometheus pour TrackYu GPS
+# Place dans /etc/prometheus/prometheus.yml sur le serveur
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
+rule_files:
+  - '/etc/prometheus/rules.yml'
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # TrackYu GPS Backend
+  - job_name: 'trackyu-backend'
+    static_configs:
+      - targets: ['trackyu-gps-backend-1:3001']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Node Exporter (métriques système)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['trackyu-node-exporter:9100']
+
+  # Redis Exporter  
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['trackyu-redis-exporter:9121']
+
+  # PostgreSQL Exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['trackyu-postgres-exporter:9187']

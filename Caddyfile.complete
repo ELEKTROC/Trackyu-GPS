@@ -1,0 +1,59 @@
+sms.abidjangps.com {
+    reverse_proxy app:3000
+}
+
+trackyugps.com, www.trackyugps.com {
+    # API requests -> backend (port 3001)
+    handle /api* {
+        reverse_proxy 172.17.0.1:3001
+    }
+
+    # Socket.IO -> backend (with WebSocket support)
+    handle /socket.io* {
+        reverse_proxy 172.17.0.1:3001 {
+            header_up Upgrade {http.request.header.Upgrade}
+            header_up Connection {http.request.header.Connection}
+        }
+    }
+
+    # Everything else -> frontend nginx
+    handle {
+        reverse_proxy 172.17.0.1:8080
+    }
+}
+
+staging.trackyugps.com {
+    # Logs JSON
+    log {
+        output file /var/log/caddy/staging-access.log
+        format json
+    }
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        X-Environment "staging"
+    }
+
+    # API requests -> backend staging (port 3002)
+    handle /api* {
+        reverse_proxy 172.17.0.1:3002
+    }
+
+    # Socket.IO -> backend staging (with WebSocket support)
+    handle /socket.io* {
+        reverse_proxy 172.17.0.1:3002 {
+            header_up Upgrade {http.request.header.Upgrade}
+            header_up Connection {http.request.header.Connection}
+        }
+    }
+
+    # Everything else -> frontend staging nginx (port 8081)
+    handle {
+        reverse_proxy 172.17.0.1:8081
+    }
+}

@@ -1,0 +1,99 @@
+services:
+  # 1. Base de données (PostgreSQL + TimescaleDB)
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    container_name: fleet_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS:-fleet_password}
+      - POSTGRES_USER=${DB_USER:-fleet_user}
+      - POSTGRES_DB=${DB_NAME:-fleet_db}
+    ports:
+      - "5435:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - fleet_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-fleet_user} -d ${DB_NAME:-fleet_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # 2. Backend API (Node.js)
+  backend:
+    build: ./backend
+    container_name: fleet_backend
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgres://${DB_USER:-fleet_user}:${DB_PASS:-fleet_password}@timescaledb:5432/${DB_NAME:-fleet_db}
+      - PORT=3000
+      - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+      - ORANGE_SMS_CLIENT_ID=${ORANGE_SMS_CLIENT_ID}
+      - ORANGE_SMS_CLIENT_SECRET=${ORANGE_SMS_CLIENT_SECRET}
+      - ORANGE_SMS_SENDER_NAME=${ORANGE_SMS_SENDER_NAME:-TrackYu}
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - fleet_network
+    volumes:
+      - ./backend:/app
+      # - /app/node_modules
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', r => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # 3. Broker MQTT (Pour les trackers GPS)
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: fleet_mqtt
+    restart: unless-stopped
+    ports:
+      - "18883:1883"
+      - "9002:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - fleet_network
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # 4. Redis (Cache Temps Réel)
+  redis:
+    image: redis:alpine
+    container_name: fleet_redis
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6381:6379"
+    networks:
+      - fleet_network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  db_data:
+  redis_data:
+
+networks:
+  fleet_network:
+    driver: bridge

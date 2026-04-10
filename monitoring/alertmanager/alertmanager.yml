@@ -1,0 +1,63 @@
+# Alertmanager Configuration - TrackYu GPS
+# 
+# Configure les canaux de notification pour les alertes Prometheus.
+# En production, configurer les receivers avec les vrais endpoints.
+
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'severity']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'default'
+  routes:
+    # Alertes critiques → notification immédiate
+    - match:
+        severity: critical
+      receiver: 'critical'
+      group_wait: 0s
+      repeat_interval: 1h
+
+    # Alertes warning → groupées
+    - match:
+        severity: warning
+      receiver: 'default'
+      repeat_interval: 4h
+
+    # Alertes info → faible priorité
+    - match:
+        severity: info
+      receiver: 'default'
+      repeat_interval: 12h
+
+receivers:
+  # Receiver par défaut (logs uniquement en dev)
+  - name: 'default'
+    # TODO: Configurer en production :
+    # webhook_configs:
+    #   - url: 'http://backend:3001/api/system/alerts'
+    #     send_resolved: true
+
+  # Receiver critique (Telegram + webhook backend)
+  - name: 'critical'
+    # TODO: Configurer en production :
+    # webhook_configs:
+    #   - url: 'http://backend:3001/api/system/alerts'
+    #     send_resolved: true
+    # telegram_configs:
+    #   - bot_token: '${TELEGRAM_BOT_TOKEN}'
+    #     chat_id: ${TELEGRAM_CHAT_ID}
+    #     message: |
+    #       🚨 {{ .CommonAnnotations.summary }}
+    #       {{ .CommonAnnotations.description }}
+    #       Status: {{ .Status }}
+
+# Inhibe les alertes warning quand une alerte critical existe pour le même groupe
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname']

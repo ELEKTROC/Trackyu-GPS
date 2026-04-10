@@ -1,0 +1,188 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }, { "color": "green", "value": 50 }, { "color": "yellow", "value": 150 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "🛰️ GPS Connections",
+      "type": "stat",
+      "targets": [{ "expr": "gps_active_connections", "legendFormat": "" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+      "id": 2,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "🌐 WebSocket Clients",
+      "type": "stat",
+      "targets": [{ "expr": "websocket_active_clients", "legendFormat": "" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "unit": "short", "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 200 }, { "color": "red", "value": 500 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "id": 3,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "📦 Position Buffer",
+      "type": "stat",
+      "targets": [{ "expr": "position_buffer_size", "legendFormat": "" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": { "unit": "ops", "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 1 }, { "color": "green", "value": 10 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "id": 4,
+      "options": { "colorMode": "value", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "title": "💾 Positions Saved/s",
+      "type": "stat",
+      "targets": [{ "expr": "rate(gps_positions_saved_total[1m])", "legendFormat": "" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "id": 5,
+      "title": "📡 GPS Messages Rate by Protocol",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (protocol) (rate(gps_messages_received_total{status=\"success\"}[1m]))", "legendFormat": "{{ protocol }} (success)" },
+        { "expr": "sum by (protocol) (rate(gps_messages_received_total{status=\"error\"}[1m]))", "legendFormat": "{{ protocol }} (error)" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "id": 6,
+      "title": "⏱️ GPS Processing Latency",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum by (le) (rate(gps_message_processing_seconds_bucket[5m])))", "legendFormat": "P50" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(gps_message_processing_seconds_bucket[5m])))", "legendFormat": "P95" },
+        { "expr": "histogram_quantile(0.99, sum by (le) (rate(gps_message_processing_seconds_bucket[5m])))", "legendFormat": "P99" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "id": 7,
+      "title": "🔌 GPS Active Connections",
+      "type": "timeseries",
+      "targets": [{ "expr": "gps_active_connections", "legendFormat": "TCP Connections" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "id": 8,
+      "title": "❌ GPS Parsing Errors",
+      "type": "timeseries",
+      "targets": [{ "expr": "sum by (protocol, error_type) (rate(gps_parsing_errors_total[5m]))", "legendFormat": "{{ protocol }}: {{ error_type }}" }]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "id": 9,
+      "title": "🔄 Cache Hit/Miss Rate",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (result) (rate(cache_operations_total[5m]))", "legendFormat": "{{ result }}" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "id": 10,
+      "title": "⚡ Cache Latency",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum by (le) (rate(cache_operation_seconds_bucket[5m])))", "legendFormat": "P50" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(cache_operation_seconds_bucket[5m])))", "legendFormat": "P95" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "id": 11,
+      "title": "📬 WebSocket Messages Emitted",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (event_type) (rate(websocket_messages_emitted_total[5m]))", "legendFormat": "{{ event_type }}" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "id": 12,
+      "title": "📊 Batch Inserts",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(batch_inserts_total{status=\"success\"}[5m])", "legendFormat": "Success" },
+        { "expr": "rate(batch_inserts_total{status=\"error\"}[5m])", "legendFormat": "Error" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 36 },
+      "id": 13,
+      "title": "🚗 Active Vehicles by Tenant",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(active_vehicles)", "legendFormat": "Total Active" },
+        { "expr": "topk(10, active_vehicles)", "legendFormat": "Tenant {{ tenant_id }}" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "ops", "color": { "mode": "palette-classic" } } },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 42 },
+      "id": 14,
+      "title": "🚨 Alerts Generated",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (type) (rate(alerts_generated_total[5m]))", "legendFormat": "{{ type }}" }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "tags": ["trackyu", "business", "gps", "realtime"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "Africa/Abidjan",
+  "title": "TrackYu - Business & GPS Realtime",
+  "uid": "trackyu-business-realtime",
+  "version": 1
+}

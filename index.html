@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+    
+    <!-- Preconnect to external domains for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    
+    <!-- Cache Control - Force refresh -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    
+    <!-- Color scheme - supports both light and dark, will be updated by ThemeContext -->
+    <meta name="color-scheme" content="light dark" />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="background-color" content="#f1f5f9" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Trackyu GPS" />
+    <meta name="application-name" content="Trackyu GPS" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Trackyu GPS - Application de gestion de flotte GPS en temps réel. Suivi véhicules, alertes, rapports et maintenance." />
+    <meta name="keywords" content="GPS, flotte, véhicules, tracking, suivi, géolocalisation" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicons & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#2563eb" />
+    
+    <title>Trackyu GPS</title>
+    
+    <!-- Preload critical font with display swap for faster text rendering -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    
+    <style>
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #f1f5f9;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+      
+      /* Hide scrollbar for tabs on mobile */
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      
+      /* Touch-friendly buttons */
+      .touch-manipulation {
+        touch-action: manipulation;
+      }
+      
+      /* Safe area padding for notched phones */
+      /* Note: Only top/left/right safe areas applied on body.
+         Bottom safe area is handled by BottomNavigation and individual components
+         to avoid double padding. */
+      @supports (padding: max(0px)) {
+        body {
+          padding-top: max(0px, env(safe-area-inset-top));
+          padding-left: max(0px, env(safe-area-inset-left));
+          padding-right: max(0px, env(safe-area-inset-right));
+        }
+        /* Ensure main content area respects safe-area */
+        #root {
+          min-height: calc(100vh - env(safe-area-inset-top));
+        }
+      }
+      
+      /* Prevent text overflow issues */
+      * {
+        min-width: 0;
+      }
+      
+      /* Custom xs breakpoint for very small screens */
+      @media (max-width: 400px) {
+        .xs\\:hidden { display: none !important; }
+        .xs\\:inline { display: inline !important; }
+      }
+      @media (min-width: 401px) {
+        .xs\\:hidden { display: block !important; }
+        .xs\\:inline { display: inline !important; }
+      }
+      
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      
+      /* Dark mode scrollbar */
+      .dark ::-webkit-scrollbar-thumb {
+        background: #475569;
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
+      .dark body {
+        background-color: #0f172a;
+      }
+      
+      /* Mobile table improvements - scrollable horizontal */
+      @media (max-width: 768px) {
+        table {
+          font-size: 0.75rem;
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+          -webkit-overflow-scrolling: touch;
+        }
+        td, th {
+          padding: 0.5rem 0.75rem;
+        }
+        /* Table container wrapper */
+        .table-container {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          margin: 0 -1rem;
+          padding: 0 1rem;
+        }
+      }
+      
+      /* Mobile safe area for fixed headers */
+      @media (max-width: 768px) {
+        .mobile-header {
+          padding-top: max(1rem, env(safe-area-inset-top));
+        }
+        .mobile-content {
+          padding-top: max(4rem, calc(4rem + env(safe-area-inset-top)));
+        }
+      }
+      
+      /* Safe area bottom for bottom navigation */
+      .safe-area-bottom {
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+      }
+      
+      /* Fix header height on mobile with safe-area */
+      @supports (padding: max(0px)) {
+        @media (max-width: 1024px) {
+          .mobile-header {
+            min-height: calc(4rem + env(safe-area-inset-top));
+          }
+        }
+      }
+    </style>
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

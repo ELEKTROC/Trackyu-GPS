@@ -1,0 +1,259 @@
+# Prometheus Alerting Rules - TrackYu GPS
+# Règles d'alerte pour la supervision de la plateforme
+
+groups:
+  # ============================================
+  # ALERTES SERVICES (up/down)
+  # ============================================
+  - name: service_health
+    interval: 30s
+    rules:
+      - alert: BackendDown
+        expr: up{job="trackyu-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backend API indisponible"
+          description: "Le backend TrackYu ne répond plus depuis {{ $value }}s. Vérifier le container Docker."
+
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis indisponible"
+          description: "Redis ne répond plus. Impact : cache GPS, sessions, positions temps réel."
+
+      - alert: PostgresDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL/TimescaleDB indisponible"
+          description: "La base de données ne répond plus. Impact : toutes les fonctionnalités."
+
+  # ============================================
+  # ALERTES SYSTÈME (node-exporter)
+  # ============================================
+  - name: system_resources
+    interval: 60s
+    rules:
+      - alert: HighCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU élevé ({{ $value | printf \"%.1f\" }}%)"
+          description: "Utilisation CPU > 85% depuis 5 minutes. Vérifier les processus."
+
+      - alert: CriticalCpuUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "CPU critique ({{ $value | printf \"%.1f\" }}%)"
+          description: "CPU > 95% depuis 2 min. Risque de dégradation des services."
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mémoire élevée ({{ $value | printf \"%.1f\" }}%)"
+          description: "Utilisation mémoire > 85%. Vérifier les fuites mémoire."
+
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Mémoire critique ({{ $value | printf \"%.1f\" }}%)"
+          description: "Mémoire > 95%. Risque d'OOM kill."
+
+      - alert: DiskSpaceLow
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Espace disque faible ({{ $value | printf \"%.1f\" }}%)"
+          description: "Disque root > 80%. Vérifier les logs et backups."
+
+      - alert: DiskSpaceCritical
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Espace disque critique ({{ $value | printf \"%.1f\" }}%)"
+          description: "Disque root > 90%. Nettoyage urgent requis."
+
+  # ============================================
+  # ALERTES API BACKEND
+  # ============================================
+  - name: api_health
+    interval: 30s
+    rules:
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status_code=~"5.."}[5m]))
+          / sum(rate(http_requests_total[5m])) * 100 > 5
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Taux d'erreurs HTTP 5xx élevé ({{ $value | printf \"%.1f\" }}%)"
+          description: "Plus de 5% des requêtes retournent une erreur serveur."
+
+      - alert: CriticalErrorRate
+        expr: |
+          sum(rate(http_requests_total{status_code=~"5.."}[5m]))
+          / sum(rate(http_requests_total[5m])) * 100 > 15
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Taux d'erreurs critique ({{ $value | printf \"%.1f\" }}%)"
+          description: "Plus de 15% d'erreurs 5xx. Service potentiellement en panne."
+
+      - alert: HighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latence API élevée (P95 > 2s)"
+          description: "Le 95e percentile de latence dépasse 2 secondes depuis 5 min."
+
+      - alert: HighRequestsInFlight
+        expr: http_requests_in_flight > 100
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Trop de requêtes en cours ({{ $value }})"
+          description: "Plus de 100 requêtes simultanées. Risque de saturation."
+
+  # ============================================
+  # ALERTES GPS PIPELINE
+  # ============================================
+  - name: gps_pipeline
+    interval: 30s
+    rules:
+      - alert: GpsNoData
+        expr: rate(gps_messages_received_total[5m]) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Aucune donnée GPS reçue depuis 10 min"
+          description: "Le serveur GPS ne reçoit plus de messages. Vérifier le port TCP 5000 et les trackers."
+
+      - alert: GpsHighErrorRate
+        expr: |
+          sum(rate(gps_messages_received_total{status="error"}[5m]))
+          / sum(rate(gps_messages_received_total[5m])) * 100 > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Taux d'erreurs GPS élevé ({{ $value | printf \"%.1f\" }}%)"
+          description: "Plus de 20% des messages GPS échouent le parsing."
+
+      - alert: GpsHighLatency
+        expr: histogram_quantile(0.95, rate(gps_message_processing_seconds_bucket[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Latence traitement GPS élevée (P95 > 500ms)"
+          description: "Le traitement des messages GPS est lent. Vérifier Redis et TimescaleDB."
+
+      - alert: PositionBufferBacklog
+        expr: position_buffer_size > 500
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Buffer de positions saturé ({{ $value }})"
+          description: "Plus de 500 positions en attente d'insertion. La DB est potentiellement lente."
+
+  # ============================================
+  # ALERTES BASE DE DONNÉES
+  # ============================================
+  - name: database_health
+    interval: 60s
+    rules:
+      - alert: DbPoolExhausted
+        expr: db_pool_connections{state="waiting"} > 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pool DB saturé ({{ $value }} en attente)"
+          description: "Des connexions attendent un slot dans le pool PostgreSQL."
+
+      - alert: DbSlowQueries
+        expr: histogram_quantile(0.95, rate(db_query_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Requêtes DB lentes (P95 > 1s)"
+          description: "Le 95e percentile des requêtes dépasse 1 seconde."
+
+  # ============================================
+  # ALERTES REDIS
+  # ============================================
+  - name: redis_health
+    interval: 60s
+    rules:
+      - alert: RedisHighMemory
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis mémoire élevée ({{ $value | printf \"%.1f\" }}%)"
+          description: "Redis utilise plus de 80% de sa mémoire max. LRU eviction risque de s'activer."
+
+      - alert: RedisHighConnections
+        expr: redis_connected_clients > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Redis trop de clients ({{ $value }})"
+          description: "Plus de 100 clients connectés à Redis."
+
+  # ============================================
+  # ALERTES WEBSOCKET
+  # ============================================
+  - name: websocket_health
+    interval: 60s
+    rules:
+      - alert: NoWebSocketClients
+        expr: websocket_active_clients == 0
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "Aucun client WebSocket connecté"
+          description: "Aucun utilisateur connecté en temps réel depuis 30 min."
+
+      - alert: HighThrottleRate
+        expr: rate(websocket_messages_throttled_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "WebSocket throttling élevé"
+          description: "Plus de 10 messages throttled/s. Les clients ne reçoivent pas toutes les mises à jour."

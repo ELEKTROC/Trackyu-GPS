@@ -1,0 +1,507 @@
+@import "tailwindcss";
+
+/* ===== Global Focus Styles for Accessibility ===== */
+/* Base focus ring for all form elements - ensures keyboard users always see focus */
+/* Individual utility classes (focus:ring-*) will override these via specificity */
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-dim);
+  border-color: var(--primary);
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+.dark select:focus,
+.dark textarea:focus {
+  box-shadow: 0 0 0 2px var(--primary-dim);
+  border-color: var(--primary);
+}
+
+/* ===== Dark Mode Global Text Fix for Inputs ===== */
+/* Ensures text is visible in dark mode across ALL form fields */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark select,
+.dark textarea {
+  color: #f1f5f9; /* slate-100 — visible on dark backgrounds */
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b; /* slate-500 — subtle but visible placeholder */
+}
+
+.dark select option {
+  background-color: #1e293b; /* slate-800 */
+  color: #f1f5f9;
+}
+
+/* ===== Shared Form Input Classes ===== */
+/* Reusable base styles for consistent form inputs across the app */
+.form-input-base {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0; /* slate-200 */
+  border-radius: 0.5rem;
+  color: #0f172a; /* slate-900 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.dark .form-input-base {
+  background-color: #1e293b; /* slate-800 */
+  border-color: #334155; /* slate-700 */
+  color: #f1f5f9; /* slate-100 */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TRACKYU DESIGN SYSTEM — CSS Variables
+   Aligné sur la charte graphique mobile (themes.ts + tokens.ts)
+   Surchargeable par AppearanceContext pour le white label
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens invariants (identiques sur tous les thèmes) ─────────────────── */
+:root {
+  /* Statuts véhicules */
+  --status-moving:  #10B981;
+  --status-idle:    #F59E0B;
+  --status-stopped: #6B7280;
+  --status-alert:   #EF4444;
+  --status-offline: #374151;
+
+  /* Couleurs fonctionnelles */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error:   #EF4444;
+  --color-info:    #3B82F6;
+
+  /* Typographie */
+  --brand-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --brand-font-size: 16px;
+
+  /* Border radius base (surchargeable via AppearanceContext) */
+  --brand-radius: 0.75rem;
+
+  /* Spacing (rem) */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 3rem;
+}
+
+/* ── Thème 1 : TrackYu Dark (défaut) ────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg-primary:  #0D0D0F;
+  --bg-surface:  #1A1A1E;
+  --bg-elevated: #252529;
+  --bg-overlay:  rgba(0, 0, 0, 0.65);
+
+  --primary:      #E8771A;
+  --primary-light: #F5943A;
+  --primary-dim:  rgba(232, 119, 26, 0.15);
+
+  --text-primary:    #F9FAFB;
+  --text-secondary:  #9CA3AF;
+  --text-muted:      #4B5563;
+  --text-inverse:    #0D0D0F;
+  --text-on-primary: #FFFFFF;
+
+  --border:        #2A2A2E;
+  --border-strong: #3A3A3E;
+
+  --nav-bg:       #131316;
+  --nav-active:   #E8771A;
+  --nav-inactive: #6B7280;
+  --nav-border:   #2A2A2E;
+
+  /* Backward compat AppearanceContext */
+  --brand-primary:   #E8771A;
+  --brand-secondary: #F5943A;
+}
+
+/* ── Thème 2 : Ocean Dark ────────────────────────────────────────────────── */
+[data-theme="ocean"] {
+  --bg-primary:  #080E1A;
+  --bg-surface:  #0F1B2D;
+  --bg-elevated: #162338;
+  --bg-overlay:  rgba(0, 8, 26, 0.70);
+
+  --primary:       #3B82F6;
+  --primary-light: #60A5FA;
+  --primary-dim:   rgba(59, 130, 246, 0.15);
+
+  --text-primary:    #F0F6FF;
+  --text-secondary:  #8BAAC4;
+  --text-muted:      #3D5A73;
+  --text-inverse:    #080E1A;
+  --text-on-primary: #FFFFFF;
+
+  --border:        #1E2E42;
+  --border-strong: #2A3F58;
+
+  --nav-bg:       #060C16;
+  --nav-active:   #3B82F6;
+  --nav-inactive: #4A6580;
+  --nav-border:   #1E2E42;
+
+  --brand-primary:   #3B82F6;
+  --brand-secondary: #60A5FA;
+}
+
+/* ── Thème 3 : Light Pro ─────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-primary:  #F8FAFC;
+  --bg-surface:  #FFFFFF;
+  --bg-elevated: #F1F5F9;
+  --bg-overlay:  rgba(15, 23, 42, 0.45);
+
+  --primary:       #E8771A;
+  --primary-light: #F5943A;
+  --primary-dim:   rgba(232, 119, 26, 0.10);
+
+  --text-primary:    #0F172A;
+  --text-secondary:  #64748B;
+  --text-muted:      #94A3B8;
+  --text-inverse:    #FFFFFF;
+  --text-on-primary: #FFFFFF;
+
+  --border:        #E2E8F0;
+  --border-strong: #CBD5E1;
+
+  --nav-bg:       #FFFFFF;
+  --nav-active:   #E8771A;
+  --nav-inactive: #94A3B8;
+  --nav-border:   #E2E8F0;
+
+  --brand-primary:   #E8771A;
+  --brand-secondary: #F5943A;
+}
+
+/* Custom styles from index.html */
+body {
+  font-family: var(--brand-font);
+  font-size: var(--brand-font-size);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.5);
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: rgba(71, 85, 105, 0.5);
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(71, 85, 105, 0.7);
+}
+
+/* Custom CSS animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+/* Glass morphism effect */
+.glass {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Hide scrollbar on mobile */
+@media (max-width: 768px) {
+  *::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    scrollbar-width: none;
+  }
+}
+
+/* Leaflet custom overrides */
+.leaflet-container {
+  font-family: inherit !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px !important;
+}
+
+.dark .leaflet-popup-content-wrapper {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .leaflet-popup-tip {
+  background: #1e293b !important;
+}
+
+/* ========================================
+   MOBILE OPTIMIZATIONS
+   ======================================== */
+
+/* Safe Area Insets for iPhone X+ and Android notches */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}
+
+.safe-area-all {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Minimum touch target size (44x44 Apple, 48x48 Google) */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.touch-target-lg {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+/* Active states for touch feedback (mobile doesn't have hover) */
+@media (hover: none) and (pointer: coarse) {
+  .btn-touch:active {
+    transform: scale(0.97);
+    opacity: 0.9;
+  }
+  
+  .card-touch:active {
+    transform: scale(0.99);
+    box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+}
+
+/* Bottom navigation safe spacing */
+.pb-bottom-nav {
+  padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .pb-bottom-nav {
+    padding-bottom: 1.5rem;
+  }
+}
+
+/* Pull to refresh indicator */
+.pull-indicator {
+  transition: transform 0.2s ease-out;
+}
+
+.pull-indicator.pulling {
+  transform: rotate(180deg);
+}
+
+/* Haptic feedback simulation (visual) */
+@keyframes haptic-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+.haptic-feedback:active {
+  animation: haptic-pulse 0.15s ease-out;
+}
+
+/* Improved tap highlight for iOS */
+* {
+  -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth momentum scrolling on iOS */
+.scroll-smooth-ios {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* ========================================
+   MOBILE FORM INPUTS
+   ======================================== */
+
+/* Prevent zoom on iOS when focusing inputs (must be 16px minimum) */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="search"],
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  select,
+  textarea {
+    font-size: 16px !important;
+    min-height: 44px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+  
+  /* Better touch targets for form elements */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Sticky footer for form buttons */
+  .form-actions-mobile {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: inherit;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    margin-top: auto;
+    z-index: 10;
+  }
+  
+  /* Labels more compact on mobile */
+  label {
+    font-size: 11px;
+  }
+}
+
+/* Input group with icon */
+.input-group-mobile {
+  position: relative;
+}
+
+.input-group-mobile input {
+  padding-left: 40px;
+}
+
+.input-group-mobile .input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Number input with better controls */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: 30px;
+  opacity: 1;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ========================================
+   GLOBAL LOADING BAR ANIMATION
+   ======================================== */
+@keyframes loading-bar {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-loading-bar {
+  animation: loading-bar 1.5s ease-in-out infinite;
+}
+
+/* ========================================
+   VIEW TRANSITION ANIMATIONS
+   ======================================== */
+@keyframes view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-view-enter {
+  animation: view-enter 0.2s ease-out;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .animate-view-enter,
+  .animate-loading-bar {
+    animation: none;
+  }
+}

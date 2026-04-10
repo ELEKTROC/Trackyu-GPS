@@ -1,0 +1,173 @@
+services:
+  # --- DATA LAYER ---
+  postgres:
+    image: timescale/timescaledb:latest-pg14
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME:-fleet_db}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    # Production: Do NOT expose postgres port externally
+    # Access via docker exec or backend service only
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME:-fleet_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning --maxmemory 512mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  # --- CONNECTION POOLING ---
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    restart: unless-stopped
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    volumes:
+      - ./backend/pgbouncer/pgbouncer.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./backend/pgbouncer/entrypoint.sh:/entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "localhost", "-p", "6432"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  # --- APPLICATION LAYER ---
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASS}@pgbouncer:6432/${DB_NAME:-fleet_db}
+      DATABASE_URL_DIRECT: postgres://${DB_USER}:${DB_PASS}@postgres:5432/${DB_NAME:-fleet_db}
+      REDIS_URL: redis://${REDIS_PASSWORD:+:${REDIS_PASSWORD}@}redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      ORANGE_SMS_CLIENT_ID: ${ORANGE_SMS_CLIENT_ID}
+      ORANGE_SMS_CLIENT_SECRET: ${ORANGE_SMS_CLIENT_SECRET}
+      ORANGE_SMS_SENDER_NAME: ${ORANGE_SMS_SENDER_NAME}
+    volumes:
+      - ./backend/dist:/app/dist
+      - uploads_data:/app/uploads
+    ports:
+      - "3001:3001"
+      - "5001:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+    networks:
+      - internal
+      - web
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/api/health', r => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+      # Uncomment for horizontal scaling (requires load balancer):
+      # replicas: 2
+
+  # --- GPS SERVER (optional microservice) ---
+  # Uncomment to run GPS TCP server as a separate scalable service
+  # When enabled, set GPS_ENABLED=false on the backend to avoid conflict
+  # gps-server:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile.gps
+  #   restart: unless-stopped
+  #   environment:
+  #     DATABASE_URL: postgres://${DB_USER}:${DB_PASS}@pgbouncer:6432/${DB_NAME:-fleet_db}
+  #     REDIS_URL: redis://${REDIS_PASSWORD:+:${REDIS_PASSWORD}@}redis:6379
+  #     GPS_PORT: 5000
+  #     GPS_MAX_CONNECTIONS: 5000
+  #   ports:
+  #     - "5001:5000"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 512M
+  #     replicas: 1  # Scale up for more GPS connections
+
+  frontend:
+    image: nginx:alpine
+    restart: unless-stopped
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+      - ./nginx_host.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  pg_data:
+  redis_data:
+  uploads_data:
+
+networks:
+  internal:
+    driver: bridge
+  web:
+    driver: bridge

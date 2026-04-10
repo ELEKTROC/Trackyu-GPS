@@ -1,0 +1,1 @@
+export { MessageTemplatesPanel } from './MessageTemplatesPanel';
