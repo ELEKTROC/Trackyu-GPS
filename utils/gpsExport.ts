@@ -1,6 +1,3 @@
-// @ts-expect-error - togpx has no TypeScript declarations
-import togpx from 'togpx';
-
 export interface GPSPoint {
   lat: number;
   lng: number;
@@ -10,73 +7,60 @@ export interface GPSPoint {
   heading?: number;
 }
 
+/** Escape XML special characters */
+const escXml = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 /**
- * Export trajectory to GPX format
+ * Export trajectory to GPX format (pure implementation — no togpx dependency)
  */
 export const exportToGPX = (
   points: GPSPoint[],
   trackName: string = 'Track',
   vehicleName: string = 'Vehicle'
 ): string => {
-  // Convert to GeoJSON format for togpx
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {
-          name: trackName,
-          desc: `Trajectory for ${vehicleName}`,
-          time: points[0]?.timestamp || new Date().toISOString()
-        },
-        geometry: {
-          type: 'LineString',
-          coordinates: points.map(p => [p.lng, p.lat, p.elevation || 0])
-        }
-      }
-    ]
-  };
+  const safeTrackName = escXml(trackName);
+  const safeVehicleName = escXml(vehicleName);
+  const now = new Date().toISOString();
 
-  // Add waypoints for significant points (start, end, stops)
-  if (points.length > 0) {
-    geojson.features.push({
-      type: 'Feature',
-      properties: {
-        name: 'Start',
-        desc: 'Starting point',
-        time: points[0].timestamp || new Date().toISOString()
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: [points[0].lng, points[0].lat, points[0].elevation || 0] as any
-      }
-    });
+  const trkpts = points
+    .map((p) => {
+      const time = p.timestamp ? `\n        <time>${escXml(p.timestamp)}</time>` : '';
+      const ele = p.elevation != null ? `\n        <ele>${p.elevation}</ele>` : '';
+      const speed = p.speed != null ? `\n        <extensions><speed>${p.speed}</speed></extensions>` : '';
+      return `      <trkpt lat="${p.lat}" lon="${p.lng}">${ele}${time}${speed}\n      </trkpt>`;
+    })
+    .join('\n');
 
-    if (points.length > 1) {
-      const lastPoint = points[points.length - 1];
-      geojson.features.push({
-        type: 'Feature',
-        properties: {
-          name: 'End',
-          desc: 'Ending point',
-          time: lastPoint.timestamp || new Date().toISOString()
-        },
-        geometry: {
-          type: 'Point',
-          coordinates: [lastPoint.lng, lastPoint.lat, lastPoint.elevation || 0] as any
-        }
-      });
-    }
-  }
+  const wptStart =
+    points.length > 0
+      ? `  <wpt lat="${points[0].lat}" lon="${points[0].lng}">\n    <name>Start</name>\n    <desc>Starting point</desc>\n  </wpt>`
+      : '';
 
-  return togpx(geojson, {
-    creator: 'TrackYu GPS',
-    metadata: {
-      name: trackName,
-      desc: `GPS track for ${vehicleName}`,
-      time: new Date().toISOString()
-    }
-  });
+  const wptEnd =
+    points.length > 1
+      ? `  <wpt lat="${points[points.length - 1].lat}" lon="${points[points.length - 1].lng}">\n    <name>End</name>\n    <desc>Ending point</desc>\n  </wpt>`
+      : '';
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="TrackYu GPS"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>${safeTrackName}</name>
+    <desc>GPS track for ${safeVehicleName}</desc>
+    <time>${now}</time>
+  </metadata>
+${wptStart}
+${wptEnd}
+  <trk>
+    <name>${safeTrackName}</name>
+    <trkseg>
+${trkpts}
+    </trkseg>
+  </trk>
+</gpx>`;
 };
 
 /**
@@ -87,9 +71,10 @@ export const exportToKML = (
   trackName: string = 'Track',
   vehicleName: string = 'Vehicle'
 ): string => {
-  const coordinates = points
-    .map(p => `${p.lng},${p.lat},${p.elevation || 0}`)
-    .join('\n          ');
+  const safeTrackName = escXml(trackName);
+  const safeVehicleName = escXml(vehicleName);
+
+  const coordinates = points.map((p) => `${p.lng},${p.lat},${p.elevation || 0}`).join('\n          ');
 
   const startPoint = points[0];
   const endPoint = points[points.length - 1];
@@ -97,16 +82,16 @@ export const exportToKML = (
   return `<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
-    <name>${trackName}</name>
-    <description>Trajectory for ${vehicleName}</description>
-    
+    <name>${safeTrackName}</name>
+    <description>Trajectory for ${safeVehicleName}</description>
+
     <Style id="trackStyle">
       <LineStyle>
         <color>ff0000ff</color>
         <width>3</width>
       </LineStyle>
     </Style>
-    
+
     <Style id="startStyle">
       <IconStyle>
         <color>ff00ff00</color>
@@ -116,7 +101,7 @@ export const exportToKML = (
         </Icon>
       </IconStyle>
     </Style>
-    
+
     <Style id="endStyle">
       <IconStyle>
         <color>ff0000ff</color>
@@ -126,10 +111,10 @@ export const exportToKML = (
         </Icon>
       </IconStyle>
     </Style>
-    
+
     <!-- Track Line -->
     <Placemark>
-      <name>${trackName}</name>
+      <name>${safeTrackName}</name>
       <description>GPS trajectory</description>
       <styleUrl>#trackStyle</styleUrl>
       <LineString>
@@ -141,26 +126,34 @@ export const exportToKML = (
         </coordinates>
       </LineString>
     </Placemark>
-    
+
     <!-- Start Point -->
-    <Placemark>
+    ${
+      startPoint
+        ? `<Placemark>
       <name>Start</name>
       <description>Starting point</description>
       <styleUrl>#startStyle</styleUrl>
       <Point>
         <coordinates>${startPoint.lng},${startPoint.lat},0</coordinates>
       </Point>
-    </Placemark>
-    
+    </Placemark>`
+        : ''
+    }
+
     <!-- End Point -->
-    <Placemark>
+    ${
+      endPoint && points.length > 1
+        ? `<Placemark>
       <name>End</name>
       <description>Ending point</description>
       <styleUrl>#endStyle</styleUrl>
       <Point>
         <coordinates>${endPoint.lng},${endPoint.lat},0</coordinates>
       </Point>
-    </Placemark>
+    </Placemark>`
+        : ''
+    }
   </Document>
 </kml>`;
 };

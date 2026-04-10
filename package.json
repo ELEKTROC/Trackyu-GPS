@@ -67,7 +67,6 @@
     "react-window-infinite-loader": "^2.0.0",
     "recharts": "^3.4.1",
     "socket.io-client": "^4.8.1",
-    "togpx": "^0.5.4",
     "xlsx": "^0.18.5",
     "zod": "^4.1.13"
   },
