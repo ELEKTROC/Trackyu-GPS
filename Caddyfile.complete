@@ -5,7 +5,7 @@ sms.abidjangps.com {
 trackyugps.com, www.trackyugps.com {
     # Security headers (production)
     header {
-        # Anti-clickjacking (X-Frame-Options + frame-ancestors dans CSP)
+        # Anti-clickjacking
         X-Frame-Options "DENY"
 
         # Content Security Policy complète
@@ -28,6 +28,9 @@ trackyugps.com, www.trackyugps.com {
     }
 
     # API requests -> backend (port 3001)
+    # Rate limiting géré par express-rate-limit dans server.ts :
+    #   - Global   : 1000 req/15min par IP
+    #   - /auth/login : 5 req/heure par IP (anti-brute-force)
     handle /api* {
         reverse_proxy 172.17.0.1:3001
     }
@@ -53,14 +56,16 @@ staging.trackyugps.com {
         format json
     }
 
-    # Security headers
+    # Security headers (staging — identiques à prod)
     header {
+        X-Frame-Options "DENY"
+        Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://trackyugps.com https://staging.trackyugps.com https://live.trackyugps.com wss://trackyugps.com wss://staging.trackyugps.com wss://live.trackyugps.com; media-src 'self' blob:; worker-src blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         Strict-Transport-Security "max-age=31536000; includeSubDomains"
         X-Content-Type-Options "nosniff"
-        X-Frame-Options "SAMEORIGIN"
-        X-XSS-Protection "1; mode=block"
         Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
         X-Environment "staging"
+        -X-Powered-By
     }
 
     # API requests -> backend staging (port 3002)

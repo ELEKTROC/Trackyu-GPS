@@ -6,7 +6,7 @@ staging.trackyugps.com {
         format json
     }
 
-    # Security headers (staging)
+    # Security headers (staging — identiques à prod)
     header {
         X-Frame-Options "DENY"
         Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://trackyugps.com https://staging.trackyugps.com https://live.trackyugps.com wss://trackyugps.com wss://staging.trackyugps.com wss://live.trackyugps.com; media-src 'self' blob:; worker-src blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
@@ -20,6 +20,7 @@ staging.trackyugps.com {
     }
 
     # API requests -> backend staging (port 3002)
+    # Rate limiting géré par express-rate-limit dans server.ts
     handle /api* {
         reverse_proxy 172.17.0.1:3002
     }
