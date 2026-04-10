@@ -69,8 +69,12 @@ const mockClients: Client[] = [
     type: 'B2B',
     status: 'ACTIVE',
     tenantId: 'tenant_default',
+    contactName: 'Contact 1',
+    email: 'contact1@logistics.com',
+    phone: '0600000001',
+    address: '1 rue Test',
+    subscriptionPlan: 'PRO',
     createdAt: new Date(),
-    updatedAt: new Date(),
   },
   {
     id: 'CLT-1002',
@@ -78,12 +82,16 @@ const mockClients: Client[] = [
     type: 'B2B',
     status: 'ACTIVE',
     tenantId: 'tenant_default',
+    contactName: 'Contact 2',
+    email: 'contact2@transport.com',
+    phone: '0600000002',
+    address: '2 rue Test',
+    subscriptionPlan: 'BASIC',
     createdAt: new Date(),
-    updatedAt: new Date(),
   },
 ];
 
-const mockVehicles: Vehicle[] = [
+const mockVehicles = [
   {
     id: 'TRK-001',
     name: 'Scania R500',
@@ -91,10 +99,8 @@ const mockVehicles: Vehicle[] = [
     status: 'MOVING',
     plate: 'AB-123-CD',
     clientId: 'CLT-1001',
-    createdAt: new Date(),
-    updatedAt: new Date(),
   },
-];
+] as unknown as Vehicle[];
 
 // Helper to render with providers
 const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
@@ -127,18 +133,31 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
   };
 
   const defaultAuthContext = {
-    user: { id: 'USR-001', name: 'Test User', role: 'SUPERADMIN', permissions: [], email: 'test@test.com', avatar: '' },
+    user: {
+      id: 'USR-001',
+      name: 'Test User',
+      role: 'SUPERADMIN',
+      status: 'Actif' as const,
+      permissions: [],
+      email: 'test@test.com',
+      avatar: '',
+    },
     isAuthenticated: true,
     isLoading: false,
+    requirePasswordChange: false,
     login: vi.fn(),
     logout: vi.fn(),
     hasPermission: vi.fn().mockReturnValue(true),
+    changePassword: vi.fn(),
+    updateProfile: vi.fn(),
+    impersonate: vi.fn(),
+    stopImpersonation: vi.fn(),
   };
 
   return {
     ...render(
       <AuthContext.Provider value={defaultAuthContext}>
-        <ToastContext.Provider value={{ showToast: mockShowToast, toasts: [], removeToast: vi.fn() }}>
+        <ToastContext.Provider value={{ showToast: mockShowToast }}>
           <DataContext.Provider value={defaultContext as any}>{ui}</DataContext.Provider>
         </ToastContext.Provider>
       </AuthContext.Provider>

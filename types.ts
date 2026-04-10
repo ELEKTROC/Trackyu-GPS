@@ -24,7 +24,6 @@ export * from './types/index';
 // This section is intentionally left empty.
 // If you need to add a new type, add it to the appropriate domain file in types/.
 
- 
 /*
   Original content (1632 lines) has been split into 12 domain modules.
   See types/ directory for the source of truth.
@@ -36,21 +35,21 @@ export enum View {
   FLEET = 'FLEET',
   REPORTS = 'REPORTS',
   SETTINGS = 'SETTINGS',
-  AGENDA = 'AGENDA',     // Calendrier interventions/tâches
-  
+  AGENDA = 'AGENDA', // Calendrier interventions/tâches
+
   // Business Modules (Containers)
   PRESALES = 'PRESALES', // Contient: Leads, Devis, Catalogue
-  SALES = 'SALES',       // Contient: Clients, Factures, Contrats
-  
+  SALES = 'SALES', // Contient: Clients, Factures, Contrats
+
   // Tech & Stock
-  STOCK = 'STOCK',       // Devices, SIM Cards
-  TECH = 'TECH',         // Interventions, Scheduling
+  STOCK = 'STOCK', // Devices, SIM Cards
+  TECH = 'TECH', // Interventions, Scheduling
   MONITORING = 'MONITORING', // Monitoring Technique
-  
+
   // Support & Admin
-  SUPPORT = 'SUPPORT',   // Tickets
-  ADMIN = 'ADMIN',        // Users, Roles, Logs
-  
+  SUPPORT = 'SUPPORT', // Tickets
+  ADMIN = 'ADMIN', // Users, Roles, Logs
+
   // Comptabilité
   ACCOUNTING = 'ACCOUNTING', // SYSCOHADA, Finance
 
@@ -60,63 +59,111 @@ export enum View {
   CATALOG = 'CATALOG',
   CLIENTS = 'CLIENTS',
   INVOICES = 'INVOICES',
-  CONTRACTS = 'CONTRACTS'
+  CONTRACTS = 'CONTRACTS',
 }
 
 // --- RBAC SYSTEM ---
-export type Permission = 
+export type Permission =
   // General Access
   | 'VIEW_DASHBOARD'
   | 'VIEW_MAP'
   | 'VIEW_REPORTS'
   | 'VIEW_LOGS'
-  
+
   // Fleet
   | 'VIEW_FLEET' // Alias pour accès flotte
-  | 'VIEW_VEHICLES' | 'CREATE_VEHICLES' | 'EDIT_VEHICLES' | 'DELETE_VEHICLES'
-  | 'VIEW_DRIVERS' | 'CREATE_DRIVERS' | 'EDIT_DRIVERS' | 'DELETE_DRIVERS'
+  | 'VIEW_VEHICLES'
+  | 'CREATE_VEHICLES'
+  | 'EDIT_VEHICLES'
+  | 'DELETE_VEHICLES'
+  | 'VIEW_DRIVERS'
+  | 'CREATE_DRIVERS'
+  | 'EDIT_DRIVERS'
+  | 'DELETE_DRIVERS'
 
   // Sales & CRM
   | 'VIEW_CRM'
   | 'MANAGE_LEADS' // Legacy
   | 'MANAGE_CLIENTS' // Legacy
   | 'MANAGE_CONTRACTS' // Legacy
-  | 'VIEW_LEADS' | 'CREATE_LEADS' | 'EDIT_LEADS' | 'DELETE_LEADS'
-  | 'VIEW_CLIENTS' | 'CREATE_CLIENTS' | 'EDIT_CLIENTS' | 'DELETE_CLIENTS'
-  | 'VIEW_CONTRACTS' | 'CREATE_CONTRACTS' | 'EDIT_CONTRACTS' | 'DELETE_CONTRACTS'
-  | 'VIEW_TASKS' | 'CREATE_TASKS' | 'EDIT_TASKS' | 'DELETE_TASKS'
-  
+  | 'VIEW_LEADS'
+  | 'CREATE_LEADS'
+  | 'EDIT_LEADS'
+  | 'DELETE_LEADS'
+  | 'VIEW_CLIENTS'
+  | 'CREATE_CLIENTS'
+  | 'EDIT_CLIENTS'
+  | 'DELETE_CLIENTS'
+  | 'VIEW_CONTRACTS'
+  | 'CREATE_CONTRACTS'
+  | 'EDIT_CONTRACTS'
+  | 'DELETE_CONTRACTS'
+  | 'VIEW_TASKS'
+  | 'CREATE_TASKS'
+  | 'EDIT_TASKS'
+  | 'DELETE_TASKS'
+
   // Finance
   | 'VIEW_FINANCE'
   | 'MANAGE_FINANCE' // Comptabilité avancée (écritures, budgets, rapprochement)
   | 'MANAGE_INVOICES' // Legacy
-  | 'VIEW_INVOICES' | 'CREATE_INVOICES' | 'EDIT_INVOICES' | 'DELETE_INVOICES'
-  | 'VIEW_QUOTES' | 'CREATE_QUOTES' | 'EDIT_QUOTES' | 'DELETE_QUOTES'
-  | 'VIEW_PAYMENTS' | 'CREATE_PAYMENTS' | 'EDIT_PAYMENTS' | 'DELETE_PAYMENTS' | 'APPROVE_PAYMENTS'
-  | 'VIEW_EXPENSES' | 'CREATE_EXPENSES' | 'EDIT_EXPENSES' | 'DELETE_EXPENSES'
-  | 'VIEW_JOURNAL_ENTRIES' | 'CREATE_JOURNAL_ENTRIES' | 'EDIT_JOURNAL_ENTRIES' | 'DELETE_JOURNAL_ENTRIES' | 'VALIDATE_JOURNAL_ENTRIES'
-  
+  | 'VIEW_INVOICES'
+  | 'CREATE_INVOICES'
+  | 'EDIT_INVOICES'
+  | 'DELETE_INVOICES'
+  | 'VIEW_QUOTES'
+  | 'CREATE_QUOTES'
+  | 'EDIT_QUOTES'
+  | 'DELETE_QUOTES'
+  | 'VIEW_PAYMENTS'
+  | 'CREATE_PAYMENTS'
+  | 'EDIT_PAYMENTS'
+  | 'DELETE_PAYMENTS'
+  | 'APPROVE_PAYMENTS'
+  | 'VIEW_EXPENSES'
+  | 'CREATE_EXPENSES'
+  | 'EDIT_EXPENSES'
+  | 'DELETE_EXPENSES'
+  | 'VIEW_JOURNAL_ENTRIES'
+  | 'CREATE_JOURNAL_ENTRIES'
+  | 'EDIT_JOURNAL_ENTRIES'
+  | 'DELETE_JOURNAL_ENTRIES'
+  | 'VALIDATE_JOURNAL_ENTRIES'
+
   // Tech & Stock
   | 'VIEW_TECH'
   | 'MANAGE_INTERVENTIONS' // Legacy
   | 'MANAGE_STOCK' // Legacy
   | 'MANAGE_DEVICES' // Legacy
-  | 'VIEW_INTERVENTIONS' | 'CREATE_INTERVENTIONS' | 'EDIT_INTERVENTIONS' | 'DELETE_INTERVENTIONS'
-  | 'VIEW_STOCK' | 'CREATE_STOCK' | 'EDIT_STOCK' | 'DELETE_STOCK'
-  | 'VIEW_DEVICES' | 'CREATE_DEVICES' | 'EDIT_DEVICES' | 'DELETE_DEVICES'
-  
+  | 'VIEW_INTERVENTIONS'
+  | 'CREATE_INTERVENTIONS'
+  | 'EDIT_INTERVENTIONS'
+  | 'DELETE_INTERVENTIONS'
+  | 'VIEW_STOCK'
+  | 'CREATE_STOCK'
+  | 'EDIT_STOCK'
+  | 'DELETE_STOCK'
+  | 'VIEW_DEVICES'
+  | 'CREATE_DEVICES'
+  | 'EDIT_DEVICES'
+  | 'DELETE_DEVICES'
+
   // Alerts & Monitoring
-  | 'VIEW_ALERTS' | 'MANAGE_ALERTS'
-  
+  | 'VIEW_ALERTS'
+  | 'MANAGE_ALERTS'
+
   // Fleet management
   | 'MANAGE_FLEET' // Geofences, groupes, règles de maintenance
-  
+
   // Support
   | 'VIEW_SUPPORT'
   | 'MANAGE_TICKETS' // Legacy
   | 'MANAGE_MACROS' // Gestion des macros de réponse
-  | 'VIEW_TICKETS' | 'CREATE_TICKETS' | 'EDIT_TICKETS' | 'DELETE_TICKETS'
-  
+  | 'VIEW_TICKETS'
+  | 'CREATE_TICKETS'
+  | 'EDIT_TICKETS'
+  | 'DELETE_TICKETS'
+
   // Administration
   | 'VIEW_ADMIN'
   | 'MANAGE_USERS' // Legacy
@@ -124,13 +171,22 @@ export type Permission =
   | 'MANAGE_TENANTS' // Gestion des tenants (SuperAdmin)
   | 'MANAGE_SETTINGS' // Paramètres système, intégrations
   | 'MANAGE_FAQ' // Articles d'aide
-  | 'VIEW_USERS' | 'CREATE_USERS' | 'EDIT_USERS' | 'DELETE_USERS'
-  | 'VIEW_ROLES' | 'CREATE_ROLES' | 'EDIT_ROLES' | 'DELETE_ROLES'
-  | 'VIEW_TENANTS' | 'CREATE_TENANTS' | 'EDIT_TENANTS' | 'DELETE_TENANTS';
+  | 'VIEW_USERS'
+  | 'CREATE_USERS'
+  | 'EDIT_USERS'
+  | 'DELETE_USERS'
+  | 'VIEW_ROLES'
+  | 'CREATE_ROLES'
+  | 'EDIT_ROLES'
+  | 'DELETE_ROLES'
+  | 'VIEW_TENANTS'
+  | 'CREATE_TENANTS'
+  | 'EDIT_TENANTS'
+  | 'DELETE_TENANTS';
 
 export interface Role {
   id: string;
-  name: string; 
+  name: string;
   description?: string;
   permissions: Permission[];
   isSystem?: boolean;
@@ -150,14 +206,14 @@ export interface SystemUser {
   avatar: string;
   permissions: string[];
   currency?: string; // User preference
-  
+
   // Champs techniques pour le module Intervention
   location?: { lat: number; lng: number };
   specialty?: string;
   jobStatus?: 'BUSY' | 'AVAILABLE';
   region?: string;
   signature?: string; // Signature base64 du technicien (persistante)
-  
+
   // Identification RH
   matricule?: string; // Numéro matricule / Numéro employé
   cin?: string; // Carte d'identité nationale / CNI / CIN
@@ -170,7 +226,7 @@ export interface SystemUser {
   ville?: string; // Ville
   codePostal?: string; // Code postal
   pays?: string; // Pays
-  
+
   // Contrat de travail
   dateEmbauche?: string; // Date d'embauche
   typeContrat?: 'CDI' | 'CDD' | 'Stage' | 'Freelance' | 'Prestataire'; // Type de contrat
@@ -178,25 +234,28 @@ export interface SystemUser {
   poste?: string; // Intitulé du poste
   manager?: string; // ID du manager
   salaire?: number; // Salaire (optionnel)
-  
+
   // Contacts d'urgence
   contactUrgenceNom?: string; // Nom contact urgence
   contactUrgenceTel?: string; // Téléphone contact urgence
   contactUrgenceLien?: string; // Lien de parenté
-  
+
   // Contacts professionnels (personnes à contacter)
   contacts?: {
     comptabilite?: { name?: string; fonction?: string; phone?: string; email?: string };
     interventions?: { name?: string; fonction?: string; phone?: string; email?: string };
     autre?: { name?: string; fonction?: string; phone?: string; email?: string };
   };
-  
+
   // Métadonnées
   createdAt?: string;
   updatedAt?: string;
   lastLogin?: string;
   require2FA?: boolean;
   allowedTenants?: string[]; // IDs des organisations auxquelles l'utilisateur a accès (multi-tenant)
+  mobileTabs?: string[]; // Onglets mobile configurés par SuperAdmin (override du profil par rôle)
+  vehicleIds?: string[]; // Véhicules accessibles (restriction CLIENT)
+  allVehicles?: boolean; // Accès à tous les véhicules du tenant
 }
 
 // Alias pour compatibilité
@@ -228,18 +287,18 @@ export interface Client {
   companyName?: string; // Nom de l'entreprise (alias)
   type: 'B2B' | 'B2C';
   status: 'ACTIVE' | 'SUSPENDED' | 'CHURNED' | 'INACTIVE';
-  
+
   // Contact Principal
   contactName: string;
   email: string;
   phone: string;
-  
+
   // Contact Secondaire & Adresse
   secondContactName?: string;
   address: string;
   city?: string;
   country?: string;
-  
+
   // Info Commerciales
   subscriptionPlan: string;
   resellerId?: string;
@@ -249,16 +308,16 @@ export interface Client {
   sector?: string;
   segment?: string; // ex: 'VIP', 'Standard', 'Grand Compte'
   language?: string;
-  
+
   // Info Financières
   paymentTerms?: string; // ex: '30 jours fin de mois'
   currency?: string;
   paymentStatus?: 'UP_TO_DATE' | 'OVERDUE'; // A jour / Impayés
   balance?: number; // Nouveau champ
-  
+
   // Liste des contacts additionnels
   contacts?: ClientContact[];
-  
+
   // Account creation flag
   createUserAccount?: boolean;
 }
@@ -365,7 +424,17 @@ export interface Invoice {
   currency?: string; // ISO 4217 (XOF, EUR, USD, etc.)
   amountHT?: number; // Added: Amount before tax
   balance?: number; // Added: Remaining balance to pay
-  status: 'DRAFT' | 'SENT' | 'PAID' | 'PARTIALLY_PAID' | 'PARTIAL' | 'OVERDUE' | 'CANCELLED' | 'paid' | 'pending' | 'cancelled';
+  status:
+    | 'DRAFT'
+    | 'SENT'
+    | 'PAID'
+    | 'PARTIALLY_PAID'
+    | 'PARTIAL'
+    | 'OVERDUE'
+    | 'CANCELLED'
+    | 'paid'
+    | 'pending'
+    | 'cancelled';
   items: { description: string; quantity: number; price: number }[];
   // New fields
   paymentTerms?: string;
@@ -410,7 +479,7 @@ export interface Ticket {
   id: string;
   tenantId: string;
   clientId: string;
-  clientName?: string;  // Nom du client (depuis JOIN backend)
+  clientName?: string; // Nom du client (depuis JOIN backend)
   vehicleId?: string;
   subject: string;
   description: string;
@@ -421,7 +490,7 @@ export interface Ticket {
   interventionType?: string;
   messages: TicketMessage[];
   assignedTo?: string; // User ID
-  assignedUserName?: string;  // Nom de l'utilisateur assigné (depuis JOIN backend)
+  assignedUserName?: string; // Nom de l'utilisateur assigné (depuis JOIN backend)
   location?: string; // Adresse/lieu du ticket
   contactPhone?: string; // Téléphone de contact
   createdAt: Date;
@@ -448,7 +517,18 @@ export interface Ticket {
 // Types d'intervention (alignés avec le schéma Zod interventionSchema)
 export type InterventionType = 'INSTALLATION' | 'DEPANNAGE';
 // Natures d'intervention (sous-catégories)
-export type InterventionNature = 'Installation' | 'Remplacement' | 'Transfert' | 'Retrait' | 'Réinstallation' | 'Contrôle branchements' | 'Recalibrage sonde' | 'Maintenance' | 'Diagnostic' | 'Dépannage' | 'Désinstallation';
+export type InterventionNature =
+  | 'Installation'
+  | 'Remplacement'
+  | 'Transfert'
+  | 'Retrait'
+  | 'Réinstallation'
+  | 'Contrôle branchements'
+  | 'Recalibrage sonde'
+  | 'Maintenance'
+  | 'Diagnostic'
+  | 'Dépannage'
+  | 'Désinstallation';
 
 export interface Intervention {
   id: string;
@@ -460,18 +540,18 @@ export interface Intervention {
   clientId: string;
   contactName?: string; // Nom du contact client
   contactPhone?: string; // Téléphone du contact client
-  technicianId: string | 'UNASSIGNED'; 
+  technicianId: string | 'UNASSIGNED';
   resellerId?: string; // Added
   resellerName?: string; // Nom du revendeur pour affichage
   branchId?: string; // Branche assignée
   description?: string; // Description de l'intervention
-  
+
   type: InterventionType;
-  nature: InterventionNature; 
-  
+  nature: InterventionNature;
+
   // Status mis à jour
   status: 'PENDING' | 'SCHEDULED' | 'EN_ROUTE' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED';
-  
+
   scheduledDate: string; // ISO Date string
   endTime?: string; // Date de fin réelle (Clôture)
   duration: number; // en minutes
@@ -480,15 +560,22 @@ export interface Intervention {
 
   // *** NOUVEAU CHAMP DEMANDÉ ***
   cost?: number; // Montant de l'intervention (sans devise)
-  invoiceItems?: { id?: string; description: string; quantity: number; unitPrice: number; price?: number; total?: number }[]; // Détail facturation
-  
+  invoiceItems?: {
+    id?: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    price?: number;
+    total?: number;
+  }[]; // Détail facturation
+
   // Identifiants Véhicule
   licensePlate?: string; // Plaque Définitive
   tempPlate?: string; // WW
   vin?: string; // Châssis
   vehicleName?: string; // Nom du véhicule
   vehicleType?: string; // Type d'engin (e.g., Camion, VUL, Engin TP)
-  
+
   // Lien Contrat (Logique Abonnement)
   contractId?: string; // Contrat rattaché ou généré
   updateContract?: boolean; // Ajout au contrat (Installation/Package)
@@ -519,13 +606,13 @@ export interface Intervention {
   material?: string[]; // Liste du matériel (Device models, SIMs, Câbles...)
   imei?: string;
   simCard?: string; // Numéro SIM (06...)
-  iccid?: string;   // ID Carte SIM (8933...)
+  iccid?: string; // ID Carte SIM (8933...)
   sensorSerial?: string; // Numéro de série Capteur/Accessoire
   deviceLocation?: string; // Emplacement du boîtier (e.g., Tableau de bord, Sous siège)
   beaconType?: string; // Type de balise (BLE, UHF, etc.)
   macAddress?: string; // Adresse MAC du dispositif
   probeType?: 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' | string; // Type de sonde
-  
+
   // Champs Remplacement & Transfert (Onglet Terminer)
   newSim?: string;
   newImei?: string;
@@ -549,7 +636,7 @@ export interface Intervention {
   tankWidth?: number;
   tankLength?: number;
   tankShape?: 'RECTANGULAR' | 'CYLINDRICAL_H' | 'CYLINDRICAL_V' | 'L_SHAPE' | 'D_SHAPE'; // Added
-  
+
   // New Fuel Management Fields
   fuelSensorType?: 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC';
   calibrationTable?: string; // CSV format: height,volume
@@ -597,7 +684,16 @@ export interface DeviceStock {
   phoneNumber?: string; // Pour les cartes SIM
   operator?: string; // Opérateur SIM (Orange, MTN, etc.)
   model: string;
-  status: 'IN_STOCK' | 'INSTALLED' | 'RMA' | 'RMA_PENDING' | 'SENT_TO_SUPPLIER' | 'REPLACED_BY_SUPPLIER' | 'SCRAPPED' | 'LOST' | 'REMOVED'; // Extended with RMA workflow statuses
+  status:
+    | 'IN_STOCK'
+    | 'INSTALLED'
+    | 'RMA'
+    | 'RMA_PENDING'
+    | 'SENT_TO_SUPPLIER'
+    | 'REPLACED_BY_SUPPLIER'
+    | 'SCRAPPED'
+    | 'LOST'
+    | 'REMOVED'; // Extended with RMA workflow statuses
   simCardId?: string;
   assignedClientId?: string;
   assignedVehicleId?: string;
@@ -613,11 +709,10 @@ export interface DeviceStock {
   technicianId?: string; // Si location === 'TECH'
   transferStatus?: 'NONE' | 'PENDING_RECEIPT' | 'PENDING_RETURN'; // État du transfert
 
-  
   // Dates
-  entryDate?: string;        // Date d'entrée en stock
+  entryDate?: string; // Date d'entrée en stock
   installationDate?: string; // Date d'installation
-  removalDate?: string;      // Date de sortie/retrait
+  removalDate?: string; // Date de sortie/retrait
 }
 
 export interface StockMovement {
@@ -653,8 +748,6 @@ export interface Zone {
   color: string;
   category: 'DEPOT' | 'CLIENT' | 'RESTRICTED' | 'HQ';
 }
-
-
 
 export interface FuelRecord {
   id: string;
@@ -715,8 +808,8 @@ export type DeviceStatus =
  * This is the source of truth type for the new architecture.
  */
 export interface TrackedObject {
-  id: string;               // ABO-XXXXXX code (primary key)
-  subscriptionCode: string;  // Same as id (alias for clarity)
+  id: string; // ABO-XXXXXX code (primary key)
+  subscriptionCode: string; // Same as id (alias for clarity)
   tenantId: string;
 
   // Device fields (ex-devices BOX)
@@ -785,25 +878,25 @@ export interface TrackedObject {
 
 /**
  * Vehicle — Extended TrackedObject with backward-compatible aliases.
- * 
+ *
  * Components use `vehicle.client`, `vehicle.driver`, `vehicle.speed`, etc.
  * These aliases are populated by the api.vehicles.list() adapter layer.
- * 
+ *
  * New code should prefer TrackedObject fields (clientName, driverName, etc.)
  * but both are available on Vehicle for backward compatibility.
  */
 export interface Vehicle extends TrackedObject {
   // Backward-compat aliases (mapped from TrackedObject equivalents)
-  client: string;       // = clientName || ''
-  driver: string;       // = driverName || ''
+  client: string; // = clientName || ''
+  driver: string; // = driverName || ''
 
   // Required overrides (TrackedObject has these as optional, Vehicle needs defaults)
-  speed: number;        // km/h (default 0)
-  fuelLevel: number;    // percentage (default 0)
-  mileage: number;      // Kilométrage Total (default 0)
-  lastUpdated: Date;    // (default to createdAt or epoch)
+  speed: number; // km/h (default 0)
+  fuelLevel: number; // percentage (default 0)
+  mileage: number; // Kilométrage Total (default 0)
+  lastUpdated: Date; // (default to createdAt or epoch)
   location: Coordinate; // (default { lat: 0, lng: 0 })
-  branchId: string;     // Mandatory: Vehicle MUST belong to a branch
+  branchId: string; // Mandatory: Vehicle MUST belong to a branch
 
   // Vehicle display/computed fields (not in DB, set by adapter)
   maxSpeed: number;
@@ -820,26 +913,26 @@ export interface Vehicle extends TrackedObject {
   violationsCount: number;
 
   // Fuel computed fields
-  fuelQuantity: number;    // Litres actuels (= lastFuelLiters)
-  refuelAmount: number;    // Litres ajoutés (Recharge)
-  fuelLoss: number;        // Litres perdus (Perte)
-  consumption: number;     // L/100km
-  suspectLoss: number;     // Litres (Perte suspecte)
+  fuelQuantity: number; // Litres actuels (= lastFuelLiters)
+  refuelAmount: number; // Litres ajoutés (Recharge)
+  fuelLoss: number; // Litres perdus (Perte)
+  consumption: number; // L/100km
+  suspectLoss: number; // Litres (Perte suspecte)
 
   // Organisation compat
-  group?: string;          // = groupName
+  group?: string; // = groupName
   geofence?: string;
 
   // Identification compat
-  licensePlate?: string;   // = plate
+  licensePlate?: string; // = plate
   wwPlate?: string;
   sim?: string;
   resellerId?: string;
 
   // Security compat aliases
   isBrokenDown?: boolean;
-  immobilized?: boolean;   // = isImmobilized
-  isBreakdown?: boolean;   // = isBrokenDown
+  immobilized?: boolean; // = isImmobilized
+  isBreakdown?: boolean; // = isBrokenDown
 
   // Media
   photoUrl?: string;
@@ -848,7 +941,7 @@ export interface Vehicle extends TrackedObject {
   engineHours?: number;
   weight?: number;
   temperature?: number;
-  batteryLevel?: number;   // Tension batterie en V (= batteryVoltage)
+  batteryLevel?: number; // Tension batterie en V (= batteryVoltage)
   signalStrength?: string;
 
   // Behavior Stats (computed)
@@ -860,8 +953,8 @@ export interface Vehicle extends TrackedObject {
   };
 
   // Settings / Form field aliases
-  deviceType?: string;     // = deviceModel
-  odometer?: number;       // = mileage
+  deviceType?: string; // = deviceModel
+  odometer?: number; // = mileage
 
   // Override odometerSource to also accept legacy 'CANBUS' value
   odometerSource?: 'GPS' | 'CAN' | 'SENSOR' | 'CANBUS';
@@ -885,7 +978,7 @@ export interface CatalogItem {
   price: number;
   unit: string;
   description?: string;
-  
+
   // Propriétés pour les Packages
   isPackage?: boolean;
   includesSubscription?: boolean; // Déclenche la logique contrat
@@ -895,7 +988,7 @@ export interface CatalogItem {
   status: 'ACTIVE' | 'INACTIVE';
   resellerId?: string; // Added
   resellerName?: string; // Added
-  
+
   // New fields for Accounting & Stock
   accountingAccountSale?: string;
   accountingAccountPurchase?: string;
@@ -925,25 +1018,25 @@ export interface Alert {
 }
 
 // Types d'alertes système
-export type AlertType = 
-  | 'SPEEDING'      // Excès de vitesse
-  | 'GEOFENCE'      // Entrée/Sortie zone
-  | 'FUEL_LEVEL'    // Niveau carburant bas
-  | 'FUEL_THEFT'    // Vol de carburant
-  | 'MAINTENANCE'   // Alerte maintenance
-  | 'SOS'           // Bouton SOS
-  | 'IGNITION'      // Allumage/Extinction
-  | 'IDLING'        // Ralenti excessif
-  | 'BATTERY'       // Batterie faible (véhicule ou GPS)
-  | 'TOWING'        // Remorquage détecté
-  | 'JAMMING'       // Brouillage GPS
-  | 'OFFLINE'       // Perte de signal
-  | 'POWER_CUT'     // Coupure alimentation
+export type AlertType =
+  | 'SPEEDING' // Excès de vitesse
+  | 'GEOFENCE' // Entrée/Sortie zone
+  | 'FUEL_LEVEL' // Niveau carburant bas
+  | 'FUEL_THEFT' // Vol de carburant
+  | 'MAINTENANCE' // Alerte maintenance
+  | 'SOS' // Bouton SOS
+  | 'IGNITION' // Allumage/Extinction
+  | 'IDLING' // Ralenti excessif
+  | 'BATTERY' // Batterie faible (véhicule ou GPS)
+  | 'TOWING' // Remorquage détecté
+  | 'JAMMING' // Brouillage GPS
+  | 'OFFLINE' // Perte de signal
+  | 'POWER_CUT' // Coupure alimentation
   | 'HARSH_BRAKING' // Freinage brusque
-  | 'HARSH_ACCEL'   // Accélération brusque
-  | 'SHARP_TURN'    // Virage brusque
-  | 'TAMPERING'     // Sabotage/Vibration
-  | 'CRASH'         // Détection accident
+  | 'HARSH_ACCEL' // Accélération brusque
+  | 'SHARP_TURN' // Virage brusque
+  | 'TAMPERING' // Sabotage/Vibration
+  | 'CRASH' // Détection accident
   | 'RULE_VIOLATION'; // Violation de règle planifiée
 
 // Niveaux de sévérité
@@ -979,7 +1072,7 @@ export interface Branch {
   clientId: string;
   isDefault: boolean;
   createdAt: string;
-  
+
   // Optional legacy/agency fields (deprecated but kept for compatibility if needed)
   ville?: string;
   responsable?: string;
@@ -1010,11 +1103,21 @@ export interface Payment {
   date: string;
   amount: number;
   currency?: string; // ISO 4217 (XOF, EUR, USD, etc.)
-  method: 'VIREMENT' | 'CHEQUE' | 'ESPECES' | 'CB' | 'PRELEVEMENT' | 'MOBILE_MONEY' | 'EXCESS_USAGE' | 'CASH' | 'BANK_TRANSFER' | 'CHECK';
+  method:
+    | 'VIREMENT'
+    | 'CHEQUE'
+    | 'ESPECES'
+    | 'CB'
+    | 'PRELEVEMENT'
+    | 'MOBILE_MONEY'
+    | 'EXCESS_USAGE'
+    | 'CASH'
+    | 'BANK_TRANSFER'
+    | 'CHECK';
   type: 'INCOMING' | 'OUTGOING';
   reference: string; // Bank ref or Check number
   status: 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'COMPLETED' | 'FAILED' | 'PENDING';
-  
+
   // Workflow d'approbation (double validation)
   createdBy?: string; // User ID du créateur
   createdByName?: string;
@@ -1027,20 +1130,20 @@ export interface Payment {
   rejectionReason?: string;
   requiresApproval?: boolean; // true si montant > seuil
   approvalThreshold?: number; // Seuil au-delà duquel l'approbation est requise
-  
+
   // Links
-  clientId?: string; 
+  clientId?: string;
   resellerId?: string; // New: Reseller link
   invoiceId?: string; // Legacy: Single invoice link
   invoiceIds?: string[]; // New: Multiple invoices
   allocations?: { invoiceId: string; amount: number }[]; // New: Amount per invoice
-  supplierId?: string; 
-  
+  supplierId?: string;
+
   // Context
   vehicleId?: string;
   contractId?: string;
   attachments?: string[]; // URLs or filenames
-  
+
   notes?: string;
   error?: string; // Error message from API
   createdAt: string;
@@ -1184,7 +1287,7 @@ export interface Tier {
     permissions?: string[];
     isActive?: boolean;
   };
-  
+
   // Legacy compatibility
   contactName?: string;
   secondContactName?: string;
@@ -1192,19 +1295,19 @@ export interface Tier {
 }
 
 export interface Subscription {
-    id: string;
-    tierId: string; // Link to Tier (Client or Reseller)
-    tenantId: string;
-    planId: string; // Link to a Plan (Basic, Pro, Enterprise)
-    status: 'ACTIVE' | 'SUSPENDED' | 'CANCELED' | 'EXPIRED';
-    startDate: string;
-    endDate?: string;
-    billingCycle: 'MONTHLY' | 'ANNUAL';
-    amount: number;
-    currency: string;
-    autoRenew: boolean;
-    nextBillingDate: string;
-    createdAt: string;
+  id: string;
+  tierId: string; // Link to Tier (Client or Reseller)
+  tenantId: string;
+  planId: string; // Link to a Plan (Basic, Pro, Enterprise)
+  status: 'ACTIVE' | 'SUSPENDED' | 'CANCELED' | 'EXPIRED';
+  startDate: string;
+  endDate?: string;
+  billingCycle: 'MONTHLY' | 'ANNUAL';
+  amount: number;
+  currency: string;
+  autoRenew: boolean;
+  nextBillingDate: string;
+  createdAt: string;
 }
 
 // --- MONITORING & ANOMALIES (REFORM 2025) ---
@@ -1515,7 +1618,20 @@ export interface AlertConfig {
   id: string;
   tenantId?: string;
   name: string;
-  type: 'SPEEDING' | 'GEOFENCE' | 'FUEL_THEFT' | 'FUEL_LOW' | 'IDLE' | 'SOS' | 'MAINTENANCE' | 'BATTERY' | 'JAMMING' | 'OFFLINE' | 'SPEED' | 'MOVEMENT' | 'OTHER';
+  type:
+    | 'SPEEDING'
+    | 'GEOFENCE'
+    | 'FUEL_THEFT'
+    | 'FUEL_LOW'
+    | 'IDLE'
+    | 'SOS'
+    | 'MAINTENANCE'
+    | 'BATTERY'
+    | 'JAMMING'
+    | 'OFFLINE'
+    | 'SPEED'
+    | 'MOVEMENT'
+    | 'OTHER';
   priority: 'low' | 'medium' | 'high' | 'critical' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   conditionValue?: number;
   conditionDuration?: number;
@@ -1607,15 +1723,30 @@ export interface Task {
 }
 
 export type AutomationTriggerType =
-  | 'LEAD_CREATED' | 'LEAD_STATUS_CHANGED'
-  | 'QUOTE_SENT' | 'QUOTE_ACCEPTED' | 'QUOTE_REJECTED'
-  | 'INVOICE_CREATED' | 'INVOICE_OVERDUE' | 'INVOICE_PAID'
-  | 'CONTRACT_CREATED' | 'CONTRACT_EXPIRING' | 'CONTRACT_EXPIRED'
-  | 'PAYMENT_RECEIVED' | 'TASK_DUE' | 'VEHICLE_ALERT';
+  | 'LEAD_CREATED'
+  | 'LEAD_STATUS_CHANGED'
+  | 'QUOTE_SENT'
+  | 'QUOTE_ACCEPTED'
+  | 'QUOTE_REJECTED'
+  | 'INVOICE_CREATED'
+  | 'INVOICE_OVERDUE'
+  | 'INVOICE_PAID'
+  | 'CONTRACT_CREATED'
+  | 'CONTRACT_EXPIRING'
+  | 'CONTRACT_EXPIRED'
+  | 'PAYMENT_RECEIVED'
+  | 'TASK_DUE'
+  | 'VEHICLE_ALERT';
 
 export type AutomationActionType =
-  | 'CREATE_TASK' | 'SEND_EMAIL' | 'SEND_SMS' | 'SEND_TELEGRAM'
-  | 'UPDATE_STATUS' | 'ASSIGN_TO_USER' | 'CREATE_DUNNING' | 'WEBHOOK';
+  | 'CREATE_TASK'
+  | 'SEND_EMAIL'
+  | 'SEND_SMS'
+  | 'SEND_TELEGRAM'
+  | 'UPDATE_STATUS'
+  | 'ASSIGN_TO_USER'
+  | 'CREATE_DUNNING'
+  | 'WEBHOOK';
 
 export interface AutomationRule {
   id: string;

@@ -287,6 +287,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: 'Demo Admin',
           email: email,
           role: 'Superadmin',
+          status: 'Actif',
           avatar: 'https://i.pravatar.cc/150?u=thomas',
           permissions: ROLE_DEFINITIONS.SUPERADMIN,
         };
@@ -345,6 +346,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         name: apiUser.name,
         email: apiUser.email,
         role: apiUser.role,
+        status: (apiUser.status as 'Actif' | 'Inactif') ?? 'Actif',
         avatar: apiUser.avatar || 'https://i.pravatar.cc/150?u=default',
         tenantId: apiUser.tenant_id,
         permissions: effectivePermissions,
