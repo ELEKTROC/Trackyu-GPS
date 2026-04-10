@@ -236,7 +236,7 @@ export const MyAccountView: React.FC = () => {
             </p>
           </div>
           <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-            <span className="px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase">
+            <span className="px-3 py-1 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-bold uppercase">
               {user?.role}
             </span>
             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1 ${
@@ -267,7 +267,7 @@ export const MyAccountView: React.FC = () => {
             {/* Personal Info Form */}
             <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-700">
-                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+                    <div className="p-2 bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
                         <User className="w-5 h-5" />
                     </div>
                     <h3 className="font-bold text-lg text-slate-800 dark:text-white">Informations Personnelles</h3>
@@ -285,7 +285,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="Votre nom"
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -313,7 +313,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="+33 6 00 00 00 00"
                                     value={formData.phone}
                                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                 />
                             </div>
                         </div>
@@ -325,7 +325,7 @@ export const MyAccountView: React.FC = () => {
                                     title="Langue de l'interface"
                                     value={formData.language}
                                     onChange={(e) => setFormData({...formData, language: e.target.value})}
-                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none"
+                                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all appearance-none"
                                 >
                                     <option value="fr">Français</option>
                                     <option value="en">English</option>
@@ -347,7 +347,7 @@ export const MyAccountView: React.FC = () => {
                                         placeholder="CI00000000"
                                         value={formData.cin}
                                         onChange={(e) => setFormData({...formData, cin: e.target.value})}
-                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                     />
                                 </div>
                             </div>
@@ -365,7 +365,7 @@ export const MyAccountView: React.FC = () => {
                                         placeholder="NCC-000000000"
                                         value={formData.ncc}
                                         onChange={(e) => setFormData({...formData, ncc: e.target.value})}
-                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                     />
                                 </div>
                             </div>
@@ -383,7 +383,7 @@ export const MyAccountView: React.FC = () => {
                                         placeholder="RCCM-CI-ABJ-2024-B-00000"
                                         value={formData.rccm}
                                         onChange={(e) => setFormData({...formData, rccm: e.target.value})}
-                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                     />
                                 </div>
                             </div>
@@ -394,7 +394,7 @@ export const MyAccountView: React.FC = () => {
                         <button 
                             type="submit" 
                             disabled={isLoading}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 shadow-sm disabled:opacity-70"
+                            className="px-6 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors font-medium flex items-center gap-2 shadow-sm disabled:opacity-70"
                         >
                             {isLoading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
                             Enregistrer mon profil
@@ -454,7 +454,7 @@ export const MyAccountView: React.FC = () => {
                     {/* Contact Comptabilité */}
                     <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-700">
                         <div className="flex items-center gap-2 mb-4">
-                            <Building2 className="w-4 h-4 text-blue-600" />
+                            <Building2 className="w-4 h-4 text-[var(--primary)]" />
                             <h4 className="font-semibold text-slate-700 dark:text-slate-200">Pour la Comptabilité</h4>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -465,7 +465,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="Nom complet"
                                     value={formData.contacts.comptabilite.name}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, comptabilite: {...formData.contacts.comptabilite, name: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -475,7 +475,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="Ex: Comptable"
                                     value={formData.contacts.comptabilite.fonction}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, comptabilite: {...formData.contacts.comptabilite, fonction: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -485,7 +485,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="+225 00 00 00 00"
                                     value={formData.contacts.comptabilite.phone}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, comptabilite: {...formData.contacts.comptabilite, phone: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -495,7 +495,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="comptabilite@email.com"
                                     value={formData.contacts.comptabilite.email}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, comptabilite: {...formData.contacts.comptabilite, email: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                         </div>
@@ -515,7 +515,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="Nom complet"
                                     value={formData.contacts.interventions.name}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, interventions: {...formData.contacts.interventions, name: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -525,7 +525,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="Ex: Responsable technique"
                                     value={formData.contacts.interventions.fonction}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, interventions: {...formData.contacts.interventions, fonction: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -535,7 +535,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="+225 00 00 00 00"
                                     value={formData.contacts.interventions.phone}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, interventions: {...formData.contacts.interventions, phone: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -545,7 +545,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="technique@email.com"
                                     value={formData.contacts.interventions.email}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, interventions: {...formData.contacts.interventions, email: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                         </div>
@@ -565,7 +565,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="Nom complet"
                                     value={formData.contacts.autre.name}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, autre: {...formData.contacts.autre, name: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -575,7 +575,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="Fonction"
                                     value={formData.contacts.autre.fonction}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, autre: {...formData.contacts.autre, fonction: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -585,7 +585,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="+225 00 00 00 00"
                                     value={formData.contacts.autre.phone}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, autre: {...formData.contacts.autre, phone: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                             <div className="space-y-1">
@@ -595,7 +595,7 @@ export const MyAccountView: React.FC = () => {
                                     placeholder="contact@email.com"
                                     value={formData.contacts.autre.email}
                                     onChange={(e) => setFormData({...formData, contacts: {...formData.contacts, autre: {...formData.contacts.autre, email: e.target.value}}})}
-                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                 />
                             </div>
                         </div>
@@ -624,7 +624,7 @@ export const MyAccountView: React.FC = () => {
                                 title="Mot de passe actuel"
                                 value={passwordData.current}
                                 onChange={(e) => setPasswordData({...passwordData, current: e.target.value})}
-                                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -638,7 +638,7 @@ export const MyAccountView: React.FC = () => {
                                 title="Nouveau mot de passe"
                                 value={passwordData.new}
                                 onChange={(e) => setPasswordData({...passwordData, new: e.target.value})}
-                                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -652,7 +652,7 @@ export const MyAccountView: React.FC = () => {
                                 title="Confirmer le mot de passe"
                                 value={passwordData.confirm}
                                 onChange={(e) => setPasswordData({...passwordData, confirm: e.target.value})}
-                                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                                 placeholder="••••••••"
                             />
                         </div>

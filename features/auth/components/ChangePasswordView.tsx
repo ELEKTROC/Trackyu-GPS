@@ -114,7 +114,7 @@ const ChangePasswordView: React.FC = () => {
             <button
               type="submit"
               disabled={loading || newPassword.length < 8 || newPassword !== confirm}
-              className="w-full py-3 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 mt-2"
+              className="w-full py-3 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 mt-2" style={{ backgroundColor: 'var(--primary)' }}
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               {loading ? 'Enregistrement...' : 'Définir mon mot de passe'}

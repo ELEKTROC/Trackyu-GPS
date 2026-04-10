@@ -106,7 +106,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
     };
 
     const { register, handleSubmit, setValue, watch, formState: { errors, isDirty } } = useForm<UserFormData>({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
         resolver: zodResolver(UserFullSchema),
         defaultValues: {
             language: 'fr',
@@ -206,7 +206,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                             activeTab === tab.id
-                                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                                ? 'border-blue-600 text-[var(--primary)]'
                                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
                         }`}
                     >
@@ -343,7 +343,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                     <input 
                                         type="checkbox" 
                                         {...register('mustChangePassword')} 
-                                        className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500"
+                                        className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                                     />
                                     <div>
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Forcer le changement de mot de passe</span>
@@ -355,7 +355,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                     <input 
                                         type="checkbox" 
                                         {...register('isActive')} 
-                                        className="w-4 h-4 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500"
+                                        className="w-4 h-4 rounded-lg border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                                     />
                                     <div>
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Compte actif</span>
@@ -377,7 +377,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                             <button
                                                 type="button"
                                                 onClick={() => showToast('Email de réinitialisation envoyé !', 'success')}
-                                                className="px-3 py-2 text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-xl transition-colors"
+                                                className="px-3 py-2 text-xs font-medium bg-[var(--primary-dim)] text-[var(--primary)] hover:bg-blue-200 rounded-xl transition-colors"
                                             >
                                                 Réinitialiser MDP
                                             </button>
@@ -419,15 +419,15 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                             <FormField label="Thème">
                                 <div className="flex gap-4">
                                     <label className="flex items-center gap-2 cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                        <input type="radio" value="light" {...register('theme')} className="text-blue-600" />
+                                        <input type="radio" value="light" {...register('theme')} className="text-[var(--primary)]" />
                                         <span className="text-sm">Clair</span>
                                     </label>
                                     <label className="flex items-center gap-2 cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                        <input type="radio" value="dark" {...register('theme')} className="text-blue-600" />
+                                        <input type="radio" value="dark" {...register('theme')} className="text-[var(--primary)]" />
                                         <span className="text-sm">Sombre</span>
                                     </label>
                                     <label className="flex items-center gap-2 cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                                        <input type="radio" value="system" {...register('theme')} className="text-blue-600" />
+                                        <input type="radio" value="system" {...register('theme')} className="text-[var(--primary)]" />
                                         <span className="text-sm">Système</span>
                                     </label>
                                 </div>
@@ -441,15 +441,15 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                             <div className="flex flex-col gap-3">
                                 <label className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                                     <span className="text-sm font-medium">Notifications Email</span>
-                                    <input type="checkbox" {...register('notifications.email')} className="rounded-lg text-blue-600 focus:ring-blue-500" />
+                                    <input type="checkbox" {...register('notifications.email')} className="rounded-lg text-[var(--primary)] focus:ring-[var(--primary)]" />
                                 </label>
                                 <label className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                                     <span className="text-sm font-medium">Notifications SMS</span>
-                                    <input type="checkbox" {...register('notifications.sms')} className="rounded-lg text-blue-600 focus:ring-blue-500" />
+                                    <input type="checkbox" {...register('notifications.sms')} className="rounded-lg text-[var(--primary)] focus:ring-[var(--primary)]" />
                                 </label>
                                 <label className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer">
                                     <span className="text-sm font-medium">Notifications Push (Mobile/Web)</span>
-                                    <input type="checkbox" {...register('notifications.push')} className="rounded-lg text-blue-600 focus:ring-blue-500" />
+                                    <input type="checkbox" {...register('notifications.push')} className="rounded-lg text-[var(--primary)] focus:ring-[var(--primary)]" />
                                 </label>
                             </div>
                         </div>
@@ -459,13 +459,13 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                 {/* TAB 4: PERMISSIONS */}
                 {activeTab === 3 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl flex items-start gap-3">
-                            <div className="p-1.5 bg-blue-100 dark:bg-blue-800 rounded-lg shrink-0">
-                                <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <div className="p-4 bg-[var(--primary-dim)] border border-[var(--border)] rounded-xl flex items-start gap-3">
+                            <div className="p-1.5 bg-[var(--primary-dim)] rounded-lg shrink-0">
+                                <Shield className="w-4 h-4 text-[var(--primary)]" />
                             </div>
                             <div>
-                                <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">Accès à l'application client</p>
-                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                                <p className="text-sm font-semibold text-[var(--text-primary)]">Accès à l'application client</p>
+                                <p className="text-xs text-[var(--primary)] mt-0.5">
                                     Ces permissions définissent les menus visibles dans l'application mobile / web du client.
                                 </p>
                             </div>
@@ -487,9 +487,9 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                             key={value}
                                             className={`flex items-start gap-3 p-3 border rounded-xl transition-colors cursor-pointer ${
                                                 locked
-                                                    ? 'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10 cursor-not-allowed'
+                                                    ? 'border-[var(--border)] bg-[var(--primary-dim)]/50 dark:bg-blue-900/10 cursor-not-allowed'
                                                     : checked
-                                                        ? 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20'
+                                                        ? 'border-blue-300 dark:border-blue-700 bg-[var(--primary-dim)]'
                                                         : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                                             }`}
                                         >
@@ -499,12 +499,12 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                                 {...register('allowedModules')}
                                                 defaultChecked={locked}
                                                 disabled={locked}
-                                                className="mt-0.5 rounded text-blue-600 disabled:opacity-60"
+                                                className="mt-0.5 rounded text-[var(--primary)] disabled:opacity-60"
                                             />
                                             <div>
                                                 <p className="text-sm font-medium text-slate-800 dark:text-white">
                                                     {label}
-                                                    {locked && <span className="ml-2 text-[10px] text-blue-500 font-normal">par défaut</span>}
+                                                    {locked && <span className="ml-2 text-[10px] text-[var(--primary)] font-normal">par défaut</span>}
                                                 </p>
                                                 <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>
                                             </div>
@@ -530,7 +530,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                 type="button"
                                 disabled={!isEditMode}
                                 onClick={openAddSubUser}
-                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-sm font-medium"
+                                className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-sm font-medium"
                             >
                                 <Plus className="w-4 h-4" />
                                 Ajouter un sous-compte
@@ -576,7 +576,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                                     <button
                                                         type="button"
                                                         onClick={() => openEditSubUser(su, idx)}
-                                                        className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                                        className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg transition-colors"
                                                     >
                                                         <Pencil className="w-4 h-4" />
                                                     </button>
@@ -620,7 +620,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                 documentsList.map((doc, idx) => (
                                     <div key={idx} className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2.5 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-blue-600 dark:text-blue-400">
+                                            <div className="p-2.5 bg-[var(--primary-dim)] rounded-xl text-[var(--primary)]">
                                                 <FileText className="w-5 h-5" />
                                             </div>
                                             <div>
@@ -629,7 +629,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <button type="button" className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                            <button type="button" className="p-2 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg transition-colors">
                                                 <Download className="w-4 h-4" />
                                             </button>
                                             <button 
@@ -650,13 +650,13 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                 {/* TAB 7: BRANCHES */}
                 {activeTab === 6 && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl flex items-start gap-3">
-                            <div className="p-1.5 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                                <GitBranch className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <div className="p-4 bg-[var(--primary-dim)] border border-[var(--border)] rounded-xl flex items-start gap-3">
+                            <div className="p-1.5 bg-[var(--primary-dim)] rounded-lg">
+                                <GitBranch className="w-4 h-4 text-[var(--primary)]" />
                             </div>
                             <div>
-                                <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-300">Gestion des Branches</h4>
-                                <p className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                                <h4 className="text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)]">Gestion des Branches</h4>
+                                <p className="text-xs text-[var(--primary)] mt-1">
                                     Les branches permettent de regrouper les véhicules (ex: Motos, Voitures, etc.). 
                                     Une branche par défaut est créée automatiquement au nom de l'utilisateur.
                                 </p>
@@ -725,7 +725,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                     <button
                         type="button"
                         onClick={() => subFormRef.current?.requestSubmit()}
-                        className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                        className="px-4 py-2 text-sm font-medium bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] transition-colors"
                     >
                         {editingSubUserIndex !== null ? 'Mettre à jour' : 'Ajouter'}
                     </button>

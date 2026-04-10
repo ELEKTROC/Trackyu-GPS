@@ -9,7 +9,7 @@ import {
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import { Client } from '../../../types';
+import type { Client } from '../../../types';
 import { useToast } from '../../../contexts/ToastContext';
 import { useCurrency } from '../../../hooks/useCurrency';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
@@ -176,7 +176,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                             <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
                                 {paginatedData.map((i: Record<string, unknown>) => (
                                     <tr key={i.id as string} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                        <td className="py-3 px-4 font-mono text-blue-600">{i.id as string}</td>
+                                        <td className="py-3 px-4 font-mono text-[var(--primary)]">{i.id as string}</td>
                                         <td className="py-3 px-4">{i.date as string}</td>
                                         <td className="py-3 px-4">{i.dueDate as string}</td>
                                         <td className="py-3 px-4 text-right font-bold">{formatPrice(Number(i.amount))}</td>
@@ -274,7 +274,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTrxSubTab(tab.id)}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-white dark:bg-slate-700 text-[var(--primary)] shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                             >
                                 <tab.icon className="w-3 h-3" /> {tab.label}
                             </button>
@@ -285,7 +285,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                         <input
                             type="text"
                             placeholder={`Rechercher dans ${TRANSACTION_SUBTABS.find(t => t.id === activeTrxSubTab)?.label}...`}
-                            className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                             value={trxSearchTerm}
                             onChange={e => setTrxSearchTerm(e.target.value)}
                         />
@@ -353,7 +353,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                             <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase border ${client.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
                                 {client.status}
                             </span>
-                            <span className="px-2 py-1 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-600 border border-blue-200">
+                            <span className="px-2 py-1 rounded text-[10px] font-bold uppercase bg-[var(--primary-dim)] text-[var(--primary)] border border-[var(--border)]">
                                 VIP
                             </span>
                         </div>
@@ -370,9 +370,9 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                             <button
                                 key={item.id}
                                 onClick={() => setActiveDetailTab(item.id)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300'}`}
                             >
-                                <item.icon className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-blue-600' : 'text-slate-400'}`} />
+                                <item.icon className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-[var(--primary)]' : 'text-slate-400'}`} />
                                 {item.label}
                             </button>
                         ))}
@@ -448,17 +448,17 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
 
                                             <div className="grid grid-cols-2 gap-6">
                                                 {/* Contact Principal */}
-                                                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-                                                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-2">Contact Principal</p>
+                                                <div className="p-3 bg-[var(--primary-dim)] rounded-lg border border-[var(--border)]">
+                                                    <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-2">Contact Principal</p>
                                                     <div className="flex items-start gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-blue-600 shadow-sm">
+                                                        <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-[var(--primary)] shadow-sm">
                                                             {client.contactName.charAt(0)}
                                                         </div>
                                                         <div>
                                                             <p className="font-bold text-slate-800 dark:text-white text-sm">{client.contactName}</p>
                                                             <p className="text-xs text-slate-500 mb-1">Responsable Flotte</p>
                                                             <div className="flex gap-2">
-                                                                <a href={`mailto:${client.email}`} className="p-1 bg-white dark:bg-slate-800 rounded hover:text-blue-600 transition-colors" title={`Envoyer un email à ${client.email}`}><Mail className="w-3 h-3" /></a>
+                                                                <a href={`mailto:${client.email}`} className="p-1 bg-white dark:bg-slate-800 rounded hover:text-[var(--primary)] transition-colors" title={`Envoyer un email à ${client.email}`}><Mail className="w-3 h-3" /></a>
                                                                 <a href={`tel:${client.phone}`} className="p-1 bg-white dark:bg-slate-800 rounded hover:text-green-600 transition-colors" title={`Appeler ${client.phone}`}><Phone className="w-3 h-3" /></a>
                                                             </div>
                                                         </div>
@@ -550,7 +550,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                         <div className="flex justify-between items-center mb-4">
                                             <h4 className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2"><BarChart3 className="w-4 h-4" /> Chiffre d'Affaires</h4>
                                             <select
-                                                className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900 px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500"
+                                                className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900 px-2 py-1 outline-none focus:ring-1 focus:ring-[var(--primary)]"
                                                 value={chartPeriod}
                                                 onChange={(e) => setChartPeriod(e.target.value)}
                                             >
@@ -585,7 +585,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                             <h4 className="text-xs font-bold text-slate-400 uppercase">Personnes à contacter</h4>
                                             <button
                                                 onClick={handleAddContact}
-                                                className="p-1 bg-blue-50 hover:bg-blue-100 rounded text-blue-600 transition-colors"
+                                                className="p-1 bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] rounded text-[var(--primary)] transition-colors"
                                                 title="Ajouter un contact"
                                             >
                                                 <Plus className="w-4 h-4" />
@@ -602,7 +602,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                                             <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{contact.name}</p>
                                                             <p className="text-xs text-slate-500 truncate">{contact.role}</p>
                                                             <div className="flex gap-2 mt-1">
-                                                                <a href={`mailto:${contact.email}`} className="text-xs text-blue-600 hover:underline flex items-center gap-1"><Mail className="w-3 h-3" /> Email</a>
+                                                                <a href={`mailto:${contact.email}`} className="text-xs text-[var(--primary)] hover:underline flex items-center gap-1"><Mail className="w-3 h-3" /> Email</a>
                                                                 <a href={`tel:${contact.phone}`} className="text-xs text-green-600 hover:underline flex items-center gap-1"><Phone className="w-3 h-3" /> Tél</a>
                                                             </div>
                                                         </div>
@@ -629,19 +629,19 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                         </div>
                                         <button
                                             onClick={() => showToast("Navigation vers la flotte...", "info")}
-                                            className="w-full py-2 text-xs font-bold text-blue-600 border border-blue-200 bg-blue-50 hover:bg-blue-100 rounded transition-colors"
+                                            className="w-full py-2 text-xs font-bold text-[var(--primary)] border border-[var(--border)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] rounded transition-colors"
                                         >
                                             Voir la liste des véhicules
                                         </button>
                                     </div>
 
                                     {/* BLOC ACTIONS RAPIDES */}
-                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800">
-                                        <h4 className="text-sm font-bold text-blue-800 dark:text-blue-300 mb-2">Actions Rapides</h4>
+                                    <div className="bg-[var(--primary-dim)] p-4 rounded-xl border border-[var(--border)]">
+                                        <h4 className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)] mb-2">Actions Rapides</h4>
                                         <div className="space-y-2">
                                             <button
                                                 onClick={handleCreateInvoice}
-                                                className="w-full py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 text-xs font-bold rounded border border-blue-200 dark:border-blue-700 hover:shadow-sm transition-all flex items-center justify-center gap-2"
+                                                className="w-full py-2 bg-white dark:bg-slate-800 text-[var(--primary)] text-xs font-bold rounded border border-[var(--border)] hover:shadow-sm transition-all flex items-center justify-center gap-2"
                                             >
                                                 <Plus className="w-3 h-3" /> Créer une Facture
                                             </button>
@@ -666,7 +666,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                             <h4 className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2"><FileText className="w-4 h-4" /> Documents Importants</h4>
                                             <button
                                                 onClick={handleAddDocument}
-                                                className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:underline"
+                                                className="text-xs font-bold text-[var(--primary)] flex items-center gap-1 hover:underline"
                                             >
                                                 <Plus className="w-3 h-3" /> Ajouter
                                             </button>
@@ -674,7 +674,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                         <div className="space-y-3">
                                             <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700">
                                                 <div className="flex items-center gap-3">
-                                                    <FileText className="w-5 h-5 text-blue-600" />
+                                                    <FileText className="w-5 h-5 text-[var(--primary)]" />
                                                     <div>
                                                         <p className="font-medium text-slate-800 dark:text-slate-200">Contrat d'Abonnement - Acme Corp</p>
                                                         <p className="text-xs text-slate-500">PDF, 250 Ko</p>
@@ -683,7 +683,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => showToast("Téléchargement...", "info")}
-                                                        className="p-1.5 text-slate-400 hover:text-blue-600 rounded"
+                                                        className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded"
                                                         title="Télécharger"
                                                     >
                                                         <Download className="w-4 h-4" />
@@ -699,7 +699,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                             </div>
                                             <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700">
                                                 <div className="flex items-center gap-3">
-                                                    <FileText className="w-5 h-5 text-blue-600" />
+                                                    <FileText className="w-5 h-5 text-[var(--primary)]" />
                                                     <div>
                                                         <p className="font-medium text-slate-800 dark:text-slate-200">Facture - Janvier 2024</p>
                                                         <p className="text-xs text-slate-500">PDF, 150 Ko</p>
@@ -708,7 +708,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => showToast("Téléchargement...", "info")}
-                                                        className="p-1.5 text-slate-400 hover:text-blue-600 rounded"
+                                                        className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded"
                                                         title="Télécharger"
                                                     >
                                                         <Download className="w-4 h-4" />
@@ -737,7 +737,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                 <div className="flex justify-end">
                                     <button
                                         onClick={() => showToast("Envoi de message...", "info")}
-                                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 shadow-sm"
+                                        className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)] shadow-sm"
                                     >
                                         <Send className="w-4 h-4" /> Envoyer un message
                                     </button>
@@ -746,7 +746,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                     {MOCK_MAILS.map((mail, i) => (
                                         <div key={mail.id} className={`p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 group relative cursor-pointer ${i !== MOCK_MAILS.length - 1 ? 'border-b border-slate-100 dark:border-slate-800' : ''}`}>
                                             <div className="flex items-center gap-4">
-                                                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-full text-blue-600">
+                                                <div className="p-2 bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                                                     <Mail className="w-5 h-5" />
                                                 </div>
                                                 <div>
@@ -806,7 +806,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                         <button
                                             onClick={handleSendComment}
                                             disabled={!newComment.trim()}
-                                            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            className="p-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                         >
                                             <Send className="w-4 h-4" />
                                         </button>
@@ -825,7 +825,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                     </div>
                                     <div className="flex items-center gap-3 w-full sm:w-auto">
                                         <select
-                                            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--primary)]"
                                             value={statementPeriod}
                                             onChange={(e) => setStatementPeriod(e.target.value)}
                                         >
@@ -842,7 +842,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                         </button>
                                         <button
                                             onClick={() => showToast("Téléchargement PDF...", "info")}
-                                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 shadow-sm transition-colors"
+                                            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)] shadow-sm transition-colors"
                                         >
                                             <Download className="w-4 h-4" /> Télécharger PDF
                                         </button>
@@ -870,7 +870,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                                 {MOCK_STATEMENT_LINES.map((line, i) => (
                                                     <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                         <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{line.date}</td>
-                                                        <td className="px-4 py-3 font-mono text-blue-600">{line.ref}</td>
+                                                        <td className="px-4 py-3 font-mono text-[var(--primary)]">{line.ref}</td>
                                                         <td className="px-4 py-3 text-slate-800 dark:text-slate-200 font-medium">{line.label}</td>
                                                         <td className="px-4 py-3 text-right text-slate-500">{line.debit ? (line.debit ?? 0).toLocaleString('fr-FR') : '-'}</td>
                                                         <td className="px-4 py-3 text-right text-slate-500">{line.credit ? (line.credit ?? 0).toLocaleString('fr-FR') : '-'}</td>

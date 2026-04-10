@@ -64,7 +64,7 @@ const SupportSettingsPanel = lazy(() => import('../../support/components/Support
 const LoadingFallback: React.FC<{ label?: string }> = ({ label = 'Chargement...' }) => (
     <div className="flex items-center justify-center h-full min-h-[200px]">
         <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
             <span className="text-sm text-slate-500">{label}</span>
         </div>
     </div>
@@ -618,7 +618,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       if (type === 'client') {
           if (colLower.includes('nom') || colLower.includes('société')) return <div className="font-bold text-slate-800 dark:text-white">{item.name}</div>;
           if (colLower.includes('contact')) return <span className="text-slate-600 dark:text-slate-400">{item.contactName}</span>;
-          if (colLower.includes('email')) return <span className="text-blue-600 dark:text-blue-400 text-xs">{item.email}</span>;
+          if (colLower.includes('email')) return <span className="text-[var(--primary)] text-xs">{item.email}</span>;
           if (colLower.includes('ville')) return <span className="text-slate-600 dark:text-slate-400">{item.city || 'N/A'}</span>;
       }
 
@@ -650,7 +650,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
 
       // Schedule specific columns
       if (type === 'schedule') {
-          if (colLower.includes('horaires')) return item.enableTimeRestriction ? <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Oui</span> : <span className="text-xs text-slate-400">Non</span>;
+          if (colLower.includes('horaires')) return item.enableTimeRestriction ? <span className="text-xs bg-[var(--primary-dim)] text-[var(--primary)] px-2 py-1 rounded">Oui</span> : <span className="text-xs text-slate-400">Non</span>;
           if (colLower.includes('distance')) return item.enableDistanceLimit ? <span className="text-xs font-mono">{item.maxDistancePerDay} km</span> : <span className="text-xs text-slate-400">--</span>;
           if (colLower.includes('vitesse')) return item.enableSpeedLimit ? <span className="text-xs font-mono">{item.maxSpeed} km/h</span> : <span className="text-xs text-slate-400">--</span>;
           if (colLower.includes('moteur')) return item.enableEngineHoursLimit ? <span className="text-xs font-mono">{item.maxEngineHoursPerDay} h</span> : <span className="text-xs text-slate-400">--</span>;
@@ -674,8 +674,8 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
 
       if (type === 'tech') {
           if (colLower.includes('spécialité')) return <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{item.specialite}</span>;
-          if (colLower.includes('zone')) return <span className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded">{item.zone}</span>;
-          if (colLower.includes('niveau')) return <span className={`text-xs px-2 py-1 rounded-full ${item.niveau === 'Expert' ? 'bg-purple-100 text-purple-700' : item.niveau === 'Confirmé' ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>{item.niveau}</span>;
+          if (colLower.includes('zone')) return <span className="text-xs bg-[var(--primary-dim)] text-[var(--primary)] px-2 py-1 rounded">{item.zone}</span>;
+          if (colLower.includes('niveau')) return <span className={`text-xs px-2 py-1 rounded-full ${item.niveau === 'Expert' ? 'bg-purple-100 text-purple-700' : item.niveau === 'Confirmé' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-slate-100 text-slate-600'}`}>{item.niveau}</span>;
           if (colLower.includes('société')) return <span className="text-sm text-slate-600 dark:text-slate-400">{item.societe || 'Interne'}</span>;
       }
 
@@ -703,7 +703,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                       <input 
                           type="text" 
                           placeholder="Rechercher..." 
-                          className="w-full sm:w-64 pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
+                          className="w-full sm:w-64 pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] outline-none shadow-sm"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -712,7 +712,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                   <div className="relative" ref={columnMenuRef}>
                        <button 
                            onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                           className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-blue-500/20' : ''} shadow-sm`}
+                           className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary)]/20' : ''} shadow-sm`}
                            title="Gérer les colonnes"
                        >
                            <LayoutTemplate className="w-4 h-4" />
@@ -729,7 +729,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                                type="checkbox" 
                                                checked={visibleColumns.includes(col)}
                                                onChange={() => toggleColumn(col)}
-                                               className="rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 bg-white dark:bg-slate-900"
+                                               className="rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)] bg-white dark:bg-slate-900"
                                            />
                                            <span className="text-slate-700 dark:text-slate-200">{col}</span>
                                        </label>
@@ -740,7 +740,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                    </div>
 
                   {!readOnly && (
-                      <button onClick={onAddClick} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 shadow-sm flex items-center gap-2 transition-colors whitespace-nowrap">
+                      <button onClick={onAddClick} className="px-4 py-2 bg-[var(--primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--primary-light)] shadow-sm flex items-center gap-2 transition-colors whitespace-nowrap">
                           <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Nouveau</span>
                       </button>
                   )}
@@ -752,11 +752,11 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
               
               {/* Bulk Actions Bar */}
               {selectedIds.size > 0 && (
-                  <div className="absolute top-0 left-0 right-0 h-12 bg-blue-50 dark:bg-blue-900/50 flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-blue-100 dark:border-blue-800">
-                      <span className="text-sm font-bold text-blue-800 dark:text-blue-200">{selectedIds.size} sélectionné(s)</span>
+                  <div className="absolute top-0 left-0 right-0 h-12 bg-[var(--primary-dim)] dark:bg-blue-900/50 flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--border)]">
+                      <span className="text-sm font-bold text-[var(--text-primary)]">{selectedIds.size} sélectionné(s)</span>
                       <div className="flex gap-2">
-                          <button className="text-xs bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded shadow-sm hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors">Exporter</button>
-                          <button onClick={() => setSelectedIds(new Set())} className="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded text-blue-600 dark:text-blue-300"><X className="w-4 h-4" /></button>
+                          <button className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-blue-800 transition-colors">Exporter</button>
+                          <button onClick={() => setSelectedIds(new Set())} className="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded text-[var(--primary)] dark:text-[var(--primary)]"><X className="w-4 h-4" /></button>
                       </div>
                   </div>
               )}
@@ -770,7 +770,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                     type="checkbox" 
                                     checked={isAllSelected} 
                                     onChange={handleSelectAll} 
-                                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" 
+                                    className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" 
                                   />
                               </th>
                               {columns.map((col, idx) => visibleColumns.includes(col) && (
@@ -793,7 +793,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                           {paginatedData.map((item: GenericItem, idx: number) => (
                               <tr 
                                 key={idx} 
-                                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                                className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer ${selectedIds.has(item.id) ? 'bg-[var(--primary-dim)]' : ''}`}
                                 onClick={() => toggleSelection(item.id)}
                               >
                                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -801,7 +801,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                         type="checkbox" 
                                         checked={selectedIds.has(item.id)} 
                                         onChange={() => toggleSelection(item.id)} 
-                                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" 
+                                        className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" 
                                       />
                                   </td>
                                   {columns.map((col, cIdx) => visibleColumns.includes(col) && (
@@ -826,7 +826,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                                               <button
                                                                   key={status}
                                                                   onClick={(e) => { e.stopPropagation(); handleStatusChange(item.id, status); }}
-                                                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 ${item.statut === status ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}
+                                                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-slate-700 dark:text-slate-300'}`}
                                                               >
                                                                   {status}
                                                               </button>
@@ -835,7 +835,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                                   )}
                                               </div>
                                           )}
-                                          <button onClick={() => onEdit(item)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors">
+                                          <button onClick={() => onEdit(item)} className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded transition-colors">
                                               <Edit2 className="w-4 h-4" />
                                           </button>
                                           <button className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
@@ -863,7 +863,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                       <select 
                           value={itemsPerPage} 
                           onChange={(e) => setItemsPerPage(Number(e.target.value))}
-                          className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 p-1 focus:ring-2 focus:ring-blue-500 outline-none"
+                          className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 p-1 focus:ring-2 focus:ring-[var(--primary)] outline-none"
                       >
                           <option value={5}>5</option>
                           <option value={10}>10</option>
@@ -1344,8 +1344,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
   const [mobileShowList, setMobileShowList] = useState(true);
 
   const ICON_COLORS: Record<string, string> = {
-    profile: 'bg-blue-500', operations: 'bg-indigo-500', my_notifications: 'bg-purple-500', support: 'bg-green-500',
-    users: 'bg-blue-600', subaccounts: 'bg-cyan-600', branches: 'bg-teal-500', groups: 'bg-violet-500',
+    profile: 'bg-[var(--primary-dim)]0', operations: 'bg-indigo-500', my_notifications: 'bg-purple-500', support: 'bg-green-500',
+    users: 'bg-[var(--primary)]', subaccounts: 'bg-cyan-600', branches: 'bg-teal-500', groups: 'bg-violet-500',
     objects: 'bg-orange-500', drivers: 'bg-amber-500', commands: 'bg-slate-600',
     geofencing: 'bg-orange-600', poi: 'bg-blue-400', maintenance: 'bg-green-600',
     alerts: 'bg-red-500', schedule: 'bg-yellow-500', ecodriving: 'bg-emerald-500',
@@ -1460,7 +1460,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
               onClick={() => { setActiveTab('profile'); setMobileShowList(false); }}
               className="w-full flex items-center gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm text-left"
             >
-              <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-lg shrink-0">
+              <div className="w-12 h-12 rounded-full bg-[var(--primary-dim)] flex items-center justify-center text-[var(--primary)] font-bold text-lg shrink-0">
                 {(user?.name || user?.email || '?')[0].toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
@@ -1503,7 +1503,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           <div className="flex flex-col h-full">
             <button
               onClick={() => setMobileShowList(true)}
-              className="flex items-center gap-1 text-blue-600 dark:text-blue-400 text-sm font-medium mb-3 self-start"
+              className="flex items-center gap-1 text-[var(--primary)] text-sm font-medium mb-3 self-start"
             >
               <ChevronLeft className="w-4 h-4" /> Paramètres
             </button>
@@ -1559,7 +1559,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
                       type="button"
                       onClick={handleSaveClick}
                       disabled={activeTab === 'objects' && isSavingVehicle}
-                      className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-bold hover:bg-blue-700 shadow-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-[var(--primary)] text-white rounded text-sm font-bold hover:bg-[var(--primary-light)] shadow-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                       {activeTab === 'objects' && isSavingVehicle
                           ? <><Loader2 className="w-4 h-4 animate-spin" /> Enregistrement...</>

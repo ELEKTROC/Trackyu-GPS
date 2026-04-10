@@ -12,8 +12,8 @@ import {
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer 
 } from 'recharts';
-import { Tier, TierType, Vehicle, VehicleStatus } from '../../../types';
-import type { Invoice, Quote, Contract, Payment } from '../../../types';
+import { TierType, VehicleStatus } from '../../../types';
+import type { Invoice, Quote, Contract, Payment , Tier, Vehicle} from '../../../types';
 import type { Intervention } from '../../../types';
 import type { Ticket } from '../../../types';
 import type { AuditLog } from '../../../types';
@@ -223,7 +223,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
     const getInvoiceStatusStyle = (status: string): string => {
         switch (status?.toUpperCase()) {
             case 'PAID': case 'PAYÉ': return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800';
-            case 'SENT': return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800';
+            case 'SENT': return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-blue-800';
             case 'DRAFT': return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700';
             case 'PARTIALLY_PAID': case 'PARTIAL': return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800';
             case 'OVERDUE': case 'RETARD': return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800';
@@ -309,7 +309,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                   const isOverdue = effectiveStatus === 'OVERDUE';
                                   return (
                                       <tr key={inv.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${isOverdue ? 'bg-red-50/30 dark:bg-red-900/10' : ''}`}>
-                                          <td className="py-3 px-4 font-mono text-blue-600 dark:text-blue-400 font-medium text-xs">{inv.number || inv.id?.substring(0, 10)}</td>
+                                          <td className="py-3 px-4 font-mono text-[var(--primary)] font-medium text-xs">{inv.number || inv.id?.substring(0, 10)}</td>
                                           <td className="py-3 px-4 max-w-[180px] truncate text-slate-600 dark:text-slate-300" title={inv.subject || ''}>{inv.subject || '-'}</td>
                                           <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(inv.date)}</td>
                                           <td className={`py-3 px-4 whitespace-nowrap ${isOverdue ? 'text-red-600 font-bold' : 'text-slate-500'}`}>{formatDate(inv.dueDate)}</td>
@@ -360,11 +360,11 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                   const qStatusMap: Record<string, string> = { 'DRAFT': 'Brouillon', 'SENT': 'Envoyé', 'ACCEPTED': 'Accepté', 'REJECTED': 'Rejeté', 'EXPIRED': 'Expiré', 'CANCELLED': 'Annulé' };
                                   return (
                                   <tr key={q.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                      <td className="py-3 px-4 font-mono text-blue-600">{q.number || q.id}</td>
+                                      <td className="py-3 px-4 font-mono text-[var(--primary)]">{q.number || q.id}</td>
                                       <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(q.date)}</td>
                                       <td className="py-3 px-4">{q.clientName || '-'}</td>
                                       <td className="py-3 px-4 text-right font-bold">{formatPrice(Number(q.amount || 0))}</td>
-                                      <td className="py-3 px-4 text-right"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${q.status === 'ACCEPTED' ? 'bg-green-100 text-green-700 border-green-200' : q.status === 'SENT' ? 'bg-blue-100 text-blue-700 border-blue-200' : q.status === 'REJECTED' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-orange-100 text-orange-700 border-orange-200'}`}>{qStatusMap[q.status?.toUpperCase()] || q.status}</span></td>
+                                      <td className="py-3 px-4 text-right"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${q.status === 'ACCEPTED' ? 'bg-green-100 text-green-700 border-green-200' : q.status === 'SENT' ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : q.status === 'REJECTED' ? 'bg-red-100 text-red-700 border-red-200' : 'bg-orange-100 text-orange-700 border-orange-200'}`}>{qStatusMap[q.status?.toUpperCase()] || q.status}</span></td>
                                   </tr>
                                   );
                               })}
@@ -383,7 +383,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                   const billingMap: Record<string, string> = { 'MONTHLY': 'Mensuel', 'QUARTERLY': 'Trimestriel', 'YEARLY': 'Annuel', 'BIANNUAL': 'Semestriel' };
                                   return (
                                   <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                      <td className="py-3 px-4 font-mono text-blue-600">{c.id?.substring(0, 8) || '-'}</td>
+                                      <td className="py-3 px-4 font-mono text-[var(--primary)]">{c.id?.substring(0, 8) || '-'}</td>
                                       <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(c.startDate)}</td>
                                       <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(c.endDate)}</td>
                                       <td className="py-3 px-4">{billingMap[c.billingCycle?.toUpperCase()] || c.billingCycle || '-'}</td>
@@ -407,11 +407,11 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                   const itvTypeMap: Record<string, string> = { 'INSTALLATION': 'Installation', 'MAINTENANCE': 'Maintenance', 'REPAIR': 'Réparation', 'REMOVAL': 'Retrait' };
                                   return (
                                   <tr key={itv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                      <td className="py-3 px-4 font-mono text-blue-600">{itv.id?.substring(0, 10) || '-'}</td>
+                                      <td className="py-3 px-4 font-mono text-[var(--primary)]">{itv.id?.substring(0, 10) || '-'}</td>
                                       <td className="py-3 px-4">{itvTypeMap[(itv.type || itv.interventionType || '').toUpperCase()] || itv.type || itv.interventionType || '-'}</td>
                                       <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(itv.date || itv.scheduledDate)}</td>
                                       <td className="py-3 px-4">{itv.technicianName || itv.assignedTo || '-'}</td>
-                                      <td className="py-3 px-4 text-right"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${itv.status === 'COMPLETED' ? 'bg-green-100 text-green-700 border-green-200' : itv.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-orange-100 text-orange-700 border-orange-200'}`}>{itvStatusMap[itv.status?.toUpperCase()] || itv.status}</span></td>
+                                      <td className="py-3 px-4 text-right"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${itv.status === 'COMPLETED' ? 'bg-green-100 text-green-700 border-green-200' : itv.status === 'IN_PROGRESS' ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-orange-100 text-orange-700 border-orange-200'}`}>{itvStatusMap[itv.status?.toUpperCase()] || itv.status}</span></td>
                                   </tr>
                                   );
                               })}
@@ -430,10 +430,10 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                   const tPriorityMap: Record<string, string> = { 'CRITICAL': 'Critique', 'HIGH': 'Haute', 'MEDIUM': 'Moyenne', 'LOW': 'Basse' };
                                   return (
                                   <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                      <td className="py-3 px-4 font-mono text-blue-600">{t.id}</td>
+                                      <td className="py-3 px-4 font-mono text-[var(--primary)]">{t.id}</td>
                                       <td className="py-3 px-4 max-w-[250px] truncate">{t.subject}</td>
                                       <td className="py-3 px-4"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${t.priority === 'CRITICAL' ? 'bg-red-100 text-red-700' : t.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' : t.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-slate-600'}`}>{tPriorityMap[t.priority?.toUpperCase()] || t.priority}</span></td>
-                                      <td className="py-3 px-4 text-right"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${t.status === 'RESOLVED' || t.status === 'CLOSED' ? 'bg-green-100 text-green-700 border-green-200' : t.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700 border-blue-200' : 'bg-orange-100 text-orange-700 border-orange-200'}`}>{tStatusMap[t.status?.toUpperCase()] || t.status}</span></td>
+                                      <td className="py-3 px-4 text-right"><span className={`px-2 py-1 rounded text-[10px] font-bold border ${t.status === 'RESOLVED' || t.status === 'CLOSED' ? 'bg-green-100 text-green-700 border-green-200' : t.status === 'IN_PROGRESS' ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-orange-100 text-orange-700 border-orange-200'}`}>{tStatusMap[t.status?.toUpperCase()] || t.status}</span></td>
                                   </tr>
                                   );
                               })}
@@ -481,7 +481,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTrxSubTab(tab.id)}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-white dark:bg-slate-700 text-[var(--primary)] shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                             >
                                 <tab.icon className="w-3 h-3"/> {tab.label}
                             </button>
@@ -578,7 +578,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                             <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{tier.type}</p>
                             <span className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded font-mono">{tier.id}</span>
                             {tier.accountingCode && (
-                                <span className="text-[10px] px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded font-mono border border-blue-100 dark:border-blue-800" title="Code Comptable">
+                                <span className="text-[10px] px-1.5 py-0.5 bg-[var(--primary-dim)] text-[var(--primary)] rounded font-mono border border-[var(--border)]" title="Code Comptable">
                                     {tier.accountingCode}
                                 </span>
                             )}
@@ -625,9 +625,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                             <button
                                 key={item.id}
                                 onClick={() => setActiveDetailTab(item.id)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300'}`}
                             >
-                                <item.icon className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-blue-600' : 'text-slate-400'}`}/>
+                                <item.icon className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-[var(--primary)]' : 'text-slate-400'}`}/>
                                 {item.label}
                             </button>
                         ))}
@@ -667,14 +667,14 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                         <div className="flex items-center gap-1.5">
                             {/* Quick Actions */}
                             {onEdit && (
-                                <button onClick={() => onEdit(tier)} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-slate-400 hover:text-blue-600 transition-colors" title="Modifier">
+                                <button onClick={() => onEdit(tier)} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-slate-400 hover:text-[var(--primary)] transition-colors" title="Modifier">
                                     <Edit2 className="w-4 h-4"/>
                                 </button>
                             )}
                             <button onClick={() => handleQuickAction('ticket')} className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg text-slate-400 hover:text-purple-600 transition-colors" title="Créer un ticket">
                                 <LifeBuoy className="w-4 h-4"/>
                             </button>
-                            <button onClick={() => handleQuickAction('devis')} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-slate-400 hover:text-blue-600 transition-colors" title="Créer un devis">
+                            <button onClick={() => handleQuickAction('devis')} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-slate-400 hover:text-[var(--primary)] transition-colors" title="Créer un devis">
                                 <FileText className="w-4 h-4"/>
                             </button>
                             <button onClick={() => handleQuickAction('facture')} className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg text-slate-400 hover:text-emerald-600 transition-colors" title="Créer une facture">
@@ -726,16 +726,16 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                             
                                             <div className="grid grid-cols-2 gap-6">
                                                 {/* Contact Principal */}
-                                                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
-                                                    <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase mb-2">Contact Principal</p>
+                                                <div className="p-3 bg-[var(--primary-dim)] rounded-lg border border-[var(--border)]">
+                                                    <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-2">Contact Principal</p>
                                                     <div className="flex items-start gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-blue-600 shadow-sm">
+                                                        <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-[var(--primary)] shadow-sm">
                                                             {(tier.contactName || tier.name).charAt(0)}
                                                         </div>
                                                         <div>
                                                             <p className="font-bold text-slate-800 dark:text-white text-sm">{tier.contactName || tier.name}</p>
                                                             <div className="flex gap-2 mt-1">
-                                                                <a href={`mailto:${tier.email}`} title="Envoyer un email" className="p-1 bg-white dark:bg-slate-800 rounded hover:text-blue-600 transition-colors"><Mail className="w-3 h-3"/></a>
+                                                                <a href={`mailto:${tier.email}`} title="Envoyer un email" className="p-1 bg-white dark:bg-slate-800 rounded hover:text-[var(--primary)] transition-colors"><Mail className="w-3 h-3"/></a>
                                                                 {tier.phone && <a href={`tel:${tier.phone}`} title="Appeler" className="p-1 bg-white dark:bg-slate-800 rounded hover:text-green-600 transition-colors"><Phone className="w-3 h-3"/></a>}
                                                             </div>
                                                         </div>
@@ -811,7 +811,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                                         {tier.clientData?.resellerId && (
                                                             <div className="col-span-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
                                                                 <label className="block text-xs text-slate-500 mb-1">Géré par (Revendeur)</label>
-                                                                <div className="font-medium text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                                                                <div className="font-medium text-[var(--primary)] flex items-center gap-2">
                                                                     <BriefcaseIcon className="w-3 h-3"/> {tier.clientData.resellerId}
                                                                 </div>
                                                             </div>
@@ -882,7 +882,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                         <div className="flex justify-between items-center mb-4">
                                             <h4 className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2"><BarChart3 className="w-4 h-4"/> Chiffre d'Affaires</h4>
                                             <select 
-                                                 className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900 px-2 py-1 outline-none focus:ring-1 focus:ring-blue-500"
+                                                 className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900 px-2 py-1 outline-none focus:ring-1 focus:ring-[var(--primary)]"
                                                  value={chartPeriod}
                                                  onChange={(e) => setChartPeriod(e.target.value)}
                                                  title="Période du CA"
@@ -931,7 +931,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                             <h4 className="text-xs font-bold text-slate-400 uppercase">Personnes à contacter</h4>
                                             <button 
                                                 onClick={handleAddContact}
-                                                className="p-1 bg-blue-50 hover:bg-blue-100 rounded text-blue-600 transition-colors" 
+                                                className="p-1 bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] rounded text-[var(--primary)] transition-colors" 
                                                 title="Ajouter un contact"
                                             >
                                                 <Plus className="w-4 h-4"/>
@@ -959,7 +959,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                                 </div>
                                             )}
                                             {showAddContactForm && (
-                                                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-700 space-y-2">
+                                                <div className="p-3 bg-[var(--primary-dim)] rounded border border-[var(--border)] space-y-2">
                                                     <input
                                                         autoFocus
                                                         type="text"
@@ -977,7 +977,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                                     />
                                                     <div className="flex gap-2 justify-end">
                                                         <button onClick={() => setShowAddContactForm(false)} className="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Annuler</button>
-                                                        <button onClick={handleSaveContact} disabled={isSavingContact || !newContactName.trim()} className="text-xs px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50">
+                                                        <button onClick={handleSaveContact} disabled={isSavingContact || !newContactName.trim()} className="text-xs px-2 py-1 rounded bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] disabled:opacity-50">
                                                             {isSavingContact ? 'Enregistrement...' : 'Ajouter'}
                                                         </button>
                                                     </div>
@@ -1062,7 +1062,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                                                 <td className="py-3 px-4 text-xs">
                                                                     {contract ? (
                                                                         <div>
-                                                                            <span className="font-mono text-blue-600">{contract.id?.substring(0, 8)}</span>
+                                                                            <span className="font-mono text-[var(--primary)]">{contract.id?.substring(0, 8)}</span>
                                                                             <span className={`ml-2 px-1.5 py-0.5 rounded text-[9px] font-bold ${
                                                                                 contract.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 
                                                                                 contract.status === 'EXPIRED' ? 'bg-red-100 text-red-700' : 
@@ -1123,14 +1123,14 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                 <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                                     <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
                                         <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 mb-3">
-                                            <Plus className="w-4 h-4 text-blue-500"/> Ajouter une entrée
+                                            <Plus className="w-4 h-4 text-[var(--primary)]"/> Ajouter une entrée
                                         </h4>
                                         <div className="flex gap-2 mb-3">
                                             <button
                                                 onClick={() => setCommentType('note')}
                                                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors border ${
                                                     commentType === 'note' 
-                                                        ? 'bg-blue-50 text-blue-700 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700' 
+                                                        ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-blue-300 dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-blue-700' 
                                                         : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700'
                                                 }`}
                                             >
@@ -1148,7 +1148,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                             </button>
                                         </div>
                                         <textarea
-                                            className="w-full p-3 text-sm border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-800 resize-none"
+                                            className="w-full p-3 text-sm border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none bg-white dark:bg-slate-800 resize-none"
                                             rows={3}
                                             placeholder={commentType === 'appel' ? 'Résumé de l\'appel téléphonique...' : 'Ajouter une note ou un commentaire...'}
                                             value={newComment}
@@ -1158,7 +1158,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                             <button 
                                                 onClick={handleSendComment}
                                                 disabled={!newComment.trim()}
-                                                className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                                                className="px-4 py-2 bg-[var(--primary)] text-white text-sm font-bold rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 transition-colors flex items-center gap-2"
                                             >
                                                 <Send className="w-4 h-4"/> Enregistrer
                                             </button>
@@ -1170,10 +1170,10 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                 <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                                     <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
                                         <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                                            <Activity className="w-4 h-4 text-blue-500"/> Journal d&apos;activité
+                                            <Activity className="w-4 h-4 text-[var(--primary)]"/> Journal d&apos;activité
                                         </h4>
                                         <div className="flex items-center gap-2">
-                                            <button onClick={fetchAuditLogs} className="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1" title="Rafraîchir">
+                                            <button onClick={fetchAuditLogs} className="text-xs text-[var(--primary)] hover:text-[var(--primary)] font-medium flex items-center gap-1" title="Rafraîchir">
                                                 <RefreshCw className={`w-3 h-3 ${auditLoading ? 'animate-spin' : ''}`}/> Actualiser
                                             </button>
                                             <span className="text-xs text-slate-400">{auditLogs.length + comments.length} entrée(s)</span>
@@ -1197,7 +1197,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                             {(() => {
                                                 const auditActionConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
                                                     'CREATE': { icon: Plus, color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400', label: 'Création' },
-                                                    'UPDATE': { icon: Edit2, color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400', label: 'Modification' },
+                                                    'UPDATE': { icon: Edit2, color: 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]', label: 'Modification' },
                                                     'DELETE': { icon: Trash2, color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400', label: 'Suppression' },
                                                     'LOGIN': { icon: Eye, color: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400', label: 'Connexion' },
                                                     'STATUS_CHANGE': { icon: RefreshCw, color: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400', label: 'Changement statut' },
@@ -1205,7 +1205,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                                     'EXPORT': { icon: Download, color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400', label: 'Export' },
                                                 };
                                                 const commentTypeConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-                                                    note: { icon: StickyNote, color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400', label: 'Note' },
+                                                    note: { icon: StickyNote, color: 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]', label: 'Note' },
                                                     appel: { icon: PhoneIncoming, color: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400', label: 'Appel' },
                                                     email: { icon: Mail, color: 'bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400', label: 'E-mail' },
                                                     sms: { icon: MessageSquare, color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400', label: 'SMS' },
@@ -1320,7 +1320,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                     <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-slate-100 dark:border-slate-700">
                             <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                                <RefreshCw className="w-5 h-5 text-blue-500"/>
+                                <RefreshCw className="w-5 h-5 text-[var(--primary)]"/>
                                 Changer le statut
                             </h3>
                             <p className="text-sm text-slate-500 mt-1">Modifier le statut de <span className="font-bold">{tier.name}</span></p>
@@ -1352,7 +1352,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                     value={statusMotif}
                                     onChange={e => setStatusMotif(e.target.value)}
                                     placeholder="Indiquez la raison du changement de statut..."
-                                    className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm resize-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                                     rows={3}
                                 />
                             </div>
@@ -1367,7 +1367,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                             <button
                                 onClick={handleStatusChange}
                                 disabled={!newStatus || !statusMotif.trim() || isStatusUpdating}
-                                className="px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                                className="px-4 py-2 text-sm font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-light)] rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
                             >
                                 {isStatusUpdating ? <Loader2 className="w-4 h-4 animate-spin"/> : <CheckCircle className="w-4 h-4"/>}
                                 Confirmer

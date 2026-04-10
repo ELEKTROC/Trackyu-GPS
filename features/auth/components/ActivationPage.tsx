@@ -102,7 +102,7 @@ export const ActivationPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 p-12 text-white flex-col justify-between overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative p-12 text-white flex-col justify-between overflow-hidden" style={{ background: 'linear-gradient(135deg, #E8771A 0%, #C85F0E 50%, #8B3A00 100%)' }}>
         <div className="relative z-10 flex flex-col h-full justify-center">
           <div className="flex items-center gap-3 mb-8">
             <div className="p-3 bg-white/15 backdrop-blur rounded-xl">
@@ -113,7 +113,7 @@ export const ActivationPage: React.FC = () => {
           <h1 className="text-4xl font-bold leading-tight mb-4">
             Activation de votre compte
           </h1>
-          <p className="text-lg text-blue-100 leading-relaxed">
+          <p className="text-lg text-white/80 leading-relaxed">
             Votre demande d'inscription a été approuvée. Définissez votre mot de passe pour accéder à la plateforme.
           </p>
           <div className="flex flex-wrap gap-3 mt-8">
@@ -128,8 +128,8 @@ export const ActivationPage: React.FC = () => {
           </div>
         </div>
         {/* Decorative shapes */}
-        <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-blue-600 rounded-full blur-3xl opacity-20"></div>
-        <div className="absolute -top-24 -left-24 w-64 h-64 bg-purple-600 rounded-full blur-3xl opacity-20"></div>
+        <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-white rounded-full blur-3xl opacity-10"></div>
+        <div className="absolute -top-24 -left-24 w-64 h-64 bg-white rounded-full blur-3xl opacity-10"></div>
       </div>
 
       {/* Right panel — form */}
@@ -137,15 +137,15 @@ export const ActivationPage: React.FC = () => {
         <div className="w-full max-w-md space-y-8 m-auto">
           {/* Mobile header */}
           <div className="text-center lg:text-left">
-            <div className="inline-flex lg:hidden items-center gap-2 mb-4 p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
-              <Activity className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="inline-flex lg:hidden items-center gap-2 mb-4 p-2 rounded-lg" style={{ backgroundColor: 'var(--primary-dim)' }}>
+              <Activity className="w-6 h-6" style={{ color: 'var(--primary)' }} />
               <span className="font-bold text-slate-900 dark:text-white">TrackYU GPS</span>
             </div>
 
             {/* Loading state */}
             {pageState === 'loading' && (
               <div className="flex flex-col items-center justify-center py-16 space-y-4">
-                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                <Loader2 className="w-12 h-12 animate-spin" style={{ color: 'var(--primary)' }} />
                 <p className="text-slate-500 text-lg">Vérification du lien d'activation...</p>
               </div>
             )}
@@ -162,7 +162,7 @@ export const ActivationPage: React.FC = () => {
                 </div>
                 <button
                   onClick={goToLogin}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-medium transition-colors" style={{ backgroundColor: 'var(--primary)' }} onMouseEnter={e => (e.currentTarget.style.backgroundColor='var(--primary-light)')} onMouseLeave={e => (e.currentTarget.style.backgroundColor='var(--primary)')}
                 >
                   Retour à la connexion
                   <ArrowRight className="w-4 h-4" />
@@ -184,7 +184,7 @@ export const ActivationPage: React.FC = () => {
                 </div>
                 <button
                   onClick={goToLogin}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-medium transition-colors" style={{ backgroundColor: 'var(--primary)' }} onMouseEnter={e => (e.currentTarget.style.backgroundColor='var(--primary-light)')} onMouseLeave={e => (e.currentTarget.style.backgroundColor='var(--primary)')}
                 >
                   Se connecter
                   <ArrowRight className="w-4 h-4" />
@@ -197,11 +197,11 @@ export const ActivationPage: React.FC = () => {
               <>
                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Activez votre compte</h2>
                 <p className="text-slate-500 dark:text-slate-400 mt-2">
-                  Bienvenue <span className="font-medium text-slate-700 dark:text-slate-200">{tokenData.name}</span> ! Définissez votre mot de passe pour accéder à <span className="font-medium text-blue-600 dark:text-blue-400">{tokenData.tenantName}</span>.
+                  Bienvenue <span className="font-medium text-slate-700 dark:text-slate-200">{tokenData.name}</span> ! Définissez votre mot de passe pour accéder à <span className="font-medium" style={{ color: 'var(--primary)' }}>{tokenData.tenantName}</span>.
                 </p>
 
                 {/* Account info card */}
-                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl space-y-2">
+                <div className="mt-6 p-4 rounded-xl space-y-2" style={{ backgroundColor: 'var(--primary-dim)', border: '1px solid var(--primary)' }}>
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-500">Email</span>
                     <span className="font-medium text-slate-700">{tokenData.email}</span>
@@ -230,14 +230,14 @@ export const ActivationPage: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mot de passe</label>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         minLength={8}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                         placeholder="Minimum 8 caractères"
                       />
                       <button
@@ -253,14 +253,14 @@ export const ActivationPage: React.FC = () => {
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Confirmer le mot de passe</label>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" />
                       <input
                         type={showConfirmPassword ? 'text' : 'password'}
                         required
                         minLength={8}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
                         placeholder="Retapez votre mot de passe"
                       />
                       <button
@@ -288,7 +288,7 @@ export const ActivationPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting || password.length < 8 || password !== confirmPassword}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/20"
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-semibold focus:ring-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--shadow-md)]" style={{ backgroundColor: 'var(--primary)', '--tw-ring-color': 'var(--primary-dim)' } as React.CSSProperties}
                   >
                     {isSubmitting ? (
                       <>

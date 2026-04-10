@@ -30,11 +30,12 @@ import { api } from '../../../services/api';
 import { API_BASE_URL } from '../../../utils/apiConfig';
 import { useQueryClient } from '@tanstack/react-query';
 import { logger } from '../../../utils/logger';
+import type {
+  NumberingCounter} from '../../../services/numberingService';
 import {
   useNumberingCounters,
   useUpdateCounter,
   useResetCounter,
-  NumberingCounter,
   MODULE_LABELS,
   generatePreview
 } from '../../../services/numberingService';
@@ -576,7 +577,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
-                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                    ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
                     : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'
                   }`}
               >
@@ -592,7 +593,7 @@ export const OrganizationPanelV2: React.FC = () => {
           onClick={handleSave}
           disabled={loading || !hasChanges}
           className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${hasChanges
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-light)]'
               : 'bg-slate-200 text-slate-400 dark:bg-slate-700 dark:text-slate-500 cursor-not-allowed'
             } disabled:opacity-50`}
         >
@@ -986,7 +987,7 @@ export const OrganizationPanelV2: React.FC = () => {
             <div className="pt-4 border-t dark:border-slate-700">
               <div className="flex justify-between items-center mb-4">
                 <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">Comptes Bancaires</h4>
-                <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700">
+                <button className="flex items-center gap-1 text-sm text-[var(--primary)] hover:text-[var(--primary-light)]">
                   <Plus className="w-4 h-4" />
                   Ajouter
                 </button>
@@ -1005,7 +1006,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         <p className="text-sm text-slate-500">{account.bank} - {account.iban}</p>
                       </div>
                       <div className="flex gap-2">
-                        <button className="p-1 hover:text-blue-600"><Edit2 className="w-4 h-4" /></button>
+                        <button className="p-1 hover:text-[var(--primary)]"><Edit2 className="w-4 h-4" /></button>
                         <button className="p-1 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
@@ -1025,11 +1026,11 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {/* Activation */}
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="p-4 bg-[var(--primary-dim)] rounded-lg border border-[var(--border)]">
               <label className="flex items-center justify-between cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-lg">
-                    <Repeat className="w-5 h-5 text-blue-600" />
+                  <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
+                    <Repeat className="w-5 h-5 text-[var(--primary)]" />
                   </div>
                   <div>
                     <p className="font-medium text-slate-800 dark:text-white">Génération Automatique des Factures</p>
@@ -1043,7 +1044,7 @@ export const OrganizationPanelV2: React.FC = () => {
                     ...settings.subscriptionBilling,
                     autoGenerateEnabled: e.target.checked
                   })}
-                  className="w-5 h-5 text-blue-600 rounded"
+                  className="w-5 h-5 text-[var(--primary)] rounded"
                 />
               </label>
             </div>
@@ -1074,7 +1075,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       ...settings.subscriptionBilling,
                       notifyOnGeneration: e.target.checked
                     })}
-                    className="w-4 h-4 text-blue-600 rounded"
+                    className="w-4 h-4 text-[var(--primary)] rounded"
                   />
                   <div>
                     <p className="font-medium text-sm">Notification Admin</p>
@@ -1280,16 +1281,16 @@ export const OrganizationPanelV2: React.FC = () => {
               <div>
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Séries de Numérotation</h3>
                 <p className="text-sm text-slate-500">Configuration des préfixes et formats de numéros pour chaque module</p>
-                <div className="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
-                    💡 Votre slug : <code className="px-2 py-0.5 bg-blue-100 dark:bg-blue-800 rounded font-mono font-bold">{tenantSlug}</code>
+                <div className="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-[var(--border)]">
+                  <p className="text-sm text-[var(--primary)]">
+                    💡 Votre slug : <code className="px-2 py-0.5 bg-[var(--primary-dim)] rounded font-mono font-bold">{tenantSlug}</code>
                     <span className="ml-2 text-slate-500">→ Exemple: FAC-<strong>{tenantSlug}</strong>-00001</span>
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => refetchCounters()}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg transition-colors"
                 title="Rafraîchir depuis le serveur"
               >
                 <RefreshCw className={`w-4 h-4 ${countersLoading ? 'animate-spin' : ''}`} />
@@ -1299,7 +1300,7 @@ export const OrganizationPanelV2: React.FC = () => {
 
             {countersLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
                 <span className="ml-3 text-slate-500">Chargement des compteurs...</span>
               </div>
             ) : (
@@ -1383,7 +1384,7 @@ export const OrganizationPanelV2: React.FC = () => {
                                   }
                                 });
                               }}
-                              className="rounded text-blue-600"
+                              className="rounded text-[var(--primary)]"
                               title="Utiliser le slug du revendeur (ex: ABJ)"
                             />
                           </td>
@@ -1425,7 +1426,7 @@ export const OrganizationPanelV2: React.FC = () => {
                             </span>
                           </td>
                           <td className="px-3 py-2">
-                            <span className={`font-mono ${counter.includeSlug ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-slate-600 dark:text-slate-400'}`}>
+                            <span className={`font-mono ${counter.includeSlug ? 'text-[var(--primary)] font-bold' : 'text-slate-600 dark:text-slate-400'}`}>
                               {preview}
                             </span>
                           </td>
@@ -1453,10 +1454,10 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
             )}
 
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="p-4 bg-[var(--primary-dim)] rounded-lg border border-[var(--border)]">
               <div className="flex items-start gap-2">
-                <Info className="w-5 h-5 text-blue-600 mt-0.5" />
-                <div className="text-sm text-blue-700 dark:text-blue-400">
+                <Info className="w-5 h-5 text-[var(--primary)] mt-0.5" />
+                <div className="text-sm text-[var(--primary)]">
                   <p className="font-medium">Variables disponibles :</p>
                   <p>• <strong>Slug</strong> : Code unique du revendeur (ex: ABJ, DKR) - <span className="text-green-600">Recommandé</span></p>
                   <p>• <strong>Année</strong> : Inclut l'année en cours (2025)</p>
@@ -1489,14 +1490,14 @@ export const OrganizationPanelV2: React.FC = () => {
                 return (
                   <div key={docKey} className="p-4 border dark:border-slate-700 rounded-lg flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-lg bg-[var(--primary-dim)] text-[var(--primary)] flex items-center justify-center shrink-0">
                         <FileText className="w-6 h-6" />
                       </div>
                       <div>
                         <h4 className="font-bold text-slate-800 dark:text-white uppercase text-sm">{doc.label}</h4>
                         <p className="text-xs text-slate-500 mb-1">{doc.desc}</p>
                         {docUrl ? (
-                          <a href={docUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium">
+                          <a href={docUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--primary)] hover:text-[var(--primary)] flex items-center gap-1 font-medium">
                             <Eye className="w-3 h-3" /> Voir le document actuel
                           </a>
                         ) : (
@@ -1538,8 +1539,8 @@ export const OrganizationPanelV2: React.FC = () => {
               })}
             </div>
             
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex gap-3 text-sm text-blue-800 dark:text-blue-200 border border-blue-100 dark:border-blue-800 mt-6">
-               <Info className="w-5 h-5 shrink-0 mt-0.5 text-blue-600" />
+            <div className="p-4 bg-[var(--primary-dim)] rounded-lg flex gap-3 text-sm text-[var(--text-primary)] border border-[var(--border)] mt-6">
+               <Info className="w-5 h-5 shrink-0 mt-0.5 text-[var(--primary)]" />
                <p>
                  Ces documents seront automatiquement accessibles pour tous vos clients via le menu <strong>Service Client & Centre d'aide</strong>. Assurez-vous d'utiliser uniquement des fichiers au format PDF.
                </p>
@@ -1561,13 +1562,13 @@ export const OrganizationPanelV2: React.FC = () => {
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Logo</label>
                 <div className="flex items-center gap-4">
                   <div
-                    className="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center bg-slate-50 dark:bg-slate-800 relative cursor-pointer hover:border-blue-400 transition-colors"
+                    className="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center bg-slate-50 dark:bg-slate-800 relative cursor-pointer hover:border-[var(--border)] transition-colors"
                     onClick={() => document.getElementById('logo-file-input')?.click()}
-                    onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-blue-500', 'bg-blue-50'); }}
-                    onDragLeave={(e) => { e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50'); }}
+                    onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[var(--primary)]', 'bg-[var(--primary-dim)]'); }}
+                    onDragLeave={(e) => { e.currentTarget.classList.remove('border-[var(--primary)]', 'bg-[var(--primary-dim)]'); }}
                     onDrop={async (e) => {
                       e.preventDefault();
-                      e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+                      e.currentTarget.classList.remove('border-[var(--primary)]', 'bg-[var(--primary-dim)]');
                       const file = e.dataTransfer.files?.[0];
                       if (file) await handleLogoUpload(file);
                     }}
@@ -1582,7 +1583,7 @@ export const OrganizationPanelV2: React.FC = () => {
                     )}
                     {logoUploading && (
                       <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 flex items-center justify-center rounded-lg">
-                        <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
+                        <Loader2 className="w-6 h-6 animate-spin text-[var(--primary)]" />
                       </div>
                     )}
                   </div>
@@ -1680,7 +1681,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       onClick={() => handleChange('fontSize', opt.value)}
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.fontSize === opt.value
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 ring-1 ring-blue-200 dark:ring-blue-800'
+                          ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
                           : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                       }`}
                     >
@@ -1707,7 +1708,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       onClick={() => handleChange('borderRadius', opt.value)}
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.borderRadius === opt.value
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 ring-1 ring-blue-200 dark:ring-blue-800'
+                          ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
                           : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                       }`}
                     >
@@ -1764,7 +1765,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       onClick={() => handleChange('sidebarStyle', opt.value)}
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.sidebarStyle === opt.value
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 ring-1 ring-blue-200 dark:ring-blue-800'
+                          ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
                           : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                       }`}
                     >
@@ -1819,7 +1820,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       onClick={() => handleChange('tableDensity', opt.value)}
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.tableDensity === opt.value
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 ring-1 ring-blue-200 dark:ring-blue-800'
+                          ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
                           : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                       }`}
                     >
@@ -1933,8 +1934,8 @@ export const OrganizationPanelV2: React.FC = () => {
             <div className="space-y-4">
               <label className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                    <Mail className="w-5 h-5 text-blue-600" />
+                  <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
+                    <Mail className="w-5 h-5 text-[var(--primary)]" />
                   </div>
                   <div>
                     <p className="font-medium text-slate-800 dark:text-white">Notifications Email</p>
@@ -1945,7 +1946,7 @@ export const OrganizationPanelV2: React.FC = () => {
                   type="checkbox"
                   checked={settings.emailNotifications}
                   onChange={(e) => handleChange('emailNotifications', e.target.checked)}
-                  className="w-5 h-5 text-blue-600 rounded"
+                  className="w-5 h-5 text-[var(--primary)] rounded"
                 />
               </label>
 
@@ -1963,7 +1964,7 @@ export const OrganizationPanelV2: React.FC = () => {
                   type="checkbox"
                   checked={settings.smsNotifications}
                   onChange={(e) => handleChange('smsNotifications', e.target.checked)}
-                  className="w-5 h-5 text-blue-600 rounded"
+                  className="w-5 h-5 text-[var(--primary)] rounded"
                 />
               </label>
             </div>
@@ -2017,7 +2018,7 @@ export const OrganizationPanelV2: React.FC = () => {
                   type="checkbox"
                   checked={settings.require2FA}
                   onChange={(e) => handleChange('require2FA', e.target.checked)}
-                  className="w-5 h-5 text-blue-600 rounded"
+                  className="w-5 h-5 text-[var(--primary)] rounded"
                 />
               </label>
 
@@ -2120,7 +2121,7 @@ export const OrganizationPanelV2: React.FC = () => {
               return (
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <Smartphone className="w-4 h-4 text-blue-500" />
+                    <Smartphone className="w-4 h-4 text-[var(--primary)]" />
                     <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Tech / SAV</h4>
                   </div>
                   {techTabs.map(tab => (
@@ -2136,7 +2137,7 @@ export const OrganizationPanelV2: React.FC = () => {
                           setMobileViewTabsConfig(prev => ({ ...prev, techView: next }));
                           setHasChanges(true);
                         }}
-                        className="w-4 h-4 text-blue-600 rounded"
+                        className="w-4 h-4 text-[var(--primary)] rounded"
                       />
                     </label>
                   ))}
@@ -2193,7 +2194,7 @@ export const OrganizationPanelV2: React.FC = () => {
               return (
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
-                    <Smartphone className="w-4 h-4 text-blue-500" />
+                    <Smartphone className="w-4 h-4 text-[var(--primary)]" />
                     <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Support</h4>
                   </div>
                   {supportTabs.map(tab => (
@@ -2209,7 +2210,7 @@ export const OrganizationPanelV2: React.FC = () => {
                           setMobileViewTabsConfig(prev => ({ ...prev, supportView: next }));
                           setHasChanges(true);
                         }}
-                        className="w-4 h-4 text-blue-600 rounded"
+                        className="w-4 h-4 text-[var(--primary)] rounded"
                       />
                     </label>
                   ))}
@@ -2253,7 +2254,7 @@ export const OrganizationPanelV2: React.FC = () => {
               );
             })()}
 
-            <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-xs text-blue-700 dark:text-blue-300">
+            <div className="flex items-start gap-2 p-3 bg-[var(--primary-dim)] rounded-lg text-xs text-[var(--primary)]">
               <Info className="w-4 h-4 shrink-0 mt-0.5" />
               <span>Les modifications s'appliquent après enregistrement. Les onglets masqués restent accessibles sur desktop.</span>
             </div>

@@ -14,8 +14,8 @@ import { ListItemSkeleton } from '../../../components/Skeleton';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Intervention, Ticket, TicketMessage, HelpArticle, Integration, InterventionType, InterventionNature } from '../../../types';
-import type { Tier, TicketCategory } from '../../../types';
+import { TicketMessage } from '../../../types';
+import type { Tier, TicketCategory , Intervention, Ticket, HelpArticle, Integration, InterventionType, InterventionNature } from '../../../types';
 import type { User as UserType } from '../../../types/auth';
 import { api } from '../../../services/api';
 import { CreateTicketSchema } from '../../../schemas/ticketSchema';
@@ -79,7 +79,7 @@ const SUPPORT_MOBILE_HIDDEN = new Set<TabId>(['KANBAN', 'SLA', 'CONFIG']);
 
 const SUPPORT_TABS = [
     { id: 'DASHBOARD' as TabId, label: 'Dashboard',     icon: LayoutDashboard, color: 'bg-purple-500', description: 'Vue d\'ensemble du support' },
-    { id: 'TICKETS'   as TabId, label: 'Tickets',       icon: MessageSquare,   color: 'bg-blue-500',   description: 'Gestion des tickets' },
+    { id: 'TICKETS'   as TabId, label: 'Tickets',       icon: MessageSquare,   color: 'bg-[var(--primary-dim)]0',   description: 'Gestion des tickets' },
     { id: 'KANBAN'    as TabId, label: 'Kanban',         icon: Columns3,        color: 'bg-teal-500',   description: 'Vue Kanban des tickets' },
     { id: 'SLA'       as TabId, label: 'SLA Monitor',   icon: AlertTriangle,   color: 'bg-red-500',    description: 'Surveillance des délais SLA' },
     { id: 'CONFIG'    as TabId, label: 'Configuration', icon: Settings,        color: 'bg-slate-500',  description: 'Paramètres du support' },
@@ -87,7 +87,7 @@ const SUPPORT_TABS = [
 ];
 
 const KANBAN_COLUMNS = [
-    { id: 'OPEN', label: 'Ouvert', color: 'blue', borderClass: 'border-blue-500' },
+    { id: 'OPEN', label: 'Ouvert', color: 'blue', borderClass: 'border-[var(--primary)]' },
     { id: 'IN_PROGRESS', label: 'En Cours', color: 'orange', borderClass: 'border-orange-500' },
     { id: 'WAITING_CLIENT', label: 'En Attente', color: 'purple', borderClass: 'border-purple-500' },
     { id: 'RESOLVED', label: 'Résolu', color: 'green', borderClass: 'border-green-500' },
@@ -855,7 +855,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
         const styles: Record<string, string> = {
             CRITICAL: 'bg-red-100 text-red-700 border-red-200',
             HIGH: 'bg-orange-100 text-orange-700 border-orange-200',
-            MEDIUM: 'bg-blue-100 text-blue-700 border-blue-200',
+            MEDIUM: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]',
             LOW: 'bg-slate-100 text-slate-600 border-slate-200'
         };
         return styles[priority] || styles.MEDIUM;
@@ -914,7 +914,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 <div className="flex items-center gap-2">
                     {/* Export + Import — desktop only */}
                     <div className="hidden sm:flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2">
-                        <button onClick={handleExportCSV} className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-blue-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 hover:bg-blue-100 transition-colors" title="Export CSV">
+                        <button onClick={handleExportCSV} className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:border-blue-800 dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors" title="Export CSV">
                             <FileSpreadsheet className="w-3.5 h-3.5" /> CSV
                         </button>
                         <button onClick={handleExportExcel} className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-green-200 text-green-600 bg-green-50 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors" title="Export Excel">
@@ -928,7 +928,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         <Upload className="w-3.5 h-3.5" /> Import
                     </button>
                     {/* Nouveau Ticket : label sur desktop, icône seule sur mobile */}
-                    <button onClick={openCreateModal} className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow-sm">
+                    <button onClick={openCreateModal} className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] shadow-sm">
                         <Plus className="w-4 h-4" />
                         <span className="hidden sm:inline text-sm font-medium">Nouveau Ticket</span>
                     </button>
@@ -953,7 +953,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                     <p className="text-xs font-bold text-slate-500 uppercase">Ouverts</p>
                                     <p className="text-2xl font-bold text-slate-800 dark:text-white">{ticketCounts.OPEN || 0}</p>
                                 </div>
-                                <MessageSquare className="w-8 h-8 text-blue-500 opacity-50" />
+                                <MessageSquare className="w-8 h-8 text-[var(--primary)] opacity-50" />
                             </div>
                         </Card>
                         <Card className="p-4 border-l-4 border-l-orange-500">
@@ -1117,7 +1117,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {/* Statistiques par Agent */}
                     <Card className="p-6">
                         <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                            <Users className="w-5 h-5 text-blue-500" /> Performance par Agent
+                            <Users className="w-5 h-5 text-[var(--primary)]" /> Performance par Agent
                         </h3>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
@@ -1181,7 +1181,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                             return (
                                                 <tr key={i} className="density-row border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                                     <td className="py-2 px-3 font-medium text-slate-800 dark:text-white">{a.name}</td>
-                                                    <td className="text-center py-2 px-3"><span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-bold">{a.created}</span></td>
+                                                    <td className="text-center py-2 px-3"><span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-bold">{a.created}</span></td>
                                                     <td className="text-center py-2 px-3"><span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold">{a.assigned}</span></td>
                                                     <td className="text-center py-2 px-3"><span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold">{a.resolved}</span></td>
                                                     <td className="text-center py-2 px-3"><span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-xs font-bold">{a.inProgress}</span></td>
@@ -1202,7 +1202,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
 
                                         rows.push(
                                             <tr key="total" className="border-t-2 border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 font-bold">
-                                                <td className="py-3 px-3 text-blue-700 dark:text-blue-400 uppercase tracking-wider">TOTAUX / MOY. GLOBALE</td>
+                                                <td className="py-3 px-3 text-[var(--primary)] uppercase tracking-wider">TOTAUX / MOY. GLOBALE</td>
                                                 <td className="text-center py-3 px-3 text-slate-800 dark:text-white text-base">
                                                     <div className="flex flex-col">
                                                         <span>{totalCreated}</span>
@@ -1263,7 +1263,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                             <div className="flex gap-2 flex-wrap">
                                 {FILTERS_CONFIG.map(f => (
                                     <button key={f.id} onClick={() => setStatusFilter(f.id)}
-                                        className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${statusFilter === f.id ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                                        className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${statusFilter === f.id ? 'bg-[var(--primary)] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                                             }`}>
                                         {f.label} {f.id !== 'ALL' && <span className="ml-1 opacity-70">({ticketCounts[f.id] || 0})</span>}
                                     </button>
@@ -1272,10 +1272,10 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         </div>
                         {/* Bulk Action Bar */}
                         {selectedTicketIds.size > 0 && (
-                            <div className="px-4 py-2.5 bg-blue-50 dark:bg-blue-900/30 border-b border-blue-200 dark:border-blue-800 flex items-center justify-between gap-2">
+                            <div className="px-4 py-2.5 bg-[var(--primary-dim)] border-b border-[var(--border)] flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2">
-                                    <CheckSquare className="w-4 h-4 text-blue-600" />
-                                    <span className="text-sm font-medium text-blue-700 dark:text-blue-300">{selectedTicketIds.size} sélectionné(s)</span>
+                                    <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
+                                    <span className="text-sm font-medium text-[var(--primary)]">{selectedTicketIds.size} sélectionné(s)</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button onClick={handleBulkTakeCharge} disabled={bulkProcessing}
@@ -1298,9 +1298,9 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                 <div className="flex items-center gap-2">
                                     <button onClick={toggleSelectAll} className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors" title={selectedTicketIds.size === pagedTickets.length ? 'Tout désélectionner' : 'Tout sélectionner'}>
                                         {selectedTicketIds.size === pagedTickets.length && pagedTickets.length > 0
-                                            ? <CheckSquare className="w-4 h-4 text-blue-600" />
+                                            ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                                             : selectedTicketIds.size > 0
-                                                ? <MinusSquare className="w-4 h-4 text-blue-400" />
+                                                ? <MinusSquare className="w-4 h-4 text-[var(--primary)]" />
                                                 : <Square className="w-4 h-4 text-slate-400" />}
                                     </button>
                                     <span className="text-xs text-slate-500">{totalTicketCount} ticket(s)</span>
@@ -1325,12 +1325,12 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                     const isChecked = selectedTicketIds.has(ticket.id);
                                     return (
                                         <div key={ticket.id} onClick={() => setSelectedTicketId(ticket.id)}
-                                            className={`density-row p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors ${selectedTicketId === ticket.id ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-l-transparent'
+                                            className={`density-row p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors ${selectedTicketId === ticket.id ? 'bg-[var(--primary-dim)] border-l-4 border-l-blue-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-l-transparent'
                                                 }`}>
                                             <div className="flex gap-3">
                                                 {/* Checkbox */}
                                                 <button onClick={(e) => toggleTicketSelection(ticket.id, e)} className="mt-0.5 shrink-0 p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors">
-                                                    {isChecked ? <CheckSquare className="w-4 h-4 text-blue-600" /> : <Square className="w-4 h-4 text-slate-400" />}
+                                                    {isChecked ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" /> : <Square className="w-4 h-4 text-slate-400" />}
                                                 </button>
                                                 <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between mb-2">
@@ -1380,7 +1380,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                         const p = start + i;
                                         return (
                                             <button key={p} onClick={() => setCurrentPage(p)}
-                                                className={`w-7 h-7 rounded text-xs font-medium transition-colors ${p === currentPage ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                                                className={`w-7 h-7 rounded text-xs font-medium transition-colors ${p === currentPage ? 'bg-[var(--primary)] text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
                                                 {p}
                                             </button>
                                         );
@@ -1407,7 +1407,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                     {isMobile && (
                                         <button
                                             onClick={() => setSelectedTicketId(null)}
-                                            className="flex items-center gap-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 mb-3 -mt-1"
+                                            className="flex items-center gap-1.5 text-sm font-medium text-[var(--primary)] mb-3 -mt-1"
                                         >
                                             <ChevronLeft className="w-4 h-4" /> Retour aux tickets
                                         </button>
@@ -1432,7 +1432,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                 <span className="text-slate-300">|</span>
                                                 {selectedTicket.source && (
                                                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                                                        selectedTicket.source === 'TrackYu' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300' :
+                                                        selectedTicket.source === 'TrackYu' ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-blue-900/40 dark:text-[var(--primary)]' :
                                                         selectedTicket.source === 'Appel' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' :
                                                         selectedTicket.source === 'WhatsApp' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' :
                                                         selectedTicket.source === 'Visite' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
@@ -1508,7 +1508,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                         <Calendar className="w-4 h-4" />
                                                     </button>
                                                     {selectedTicket.status === 'OPEN' && (
-                                                        <button onClick={handleTakeCharge} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center gap-2">
+                                                        <button onClick={handleTakeCharge} className="px-3 py-2 bg-[var(--primary)] text-white rounded-lg text-xs font-bold flex items-center gap-2">
                                                             <Play className="w-4 h-4" /> Prendre en charge
                                                         </button>
                                                     )}
@@ -1527,7 +1527,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                             )}
                                             {/* Bouton Rouvrir pour SUPERADMIN/ADMIN sur tickets RESOLVED ou CLOSED */}
                                             {['RESOLVED', 'CLOSED'].includes(selectedTicket.status) && ['SUPERADMIN', 'ADMIN'].includes(user?.role || '') && (
-                                                <button onClick={() => handleStatusClick('OPEN')} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-blue-700 transition-colors">
+                                                <button onClick={() => handleStatusClick('OPEN')} className="px-3 py-2 bg-[var(--primary)] text-white rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-[var(--primary-light)] transition-colors">
                                                     <RotateCcw className="w-4 h-4" /> Rouvrir
                                                 </button>
                                             )}
@@ -1643,7 +1643,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                 <div className="relative pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-3">
                                     {/* Création */}
                                     <div className="relative">
-                                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-blue-500 border-2 border-white dark:border-slate-900" />
+                                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[var(--primary-dim)]0 border-2 border-white dark:border-slate-900" />
                                         <p className="text-xs text-slate-700 dark:text-slate-300"><span className="font-semibold">Créé</span> par {selectedTicket.createdByName || selectedTicket.assignedUserName || user?.name || 'Inconnu'}</p>
                                         <p className="text-[10px] text-slate-400">{new Date(selectedTicket.createdAt).toLocaleDateString('fr-FR')} à {new Date(selectedTicket.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>
                                     </div>
@@ -1710,7 +1710,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                 {(() => {
                                     const clientTickets = tickets.filter(t => t.clientId === selectedTicket?.clientId && t.id !== selectedTicket?.id).slice(0, 5);
                                     return clientTickets.length > 0 ? clientTickets.map(t => (
-                                        <div key={t.id} onClick={() => setSelectedTicketId(t.id)} className="p-2 bg-slate-50 dark:bg-slate-800 rounded mb-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                                        <div key={t.id} onClick={() => setSelectedTicketId(t.id)} className="p-2 bg-slate-50 dark:bg-slate-800 rounded mb-2 cursor-pointer hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors">
                                             <div className="flex items-center justify-between mb-1">
                                                 <span className="font-mono text-[10px] text-slate-400">{t.id}</span>
                                                 <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${getStatusInfo(t.status).style}`}>
@@ -1758,7 +1758,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                 <p className="text-sm font-medium text-slate-800 dark:text-white line-clamp-2">{ticket.subject}</p>
                                                 <div className="flex items-center justify-between mt-2">
                                                     <p className="text-xs text-slate-500">{getClientName(ticket)}</p>
-                                                    {agentName && <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">{agentName}</span>}
+                                                    {agentName && <span className="text-xs text-[var(--primary)] font-medium">{agentName}</span>}
                                                 </div>
                                             </div>
                                         )})}
@@ -1832,7 +1832,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                         <td className="py-2 px-3">
                                             <div className="flex items-center gap-2">
                                                 <span className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${getSlaStatus(t.createdAt, t.priority) === 'CRITICAL' ? 'bg-red-500' : 'bg-orange-500'}`} />
-                                                <button onClick={() => { setSelectedTicketId(t.id); setActiveTab('TICKETS'); }} className="font-mono text-xs font-bold text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline" title="Ouvrir le ticket">
+                                                <button onClick={() => { setSelectedTicketId(t.id); setActiveTab('TICKETS'); }} className="font-mono text-xs font-bold text-[var(--primary)] hover:text-[var(--primary)] dark:text-[var(--primary)] dark:hover:text-[var(--primary)] hover:underline" title="Ouvrir le ticket">
                                                     {t.id}
                                                 </button>
                                             </div>
@@ -1844,7 +1844,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                         <td className="text-center py-2 px-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">{new Date(t.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })} {new Date(t.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</td>
                                         <td className="text-center py-2 px-3">{getRemainingTime(t)}</td>
                                         <td className="text-center py-2 px-3">
-                                            <button onClick={() => { setSelectedTicketId(t.id); setActiveTab('TICKETS'); }} className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg text-blue-600" title="Voir le ticket">
+                                            <button onClick={() => { setSelectedTicketId(t.id); setActiveTab('TICKETS'); }} className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]" title="Voir le ticket">
                                                 <ArrowUpRight className="w-4 h-4" />
                                             </button>
                                         </td>
@@ -1871,7 +1871,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                             <Card className="p-6">
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-lg font-bold text-slate-800 dark:text-white">Macros de Réponse</h3>
-                                    <button onClick={() => { setIsEditingMacro(null); setNewMacro({ label: '', text: '', category: '' }); }} className="text-sm text-blue-600 hover:underline">
+                                    <button onClick={() => { setIsEditingMacro(null); setNewMacro({ label: '', text: '', category: '' }); }} className="text-sm text-[var(--primary)] hover:underline">
                                         + Nouvelle Macro
                                     </button>
                                 </div>
@@ -1883,7 +1883,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                     <textarea placeholder="Texte de la macro..." className="w-full px-3 py-2 border rounded-lg text-sm" rows={3}
                                         value={newMacro.text} onChange={e => setNewMacro({ ...newMacro, text: e.target.value })} />
                                     <div className="flex gap-2">
-                                        <button onClick={saveMacro} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
+                                        <button onClick={saveMacro} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm">
                                             {isEditingMacro ? 'Mettre à jour' : 'Créer'}
                                         </button>
                                         {isEditingMacro && (
@@ -1997,7 +1997,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                                     <div className="flex-1">
                                                                         <input
                                                                             type="text"
-                                                                            className="bg-transparent border-none p-0 text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-blue-500 w-full"
+                                                                            className="bg-transparent border-none p-0 text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-[var(--primary)] w-full"
                                                                             value={sub.name}
                                                                             onChange={(e) => {
                                                                                 const newSubs = configSubCategories.map((s: SubCategoryConfig) => s.id === sub.id ? { ...s, name: e.target.value, _modified: true } : s);
@@ -2041,7 +2041,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                                         {sub._modified && (
                                                                             <button
                                                                                 onClick={() => saveSubCat(sub)}
-                                                                                className="p-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                                                                className="p-1.5 bg-[var(--primary)] text-white rounded hover:bg-[var(--primary-light)] transition-colors"
                                                                                 title="Enregistrer les modifications"
                                                                             >
                                                                                 <Check className="w-3.5 h-3.5" />
@@ -2057,7 +2057,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                     )}
                                                     <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-center">
                                                         <button
-                                                            className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1"
+                                                            className="text-xs text-[var(--primary)] hover:text-[var(--primary-light)] flex items-center gap-1"
                                                             onClick={async () => {
                                                                 const name = prompt("Nom de la nouvelle sous-catégorie :");
                                                                 if (name) {
@@ -2109,19 +2109,19 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             <Modal isOpen={isImportModalOpen} onClose={() => { setIsImportModalOpen(false); setImportPreview([]); }} title="Importer des Tickets"
                 footer={<>
                     <button onClick={() => { setIsImportModalOpen(false); setImportPreview([]); }} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Annuler</button>
-                    <button onClick={handleImportTickets} disabled={importPreview.length === 0} className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50">
+                    <button onClick={handleImportTickets} disabled={importPreview.length === 0} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg disabled:opacity-50">
                         Importer {importPreview.length} ticket(s)
                     </button>
                 </>}>
                 <div className="space-y-4">
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                        <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-2">Instructions</h4>
-                        <ol className="text-sm text-blue-700 dark:text-blue-400 space-y-1 list-decimal list-inside">
+                    <div className="bg-[var(--primary-dim)] border border-[var(--border)] rounded-lg p-4">
+                        <h4 className="font-bold text-[var(--primary)] dark:text-[var(--primary)] mb-2">Instructions</h4>
+                        <ol className="text-sm text-[var(--primary)] space-y-1 list-decimal list-inside">
                             <li>Téléchargez le template CSV</li>
                             <li>Remplissez les données (1 ligne = 1 ticket)</li>
                             <li>Importez le fichier complété</li>
                         </ol>
-                        <button onClick={handleDownloadImportTemplate} className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
+                        <button onClick={handleDownloadImportTemplate} className="mt-3 flex items-center gap-2 px-3 py-1.5 bg-[var(--primary)] text-white text-sm rounded-lg hover:bg-[var(--primary-light)]">
                             <Download className="w-4 h-4" /> Télécharger le template
                         </button>
                     </div>
@@ -2134,7 +2134,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                             accept=".csv,.txt"
                             onChange={handleImportFile}
                             title="Sélectionner un fichier CSV à importer"
-                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                            className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
                         />
                     </div>
                     {importPreview.length > 0 && (
@@ -2173,7 +2173,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             <Modal isOpen={isStatusModalOpen} onClose={() => setIsStatusModalOpen(false)} title="Changement de Statut"
                 footer={<>
                     <button onClick={() => setIsStatusModalOpen(false)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg">Annuler</button>
-                    <button onClick={confirmStatusChange} className="px-4 py-2 bg-blue-600 text-white rounded-lg">Confirmer</button>
+                    <button onClick={confirmStatusChange} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg">Confirmer</button>
                 </>}>
                 <div className="space-y-4">
                     <p className="text-slate-600">Ticket <strong>{selectedTicket?.id}</strong> → <span className="font-bold">{targetStatus && getStatusInfo(targetStatus).label}</span></p>
@@ -2186,7 +2186,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             <Modal isOpen={!!pendingKanbanDrop} onClose={() => setPendingKanbanDrop(null)} title="Motif du changement de statut"
                 footer={<>
                     <button onClick={() => setPendingKanbanDrop(null)} className="px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">Annuler</button>
-                    <button onClick={confirmKanbanDrop} disabled={!kanbanDropReason.trim()} className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">Confirmer</button>
+                    <button onClick={confirmKanbanDrop} disabled={!kanbanDropReason.trim()} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">Confirmer</button>
                 </>}>
                 <div className="space-y-4">
                     <p className="text-slate-600 dark:text-slate-300">
