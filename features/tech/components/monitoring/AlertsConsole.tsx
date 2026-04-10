@@ -15,7 +15,7 @@ import { TOAST } from '../../../../constants/toastMessages';
 import { NotificationComposer } from '../../../notifications/components/NotificationComposer';
 import { AlertForm } from '../../../settings/components/forms/AlertForm';
 import { type Alert, type AlertType, type AlertSeverity, type AlertConfig, type Tier, type Ticket, type Intervention, ALERT_TYPE_CONFIG } from '../../../../types';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useConfirmDialog } from '../../../../components/ConfirmDialog';

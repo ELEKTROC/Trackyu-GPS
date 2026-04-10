@@ -9,229 +9,296 @@ import { SYSCOHADA_ACCOUNTS } from '../../../constants';
 import { useCurrency } from '../../../hooks/useCurrency';
 import { FormField, Input, Select, Textarea, FormGrid } from '../../../components/form';
 import { z } from 'zod';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 
 interface CatalogFormProps {
-    initialData?: Partial<CatalogItem>;
-    onSave: (item: CatalogItem) => void;
-    onCancel: () => void;
+  initialData?: Partial<CatalogItem>;
+  onSave: (item: CatalogItem) => void;
+  onCancel: () => void;
 }
 
 export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, onCancel }) => {
-    const { showToast } = useToast();
-    const { tiers } = useDataContext();
-    const { currency } = useCurrency();
-    const isNew = !initialData?.id;
-    const [formData, setFormData] = useState<Partial<CatalogItem>>({
-        isSellable: true,
-        isPurchasable: false,
-        trackStock: false,
-        taxRate: 0,
-        status: 'ACTIVE',
-        type: 'Produit',
-        category: 'Matériel',
-        ...initialData
-    });
+  const { showToast } = useToast();
+  const { tiers } = useDataContext();
+  const { currency } = useCurrency();
+  const isNew = !initialData?.id;
+  const [formData, setFormData] = useState<Partial<CatalogItem>>({
+    isSellable: true,
+    isPurchasable: false,
+    trackStock: false,
+    taxRate: 0,
+    status: 'ACTIVE',
+    type: 'Produit',
+    category: 'Matériel',
+    ...initialData,
+  });
 
-    // Pré-remplir le taux de TVA depuis les paramètres du tenant (création uniquement)
-    useEffect(() => {
-        if (!isNew) return;
-        api.tenants.getCurrent().then((tenant: any) => {
-            const rate = parseFloat(tenant.default_tax_rate ?? '0') || 0;
-            if (rate > 0) setFormData(prev => ({ ...prev, taxRate: rate }));
-        }).catch(() => {});
-    }, [isNew]);
+  // Pré-remplir le taux de TVA depuis les paramètres du tenant (création uniquement)
+  useEffect(() => {
+    if (!isNew) return;
+    api.tenants
+      .getCurrent()
+      .then((tenant: any) => {
+        const rate = parseFloat(tenant.default_tax_rate ?? '0') || 0;
+        if (rate > 0) setFormData((prev) => ({ ...prev, taxRate: rate }));
+      })
+      .catch(() => {});
+  }, [isNew]);
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (file.size > 500 * 1024) {
-                showToast('Image trop volumineuse (max 500 Ko)', 'error');
-                e.target.value = '';
-                return;
-            }
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 500 * 1024) {
+        showToast('Image trop volumineuse (max 500 Ko)', 'error');
+        e.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, imageUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const validatedData = CatalogSchema.parse(formData);
-            onSave(validatedData as CatalogItem);
-        } catch (error) {
-            if (error instanceof z.ZodError) {
-                error.issues.forEach((err) => {
-                    showToast(mapError(err.message), 'error');
-                });
-            }
-        }
-    };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const validatedData = CatalogSchema.parse(formData);
+      onSave(validatedData as CatalogItem);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        error.issues.forEach((err) => {
+          showToast(mapError(err.message), 'error');
+        });
+      }
+    }
+  };
 
-    return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <FormGrid cols={3}>
-                {/* ID & Name */}
-                <FormField label="Référence / ID">
-                    <Input 
-                        value={formData.id || ''} 
-                        onChange={e => setFormData({...formData, id: e.target.value})} 
-                        placeholder="Auto-généré si vide"
-                    />
-                </FormField>
-                <FormField label="Nom de l'article" required className="col-span-2">
-                    <Input required value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} />
-                </FormField>
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <FormGrid cols={3}>
+        {/* ID & Name */}
+        <FormField label="Référence / ID">
+          <Input
+            value={formData.id || ''}
+            onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+            placeholder="Auto-généré si vide"
+          />
+        </FormField>
+        <FormField label="Nom de l'article" required className="col-span-2">
+          <Input
+            required
+            value={formData.name || ''}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+        </FormField>
 
-                {/* Checkboxes */}
-                <div className="col-span-3 flex gap-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input 
-                            type="checkbox" 
-                            checked={formData.isSellable} 
-                            onChange={e => setFormData({...formData, isSellable: e.target.checked})}
-                            className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
-                        />
-                        <span className="text-sm font-medium">Vendable</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input 
-                            type="checkbox" 
-                            checked={formData.isPurchasable} 
-                            onChange={e => setFormData({...formData, isPurchasable: e.target.checked})}
-                            className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
-                        />
-                        <span className="text-sm font-medium">Achetable</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input 
-                            type="checkbox" 
-                            checked={formData.trackStock} 
-                            onChange={e => setFormData({...formData, trackStock: e.target.checked})}
-                            className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
-                        />
-                        <span className="text-sm font-medium">Suivre le stock</span>
-                    </label>
-                </div>
+        {/* Checkboxes */}
+        <div className="col-span-3 flex gap-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.isSellable}
+              onChange={(e) => setFormData({ ...formData, isSellable: e.target.checked })}
+              className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+            />
+            <span className="text-sm font-medium">Vendable</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.isPurchasable}
+              onChange={(e) => setFormData({ ...formData, isPurchasable: e.target.checked })}
+              className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+            />
+            <span className="text-sm font-medium">Achetable</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={formData.trackStock}
+              onChange={(e) => setFormData({ ...formData, trackStock: e.target.checked })}
+              className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+            />
+            <span className="text-sm font-medium">Suivre le stock</span>
+          </label>
+        </div>
 
-                <FormField label="Catégorie">
-                    <Select 
-                        value={formData.category || 'Matériel'} 
-                        onChange={e => {
-                            const category = e.target.value as CatalogInput['category'];
-                            let type = formData.type;
-                            if (category === 'Matériel') type = 'Produit';
-                            if (category === 'Abonnement' || category === 'Prestation') type = 'Service';
-                            setFormData({...formData, category, type});
-                        }}
-                    >
-                        <option value="Matériel">Matériel</option>
-                        <option value="Abonnement">Abonnement</option>
-                        <option value="Prestation">Prestation</option>
-                        <option value="Package">Package</option>
-                    </Select>
-                </FormField>
-                <FormField label="Type">
-                    <Select value={formData.type || 'Produit'} onChange={e => setFormData({...formData, type: e.target.value as CatalogInput['type']})}>
-                        <option value="Produit">Produit</option>
-                        <option value="Service">Service</option>
-                    </Select>
-                </FormField>
-                <FormField label={`Prix Unitaire (${currency})`} required>
-                    <Input type="number" required value={formData.price ?? ''} onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} />
-                </FormField>
-                <FormField label={`Prix Minimum (${currency})`}>
-                    <Input type="number" value={formData.minPrice ?? ''} onChange={e => { const v = parseFloat(e.target.value); setFormData({...formData, minPrice: isNaN(v) ? undefined : v}); }} />
-                </FormField>
-                <FormField label={`Prix Maximum (${currency})`}>
-                    <Input type="number" value={formData.maxPrice ?? ''} onChange={e => { const v = parseFloat(e.target.value); setFormData({...formData, maxPrice: isNaN(v) ? undefined : v}); }} />
-                </FormField>
-                <FormField label="Unité">
-                    <Input placeholder="ex: unité, /mois, forfait" value={formData.unit || ''} onChange={e => setFormData({...formData, unit: e.target.value})} />
-                </FormField>
-                <FormField label="TVA (%)">
-                    <Input type="number" value={formData.taxRate ?? 0} onChange={e => { const v = parseFloat(e.target.value); setFormData({...formData, taxRate: isNaN(v) ? 0 : v}); }} />
-                </FormField>
-                <FormField label="Statut (Lecture seule)">
-                    <Select value={formData.status || 'ACTIVE'} disabled className="bg-slate-50 cursor-not-allowed">
-                        <option value="ACTIVE">Actif</option>
-                        <option value="INACTIVE">Inactif</option>
-                    </Select>
-                </FormField>
-                <FormField label="Revendeur">
-                    <Select 
-                        value={formData.resellerId || ''} 
-                        disabled={!!initialData?.id}
-                        onChange={e => {
-                            const reseller = tiers.find(r => r.id === e.target.value);
-                            setFormData({...formData, resellerId: e.target.value, resellerName: reseller?.name || (e.target.value === 'tenant_trackyu' ? 'TrackYu System' : undefined)});
-                        }} 
-                        className={initialData?.id ? 'opacity-50 cursor-not-allowed' : ''}
-                    >
-                        <option value="">-- Aucun (Global) --</option>
-                        <option value="tenant_trackyu">TrackYu System (Système)</option>
-                        {tiers.filter(t => t.type === 'RESELLER').map(r => (
-                            <option key={r.id} value={r.id}>{r.name}</option>
-                        ))}
-                    </Select>
-                </FormField>
+        <FormField label="Catégorie">
+          <Select
+            value={formData.category || 'Matériel'}
+            onChange={(e) => {
+              const category = e.target.value as CatalogInput['category'];
+              let type = formData.type;
+              if (category === 'Matériel') type = 'Produit';
+              if (category === 'Abonnement' || category === 'Prestation') type = 'Service';
+              setFormData({ ...formData, category, type });
+            }}
+          >
+            <option value="Matériel">Matériel</option>
+            <option value="Abonnement">Abonnement</option>
+            <option value="Prestation">Prestation</option>
+            <option value="Package">Package</option>
+          </Select>
+        </FormField>
+        <FormField label="Type">
+          <Select
+            value={formData.type || 'Produit'}
+            onChange={(e) => setFormData({ ...formData, type: e.target.value as CatalogInput['type'] })}
+          >
+            <option value="Produit">Produit</option>
+            <option value="Service">Service</option>
+          </Select>
+        </FormField>
+        <FormField label={`Prix Unitaire (${currency})`} required>
+          <Input
+            type="number"
+            required
+            value={formData.price ?? ''}
+            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+          />
+        </FormField>
+        <FormField label={`Prix Minimum (${currency})`}>
+          <Input
+            type="number"
+            value={formData.minPrice ?? ''}
+            onChange={(e) => {
+              const v = parseFloat(e.target.value);
+              setFormData({ ...formData, minPrice: isNaN(v) ? undefined : v });
+            }}
+          />
+        </FormField>
+        <FormField label={`Prix Maximum (${currency})`}>
+          <Input
+            type="number"
+            value={formData.maxPrice ?? ''}
+            onChange={(e) => {
+              const v = parseFloat(e.target.value);
+              setFormData({ ...formData, maxPrice: isNaN(v) ? undefined : v });
+            }}
+          />
+        </FormField>
+        <FormField label="Unité">
+          <Input
+            placeholder="ex: unité, /mois, forfait"
+            value={formData.unit || ''}
+            onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
+          />
+        </FormField>
+        <FormField label="TVA (%)">
+          <Input
+            type="number"
+            value={formData.taxRate ?? 0}
+            onChange={(e) => {
+              const v = parseFloat(e.target.value);
+              setFormData({ ...formData, taxRate: isNaN(v) ? 0 : v });
+            }}
+          />
+        </FormField>
+        <FormField label="Statut (Lecture seule)">
+          <Select value={formData.status || 'ACTIVE'} disabled className="bg-slate-50 cursor-not-allowed">
+            <option value="ACTIVE">Actif</option>
+            <option value="INACTIVE">Inactif</option>
+          </Select>
+        </FormField>
+        <FormField label="Revendeur">
+          <Select
+            value={formData.resellerId || ''}
+            disabled={!!initialData?.id}
+            onChange={(e) => {
+              const reseller = tiers.find((r) => r.id === e.target.value);
+              setFormData({
+                ...formData,
+                resellerId: e.target.value,
+                resellerName: reseller?.name || (e.target.value === 'tenant_trackyu' ? 'TrackYu System' : undefined),
+              });
+            }}
+            className={initialData?.id ? 'opacity-50 cursor-not-allowed' : ''}
+          >
+            <option value="">-- Aucun (Global) --</option>
+            <option value="tenant_trackyu">TrackYu System (Système)</option>
+            {tiers
+              .filter((t) => t.type === 'RESELLER')
+              .map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.name}
+                </option>
+              ))}
+          </Select>
+        </FormField>
 
-                {/* Accounting */}
-                {formData.isSellable && (
-                    <FormField label="Compte Vente">
-                        <Select 
-                            value={formData.accountingAccountSale || ''} 
-                            onChange={e => setFormData({...formData, accountingAccountSale: e.target.value})} 
-                        >
-                            <option value="">-- Sélectionner --</option>
-                            {SYSCOHADA_ACCOUNTS.filter(a => a.class === '7').map(acc => (
-                                <option key={acc.code} value={acc.code}>{acc.code} - {acc.label}</option>
-                            ))}
-                        </Select>
-                    </FormField>
-                )}
-                
-                {formData.isPurchasable && (
-                    <FormField label="Compte Achat">
-                        <Select 
-                            value={formData.accountingAccountPurchase || ''} 
-                            onChange={e => setFormData({...formData, accountingAccountPurchase: e.target.value})} 
-                        >
-                            <option value="">-- Sélectionner --</option>
-                            {SYSCOHADA_ACCOUNTS.filter(a => a.class === '6').map(acc => (
-                                <option key={acc.code} value={acc.code}>{acc.code} - {acc.label}</option>
-                            ))}
-                        </Select>
-                    </FormField>
-                )}
+        {/* Accounting */}
+        {formData.isSellable && (
+          <FormField label="Compte Vente">
+            <Select
+              value={formData.accountingAccountSale || ''}
+              onChange={(e) => setFormData({ ...formData, accountingAccountSale: e.target.value })}
+            >
+              <option value="">-- Sélectionner --</option>
+              {SYSCOHADA_ACCOUNTS.filter((a) => a.class === '7').map((acc) => (
+                <option key={acc.code} value={acc.code}>
+                  {acc.code} - {acc.label}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+        )}
 
-                {/* Image Upload */}
-                <FormField label="Image">
-                    <div className="flex items-center gap-4">
-                        {formData.imageUrl && (
-                            <img src={formData.imageUrl} alt="Preview" className="w-12 h-12 object-cover rounded-xl border" />
-                        )}
-                        <input 
-                            type="file" 
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
-                        />
-                    </div>
-                </FormField>
+        {formData.isPurchasable && (
+          <FormField label="Compte Achat">
+            <Select
+              value={formData.accountingAccountPurchase || ''}
+              onChange={(e) => setFormData({ ...formData, accountingAccountPurchase: e.target.value })}
+            >
+              <option value="">-- Sélectionner --</option>
+              {SYSCOHADA_ACCOUNTS.filter((a) => a.class === '6').map((acc) => (
+                <option key={acc.code} value={acc.code}>
+                  {acc.code} - {acc.label}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+        )}
 
-                <FormField label="Description" className="col-span-3">
-                    <Textarea value={formData.description || ''} onChange={e => setFormData({...formData, description: e.target.value})} rows={3} />
-                </FormField>
-            </FormGrid>
-            <div className="flex justify-end gap-2 pt-4 border-t dark:border-slate-700">
-                <button type="button" onClick={onCancel} className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Annuler</button>
-                <button type="submit" className="px-4 py-2.5 bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] transition-colors font-medium">Enregistrer</button>
-            </div>
-        </form>
-    );
+        {/* Image Upload */}
+        <FormField label="Image">
+          <div className="flex items-center gap-4">
+            {formData.imageUrl && (
+              <img src={formData.imageUrl} alt="Preview" className="w-12 h-12 object-cover rounded-xl border" />
+            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
+            />
+          </div>
+        </FormField>
+
+        <FormField label="Description" className="col-span-3">
+          <Textarea
+            value={formData.description || ''}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            rows={3}
+          />
+        </FormField>
+      </FormGrid>
+      <div className="flex justify-end gap-2 pt-4 border-t dark:border-slate-700">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+        >
+          Annuler
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2.5 bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] transition-colors font-medium"
+        >
+          Enregistrer
+        </button>
+      </div>
+    </form>
+  );
 };

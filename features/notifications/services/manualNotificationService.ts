@@ -3,17 +3,16 @@
  * Gère l'envoi groupé et les différents canaux de diffusion
  */
 
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import type {
   ManualNotification,
   ManualNotificationFormData,
   NotificationTemplate,
   NotificationRecipient,
   NotificationDeliveryResult,
-  NotificationChannel} from '../types/manualNotification';
-import {
-  DEFAULT_NOTIFICATION_TEMPLATES
+  NotificationChannel,
 } from '../types/manualNotification';
+import { DEFAULT_NOTIFICATION_TEMPLATES } from '../types/manualNotification';
 
 // Types de retour API
 interface SendNotificationResponse {
@@ -54,7 +53,7 @@ export const getNotificationRecipients = async (
 ): Promise<NotificationRecipient[]> => {
   try {
     const response = await api.get('/notifications/recipients', {
-      params: { tenantId, type }
+      params: { tenantId, type },
     });
     return response.data || [];
   } catch {
@@ -67,7 +66,7 @@ export const getNotificationRecipients = async (
  * Récupérer les clients comme destinataires depuis le DataContext
  */
 export const getClientsAsRecipients = (clients: any[]): NotificationRecipient[] => {
-  return clients.map(client => ({
+  return clients.map((client) => ({
     id: client.id,
     type: 'CLIENT' as const,
     name: client.name || client.nom || 'Client',
@@ -103,7 +102,7 @@ export const createNotification = async (
     channels: data.channels,
     sendImmediately: data.sendImmediately,
     scheduledAt: data.scheduledAt,
-    status: data.sendImmediately ? 'SENDING' : (data.scheduledAt ? 'SCHEDULED' : 'DRAFT'),
+    status: data.sendImmediately ? 'SENDING' : data.scheduledAt ? 'SCHEDULED' : 'DRAFT',
     createdAt: new Date().toISOString(),
   };
 
@@ -126,7 +125,7 @@ export const sendNotification = async (
 ): Promise<SendNotificationResponse> => {
   try {
     const response = await api.post(`/notifications/manual/${notificationId}/send`, {
-      recipientIds: recipients.map(r => r.id),
+      recipientIds: recipients.map((r) => r.id),
       channels,
     });
     return response.data;
@@ -140,7 +139,7 @@ export const sendNotification = async (
       for (const channel of channels) {
         // Simuler un taux de succès de 95%
         const success = Math.random() > 0.05;
-        
+
         deliveryResults.push({
           recipientId: recipient.id,
           recipientName: recipient.name,
@@ -176,7 +175,7 @@ export const getNotificationHistory = async (
 ): Promise<NotificationListResponse> => {
   try {
     const response = await api.get('/notifications/manual/history', {
-      params: { tenantId, page, pageSize }
+      params: { tenantId, page, pageSize },
     });
     return response.data;
   } catch {
@@ -204,10 +203,7 @@ export const deleteNotificationDraft = async (notificationId: string): Promise<b
 /**
  * Remplacer les variables dans un template
  */
-export const replaceTemplateVariables = (
-  template: string,
-  variables: Record<string, string>
-): string => {
+export const replaceTemplateVariables = (template: string, variables: Record<string, string>): string => {
   let result = template;
   for (const [key, value] of Object.entries(variables)) {
     result = result.replace(new RegExp(`{{${key}}}`, 'g'), value);
@@ -218,7 +214,9 @@ export const replaceTemplateVariables = (
 /**
  * Valider le formulaire de notification
  */
-export const validateNotificationForm = (data: ManualNotificationFormData): {
+export const validateNotificationForm = (
+  data: ManualNotificationFormData
+): {
   valid: boolean;
   errors: Record<string, string>;
 } => {

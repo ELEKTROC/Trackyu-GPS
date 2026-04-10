@@ -64,7 +64,7 @@ import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import { useDataContext } from '../../../contexts/DataContext';
 import { TierList } from './TierList';
 import { logger } from '../../../utils/logger';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { TierQuickAction } from './TierList';
 

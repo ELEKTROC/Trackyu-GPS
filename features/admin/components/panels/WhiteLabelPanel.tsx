@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Palette, Save, Loader2, Globe, Mail, Phone, RefreshCw } from 'lucide-react';
 import { Card } from '../../../../components/Card';
 import { useToast } from '../../../../contexts/ToastContext';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { TOAST } from '../../../../constants/toastMessages';
 import { mapError } from '../../../../utils/errorMapper';
 import { useAuth } from '../../../../contexts/AuthContext';
@@ -39,14 +39,14 @@ export const WhiteLabelPanel: React.FC = () => {
   const { user } = useAuth();
   const { tiers: rawTiers = [] } = useDataContext();
   const isSuperAdmin = user?.role === 'SUPERADMIN' || user?.role === 'SUPER_ADMIN';
-  
+
   const [selectedTenantId, setSelectedTenantId] = useState<string>(user?.tenantId || '');
   const [config, setConfig] = useState<WhiteLabelConfig>(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const resellers = rawTiers.filter(t => t.type === 'RESELLER');
+  const resellers = rawTiers.filter((t) => t.type === 'RESELLER');
 
   const loadConfig = useCallback(async () => {
     try {
@@ -73,10 +73,12 @@ export const WhiteLabelPanel: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => { loadConfig(); }, [loadConfig, selectedTenantId]);
+  useEffect(() => {
+    loadConfig();
+  }, [loadConfig, selectedTenantId]);
 
   const handleChange = (field: keyof WhiteLabelConfig, value: string) => {
-    setConfig(prev => ({ ...prev, [field]: value }));
+    setConfig((prev) => ({ ...prev, [field]: value }));
     setHasChanges(true);
   };
 
@@ -142,13 +144,12 @@ export const WhiteLabelPanel: React.FC = () => {
               </div>
             </div>
             <div className="w-64">
-              <Select
-                value={selectedTenantId}
-                onChange={e => setSelectedTenantId(e.target.value)}
-              >
+              <Select value={selectedTenantId} onChange={(e) => setSelectedTenantId(e.target.value)}>
                 <option value={user?.tenantId || ''}>Ma configuration (TrackYu)</option>
-                {resellers.map(reseller => (
-                  <option key={reseller.id} value={reseller.id}>{reseller.name}</option>
+                {resellers.map((reseller) => (
+                  <option key={reseller.id} value={reseller.id}>
+                    {reseller.name}
+                  </option>
                 ))}
               </Select>
             </div>
@@ -168,7 +169,7 @@ export const WhiteLabelPanel: React.FC = () => {
               <input
                 type="text"
                 value={config.app_name}
-                onChange={e => handleChange('app_name', e.target.value)}
+                onChange={(e) => handleChange('app_name', e.target.value)}
                 placeholder="TrackYu GPS"
                 className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
               />
@@ -178,7 +179,7 @@ export const WhiteLabelPanel: React.FC = () => {
               <input
                 type="text"
                 value={config.domain}
-                onChange={e => handleChange('domain', e.target.value)}
+                onChange={(e) => handleChange('domain', e.target.value)}
                 placeholder="app.mondomaine.com"
                 className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
               />
@@ -191,7 +192,7 @@ export const WhiteLabelPanel: React.FC = () => {
               <input
                 type="email"
                 value={config.support_email}
-                onChange={e => handleChange('support_email', e.target.value)}
+                onChange={(e) => handleChange('support_email', e.target.value)}
                 placeholder="support@mondomaine.com"
                 className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
               />
@@ -204,7 +205,7 @@ export const WhiteLabelPanel: React.FC = () => {
               <input
                 type="tel"
                 value={config.support_phone}
-                onChange={e => handleChange('support_phone', e.target.value)}
+                onChange={(e) => handleChange('support_phone', e.target.value)}
                 placeholder="+225 XX XX XX XX"
                 className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
               />
@@ -228,7 +229,7 @@ export const WhiteLabelPanel: React.FC = () => {
                 <input
                   type="text"
                   value={config.logo_url}
-                  onChange={e => handleChange('logo_url', e.target.value)}
+                  onChange={(e) => handleChange('logo_url', e.target.value)}
                   placeholder="https://..."
                   className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
                 />
@@ -239,7 +240,7 @@ export const WhiteLabelPanel: React.FC = () => {
               <input
                 type="text"
                 value={config.favicon_url}
-                onChange={e => handleChange('favicon_url', e.target.value)}
+                onChange={(e) => handleChange('favicon_url', e.target.value)}
                 placeholder="https://..."
                 className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
               />
@@ -251,13 +252,13 @@ export const WhiteLabelPanel: React.FC = () => {
                   <input
                     type="color"
                     value={config.primary_color}
-                    onChange={e => handleChange('primary_color', e.target.value)}
+                    onChange={(e) => handleChange('primary_color', e.target.value)}
                     className="w-8 h-8 rounded border cursor-pointer"
                   />
                   <input
                     type="text"
                     value={config.primary_color}
-                    onChange={e => handleChange('primary_color', e.target.value)}
+                    onChange={(e) => handleChange('primary_color', e.target.value)}
                     className="flex-1 p-2 border rounded text-sm bg-white dark:bg-slate-900 dark:border-slate-700"
                   />
                 </div>
@@ -268,13 +269,13 @@ export const WhiteLabelPanel: React.FC = () => {
                   <input
                     type="color"
                     value={config.secondary_color}
-                    onChange={e => handleChange('secondary_color', e.target.value)}
+                    onChange={(e) => handleChange('secondary_color', e.target.value)}
                     className="w-8 h-8 rounded border cursor-pointer"
                   />
                   <input
                     type="text"
                     value={config.secondary_color}
-                    onChange={e => handleChange('secondary_color', e.target.value)}
+                    onChange={(e) => handleChange('secondary_color', e.target.value)}
                     className="flex-1 p-2 border rounded text-sm bg-white dark:bg-slate-900 dark:border-slate-700"
                   />
                 </div>
@@ -286,12 +287,10 @@ export const WhiteLabelPanel: React.FC = () => {
         {/* CSS Personnalisé */}
         <Card title="CSS Personnalisé" className="md:col-span-2">
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-              CSS additionnel (optionnel)
-            </label>
+            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">CSS additionnel (optionnel)</label>
             <textarea
               value={config.custom_css}
-              onChange={e => handleChange('custom_css', e.target.value)}
+              onChange={(e) => handleChange('custom_css', e.target.value)}
               placeholder={`/* Personnalisation CSS */\n.sidebar { background: #1a1a2e; }\n.header { border-bottom: 2px solid var(--primary); }`}
               rows={6}
               className="w-full p-3 border rounded font-mono text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"

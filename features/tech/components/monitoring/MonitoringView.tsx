@@ -7,6 +7,7 @@ import { OfflineTrackerList } from './OfflineTrackerList';
 import { AnomalyDashboard } from './AnomalyDashboard';
 import { SystemMetricsPanel } from './SystemMetricsPanel';
 import { UserMonitoring } from './UserMonitoring';
+import { getHeaders } from '../../../../services/api/client';
 import {
   Activity, AlertTriangle, CheckCircle, Cpu, RefreshCw,
   Server, Shield, Users, Wifi, WifiOff, XCircle, Zap
@@ -43,11 +44,6 @@ interface GpsPipelineStats {
 }
 
 type Tab = 'OVERVIEW' | 'PIPELINE_GPS' | 'ALERTS' | 'OFFLINE' | 'ANOMALIES' | 'SYSTEM' | 'USERS';
-
-const getHeaders = () => {
-  const token = localStorage.getItem('token');
-  return { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
-};
 
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return '—';

@@ -5,7 +5,7 @@ import { useToast } from '../../../../contexts/ToastContext';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
 import type { User, UserActivity } from '../../../../types';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 

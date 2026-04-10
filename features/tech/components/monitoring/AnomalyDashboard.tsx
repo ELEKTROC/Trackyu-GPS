@@ -8,7 +8,7 @@ import { type Ticket } from '../../../../types';
 import { useDataContext } from '../../../../contexts/DataContext';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 
 const getTimeAgo = (dateStr: string | Date | undefined): string => {

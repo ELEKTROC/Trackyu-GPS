@@ -7,7 +7,7 @@ import { Modal } from '../../../components/Modal';
 import type { Contract } from '../../../types';
 import type { Invoice } from '../../../types';
 import { useDataContext } from '../../../contexts/DataContext';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import {
   Search,
   Plus,

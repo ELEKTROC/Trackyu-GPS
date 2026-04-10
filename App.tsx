@@ -29,13 +29,24 @@ import {
 
 import { Menu, Bell, MessageCircle, X, Search, Moon, Sun, RefreshCw } from 'lucide-react';
 import { Drawer } from './components/Drawer';
-import { VehicleDetailPanel } from './features/fleet/components/VehicleDetailPanel';
-import { AiAssistant } from './features/ai/components/AiAssistant';
 import { useAuth } from './contexts/AuthContext';
 import { LoginView } from './features/auth/components/LoginView';
 import { ActivationPage } from './features/auth/components/ActivationPage';
-import { NotificationCenter, type Notification } from './features/notifications/components/NotificationCenter';
-import { CommandPalette } from './components/CommandPalette';
+import type { Notification } from './features/notifications/components/NotificationCenter';
+
+// Lazy-loaded panels (not needed at initial render)
+const VehicleDetailPanel = React.lazy(() =>
+  import('./features/fleet/components/VehicleDetailPanel').then((m) => ({ default: m.VehicleDetailPanel }))
+);
+const AiAssistant = React.lazy(() =>
+  import('./features/ai/components/AiAssistant').then((m) => ({ default: m.AiAssistant }))
+);
+const NotificationCenter = React.lazy(() =>
+  import('./features/notifications/components/NotificationCenter').then((m) => ({ default: m.NotificationCenter }))
+);
+const CommandPalette = React.lazy(() =>
+  import('./components/CommandPalette').then((m) => ({ default: m.CommandPalette }))
+);
 import { useTheme } from './contexts/ThemeContext';
 import { useDataContext } from './contexts/DataContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -46,7 +57,8 @@ import { InstallPrompt } from './components/InstallPrompt';
 // const generateNotifications = (vehicles: Vehicle[]): Notification[] => { ... };
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, isLoading, hasPermission, logout, user, stopImpersonation, requirePasswordChange } = useAuth();
+  const { isAuthenticated, isLoading, hasPermission, logout, user, stopImpersonation, requirePasswordChange } =
+    useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const { vehicles, zones, alerts, markAlertAsRead, refreshData } = useDataContext(); // DATA FROM CONTEXT
 
@@ -60,7 +72,9 @@ const AppContent: React.FC = () => {
         const v = getDefaultViewForRole(u.role);
         return View[v as keyof typeof View] ?? View.DASHBOARD;
       }
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return View.DASHBOARD;
   });
   const [viewHistory, setViewHistory] = useState<View[]>([currentView]);
@@ -414,7 +428,11 @@ const AppContent: React.FC = () => {
         return hasPermission('VIEW_TECH') ? <LazyAgendaView /> : AccessDenied;
       case View.SETTINGS:
         return (
-          <LazySettingsView initialAction={viewParams.action} initialId={viewParams.id} initialTab={viewParams.tab as Parameters<typeof LazySettingsView>[0]['initialTab']} />
+          <LazySettingsView
+            initialAction={viewParams.action}
+            initialId={viewParams.id}
+            initialTab={viewParams.tab as Parameters<typeof LazySettingsView>[0]['initialTab']}
+          />
         );
       default:
         return null;
@@ -510,9 +528,13 @@ const AppContent: React.FC = () => {
               <Menu className="w-6 h-6" />
             </button>
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="hidden lg:block text-xs font-medium text-slate-400 dark:text-slate-500 shrink-0">{getViewGroup()}</span>
+              <span className="hidden lg:block text-xs font-medium text-slate-400 dark:text-slate-500 shrink-0">
+                {getViewGroup()}
+              </span>
               <span className="hidden lg:block text-slate-300 dark:text-slate-600 text-xs">/</span>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate">{getHeaderTitle()}</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate">
+                {getHeaderTitle()}
+              </h1>
             </div>
             {/* IMPERSONATION BANNER */}
             {user?.role?.startsWith('Impersonating') && (
@@ -609,36 +631,42 @@ const AppContent: React.FC = () => {
         {/* Global Components */}
         <Drawer isOpen={!!selectedVehicle && currentView !== View.MAP} onClose={() => setSelectedVehicle(null)}>
           {selectedVehicle && (
-            <VehicleDetailPanel
-              vehicle={selectedVehicle}
-              onClose={() => setSelectedVehicle(null)}
-              variant="drawer"
-              onReplay={() => handleReplay(selectedVehicle)}
-            />
+            <React.Suspense fallback={null}>
+              <VehicleDetailPanel
+                vehicle={selectedVehicle}
+                onClose={() => setSelectedVehicle(null)}
+                variant="drawer"
+                onReplay={() => handleReplay(selectedVehicle)}
+              />
+            </React.Suspense>
           )}
         </Drawer>
 
-        <NotificationCenter
-          isOpen={isNotificationOpen}
-          onClose={() => setIsNotificationOpen(false)}
-          notifications={notifications}
-          onMarkAsRead={markAsRead}
-          onMarkAllAsRead={markAllRead}
-          onClearAll={clearNotifications}
-          onAction={handleNotificationAction}
-        />
+        <React.Suspense fallback={null}>
+          <NotificationCenter
+            isOpen={isNotificationOpen}
+            onClose={() => setIsNotificationOpen(false)}
+            notifications={notifications}
+            onMarkAsRead={markAsRead}
+            onMarkAllAsRead={markAllRead}
+            onClearAll={clearNotifications}
+            onAction={handleNotificationAction}
+          />
+        </React.Suspense>
 
-        <CommandPalette
-          isOpen={isCommandPaletteOpen}
-          onClose={() => setIsCommandPaletteOpen(false)}
-          vehicles={vehicles}
-          onNavigate={handleNavigate}
-          onSelectVehicle={(v) => {
-            setSelectedVehicle(v);
-            setCurrentView(View.MAP);
-          }}
-          onAction={handleGlobalAction}
-        />
+        <React.Suspense fallback={null}>
+          <CommandPalette
+            isOpen={isCommandPaletteOpen}
+            onClose={() => setIsCommandPaletteOpen(false)}
+            vehicles={vehicles}
+            onNavigate={handleNavigate}
+            onSelectVehicle={(v) => {
+              setSelectedVehicle(v);
+              setCurrentView(View.MAP);
+            }}
+            onAction={handleGlobalAction}
+          />
+        </React.Suspense>
       </div>
 
       {isMobileMenuOpen && (
@@ -652,24 +680,28 @@ const AppContent: React.FC = () => {
       <InstallPrompt />
 
       {/* AI Chat Button - hidden on MAP (has its own floating buttons) */}
-      {currentView !== View.MAP && <div className="fixed bottom-20 lg:bottom-6 right-4 z-40 flex flex-col items-end gap-4">
-        {isChatOpen && (
-          <div className="w-80 sm:w-96 h-[500px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200 origin-bottom-right">
-            <AiAssistant vehicles={vehicles} />
-          </div>
-        )}
-        <button
-          onClick={() => setIsChatOpen(!isChatOpen)}
-          className={`p-3 lg:p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center ${
-            isChatOpen
-              ? 'bg-slate-800 dark:bg-slate-700 text-white rotate-90'
-              : 'bg-[var(--primary)] text-white hover:bg-[var(--primary-light)]'
-          }`}
-          title="Ouvrir l'assistant"
-        >
-          {isChatOpen ? <X className="w-5 h-5 lg:w-6 lg:h-6" /> : <MessageCircle className="w-5 h-5 lg:w-6 lg:h-6" />}
-        </button>
-      </div>}
+      {currentView !== View.MAP && (
+        <div className="fixed bottom-20 lg:bottom-6 right-4 z-40 flex flex-col items-end gap-4">
+          {isChatOpen && (
+            <div className="w-80 sm:w-96 h-[500px] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-in slide-in-from-bottom-10 fade-in duration-200 origin-bottom-right">
+              <React.Suspense fallback={null}>
+                <AiAssistant vehicles={vehicles} />
+              </React.Suspense>
+            </div>
+          )}
+          <button
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className={`p-3 lg:p-4 rounded-full shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center ${
+              isChatOpen
+                ? 'bg-slate-800 dark:bg-slate-700 text-white rotate-90'
+                : 'bg-[var(--primary)] text-white hover:bg-[var(--primary-light)]'
+            }`}
+            title="Ouvrir l'assistant"
+          >
+            {isChatOpen ? <X className="w-5 h-5 lg:w-6 lg:h-6" /> : <MessageCircle className="w-5 h-5 lg:w-6 lg:h-6" />}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

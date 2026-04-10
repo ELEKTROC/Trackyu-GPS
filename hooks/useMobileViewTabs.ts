@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../services/api';
+import { api } from '../services/apiLazy';
 
 export interface MobileViewTabsConfig {
   techView?: string[];
@@ -32,10 +32,7 @@ export const useMobileViewTabs = () => {
    * Filters a tab array to only those allowed by the tenant config.
    * If the view has no config entry, returns all tabs unchanged.
    */
-  function filterTabsForView<T extends { id: string }>(
-    viewKey: keyof MobileViewTabsConfig,
-    tabs: T[]
-  ): T[] {
+  function filterTabsForView<T extends { id: string }>(viewKey: keyof MobileViewTabsConfig, tabs: T[]): T[] {
     const allowed = config?.[viewKey];
     if (!allowed || allowed.length === 0) return tabs;
     return tabs.filter((t) => allowed.includes(t.id));

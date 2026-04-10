@@ -1,6 +1,6 @@
 /**
  * MessageTemplatesPanel - Panneau de gestion des modèles de messages
- * 
+ *
  * Fonctionnalités:
  * - CRUD templates de messages (Email, SMS, WhatsApp, Telegram)
  * - Catégories: Paiements, Commercial, Facturation, Interventions, Alertes, Système
@@ -11,11 +11,38 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
-  Plus, Edit2, Trash2, Copy, Eye, Search, Filter, Send,
-  Mail, MessageSquare, Loader2, Check, X, ChevronDown, ChevronUp,
-  Code, Zap, Clock, Bell, CreditCard, TrendingUp, Receipt,
-  Wrench, AlertTriangle, Settings, RefreshCw, Download, Upload,
-  ToggleLeft, ToggleRight, Smartphone, Hash
+  Plus,
+  Edit2,
+  Trash2,
+  Copy,
+  Eye,
+  Search,
+  Filter,
+  Send,
+  Mail,
+  MessageSquare,
+  Loader2,
+  Check,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Code,
+  Zap,
+  Clock,
+  Bell,
+  CreditCard,
+  TrendingUp,
+  Receipt,
+  Wrench,
+  AlertTriangle,
+  Settings,
+  RefreshCw,
+  Download,
+  Upload,
+  ToggleLeft,
+  ToggleRight,
+  Smartphone,
+  Hash,
 } from 'lucide-react';
 import { Card } from '../../../../components/Card';
 import { Modal } from '../../../../components/Modal';
@@ -23,7 +50,7 @@ import { useToast } from '../../../../contexts/ToastContext';
 import { useConfirmDialog } from '../../../../components/ConfirmDialog';
 import { TOAST } from '../../../../constants/toastMessages';
 import { mapError } from '../../../../utils/errorMapper';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import type { MessageTemplate, MessageCategory, MessageChannel, MessageTrigger } from './types';
 import { MESSAGE_CATEGORIES, MESSAGE_CHANNELS, TEMPLATE_VARIABLES, getCategoryIcon, getChannelIcon } from './constants';
 
@@ -34,10 +61,10 @@ const apiService = {
     return data.map((t: { channel: string; variables?: string[] }) => ({
       ...t,
       type: t.channel,
-      variables: t.variables || []
+      variables: t.variables || [],
     }));
   },
-  
+
   create: async (data: Partial<MessageTemplate>): Promise<MessageTemplate> => {
     const payload = {
       name: data.name,
@@ -47,12 +74,12 @@ const apiService = {
       subject: data.subject,
       content: data.content,
       is_active: data.is_active !== false,
-      delay_days: data.delay_days
+      delay_days: data.delay_days,
     };
     const created = await api.messageTemplates.create(payload);
     return { ...created, type: created.channel, variables: created.variables || [] };
   },
-  
+
   update: async (id: string, data: Partial<MessageTemplate>): Promise<MessageTemplate> => {
     const payload = {
       name: data.name,
@@ -62,20 +89,20 @@ const apiService = {
       subject: data.subject,
       content: data.content,
       is_active: data.is_active,
-      delay_days: data.delay_days
+      delay_days: data.delay_days,
     };
     const updated = await api.messageTemplates.update(id, payload);
     return { ...updated, type: updated.channel, variables: updated.variables || [] };
   },
-  
+
   delete: async (id: string): Promise<void> => {
     await api.messageTemplates.delete(id);
   },
-  
+
   duplicate: async (id: string): Promise<MessageTemplate> => {
     const duplicated = await api.messageTemplates.duplicate(id);
     return { ...duplicated, type: duplicated.channel, variables: duplicated.variables || [] };
-  }
+  },
 };
 
 export const MessageTemplatesPanel: React.FC = () => {
@@ -86,14 +113,14 @@ export const MessageTemplatesPanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<MessageCategory | 'ALL'>('ALL');
   const [filterChannel, setFilterChannel] = useState<MessageChannel | 'ALL'>('ALL');
-  
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<MessageTemplate | null>(null);
   const [previewTemplate, setPreviewTemplate] = useState<MessageTemplate | null>(null);
   const [activeVariableCategory, setActiveVariableCategory] = useState<string | null>(null);
-  
+
   // Form state
   const [formData, setFormData] = useState<Partial<MessageTemplate>>({
     name: '',
@@ -104,9 +131,9 @@ export const MessageTemplatesPanel: React.FC = () => {
     content: '',
     variables: [],
     is_active: true,
-    is_system: false
+    is_system: false,
   });
-  
+
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const { showToast } = useToast();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
@@ -129,9 +156,10 @@ export const MessageTemplatesPanel: React.FC = () => {
 
   // Filtrer les templates
   const filteredTemplates = useMemo(() => {
-    return templates.filter(t => {
-      const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           t.content.toLowerCase().includes(searchQuery.toLowerCase());
+    return templates.filter((t) => {
+      const matchesSearch =
+        t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.content.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = filterCategory === 'ALL' || t.category === filterCategory;
       const matchesChannel = filterChannel === 'ALL' || t.channel === filterChannel;
       return matchesSearch && matchesCategory && matchesChannel;
@@ -146,15 +174,15 @@ export const MessageTemplatesPanel: React.FC = () => {
       INVOICE: [],
       INTERVENTION: [],
       ALERT: [],
-      SYSTEM: []
+      SYSTEM: [],
     };
-    
-    filteredTemplates.forEach(t => {
+
+    filteredTemplates.forEach((t) => {
       if (grouped[t.category]) {
         grouped[t.category].push(t);
       }
     });
-    
+
     return grouped;
   }, [filteredTemplates]);
 
@@ -162,33 +190,33 @@ export const MessageTemplatesPanel: React.FC = () => {
   const availableVariables = useMemo(() => {
     const category = formData.category || 'PAYMENT';
     const vars = TEMPLATE_VARIABLES[category] || [];
-    
+
     // Grouper par catégorie de variable
     const grouped: Record<string, typeof vars> = {};
-    vars.forEach(v => {
+    vars.forEach((v) => {
       if (!grouped[v.category]) {
         grouped[v.category] = [];
       }
       grouped[v.category].push(v);
     });
-    
+
     return grouped;
   }, [formData.category]);
 
   // Prévisualisation avec variables remplacées
   const previewContent = useMemo(() => {
     if (!previewTemplate) return { subject: '', content: '' };
-    
+
     let subject = previewTemplate.subject || '';
     let content = previewTemplate.content || '';
-    
+
     const vars = TEMPLATE_VARIABLES[previewTemplate.category] || [];
-    vars.forEach(v => {
+    vars.forEach((v) => {
       const regex = new RegExp(v.key.replace(/[{}]/g, '\\$&'), 'g');
       subject = subject.replace(regex, v.example);
       content = content.replace(regex, v.example);
     });
-    
+
     return { subject, content };
   }, [previewTemplate]);
 
@@ -196,7 +224,7 @@ export const MessageTemplatesPanel: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    
+
     try {
       // Extraire les variables utilisées
       const allContent = (formData.subject || '') + (formData.content || '');
@@ -208,9 +236,9 @@ export const MessageTemplatesPanel: React.FC = () => {
           usedVariables.push(match[0]);
         }
       }
-      
+
       const dataToSave = { ...formData, variables: usedVariables };
-      
+
       if (editingTemplate) {
         await apiService.update(editingTemplate.id, dataToSave);
         showToast(TOAST.ADMIN.TEMPLATE_UPDATED, 'success');
@@ -218,7 +246,7 @@ export const MessageTemplatesPanel: React.FC = () => {
         await apiService.create(dataToSave);
         showToast(TOAST.ADMIN.TEMPLATE_CREATED, 'success');
       }
-      
+
       setIsModalOpen(false);
       fetchTemplates();
       resetForm();
@@ -230,13 +258,21 @@ export const MessageTemplatesPanel: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const template = templates.find(t => t.id === id);
+    const template = templates.find((t) => t.id === id);
     if (template?.is_system) {
       showToast('Impossible de supprimer un template système', 'error');
       return;
     }
-    if (!await confirm({ message: 'Êtes-vous sûr de vouloir supprimer ce template ?', variant: 'danger', title: 'Confirmer la suppression', confirmLabel: 'Supprimer' })) return;
-    
+    if (
+      !(await confirm({
+        message: 'Êtes-vous sûr de vouloir supprimer ce template ?',
+        variant: 'danger',
+        title: 'Confirmer la suppression',
+        confirmLabel: 'Supprimer',
+      }))
+    )
+      return;
+
     try {
       await apiService.delete(id);
       showToast(TOAST.ADMIN.TEMPLATE_DELETED, 'success');
@@ -261,7 +297,7 @@ export const MessageTemplatesPanel: React.FC = () => {
     setFormData({
       ...template,
       name: `${template.name} (copie)`,
-      is_system: false
+      is_system: false,
     });
     setIsModalOpen(true);
   };
@@ -273,7 +309,7 @@ export const MessageTemplatesPanel: React.FC = () => {
       const text = formData.content || '';
       const newContent = text.substring(0, start) + variable + text.substring(end);
       setFormData({ ...formData, content: newContent });
-      
+
       setTimeout(() => {
         if (contentRef.current) {
           contentRef.current.focus();
@@ -294,7 +330,7 @@ export const MessageTemplatesPanel: React.FC = () => {
       content: '',
       variables: [],
       is_active: true,
-      is_system: false
+      is_system: false,
     });
     setActiveVariableCategory(null);
   };
@@ -311,11 +347,11 @@ export const MessageTemplatesPanel: React.FC = () => {
   };
 
   const getChannelConfig = (channel: MessageChannel) => {
-    return MESSAGE_CHANNELS.find(c => c.id === channel);
+    return MESSAGE_CHANNELS.find((c) => c.id === channel);
   };
 
   const getCategoryConfig = (category: MessageCategory) => {
-    return MESSAGE_CATEGORIES.find(c => c.id === category);
+    return MESSAGE_CATEGORIES.find((c) => c.id === category);
   };
 
   // Compteur de caractères pour SMS
@@ -341,7 +377,10 @@ export const MessageTemplatesPanel: React.FC = () => {
           </p>
         </div>
         <button
-          onClick={() => { resetForm(); setIsModalOpen(true); }}
+          onClick={() => {
+            resetForm();
+            setIsModalOpen(true);
+          }}
           className="flex items-center px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -351,11 +390,11 @@ export const MessageTemplatesPanel: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-        {MESSAGE_CATEGORIES.map(cat => {
+        {MESSAGE_CATEGORIES.map((cat) => {
           const Icon = getCategoryIcon(cat.id);
-          const count = templates.filter(t => t.category === cat.id).length;
-          const activeCount = templates.filter(t => t.category === cat.id && t.is_active).length;
-          
+          const count = templates.filter((t) => t.category === cat.id).length;
+          const activeCount = templates.filter((t) => t.category === cat.id && t.is_active).length;
+
           return (
             <button
               key={cat.id}
@@ -394,8 +433,10 @@ export const MessageTemplatesPanel: React.FC = () => {
             className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
           >
             <option value="ALL">Tous les canaux</option>
-            {MESSAGE_CHANNELS.map(ch => (
-              <option key={ch.id} value={ch.id}>{ch.label}</option>
+            {MESSAGE_CHANNELS.map((ch) => (
+              <option key={ch.id} value={ch.id}>
+                {ch.label}
+              </option>
             ))}
           </select>
         </div>
@@ -405,38 +446,36 @@ export const MessageTemplatesPanel: React.FC = () => {
       <div className="space-y-6">
         {Object.entries(templatesByCategory).map(([category, categoryTemplates]) => {
           if (categoryTemplates.length === 0) return null;
-          
+
           const catConfig = getCategoryConfig(category as MessageCategory);
           const CatIcon = getCategoryIcon(category as MessageCategory);
-          
+
           return (
             <div key={category}>
               <div className="flex items-center gap-2 mb-3">
                 <CatIcon className={`w-5 h-5 text-${catConfig?.color}-500`} />
-                <h3 className="font-semibold text-slate-700 dark:text-slate-300">
-                  {catConfig?.label}
-                </h3>
+                <h3 className="font-semibold text-slate-700 dark:text-slate-300">{catConfig?.label}</h3>
                 <span className="text-xs text-slate-500">({categoryTemplates.length})</span>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                {categoryTemplates.map(template => {
+                {categoryTemplates.map((template) => {
                   const channelConfig = getChannelConfig(template.channel);
                   const ChannelIcon = getChannelIcon(template.channel);
-                  
+
                   return (
-                    <Card 
-                      key={template.id} 
-                      className={`p-4 hover:shadow-md transition-all ${
-                        !template.is_active ? 'opacity-60' : ''
-                      }`}
+                    <Card
+                      key={template.id}
+                      className={`p-4 hover:shadow-md transition-all ${!template.is_active ? 'opacity-60' : ''}`}
                     >
                       <div className="flex justify-between items-start gap-3">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium
                               bg-${channelConfig?.color}-100 text-${channelConfig?.color}-700
-                              dark:bg-${channelConfig?.color}-900/30 dark:text-${channelConfig?.color}-400`}>
+                              dark:bg-${channelConfig?.color}-900/30 dark:text-${channelConfig?.color}-400`}
+                            >
                               <ChannelIcon className="w-3 h-3" />
                               {channelConfig?.label}
                             </span>
@@ -448,42 +487,42 @@ export const MessageTemplatesPanel: React.FC = () => {
                             )}
                             {template.delay_days && (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400">
-                                <Clock className="w-3 h-3" />
-                                J{template.delay_days > 0 ? '+' : ''}{template.delay_days}
+                                <Clock className="w-3 h-3" />J{template.delay_days > 0 ? '+' : ''}
+                                {template.delay_days}
                               </span>
                             )}
                           </div>
-                          
+
                           <h4 className="font-medium text-slate-900 dark:text-white truncate">
                             {template.name}
-                            {template.is_system && (
-                              <span className="ml-2 text-xs text-slate-400">(système)</span>
-                            )}
+                            {template.is_system && <span className="ml-2 text-xs text-slate-400">(système)</span>}
                           </h4>
-                          
+
                           {template.subject && (
-                            <p className="text-sm text-slate-500 truncate mt-1">
-                              Objet: {template.subject}
-                            </p>
+                            <p className="text-sm text-slate-500 truncate mt-1">Objet: {template.subject}</p>
                           )}
-                          
+
                           <p className="text-xs text-slate-400 mt-1 line-clamp-2">
                             {template.content.substring(0, 100)}...
                           </p>
                         </div>
-                        
+
                         {/* Actions */}
                         <div className="flex flex-col gap-1">
                           <button
                             onClick={() => handleToggleActive(template)}
                             className={`p-1.5 rounded-lg transition-colors ${
-                              template.is_active 
-                                ? 'text-green-600 hover:bg-green-50' 
+                              template.is_active
+                                ? 'text-green-600 hover:bg-green-50'
                                 : 'text-slate-400 hover:bg-slate-100'
                             }`}
                             title={template.is_active ? 'Désactiver' : 'Activer'}
                           >
-                            {template.is_active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                            {template.is_active ? (
+                              <ToggleRight className="w-5 h-5" />
+                            ) : (
+                              <ToggleLeft className="w-5 h-5" />
+                            )}
                           </button>
                           <button
                             onClick={() => openPreview(template)}
@@ -524,13 +563,11 @@ export const MessageTemplatesPanel: React.FC = () => {
             </div>
           );
         })}
-        
+
         {filteredTemplates.length === 0 && (
           <Card className="p-8 text-center">
             <MessageSquare className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Aucun template trouvé
-            </h3>
+            <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">Aucun template trouvé</h3>
             <p className="text-sm text-slate-500">
               {searchQuery || filterCategory !== 'ALL' || filterChannel !== 'ALL'
                 ? 'Modifiez vos filtres ou créez un nouveau template'
@@ -544,14 +581,12 @@ export const MessageTemplatesPanel: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingTemplate ? "Modifier le template" : "Nouveau template"}
+        title={editingTemplate ? 'Modifier le template' : 'Nouveau template'}
       >
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
           {/* Nom */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Nom du template
-            </label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom du template</label>
             <input
               type="text"
               value={formData.name}
@@ -565,37 +600,35 @@ export const MessageTemplatesPanel: React.FC = () => {
           {/* Catégorie + Canal + Trigger */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Catégorie
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Catégorie</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as MessageCategory })}
                 className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
               >
-                {MESSAGE_CATEGORIES.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                {MESSAGE_CATEGORIES.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.label}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Canal
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Canal</label>
               <select
                 value={formData.channel}
                 onChange={(e) => setFormData({ ...formData, channel: e.target.value as MessageChannel })}
                 className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
               >
-                {MESSAGE_CHANNELS.map(ch => (
-                  <option key={ch.id} value={ch.id}>{ch.label}</option>
+                {MESSAGE_CHANNELS.map((ch) => (
+                  <option key={ch.id} value={ch.id}>
+                    {ch.label}
+                  </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Déclencheur
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Déclencheur</label>
               <select
                 value={formData.trigger}
                 onChange={(e) => setFormData({ ...formData, trigger: e.target.value as MessageTrigger })}
@@ -654,9 +687,7 @@ export const MessageTemplatesPanel: React.FC = () => {
                 <div key={category} className={idx > 0 ? 'border-t dark:border-slate-700' : ''}>
                   <button
                     type="button"
-                    onClick={() => setActiveVariableCategory(
-                      activeVariableCategory === category ? null : category
-                    )}
+                    onClick={() => setActiveVariableCategory(activeVariableCategory === category ? null : category)}
                     className="w-full px-3 py-2 flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm"
                   >
                     <span className="font-medium text-slate-700 dark:text-slate-300">{category}</span>
@@ -668,7 +699,7 @@ export const MessageTemplatesPanel: React.FC = () => {
                   </button>
                   {activeVariableCategory === category && (
                     <div className="p-2 flex flex-wrap gap-1">
-                      {vars.map(v => (
+                      {vars.map((v) => (
                         <button
                           key={v.key}
                           type="button"
@@ -689,9 +720,7 @@ export const MessageTemplatesPanel: React.FC = () => {
           {/* Contenu */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Contenu du message
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contenu du message</label>
               {formData.channel === 'SMS' && (
                 <span className={`text-xs ${charCount > 160 ? 'text-orange-500' : 'text-slate-500'}`}>
                   {charCount} caractères ({smsCount} SMS)
@@ -767,32 +796,42 @@ export const MessageTemplatesPanel: React.FC = () => {
                 {React.createElement(getChannelIcon(previewTemplate.channel), { className: 'w-5 h-5 text-slate-500' })}
                 <span className="font-medium">{getChannelConfig(previewTemplate.channel)?.label}</span>
               </div>
-              
+
               {/* Email preview */}
               {previewTemplate.channel === 'EMAIL' && (
                 <div className="border rounded-lg overflow-hidden">
                   <div className="bg-slate-100 dark:bg-slate-800 px-4 py-2 border-b">
-                    <p className="text-sm"><span className="text-slate-500">Objet:</span> {previewContent.subject}</p>
+                    <p className="text-sm">
+                      <span className="text-slate-500">Objet:</span> {previewContent.subject}
+                    </p>
                   </div>
                   <div className="p-4 bg-white dark:bg-slate-900 whitespace-pre-wrap text-sm">
                     {previewContent.content}
                   </div>
                 </div>
               )}
-              
+
               {/* SMS/WhatsApp/Telegram preview */}
               {previewTemplate.channel !== 'EMAIL' && (
-                <div className={`p-4 rounded-lg ${
-                  previewTemplate.channel === 'SMS' ? 'bg-green-50 dark:bg-green-900/20' :
-                  previewTemplate.channel === 'WHATSAPP' ? 'bg-emerald-50 dark:bg-emerald-900/20' :
-                  'bg-sky-50 dark:bg-sky-900/20'
-                }`}>
+                <div
+                  className={`p-4 rounded-lg ${
+                    previewTemplate.channel === 'SMS'
+                      ? 'bg-green-50 dark:bg-green-900/20'
+                      : previewTemplate.channel === 'WHATSAPP'
+                        ? 'bg-emerald-50 dark:bg-emerald-900/20'
+                        : 'bg-sky-50 dark:bg-sky-900/20'
+                  }`}
+                >
                   <div className="max-w-xs mx-auto">
-                    <div className={`p-3 rounded-lg shadow-sm ${
-                      previewTemplate.channel === 'SMS' ? 'bg-white' :
-                      previewTemplate.channel === 'WHATSAPP' ? 'bg-white' :
-                      'bg-white'
-                    }`}>
+                    <div
+                      className={`p-3 rounded-lg shadow-sm ${
+                        previewTemplate.channel === 'SMS'
+                          ? 'bg-white'
+                          : previewTemplate.channel === 'WHATSAPP'
+                            ? 'bg-white'
+                            : 'bg-white'
+                      }`}
+                    >
                       <p className="text-sm whitespace-pre-wrap">{previewContent.content}</p>
                       <p className="text-xs text-slate-400 text-right mt-2">
                         {new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
@@ -801,13 +840,11 @@ export const MessageTemplatesPanel: React.FC = () => {
                   </div>
                 </div>
               )}
-              
-              <p className="text-xs text-slate-500 text-center">
-                Les variables sont remplacées par des exemples
-              </p>
+
+              <p className="text-xs text-slate-500 text-center">Les variables sont remplacées par des exemples</p>
             </>
           )}
-          
+
           <div className="flex justify-end pt-4 border-t dark:border-slate-700">
             <button
               onClick={() => setIsPreviewModalOpen(false)}

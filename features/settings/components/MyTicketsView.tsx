@@ -1,9 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  MessageSquare, Send, Clock, ChevronLeft, AlertTriangle,
-  CheckCircle, Loader2, User, Headset, Bot, RefreshCw
+  MessageSquare,
+  Send,
+  Clock,
+  ChevronLeft,
+  AlertTriangle,
+  CheckCircle,
+  Loader2,
+  User,
+  Headset,
+  Bot,
+  RefreshCw,
 } from 'lucide-react';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
@@ -14,11 +23,35 @@ import type { Ticket, TicketMessage } from '../../../types';
 // STATUS / PRIORITY CONFIG
 // ============================================================================
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  OPEN: { label: 'Ouvert', color: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-[var(--primary)]', icon: <MessageSquare className="w-3 h-3" /> },
-  IN_PROGRESS: { label: 'En cours', color: 'bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700', icon: <Loader2 className="w-3 h-3 animate-spin" /> },
-  WAITING_CLIENT: { label: 'En attente de votre réponse', color: 'bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700', icon: <AlertTriangle className="w-3 h-3" /> },
-  RESOLVED: { label: 'Résolu', color: 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700', icon: <CheckCircle className="w-3 h-3" /> },
-  CLOSED: { label: 'Clôturé', color: 'bg-slate-100 text-slate-500 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600', icon: <CheckCircle className="w-3 h-3" /> },
+  OPEN: {
+    label: 'Ouvert',
+    color:
+      'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-[var(--primary)]',
+    icon: <MessageSquare className="w-3 h-3" />,
+  },
+  IN_PROGRESS: {
+    label: 'En cours',
+    color:
+      'bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700',
+    icon: <Loader2 className="w-3 h-3 animate-spin" />,
+  },
+  WAITING_CLIENT: {
+    label: 'En attente de votre réponse',
+    color:
+      'bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700',
+    icon: <AlertTriangle className="w-3 h-3" />,
+  },
+  RESOLVED: {
+    label: 'Résolu',
+    color:
+      'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-300 dark:border-green-700',
+    icon: <CheckCircle className="w-3 h-3" />,
+  },
+  CLOSED: {
+    label: 'Clôturé',
+    color: 'bg-slate-100 text-slate-500 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600',
+    icon: <CheckCircle className="w-3 h-3" />,
+  },
 };
 
 const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
@@ -29,9 +62,25 @@ const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
 };
 
 const SENDER_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode; align: string }> = {
-  CLIENT: { label: 'Vous', color: 'bg-[var(--primary)] text-white', icon: <User className="w-3.5 h-3.5" />, align: 'justify-end' },
-  SUPPORT: { label: 'Support', color: 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600', icon: <Headset className="w-3.5 h-3.5" />, align: 'justify-start' },
-  SYSTEM: { label: 'Système', color: 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700', icon: <Bot className="w-3.5 h-3.5" />, align: 'justify-center' },
+  CLIENT: {
+    label: 'Vous',
+    color: 'bg-[var(--primary)] text-white',
+    icon: <User className="w-3.5 h-3.5" />,
+    align: 'justify-end',
+  },
+  SUPPORT: {
+    label: 'Support',
+    color: 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600',
+    icon: <Headset className="w-3.5 h-3.5" />,
+    align: 'justify-start',
+  },
+  SYSTEM: {
+    label: 'Système',
+    color:
+      'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700',
+    icon: <Bot className="w-3.5 h-3.5" />,
+    align: 'justify-center',
+  },
 };
 
 // ============================================================================
@@ -61,14 +110,16 @@ export const MyTicketsView: React.FC = () => {
     }
   };
 
-  useEffect(() => { loadTickets(); }, []);
+  useEffect(() => {
+    loadTickets();
+  }, []);
 
   // Auto-scroll messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [selectedTicketId, tickets]);
 
-  const selectedTicket = tickets.find(t => t.id === selectedTicketId);
+  const selectedTicket = tickets.find((t) => t.id === selectedTicketId);
 
   // Send reply
   const handleSendReply = async () => {
@@ -77,11 +128,11 @@ export const MyTicketsView: React.FC = () => {
     try {
       const newMsg = await api.tickets.clientReply(selectedTicketId, replyText.trim());
       // Update local state
-      setTickets(prev => prev.map(t =>
-        t.id === selectedTicketId
-          ? { ...t, messages: [...(t.messages || []), newMsg], updatedAt: new Date() }
-          : t
-      ));
+      setTickets((prev) =>
+        prev.map((t) =>
+          t.id === selectedTicketId ? { ...t, messages: [...(t.messages || []), newMsg], updatedAt: new Date() } : t
+        )
+      );
       setReplyText('');
       showToast(TOAST.SUPPORT.MESSAGE_SENT, 'success');
     } catch (e: unknown) {
@@ -93,8 +144,11 @@ export const MyTicketsView: React.FC = () => {
 
   const formatDate = (date: Date | string) => {
     const d = new Date(date);
-    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) +
-      ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return (
+      d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) +
+      ' à ' +
+      d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    );
   };
 
   const formatDateShort = (date: Date | string) => {
@@ -147,11 +201,15 @@ export const MyTicketsView: React.FC = () => {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="font-mono text-xs text-slate-400">{selectedTicket.id}</span>
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase border ${status.color}`}>
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase border ${status.color}`}
+              >
                 {status.icon} {status.label}
               </span>
               {selectedTicket.priority && (
-                <span className={`px-1.5 py-0.5 rounded text-xs font-semibold uppercase border ${PRIORITY_CONFIG[selectedTicket.priority]?.color || ''}`}>
+                <span
+                  className={`px-1.5 py-0.5 rounded text-xs font-semibold uppercase border ${PRIORITY_CONFIG[selectedTicket.priority]?.color || ''}`}
+                >
                   {PRIORITY_CONFIG[selectedTicket.priority]?.label || selectedTicket.priority}
                 </span>
               )}
@@ -199,13 +257,13 @@ export const MyTicketsView: React.FC = () => {
                         {senderConf.icon}
                         {senderConf.label}
                       </span>
-                      <span className="text-xs text-slate-400">
-                        {formatDate(msg.date)}
-                      </span>
+                      <span className="text-xs text-slate-400">{formatDate(msg.date)}</span>
                     </div>
-                    <div className={`px-4 py-2.5 rounded-2xl text-sm whitespace-pre-wrap ${senderConf.color} ${
-                      isClient ? 'rounded-br-md' : 'rounded-bl-md'
-                    }`}>
+                    <div
+                      className={`px-4 py-2.5 rounded-2xl text-sm whitespace-pre-wrap ${senderConf.color} ${
+                        isClient ? 'rounded-br-md' : 'rounded-bl-md'
+                      }`}
+                    >
                       {msg.text}
                     </div>
                   </div>
@@ -223,8 +281,8 @@ export const MyTicketsView: React.FC = () => {
               <input
                 type="text"
                 value={replyText}
-                onChange={e => setReplyText(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSendReply()}
+                onChange={(e) => setReplyText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendReply()}
                 placeholder="Écrivez votre réponse..."
                 className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
                 disabled={sending}
@@ -274,9 +332,9 @@ export const MyTicketsView: React.FC = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-2">
-        {tickets.map(ticket => {
+        {tickets.map((ticket) => {
           const status = STATUS_CONFIG[ticket.status] || STATUS_CONFIG.OPEN;
-          const unreadCount = (ticket.messages || []).filter(m => m.sender === 'SUPPORT').length;
+          const unreadCount = (ticket.messages || []).filter((m) => m.sender === 'SUPPORT').length;
           const lastMessage = (ticket.messages || []).slice(-1)[0];
 
           return (
@@ -288,11 +346,15 @@ export const MyTicketsView: React.FC = () => {
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-mono text-xs text-slate-400">{ticket.id}</span>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase border ${status.color}`}>
+                  <span
+                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase border ${status.color}`}
+                  >
                     {status.icon} {status.label}
                   </span>
                   {ticket.priority && (
-                    <span className={`px-1.5 py-0.5 rounded text-xs font-semibold uppercase border ${PRIORITY_CONFIG[ticket.priority]?.color || ''}`}>
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-xs font-semibold uppercase border ${PRIORITY_CONFIG[ticket.priority]?.color || ''}`}
+                    >
                       {PRIORITY_CONFIG[ticket.priority]?.label}
                     </span>
                   )}
@@ -302,9 +364,7 @@ export const MyTicketsView: React.FC = () => {
                 </span>
               </div>
 
-              <p className="font-medium text-sm text-slate-800 dark:text-white mb-1 line-clamp-1">
-                {ticket.subject}
-              </p>
+              <p className="font-medium text-sm text-slate-800 dark:text-white mb-1 line-clamp-1">{ticket.subject}</p>
 
               {lastMessage && (
                 <p className="text-xs text-slate-500 line-clamp-1 flex items-center gap-1">

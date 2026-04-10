@@ -6,7 +6,7 @@ import {
   Wifi, WifiOff, BarChart3, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { Card } from '../../../../components/Card';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 
 interface SystemStats {
   cpu: { count: number; percent: number };

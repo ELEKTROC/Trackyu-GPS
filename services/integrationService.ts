@@ -1,39 +1,32 @@
 /**
  * Service centralisé pour la gestion des intégrations
  * Communique avec le backend pour stocker les credentials de manière sécurisée
- * 
+ *
  * NOTE: Ce service remplace les appels directs aux APIs externes (localStorage)
  * par des appels au backend qui gère le chiffrement et le stockage sécurisé
- * 
+ *
  * @version 2.0 - Orange SMS balance via backend (évite CORS)
  */
 
 import { API_BASE_URL } from '../utils/apiConfig';
 import { logger } from '../utils/logger';
-
-// Helper pour les requêtes authentifiées
-const getAuthHeaders = (): HeadersInit => {
-  const token = localStorage.getItem('fleet_token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { 'Authorization': `Bearer ${token}` })
-  };
-};
+import { getHeaders } from './api/client';
 
 const fetchApi = async (endpoint: string, options: RequestInit = {}) => {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
+    credentials: 'include',
     headers: {
-      ...getAuthHeaders(),
-      ...options.headers
-    }
+      ...getHeaders(),
+      ...options.headers,
+    },
   });
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Erreur réseau' }));
     throw new Error(error.error || error.message || `HTTP ${response.status}`);
   }
-  
+
   return response.json();
 };
 
@@ -77,12 +70,7 @@ export interface IntegrationStatusDetail {
 /**
  * Providers supportés
  */
-export type IntegrationProvider = 
-  | 'telegram' 
-  | 'resend' 
-  | 'wave' 
-  | 'whatsapp' 
-  | 'orange_sms';
+export type IntegrationProvider = 'telegram' | 'resend' | 'wave' | 'whatsapp' | 'orange_sms';
 
 /**
  * Service de gestion des intégrations via backend
@@ -108,7 +96,7 @@ class IntegrationService {
   async get(provider: IntegrationProvider): Promise<IntegrationCredential | null> {
     try {
       const all = await this.getAll();
-      return all.find(i => i.provider === provider) || null;
+      return all.find((i) => i.provider === provider) || null;
     } catch (error) {
       logger.error(`[IntegrationService] Error fetching ${provider}:`, error);
       return null;
@@ -121,8 +109,7 @@ class IntegrationService {
   async isConfigured(provider: IntegrationProvider): Promise<boolean> {
     try {
       const integration = await this.get(provider);
-      return !!integration && integration.is_active && 
-             Object.keys(integration.config_summary).length > 0;
+      return !!integration && integration.is_active && Object.keys(integration.config_summary).length > 0;
     } catch {
       return false;
     }
@@ -135,13 +122,13 @@ class IntegrationService {
     try {
       return await fetchApi(`${this.baseUrl}/${provider}`, {
         method: 'POST',
-        body: JSON.stringify({ credentials })
+        body: JSON.stringify({ credentials }),
       });
     } catch (error: any) {
       logger.error(`[IntegrationService] Error saving ${provider}:`, error);
       return {
         success: false,
-        error: error.message || 'Erreur lors de la sauvegarde'
+        error: error.message || 'Erreur lors de la sauvegarde',
       };
     }
   }
@@ -153,7 +140,7 @@ class IntegrationService {
     try {
       return await fetchApi(`${this.baseUrl}/${provider}/toggle`, {
         method: 'PATCH',
-        body: JSON.stringify({ is_active: isActive })
+        body: JSON.stringify({ is_active: isActive }),
       });
     } catch (error: any) {
       logger.error(`[IntegrationService] Error toggling ${provider}:`, error);
@@ -184,7 +171,7 @@ class IntegrationService {
       logger.error(`[IntegrationService] Error testing ${provider}:`, error);
       return {
         success: false,
-        error: error.message || 'Erreur lors du test'
+        error: error.message || 'Erreur lors du test',
       };
     }
   }
@@ -206,20 +193,25 @@ class IntegrationService {
    * Récupère le statut rapide de toutes les intégrations
    * Retourne un objet avec provider => { configured, active, lastTest }
    */
-  async getStatus(): Promise<Record<string, { configured: boolean; active: boolean; lastTestSuccess: boolean | null; source?: string }>> {
+  async getStatus(): Promise<
+    Record<string, { configured: boolean; active: boolean; lastTestSuccess: boolean | null; source?: string }>
+  > {
     try {
       const statusList = await this.getDetailedStatus();
-      const status: Record<string, { configured: boolean; active: boolean; lastTestSuccess: boolean | null; source?: string }> = {};
-      
+      const status: Record<
+        string,
+        { configured: boolean; active: boolean; lastTestSuccess: boolean | null; source?: string }
+      > = {};
+
       for (const item of statusList) {
         status[item.provider] = {
           configured: item.configured,
           active: item.active,
           lastTestSuccess: item.lastTestSuccess,
-          source: item.source
+          source: item.source,
         };
       }
-      
+
       return status;
     } catch (error) {
       logger.error('[IntegrationService] Error getting status:', error);
@@ -233,9 +225,9 @@ class IntegrationService {
    * Configure Resend
    */
   async configureResend(apiKey: string, defaultFrom?: string): Promise<IntegrationSaveResult> {
-    return this.save('resend', { 
+    return this.save('resend', {
       apiKey,
-      defaultFrom: defaultFrom || 'TrackYu GPS <noreply@trackyugps.com>'
+      defaultFrom: defaultFrom || 'TrackYu GPS <noreply@trackyugps.com>',
     });
   }
 
@@ -259,7 +251,7 @@ class IntegrationService {
   async configureTelegram(botToken: string, defaultChatId?: string): Promise<IntegrationSaveResult> {
     return this.save('telegram', {
       botToken,
-      ...(defaultChatId && { defaultChatId })
+      ...(defaultChatId && { defaultChatId }),
     });
   }
 
@@ -288,18 +280,22 @@ class IntegrationService {
   async configureWave(merchantId: string, paymentLinkBase?: string): Promise<IntegrationSaveResult> {
     return this.save('wave', {
       merchantId,
-      paymentLinkBase: paymentLinkBase || 'https://pay.wave.com'
+      paymentLinkBase: paymentLinkBase || 'https://pay.wave.com',
     });
   }
 
   /**
    * Configure WhatsApp
    */
-  async configureWhatsapp(phoneNumberId: string, accessToken: string, businessId?: string): Promise<IntegrationSaveResult> {
+  async configureWhatsapp(
+    phoneNumberId: string,
+    accessToken: string,
+    businessId?: string
+  ): Promise<IntegrationSaveResult> {
     return this.save('whatsapp', {
       phoneNumberId,
       accessToken,
-      ...(businessId && { businessId })
+      ...(businessId && { businessId }),
     });
   }
 }

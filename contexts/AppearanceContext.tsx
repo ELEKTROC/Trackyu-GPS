@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { logger } from '../utils/logger';
-import { api } from '../services/api';
+import { api } from '../services/apiLazy';
 
 /**
  * AppearanceContext — Applies tenant branding (colors, font, size) as CSS variables
@@ -40,10 +40,10 @@ const DEFAULT_APPEARANCE: AppearanceSettings = {
 
 // Font-family map for clean names
 const FONT_MAP: Record<string, string> = {
-  'Inter': "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  'Roboto': "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  'Poppins': "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  'Nunito': "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  Inter: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+  Roboto: "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  Poppins: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  Nunito: "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   'Open Sans': "'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   'DM Sans': "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   'Source Sans 3': "'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -95,15 +95,15 @@ const loadGoogleFont = (fontName: string) => {
  */
 // Sidebar style → CSS vars for bg/text/border
 const SIDEBAR_MAP: Record<string, { bg: string; text: string; border: string }> = {
-  dark:    { bg: '#0f172a', text: '#e2e8f0', border: '#1e293b' },
-  light:   { bg: '#ffffff', text: '#1e293b', border: '#e2e8f0' },
+  dark: { bg: '#0f172a', text: '#e2e8f0', border: '#1e293b' },
+  light: { bg: '#ffffff', text: '#1e293b', border: '#e2e8f0' },
   colored: { bg: 'var(--brand-primary)', text: '#ffffff', border: 'rgba(255,255,255,0.15)' },
 };
 
 // Table density → row vertical padding
 const DENSITY_MAP: Record<string, string> = {
-  compact:     '0.375rem',
-  standard:    '0.75rem',
+  compact: '0.375rem',
+  standard: '0.75rem',
   comfortable: '1.25rem',
 };
 
@@ -158,7 +158,8 @@ export const AppearanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const tenant = await api.tenants.getCurrent();
         const s: AppearanceSettings = {
           primaryColor: tenant?.primary_color || tenant?.settings?.primaryColor || DEFAULT_APPEARANCE.primaryColor,
-          secondaryColor: tenant?.secondary_color || tenant?.settings?.secondaryColor || DEFAULT_APPEARANCE.secondaryColor,
+          secondaryColor:
+            tenant?.secondary_color || tenant?.settings?.secondaryColor || DEFAULT_APPEARANCE.secondaryColor,
           accentColor: tenant?.settings?.accentColor || DEFAULT_APPEARANCE.accentColor,
           fontFamily: tenant?.settings?.fontFamily || tenant?.font_family || DEFAULT_APPEARANCE.fontFamily,
           fontSize: tenant?.settings?.fontSize || tenant?.font_size || DEFAULT_APPEARANCE.fontSize,
@@ -180,9 +181,5 @@ export const AppearanceProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     load();
   }, [isAuthenticated]);
 
-  return (
-    <AppearanceCtx.Provider value={{ appearance, isLoaded }}>
-      {children}
-    </AppearanceCtx.Provider>
-  );
+  return <AppearanceCtx.Provider value={{ appearance, isLoaded }}>{children}</AppearanceCtx.Provider>;
 };

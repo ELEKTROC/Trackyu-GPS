@@ -5,40 +5,55 @@ import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import {
-  Zap, Plus, Trash2, PlayCircle, PauseCircle, Pencil, Copy,
-  Bell, Mail, MessageSquare, Send, Activity, CreditCard,
-  AlertTriangle, CheckCircle, Clock, Filter, LayoutTemplate
+  Zap,
+  Plus,
+  Trash2,
+  PlayCircle,
+  PauseCircle,
+  Pencil,
+  Copy,
+  Bell,
+  Mail,
+  MessageSquare,
+  Send,
+  Activity,
+  CreditCard,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Filter,
+  LayoutTemplate,
 } from 'lucide-react';
 
 // ─── TRIGGER CONFIG ────────────────────────────────────────────────────────
 const TRIGGER_CONFIG: Record<AutomationTriggerType, { label: string; color: string; group: string }> = {
-  LEAD_CREATED:       { label: 'Nouveau lead créé',           color: 'green',  group: 'CRM' },
-  LEAD_STATUS_CHANGED:{ label: 'Statut lead modifié',         color: 'green',  group: 'CRM' },
-  QUOTE_SENT:         { label: 'Devis envoyé',                color: 'blue',   group: 'Devis' },
-  QUOTE_ACCEPTED:     { label: 'Devis accepté',               color: 'blue',   group: 'Devis' },
-  QUOTE_REJECTED:     { label: 'Devis refusé',                color: 'blue',   group: 'Devis' },
-  INVOICE_CREATED:    { label: 'Facture créée',               color: 'purple', group: 'Facturation' },
-  INVOICE_OVERDUE:    { label: 'Facture en retard',           color: 'red',    group: 'Facturation' },
-  INVOICE_PAID:       { label: 'Facture payée',               color: 'purple', group: 'Facturation' },
-  CONTRACT_CREATED:   { label: 'Contrat créé',                color: 'indigo', group: 'Contrats' },
-  CONTRACT_EXPIRING:  { label: 'Contrat expire bientôt',      color: 'amber',  group: 'Contrats' },
-  CONTRACT_EXPIRED:   { label: 'Contrat expiré',              color: 'red',    group: 'Contrats' },
-  PAYMENT_RECEIVED:   { label: 'Paiement reçu',               color: 'emerald',group: 'Paiements' },
-  TASK_DUE:           { label: 'Tâche échue',                 color: 'orange', group: 'Tâches' },
-  VEHICLE_ALERT:      { label: 'Alerte véhicule',             color: 'red',    group: 'GPS' },
+  LEAD_CREATED: { label: 'Nouveau lead créé', color: 'green', group: 'CRM' },
+  LEAD_STATUS_CHANGED: { label: 'Statut lead modifié', color: 'green', group: 'CRM' },
+  QUOTE_SENT: { label: 'Devis envoyé', color: 'blue', group: 'Devis' },
+  QUOTE_ACCEPTED: { label: 'Devis accepté', color: 'blue', group: 'Devis' },
+  QUOTE_REJECTED: { label: 'Devis refusé', color: 'blue', group: 'Devis' },
+  INVOICE_CREATED: { label: 'Facture créée', color: 'purple', group: 'Facturation' },
+  INVOICE_OVERDUE: { label: 'Facture en retard', color: 'red', group: 'Facturation' },
+  INVOICE_PAID: { label: 'Facture payée', color: 'purple', group: 'Facturation' },
+  CONTRACT_CREATED: { label: 'Contrat créé', color: 'indigo', group: 'Contrats' },
+  CONTRACT_EXPIRING: { label: 'Contrat expire bientôt', color: 'amber', group: 'Contrats' },
+  CONTRACT_EXPIRED: { label: 'Contrat expiré', color: 'red', group: 'Contrats' },
+  PAYMENT_RECEIVED: { label: 'Paiement reçu', color: 'emerald', group: 'Paiements' },
+  TASK_DUE: { label: 'Tâche échue', color: 'orange', group: 'Tâches' },
+  VEHICLE_ALERT: { label: 'Alerte véhicule', color: 'red', group: 'GPS' },
 };
 
 const ACTION_CONFIG: Record<AutomationActionType, { label: string; icon: React.ElementType; color: string }> = {
-  CREATE_TASK:    { label: 'Créer une tâche',     icon: CheckCircle,   color: 'blue' },
-  SEND_EMAIL:     { label: 'Envoyer un email',    icon: Mail,          color: 'sky' },
-  SEND_SMS:       { label: 'Envoyer un SMS',      icon: MessageSquare, color: 'green' },
-  SEND_TELEGRAM:  { label: 'Envoyer Telegram',    icon: Send,          color: 'cyan' },
-  UPDATE_STATUS:  { label: 'Modifier le statut',  icon: Activity,      color: 'purple' },
-  ASSIGN_TO_USER: { label: 'Assigner à',          icon: Bell,          color: 'indigo' },
-  CREATE_DUNNING: { label: 'Créer relance',       icon: CreditCard,    color: 'red' },
-  WEBHOOK:        { label: 'Appeler webhook',      icon: Zap,           color: 'amber' },
+  CREATE_TASK: { label: 'Créer une tâche', icon: CheckCircle, color: 'blue' },
+  SEND_EMAIL: { label: 'Envoyer un email', icon: Mail, color: 'sky' },
+  SEND_SMS: { label: 'Envoyer un SMS', icon: MessageSquare, color: 'green' },
+  SEND_TELEGRAM: { label: 'Envoyer Telegram', icon: Send, color: 'cyan' },
+  UPDATE_STATUS: { label: 'Modifier le statut', icon: Activity, color: 'purple' },
+  ASSIGN_TO_USER: { label: 'Assigner à', icon: Bell, color: 'indigo' },
+  CREATE_DUNNING: { label: 'Créer relance', icon: CreditCard, color: 'red' },
+  WEBHOOK: { label: 'Appeler webhook', icon: Zap, color: 'amber' },
 };
 
 // ─── TYPES ─────────────────────────────────────────────────────────────────
@@ -55,7 +70,11 @@ interface MessageTemplate {
 type FormData = {
   name: string;
   triggerType: AutomationTriggerType;
-  condition: { field?: string; operator?: 'EQUALS' | 'NOT_EQUALS' | 'CONTAINS' | 'GREATER_THAN' | 'LESS_THAN'; value?: string } | null;
+  condition: {
+    field?: string;
+    operator?: 'EQUALS' | 'NOT_EQUALS' | 'CONTAINS' | 'GREATER_THAN' | 'LESS_THAN';
+    value?: string;
+  } | null;
   action: AutomationRule['action'];
 };
 
@@ -71,7 +90,8 @@ const EMPTY_FORM: FormData = {
 
 // ─── COMPONENT ─────────────────────────────────────────────────────────────
 export const AutomationRulesView: React.FC = () => {
-  const { automationRules, addAutomationRule, updateAutomationRule, toggleAutomationRule, deleteAutomationRule } = useDataContext();
+  const { automationRules, addAutomationRule, updateAutomationRule, toggleAutomationRule, deleteAutomationRule } =
+    useDataContext();
   const { showToast } = useToast();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
 
@@ -84,9 +104,14 @@ export const AutomationRulesView: React.FC = () => {
 
   // Load message templates from Administration
   useEffect(() => {
-    api.messageTemplates.list().then((data: MessageTemplate[]) => {
-      setMessageTemplates(data.filter(t => t.is_active));
-    }).catch(() => { /* Templates optionnelles — non bloquant */ });
+    api.messageTemplates
+      .list()
+      .then((data: MessageTemplate[]) => {
+        setMessageTemplates(data.filter((t) => t.is_active));
+      })
+      .catch(() => {
+        /* Templates optionnelles — non bloquant */
+      });
   }, []);
 
   const openCreate = () => {
@@ -109,19 +134,26 @@ export const AutomationRulesView: React.FC = () => {
   };
 
   const handleSave = () => {
-    if (!form.name.trim()) { showToast(TOAST.VALIDATION.REQUIRED_FIELD('nom de la règle'), 'error'); return; }
+    if (!form.name.trim()) {
+      showToast(TOAST.VALIDATION.REQUIRED_FIELD('nom de la règle'), 'error');
+      return;
+    }
 
     if (form.action.type === 'CREATE_TASK' && !form.action.taskTemplate?.title.trim()) {
-      showToast(TOAST.VALIDATION.REQUIRED_FIELD('titre de la tâche'), 'error'); return;
+      showToast(TOAST.VALIDATION.REQUIRED_FIELD('titre de la tâche'), 'error');
+      return;
     }
     if (form.action.type === 'SEND_EMAIL' && !form.action.emailTemplate?.subject.trim()) {
-      showToast(TOAST.VALIDATION.REQUIRED_FIELD('sujet de l\'email'), 'error'); return;
+      showToast(TOAST.VALIDATION.REQUIRED_FIELD("sujet de l'email"), 'error');
+      return;
     }
     if (form.action.type === 'SEND_SMS' && !form.action.smsTemplate?.message.trim()) {
-      showToast(TOAST.VALIDATION.REQUIRED_FIELD('message SMS'), 'error'); return;
+      showToast(TOAST.VALIDATION.REQUIRED_FIELD('message SMS'), 'error');
+      return;
     }
     if (form.action.type === 'WEBHOOK' && !form.action.webhookUrl?.trim()) {
-      showToast(TOAST.VALIDATION.REQUIRED_FIELD('URL du webhook'), 'error'); return;
+      showToast(TOAST.VALIDATION.REQUIRED_FIELD('URL du webhook'), 'error');
+      return;
     }
 
     const payload: Partial<AutomationRule> = {
@@ -179,14 +211,14 @@ export const AutomationRulesView: React.FC = () => {
         base.webhookUrl = '';
         break;
     }
-    setForm(prev => ({ ...prev, action: base }));
+    setForm((prev) => ({ ...prev, action: base }));
   };
 
   const applyMessageTemplate = (templateId: string) => {
-    const tpl = messageTemplates.find(t => t.id === templateId);
+    const tpl = messageTemplates.find((t) => t.id === templateId);
     if (!tpl) return;
 
-    setForm(prev => {
+    setForm((prev) => {
       const action = { ...prev.action, messageTemplateId: templateId };
       if (prev.action.type === 'SEND_EMAIL') {
         action.emailTemplate = { subject: tpl.subject || tpl.name, html: tpl.content };
@@ -198,18 +230,19 @@ export const AutomationRulesView: React.FC = () => {
   };
 
   // Filter rules
-  const filteredRules = filterTrigger === 'ALL'
-    ? automationRules
-    : automationRules.filter(r => r.triggerType === filterTrigger);
+  const filteredRules =
+    filterTrigger === 'ALL' ? automationRules : automationRules.filter((r) => r.triggerType === filterTrigger);
 
-  const triggerGroups = Object.entries(TRIGGER_CONFIG).reduce<Record<string, { key: AutomationTriggerType; label: string }[]>>((acc, [k, v]) => {
+  const triggerGroups = Object.entries(TRIGGER_CONFIG).reduce<
+    Record<string, { key: AutomationTriggerType; label: string }[]>
+  >((acc, [k, v]) => {
     if (!acc[v.group]) acc[v.group] = [];
     acc[v.group].push({ key: k as AutomationTriggerType, label: v.label });
     return acc;
   }, {});
 
   // Relevant message templates for current action channel
-  const relevantTemplates = messageTemplates.filter(t => {
+  const relevantTemplates = messageTemplates.filter((t) => {
     if (form.action.type === 'SEND_EMAIL') return t.channel === 'EMAIL';
     if (form.action.type === 'SEND_SMS') return t.channel === 'SMS';
     if (form.action.type === 'SEND_TELEGRAM') return t.channel === 'TELEGRAM';
@@ -226,20 +259,24 @@ export const AutomationRulesView: React.FC = () => {
             Automatisations
           </h2>
           <p className="text-slate-500 dark:text-slate-400">
-            {automationRules.length} règle{automationRules.length !== 1 ? 's' : ''} • {automationRules.filter(r => r.isActive).length} active{automationRules.filter(r => r.isActive).length !== 1 ? 's' : ''}
+            {automationRules.length} règle{automationRules.length !== 1 ? 's' : ''} •{' '}
+            {automationRules.filter((r) => r.isActive).length} active
+            {automationRules.filter((r) => r.isActive).length !== 1 ? 's' : ''}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <select
             value={filterTrigger}
-            onChange={e => setFilterTrigger(e.target.value)}
+            onChange={(e) => setFilterTrigger(e.target.value)}
             className="px-3 py-2 border rounded-lg text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
           >
             <option value="ALL">Tous les déclencheurs</option>
             {Object.entries(triggerGroups).map(([group, items]) => (
               <optgroup key={group} label={group}>
-                {items.map(item => (
-                  <option key={item.key} value={item.key}>{item.label}</option>
+                {items.map((item) => (
+                  <option key={item.key} value={item.key}>
+                    {item.label}
+                  </option>
                 ))}
               </optgroup>
             ))}
@@ -268,7 +305,7 @@ export const AutomationRulesView: React.FC = () => {
 
       {/* Rules grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filteredRules.map(rule => {
+        {filteredRules.map((rule) => {
           const trigger = TRIGGER_CONFIG[rule.triggerType];
           const action = ACTION_CONFIG[rule.action?.type];
           const ActionIcon = action?.icon || Zap;
@@ -332,7 +369,8 @@ export const AutomationRulesView: React.FC = () => {
                       SI
                     </span>
                     <span className="text-slate-500 dark:text-slate-400 text-xs">
-                      {rule.condition.field} {rule.condition.operator?.toLowerCase()} {String(rule.condition.value || '')}
+                      {rule.condition.field} {rule.condition.operator?.toLowerCase()}{' '}
+                      {String(rule.condition.value || '')}
                     </span>
                   </div>
                 )}
@@ -363,12 +401,17 @@ export const AutomationRulesView: React.FC = () => {
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {rule.action?.type === 'CREATE_TASK'
-                      ? (rule.action.taskTemplate?.dueInDays === 0 ? 'Immédiat' : `J+${rule.action.taskTemplate?.dueInDays || 0}`)
-                      : rule.action?.type === 'WEBHOOK' ? 'Temps réel' : 'Auto'
-                    }
+                      ? rule.action.taskTemplate?.dueInDays === 0
+                        ? 'Immédiat'
+                        : `J+${rule.action.taskTemplate?.dueInDays || 0}`
+                      : rule.action?.type === 'WEBHOOK'
+                        ? 'Temps réel'
+                        : 'Auto'}
                   </span>
                   {(rule.runCount ?? 0) > 0 && (
-                    <span>{rule.runCount} exécution{(rule.runCount ?? 0) > 1 ? 's' : ''}</span>
+                    <span>
+                      {rule.runCount} exécution{(rule.runCount ?? 0) > 1 ? 's' : ''}
+                    </span>
                   )}
                 </div>
               </div>
@@ -381,17 +424,19 @@ export const AutomationRulesView: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingRule ? 'Modifier la Règle' : 'Nouvelle Règle d\'Automatisation'}
+        title={editingRule ? 'Modifier la Règle' : "Nouvelle Règle d'Automatisation"}
       >
         <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-1">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom de la règle *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              Nom de la règle *
+            </label>
             <input
               type="text"
               className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
               value={form.name}
-              onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
+              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="Ex: Relance Devis J+3"
             />
           </div>
@@ -405,12 +450,14 @@ export const AutomationRulesView: React.FC = () => {
             <select
               className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
               value={form.triggerType}
-              onChange={e => setForm(prev => ({ ...prev, triggerType: e.target.value as AutomationTriggerType }))}
+              onChange={(e) => setForm((prev) => ({ ...prev, triggerType: e.target.value as AutomationTriggerType }))}
             >
               {Object.entries(triggerGroups).map(([group, items]) => (
                 <optgroup key={group} label={group}>
-                  {items.map(item => (
-                    <option key={item.key} value={item.key}>{item.label}</option>
+                  {items.map((item) => (
+                    <option key={item.key} value={item.key}>
+                      {item.label}
+                    </option>
                   ))}
                 </optgroup>
               ))}
@@ -428,7 +475,7 @@ export const AutomationRulesView: React.FC = () => {
                 type="button"
                 onClick={() => {
                   setShowCondition(!showCondition);
-                  if (showCondition) setForm(prev => ({ ...prev, condition: null }));
+                  if (showCondition) setForm((prev) => ({ ...prev, condition: null }));
                 }}
                 className="text-xs text-[var(--primary)] hover:text-[var(--primary)]"
               >
@@ -442,12 +489,22 @@ export const AutomationRulesView: React.FC = () => {
                   placeholder="Champ (ex: status)"
                   className="px-2 py-1.5 border rounded text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                   value={form.condition?.field || ''}
-                  onChange={e => setForm(prev => ({ ...prev, condition: { ...prev.condition, field: e.target.value } }))}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, condition: { ...prev.condition, field: e.target.value } }))
+                  }
                 />
                 <select
                   className="px-2 py-1.5 border rounded text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                   value={form.condition?.operator || 'EQUALS'}
-                  onChange={e => setForm(prev => ({ ...prev, condition: { ...prev.condition, operator: e.target.value as 'EQUALS' | 'NOT_EQUALS' | 'CONTAINS' | 'GREATER_THAN' | 'LESS_THAN' } }))}
+                  onChange={(e) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      condition: {
+                        ...prev.condition,
+                        operator: e.target.value as 'EQUALS' | 'NOT_EQUALS' | 'CONTAINS' | 'GREATER_THAN' | 'LESS_THAN',
+                      },
+                    }))
+                  }
                 >
                   <option value="EQUALS">Égal à</option>
                   <option value="NOT_EQUALS">Différent de</option>
@@ -460,7 +517,9 @@ export const AutomationRulesView: React.FC = () => {
                   placeholder="Valeur"
                   className="px-2 py-1.5 border rounded text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                   value={form.condition?.value || ''}
-                  onChange={e => setForm(prev => ({ ...prev, condition: { ...prev.condition, value: e.target.value } }))}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, condition: { ...prev.condition, value: e.target.value } }))
+                  }
                 />
               </div>
             )}
@@ -473,7 +532,9 @@ export const AutomationRulesView: React.FC = () => {
               Action *
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-              {(Object.entries(ACTION_CONFIG) as [AutomationActionType, typeof ACTION_CONFIG[AutomationActionType]][]).map(([key, cfg]) => {
+              {(
+                Object.entries(ACTION_CONFIG) as [AutomationActionType, (typeof ACTION_CONFIG)[AutomationActionType]][]
+              ).map(([key, cfg]) => {
                 const Icon = cfg.icon;
                 const isSelected = form.action.type === key;
                 return (
@@ -507,38 +568,57 @@ export const AutomationRulesView: React.FC = () => {
                     type="text"
                     className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     value={form.action.taskTemplate?.title || ''}
-                    onChange={e => setForm(prev => ({
-                      ...prev,
-                      action: { ...prev.action, taskTemplate: { ...prev.action.taskTemplate!, title: e.target.value } }
-                    }))}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        action: {
+                          ...prev.action,
+                          taskTemplate: { ...prev.action.taskTemplate!, title: e.target.value },
+                        },
+                      }))
+                    }
                     placeholder="Ex: Relancer le client"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Délai (jours)</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      Délai (jours)
+                    </label>
                     <input
                       type="number"
                       min="0"
                       max="365"
                       className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                       value={form.action.taskTemplate?.dueInDays ?? 1}
-                      onChange={e => setForm(prev => ({
-                        ...prev,
-                        action: { ...prev.action, taskTemplate: { ...prev.action.taskTemplate!, dueInDays: parseInt(e.target.value) || 0 } }
-                      }))}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          action: {
+                            ...prev.action,
+                            taskTemplate: { ...prev.action.taskTemplate!, dueInDays: parseInt(e.target.value) || 0 },
+                          },
+                        }))
+                      }
                     />
                     <p className="text-xs text-slate-400 mt-0.5">0 = le jour même</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Priorité</label>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      Priorité
+                    </label>
                     <select
                       className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                       value={form.action.taskTemplate?.priority || 'MEDIUM'}
-                      onChange={e => setForm(prev => ({
-                        ...prev,
-                        action: { ...prev.action, taskTemplate: { ...prev.action.taskTemplate!, priority: e.target.value as any } }
-                      }))}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          action: {
+                            ...prev.action,
+                            taskTemplate: { ...prev.action.taskTemplate!, priority: e.target.value as any },
+                          },
+                        }))
+                      }
                     >
                       <option value="LOW">Basse</option>
                       <option value="MEDIUM">Moyenne</option>
@@ -548,15 +628,22 @@ export const AutomationRulesView: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Description</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    Description
+                  </label>
                   <textarea
                     className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     rows={2}
                     value={form.action.taskTemplate?.description || ''}
-                    onChange={e => setForm(prev => ({
-                      ...prev,
-                      action: { ...prev.action, taskTemplate: { ...prev.action.taskTemplate!, description: e.target.value } }
-                    }))}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        action: {
+                          ...prev.action,
+                          taskTemplate: { ...prev.action.taskTemplate!, description: e.target.value },
+                        },
+                      }))
+                    }
                     placeholder="Description optionnelle..."
                   />
                 </div>
@@ -578,14 +665,16 @@ export const AutomationRulesView: React.FC = () => {
                     <select
                       className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white border-purple-200 dark:border-purple-800"
                       value={form.action.messageTemplateId || ''}
-                      onChange={e => {
+                      onChange={(e) => {
                         if (e.target.value) applyMessageTemplate(e.target.value);
-                        else setForm(prev => ({ ...prev, action: { ...prev.action, messageTemplateId: undefined } }));
+                        else setForm((prev) => ({ ...prev, action: { ...prev.action, messageTemplateId: undefined } }));
                       }}
                     >
                       <option value="">— Saisie libre —</option>
-                      {relevantTemplates.map(t => (
-                        <option key={t.id} value={t.id}>📧 {t.name} ({t.category})</option>
+                      {relevantTemplates.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          📧 {t.name} ({t.category})
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -596,26 +685,40 @@ export const AutomationRulesView: React.FC = () => {
                     type="text"
                     className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     value={form.action.emailTemplate?.subject || ''}
-                    onChange={e => setForm(prev => ({
-                      ...prev,
-                      action: { ...prev.action, emailTemplate: { ...prev.action.emailTemplate!, subject: e.target.value } }
-                    }))}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        action: {
+                          ...prev.action,
+                          emailTemplate: { ...prev.action.emailTemplate!, subject: e.target.value },
+                        },
+                      }))
+                    }
                     placeholder="Sujet de l'email"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Contenu HTML</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    Contenu HTML
+                  </label>
                   <textarea
                     className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono text-xs"
                     rows={4}
                     value={form.action.emailTemplate?.html || ''}
-                    onChange={e => setForm(prev => ({
-                      ...prev,
-                      action: { ...prev.action, emailTemplate: { ...prev.action.emailTemplate!, html: e.target.value } }
-                    }))}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        action: {
+                          ...prev.action,
+                          emailTemplate: { ...prev.action.emailTemplate!, html: e.target.value },
+                        },
+                      }))
+                    }
                     placeholder="<p>Bonjour {{client.name}},</p>"
                   />
-                  <p className="text-xs text-slate-400 mt-0.5">Variables : {'{{client.name}}'}, {'{{invoice.number}}'}, etc.</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Variables : {'{{client.name}}'}, {'{{invoice.number}}'}, etc.
+                  </p>
                 </div>
               </>
             )}
@@ -624,10 +727,15 @@ export const AutomationRulesView: React.FC = () => {
             {(form.action.type === 'SEND_SMS' || form.action.type === 'SEND_TELEGRAM') && (
               <>
                 <h4 className="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
-                  {form.action.type === 'SEND_SMS'
-                    ? <><MessageSquare className="w-4 h-4 text-green-500" /> Configuration SMS</>
-                    : <><Send className="w-4 h-4 text-cyan-500" /> Configuration Telegram</>
-                  }
+                  {form.action.type === 'SEND_SMS' ? (
+                    <>
+                      <MessageSquare className="w-4 h-4 text-green-500" /> Configuration SMS
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 text-cyan-500" /> Configuration Telegram
+                    </>
+                  )}
                 </h4>
                 {relevantTemplates.length > 0 && (
                   <div>
@@ -638,13 +746,13 @@ export const AutomationRulesView: React.FC = () => {
                     <select
                       className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white border-purple-200 dark:border-purple-800"
                       value={form.action.messageTemplateId || ''}
-                      onChange={e => {
+                      onChange={(e) => {
                         if (e.target.value) applyMessageTemplate(e.target.value);
-                        else setForm(prev => ({ ...prev, action: { ...prev.action, messageTemplateId: undefined } }));
+                        else setForm((prev) => ({ ...prev, action: { ...prev.action, messageTemplateId: undefined } }));
                       }}
                     >
                       <option value="">— Saisie libre —</option>
-                      {relevantTemplates.map(t => (
+                      {relevantTemplates.map((t) => (
                         <option key={t.id} value={t.id}>
                           {t.channel === 'SMS' ? '💬' : '✈️'} {t.name} ({t.category})
                         </option>
@@ -658,11 +766,15 @@ export const AutomationRulesView: React.FC = () => {
                     className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     rows={3}
                     value={form.action.smsTemplate?.message || ''}
-                    onChange={e => setForm(prev => ({
-                      ...prev,
-                      action: { ...prev.action, smsTemplate: { message: e.target.value } }
-                    }))}
-                    placeholder={form.action.type === 'SEND_SMS' ? 'Bonjour {{client.name}}, ...' : 'Message Telegram...'}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        action: { ...prev.action, smsTemplate: { message: e.target.value } },
+                      }))
+                    }
+                    placeholder={
+                      form.action.type === 'SEND_SMS' ? 'Bonjour {{client.name}}, ...' : 'Message Telegram...'
+                    }
                   />
                   {form.action.type === 'SEND_SMS' && (
                     <p className="text-xs text-slate-400 mt-0.5">
@@ -678,15 +790,19 @@ export const AutomationRulesView: React.FC = () => {
               <>
                 <h4 className="font-bold text-slate-800 dark:text-white text-sm">Changement de statut</h4>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Nouveau statut *</label>
+                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    Nouveau statut *
+                  </label>
                   <input
                     type="text"
                     className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
                     value={form.action.statusUpdate?.newStatus || ''}
-                    onChange={e => setForm(prev => ({
-                      ...prev,
-                      action: { ...prev.action, statusUpdate: { newStatus: e.target.value } }
-                    }))}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        action: { ...prev.action, statusUpdate: { newStatus: e.target.value } },
+                      }))
+                    }
                     placeholder="Ex: QUALIFIED, WON, OVERDUE..."
                   />
                 </div>
@@ -703,10 +819,12 @@ export const AutomationRulesView: React.FC = () => {
                     type="url"
                     className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono text-sm"
                     value={form.action.webhookUrl || ''}
-                    onChange={e => setForm(prev => ({
-                      ...prev,
-                      action: { ...prev.action, webhookUrl: e.target.value }
-                    }))}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        action: { ...prev.action, webhookUrl: e.target.value },
+                      }))
+                    }
                     placeholder="https://api.example.com/webhook"
                   />
                 </div>
@@ -719,7 +837,7 @@ export const AutomationRulesView: React.FC = () => {
                 <p>
                   {form.action.type === 'CREATE_DUNNING'
                     ? 'Une action de relance sera automatiquement créée pour la facture concernée.'
-                    : 'L\'entité sera assignée à l\'utilisateur spécifié dans les conditions.'}
+                    : "L'entité sera assignée à l'utilisateur spécifié dans les conditions."}
                 </p>
               </div>
             )}

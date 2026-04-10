@@ -8,7 +8,7 @@ import {
   sleep,
   filterByTenant,
   getHeaders,
-  handleAuthError
+  handleAuthError,
 } from './client';
 import { logger } from '../../utils/logger';
 import type { Ticket, TicketMessage } from '../../types';
@@ -36,16 +36,16 @@ export function createSupportApi(lazyApi: () => any) {
         }
         try {
           const qs = new URLSearchParams();
-          if (params?.page)        qs.set('page',        String(params.page));
-          if (params?.limit)       qs.set('limit',       String(params.limit));
-          if (params?.search)      qs.set('search',      params.search);
-          if (params?.status)      qs.set('status',      params.status);
-          if (params?.priority)    qs.set('priority',    params.priority);
-          if (params?.category)    qs.set('category',    params.category);
+          if (params?.page) qs.set('page', String(params.page));
+          if (params?.limit) qs.set('limit', String(params.limit));
+          if (params?.search) qs.set('search', params.search);
+          if (params?.status) qs.set('status', params.status);
+          if (params?.priority) qs.set('priority', params.priority);
+          if (params?.category) qs.set('category', params.category);
           if (params?.assigned_to) qs.set('assigned_to', params.assigned_to);
-          if (params?.client_id)   qs.set('client_id',   params.client_id);
-          if (params?.date_from)   qs.set('date_from',   params.date_from);
-          if (params?.date_to)     qs.set('date_to',     params.date_to);
+          if (params?.client_id) qs.set('client_id', params.client_id);
+          if (params?.date_from) qs.set('date_from', params.date_from);
+          if (params?.date_to) qs.set('date_to', params.date_to);
 
           const url = `${API_URL}/tickets${qs.toString() ? `?${qs}` : ''}`;
           const response = await fetch(url, { headers: getHeaders() });
@@ -65,9 +65,14 @@ export function createSupportApi(lazyApi: () => any) {
             category: t.category,
             subCategory: t.sub_category,
             interventionType: t.intervention_type,
-            messages: t.messages ? t.messages.map((m: any) => ({
-              id: m.id, sender: m.sender, text: m.text, date: new Date(m.date)
-            })) : [],
+            messages: t.messages
+              ? t.messages.map((m: any) => ({
+                  id: m.id,
+                  sender: m.sender,
+                  text: m.text,
+                  date: new Date(m.date),
+                }))
+              : [],
             assignedTo: t.assigned_to,
             assignedUserName: t.assigned_user_name,
             createdBy: t.created_by || undefined,
@@ -128,12 +133,12 @@ export function createSupportApi(lazyApi: () => any) {
             due_date: ticket.dueDate || null,
             tags: ticket.tags || null,
             source: ticket.source || 'TrackYu',
-            received_at: ticket.receivedAt ? new Date(ticket.receivedAt).toISOString() : new Date().toISOString()
+            received_at: ticket.receivedAt ? new Date(ticket.receivedAt).toISOString() : new Date().toISOString(),
           };
           const response = await fetch(`${API_URL}/tickets`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
           });
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
@@ -165,12 +170,14 @@ export function createSupportApi(lazyApi: () => any) {
             escalationCount: rawData.escalation_count || 0,
             escalatedAt: rawData.escalated_at ? new Date(rawData.escalated_at) : undefined,
             escalatedBy: rawData.escalated_by || undefined,
-            messages: rawData.messages ? rawData.messages.map((m: any) => ({
-              id: m.id,
-              sender: m.sender,
-              text: m.text,
-              date: new Date(m.date)
-            })) : []
+            messages: rawData.messages
+              ? rawData.messages.map((m: any) => ({
+                  id: m.id,
+                  sender: m.sender,
+                  text: m.text,
+                  date: new Date(m.date),
+                }))
+              : [],
           };
         } catch (e) {
           logger.error(e);
@@ -181,7 +188,7 @@ export function createSupportApi(lazyApi: () => any) {
         if (USE_MOCK) {
           await sleep(NETWORK_DELAY);
           const tickets = db.get(DB_KEYS.TICKETS, [] as Ticket[]);
-          const index = tickets.findIndex(t => t.id === ticket.id);
+          const index = tickets.findIndex((t) => t.id === ticket.id);
           if (index !== -1) {
             tickets[index] = { ...ticket, updatedAt: new Date() };
             db.save(DB_KEYS.TICKETS, tickets);
@@ -203,12 +210,12 @@ export function createSupportApi(lazyApi: () => any) {
             assigned_to: ticket.assignedTo || null,
             due_date: ticket.dueDate || null,
             source: ticket.source || null,
-            received_at: ticket.receivedAt ? new Date(ticket.receivedAt).toISOString() : null
+            received_at: ticket.receivedAt ? new Date(ticket.receivedAt).toISOString() : null,
           };
           const response = await fetch(`${API_URL}/tickets/${ticket.id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
           });
           if (!response.ok) throw new Error('Failed to update ticket');
           const rawData = await response.json();
@@ -238,12 +245,14 @@ export function createSupportApi(lazyApi: () => any) {
             tags: rawData.tags,
             createdAt: new Date(rawData.created_at),
             updatedAt: new Date(rawData.updated_at),
-            messages: rawData.messages ? rawData.messages.map((m: any) => ({
-              id: m.id,
-              sender: m.sender,
-              text: m.text,
-              date: new Date(m.date || m.created_at)
-            })) : []
+            messages: rawData.messages
+              ? rawData.messages.map((m: any) => ({
+                  id: m.id,
+                  sender: m.sender,
+                  text: m.text,
+                  date: new Date(m.date || m.created_at),
+                }))
+              : [],
           };
         } catch (e) {
           logger.error(e);
@@ -254,14 +263,14 @@ export function createSupportApi(lazyApi: () => any) {
         if (USE_MOCK) {
           await sleep(NETWORK_DELAY);
           const tickets = db.get(DB_KEYS.TICKETS, [] as Ticket[]);
-          const filtered = tickets.filter(t => t.id !== id);
+          const filtered = tickets.filter((t) => t.id !== id);
           db.save(DB_KEYS.TICKETS, filtered);
           return;
         }
         try {
           const response = await fetch(`${API_URL}/tickets/${id}`, {
             method: 'DELETE',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to delete ticket');
         } catch (e) {
@@ -294,7 +303,7 @@ export function createSupportApi(lazyApi: () => any) {
         }
         try {
           const response = await fetch(`${API_URL}/tickets/${ticketId}/attachments`, {
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to fetch attachments');
           const rows = await response.json();
@@ -319,13 +328,10 @@ export function createSupportApi(lazyApi: () => any) {
           return { id: `ATT-${Date.now()}`, ticketId, fileName: 'mock.pdf' };
         }
         try {
-          const headers: Record<string, string> = {};
-          const token = localStorage.getItem('authToken');
-          if (token) headers['Authorization'] = `Bearer ${token}`;
           const response = await fetch(`${API_URL}/tickets/${ticketId}/attachments`, {
             method: 'POST',
-            headers,
-            body: formData
+            credentials: 'include',
+            body: formData,
           });
           if (!response.ok) throw new Error('Failed to upload attachment');
           return await response.json();
@@ -342,7 +348,7 @@ export function createSupportApi(lazyApi: () => any) {
         try {
           const response = await fetch(`${API_URL}/tickets/${ticketId}/attachments/${attachmentId}`, {
             method: 'DELETE',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to delete attachment');
         } catch (e) {
@@ -351,7 +357,10 @@ export function createSupportApi(lazyApi: () => any) {
         }
       },
       // Messages
-      addMessage: async (ticketId: string, data: { sender: string; text: string; isInternal?: boolean }): Promise<TicketMessage> => {
+      addMessage: async (
+        ticketId: string,
+        data: { sender: string; text: string; isInternal?: boolean }
+      ): Promise<TicketMessage> => {
         if (USE_MOCK) {
           await sleep(NETWORK_DELAY);
           return { id: `msg-${Date.now()}`, sender: data.sender, text: data.text, date: new Date() };
@@ -360,16 +369,18 @@ export function createSupportApi(lazyApi: () => any) {
           const payload = {
             sender: data.sender,
             text: data.text,
-            is_internal: data.isInternal || false
+            is_internal: data.isInternal || false,
           };
           const response = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
           });
           if (!response.ok) {
             const errBody = await response.json().catch(() => ({}));
-            throw new Error(errBody?.error || errBody?.details?.[0]?.message || `Failed to add message (${response.status})`);
+            throw new Error(
+              errBody?.error || errBody?.details?.[0]?.message || `Failed to add message (${response.status})`
+            );
           }
           const raw = await response.json();
           return {
@@ -377,7 +388,7 @@ export function createSupportApi(lazyApi: () => any) {
             sender: raw.sender,
             text: raw.text,
             date: new Date(raw.date || raw.created_at),
-            isInternal: raw.isInternal || raw.is_internal
+            isInternal: raw.isInternal || raw.is_internal,
           };
         } catch (e) {
           logger.error(e);
@@ -393,12 +404,12 @@ export function createSupportApi(lazyApi: () => any) {
         try {
           const payload = {
             reason: data.reason,
-            escalate_to: data.escalatedTo || null
+            escalate_to: data.escalatedTo || null,
           };
           const response = await fetch(`${API_URL}/tickets/${ticketId}/escalate`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
           });
           if (!response.ok) throw new Error('Failed to escalate ticket');
           return await response.json();
@@ -423,12 +434,14 @@ export function createSupportApi(lazyApi: () => any) {
             category: t.category,
             subCategory: t.sub_category,
             source: t.source,
-            messages: t.messages ? t.messages.map((m: any) => ({
-              id: m.id,
-              sender: m.sender,
-              text: m.text,
-              date: new Date(m.date)
-            })) : [],
+            messages: t.messages
+              ? t.messages.map((m: any) => ({
+                  id: m.id,
+                  sender: m.sender,
+                  text: m.text,
+                  date: new Date(m.date),
+                }))
+              : [],
             createdAt: new Date(t.created_at),
             updatedAt: new Date(t.updated_at),
           }));
@@ -444,7 +457,7 @@ export function createSupportApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/tickets/${ticketId}/messages/client`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify({ text })
+          body: JSON.stringify({ text }),
         });
         if (!response.ok) {
           const errBody = await response.json().catch(() => ({}));
@@ -452,7 +465,7 @@ export function createSupportApi(lazyApi: () => any) {
         }
         const raw = await response.json();
         return { id: raw.id, sender: raw.sender, text: raw.text, date: new Date(raw.date) };
-      }
+      },
     },
 
     // --- FAQ / KNOWLEDGE BASE ---
@@ -472,7 +485,7 @@ export function createSupportApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/faq/categories`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
           });
           if (!response.ok) throw new Error('Failed to create FAQ category');
           return response.json();
@@ -481,7 +494,7 @@ export function createSupportApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/faq/categories/${id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
           });
           if (!response.ok) throw new Error('Failed to update FAQ category');
           return response.json();
@@ -489,11 +502,11 @@ export function createSupportApi(lazyApi: () => any) {
         delete: async (id: string) => {
           const response = await fetch(`${API_URL}/faq/categories/${id}`, {
             method: 'DELETE',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to delete FAQ category');
           return response.json();
-        }
+        },
       },
       articles: {
         list: async (params?: { category_id?: string; status?: string; search?: string }) => {
@@ -505,7 +518,7 @@ export function createSupportApi(lazyApi: () => any) {
         },
         search: async (query: string) => {
           const response = await fetch(`${API_URL}/faq/articles/search?q=${encodeURIComponent(query)}`, {
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to search FAQ articles');
           return response.json();
@@ -519,7 +532,7 @@ export function createSupportApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/faq/articles`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
           });
           if (!response.ok) throw new Error('Failed to create FAQ article');
           return response.json();
@@ -528,7 +541,7 @@ export function createSupportApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/faq/articles/${id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
           });
           if (!response.ok) throw new Error('Failed to update FAQ article');
           return response.json();
@@ -536,7 +549,7 @@ export function createSupportApi(lazyApi: () => any) {
         delete: async (id: string) => {
           const response = await fetch(`${API_URL}/faq/articles/${id}`, {
             method: 'DELETE',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to delete FAQ article');
           return response.json();
@@ -544,7 +557,7 @@ export function createSupportApi(lazyApi: () => any) {
         publish: async (id: string) => {
           const response = await fetch(`${API_URL}/faq/articles/${id}/publish`, {
             method: 'POST',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to publish FAQ article');
           return response.json();
@@ -552,7 +565,7 @@ export function createSupportApi(lazyApi: () => any) {
         archive: async (id: string) => {
           const response = await fetch(`${API_URL}/faq/articles/${id}/archive`, {
             method: 'POST',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to archive FAQ article');
           return response.json();
@@ -560,7 +573,7 @@ export function createSupportApi(lazyApi: () => any) {
         view: async (id: string) => {
           const response = await fetch(`${API_URL}/faq/articles/${id}/view`, {
             method: 'POST',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           return response.json();
         },
@@ -568,12 +581,12 @@ export function createSupportApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/faq/articles/${id}/feedback`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
           });
           if (!response.ok) throw new Error('Failed to submit feedback');
           return response.json();
-        }
-      }
+        },
+      },
     },
 
     // --- AI Assistant & Support Chat ---
@@ -582,7 +595,7 @@ export function createSupportApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/ai/ask`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify({ query })
+          body: JSON.stringify({ query }),
         });
         if (!response.ok) throw new Error('AI request failed');
         return response.json();
@@ -591,7 +604,7 @@ export function createSupportApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/ai/analyze-report`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify({ reportType, columns, data })
+          body: JSON.stringify({ reportType, columns, data }),
         });
         if (!response.ok) throw new Error('AI analysis failed');
         return response.json();
@@ -599,7 +612,7 @@ export function createSupportApi(lazyApi: () => any) {
       createConversation: async () => {
         const response = await fetch(`${API_URL}/ai/support-conversation`, {
           method: 'POST',
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to create conversation');
         return response.json();
@@ -608,21 +621,21 @@ export function createSupportApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/ai/support-conversation/${conversationId}/messages`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify({ message })
+          body: JSON.stringify({ message }),
         });
         if (!response.ok) throw new Error('Failed to send message');
         return response.json();
       },
       getConversations: async (status: string = 'open') => {
         const response = await fetch(`${API_URL}/ai/support-conversations?status=${status}`, {
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to get conversations');
         return response.json();
       },
       getMessages: async (conversationId: string) => {
         const response = await fetch(`${API_URL}/ai/support-conversation/${conversationId}/messages`, {
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to get messages');
         return response.json();
@@ -630,7 +643,7 @@ export function createSupportApi(lazyApi: () => any) {
       // Internal Chat (Agent ↔ Agent)
       listAgents: async () => {
         const response = await fetch(`${API_URL}/ai/agents`, {
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to list agents');
         return response.json();
@@ -639,14 +652,14 @@ export function createSupportApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/ai/internal-conversation`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify({ targetUserId })
+          body: JSON.stringify({ targetUserId }),
         });
         if (!response.ok) throw new Error('Failed to create internal conversation');
         return response.json();
       },
       getInternalConversations: async (status: string = 'assigned') => {
         const response = await fetch(`${API_URL}/ai/internal-conversations?status=${status}`, {
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to get internal conversations');
         return response.json();
@@ -655,18 +668,18 @@ export function createSupportApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/ai/internal-conversation/${conversationId}/messages`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify({ message })
+          body: JSON.stringify({ message }),
         });
         if (!response.ok) throw new Error('Failed to send internal message');
         return response.json();
       },
       getInternalMessages: async (conversationId: string) => {
         const response = await fetch(`${API_URL}/ai/internal-conversation/${conversationId}/messages`, {
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to get internal messages');
         return response.json();
-      }
-    }
+      },
+    },
   };
 }

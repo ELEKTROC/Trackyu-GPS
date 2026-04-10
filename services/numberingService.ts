@@ -4,19 +4,20 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getHeaders } from './api/client';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 // ============ TYPES ============
 
-export type NumberingModule = 
-  | 'invoice' 
-  | 'quote' 
+export type NumberingModule =
+  | 'invoice'
+  | 'quote'
   | 'receipt'
   | 'credit_note'
   | 'purchase_order'
-  | 'contract' 
-  | 'intervention' 
+  | 'contract'
+  | 'intervention'
   | 'ticket'
   | 'device'
   | 'sim'
@@ -54,33 +55,15 @@ export interface NumberingCounter {
 }
 
 // ============ API FUNCTIONS ============
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('fleet_token');
-  const impersonateTenantId = localStorage.getItem('impersonate_tenant_id');
-  
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-  
-  // Add impersonation header if in impersonation mode
-  if (impersonateTenantId) {
-    headers['X-Impersonate-Tenant'] = impersonateTenantId;
-  }
-  
-  return headers;
-};
+// Auth : httpOnly cookie via getHeaders() — pas de Bearer localStorage
 
 /**
  * Récupère le prochain numéro pour un module (sans incrémenter)
  */
 export const previewNextNumber = async (module: NumberingModule, tenantId?: string): Promise<string> => {
-  const headers = getAuthHeaders();
-  if (tenantId) {
-    headers['X-Impersonate-Tenant'] = tenantId;
-  }
-  const response = await fetch(`${API_URL}/numbering/preview/${module}`, { headers });
+  const headers = getHeaders() as Record<string, string>;
+  if (tenantId) headers['X-Impersonate-Tenant'] = tenantId;
+  const response = await fetch(`${API_URL}/numbering/preview/${module}`, { credentials: 'include', headers });
 
   if (!response.ok) {
     throw new Error('Failed to preview number');
@@ -96,7 +79,7 @@ export const previewNextNumber = async (module: NumberingModule, tenantId?: stri
  * @param tenantId - (optionnel) tenant à impersonifier pour la numérotation (revendeurs)
  */
 export const getNextNumber = async (module: NumberingModule, tenantId?: string): Promise<string> => {
-  const headers = getAuthHeaders();
+  const headers = getHeaders();
   if (tenantId) {
     headers['X-Impersonate-Tenant'] = tenantId;
   }
@@ -115,13 +98,13 @@ export const getNextNumber = async (module: NumberingModule, tenantId?: string):
  */
 export const getNumberingCounters = async (): Promise<NumberingCounter[]> => {
   const response = await fetch(`${API_URL}/numbering/counters`, {
-    headers: getAuthHeaders(),
+    headers: getHeaders(),
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to fetch counters');
   }
-  
+
   return response.json();
 };
 
@@ -134,14 +117,14 @@ export const updateCounter = async (
 ): Promise<NumberingCounter> => {
   const response = await fetch(`${API_URL}/numbering/counters/${module}`, {
     method: 'PUT',
-    headers: getAuthHeaders(),
+    headers: getHeaders(),
     body: JSON.stringify(updates),
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to update counter');
   }
-  
+
   return response.json();
 };
 
@@ -151,9 +134,9 @@ export const updateCounter = async (
 export const resetCounter = async (module: string): Promise<void> => {
   const response = await fetch(`${API_URL}/numbering/counters/${module}/reset`, {
     method: 'POST',
-    headers: getAuthHeaders(),
+    headers: getHeaders(),
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to reset counter');
   }
@@ -165,14 +148,14 @@ export const resetCounter = async (module: string): Promise<void> => {
 export const getBatchNumbers = async (module: NumberingModule, count: number): Promise<string[]> => {
   const response = await fetch(`${API_URL}/numbering/batch`, {
     method: 'POST',
-    headers: getAuthHeaders(),
+    headers: getHeaders(),
     body: JSON.stringify({ module, count }),
   });
-  
+
   if (!response.ok) {
     throw new Error('Failed to generate batch numbers');
   }
-  
+
   const data = await response.json();
   return data.numbers;
 };
@@ -234,7 +217,7 @@ export const useGetNextNumber = () => {
  */
 export const useUpdateCounter = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ module, updates }: { module: string; updates: Parameters<typeof updateCounter>[1] }) =>
       updateCounter(module, updates),
@@ -249,7 +232,7 @@ export const useUpdateCounter = () => {
  */
 export const useResetCounter = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: resetCounter,
     onSuccess: () => {
@@ -299,16 +282,16 @@ export const generatePreview = (counter: NumberingCounter, tenantSlug = 'XXX'): 
   const year = new Date().getFullYear();
   const month = String(new Date().getMonth() + 1).padStart(2, '0');
   const num = String(counter.currentNumber).padStart(counter.padding, '0');
-  
+
   let preview = counter.prefix + counter.separator;
-  
+
   // Slug takes priority over year
   if (counter.includeSlug) {
     preview += tenantSlug.toUpperCase() + counter.separator;
   } else if (counter.includeYear) {
     preview += year + counter.separator;
   }
-  
+
   if (counter.includeMonth) preview += month + counter.separator;
   preview += num;
 
@@ -325,7 +308,7 @@ export const useOrgTaxRate = (): number => {
   const { data } = useQuery({
     queryKey: ['tenant-current-settings'],
     queryFn: async () => {
-      const res = await fetch(`${API_URL}/tenants/current`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API_URL}/tenants/current`, { headers: getHeaders() });
       if (!res.ok) return null;
       return res.json();
     },

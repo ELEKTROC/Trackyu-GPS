@@ -1,6 +1,6 @@
 /**
  * DocumentTemplatesPanel V2 - Panneau de gestion des modèles de documents amélioré
- * 
+ *
  * Fonctionnalités:
  * - CRUD templates
  * - Prévisualisation live avec variables substituées
@@ -11,16 +11,42 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { 
-  Plus, Edit2, Trash2, FileText, Code, Eye, Copy, Download,
-  Check, X, Loader2, FileType, Receipt, FileSignature, 
-  ClipboardList, FileCheck, ChevronDown, ChevronUp, Palette,
-  Bold, Italic, List, AlignLeft, Image, Link, Undo, Redo,
-  RefreshCw, Save, Maximize2, Minimize2
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  FileText,
+  Code,
+  Eye,
+  Copy,
+  Download,
+  Check,
+  X,
+  Loader2,
+  FileType,
+  Receipt,
+  FileSignature,
+  ClipboardList,
+  FileCheck,
+  ChevronDown,
+  ChevronUp,
+  Palette,
+  Bold,
+  Italic,
+  List,
+  AlignLeft,
+  Image,
+  Link,
+  Undo,
+  Redo,
+  RefreshCw,
+  Save,
+  Maximize2,
+  Minimize2,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { Modal } from '../../../components/Modal';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
@@ -33,12 +59,15 @@ const DOCUMENT_TYPES = [
   { id: 'QUOTE', label: 'Devis', icon: FileText, color: 'green' },
   { id: 'CONTRACT', label: 'Contrat', icon: FileSignature, color: 'purple' },
   { id: 'RECEIPT', label: 'Reçu', icon: FileCheck, color: 'orange' },
-  { id: 'INTERVENTION_REPORT', label: 'Rapport d\'intervention', icon: ClipboardList, color: 'teal' },
-  { id: 'DELIVERY_NOTE', label: 'Bon de livraison', icon: FileType, color: 'indigo' }
+  { id: 'INTERVENTION_REPORT', label: "Rapport d'intervention", icon: ClipboardList, color: 'teal' },
+  { id: 'DELIVERY_NOTE', label: 'Bon de livraison', icon: FileType, color: 'indigo' },
 ];
 
 // Variables disponibles par type de document
-const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: string; label: string; example: string }[] }[]> = {
+const VARIABLES_BY_TYPE: Record<
+  string,
+  { category: string; variables: { key: string; label: string; example: string }[] }[]
+> = {
   INVOICE: [
     {
       category: 'Client',
@@ -46,19 +75,19 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
         { key: '{{client.name}}', label: 'Nom du client', example: 'Entreprise ABC' },
         { key: '{{client.address}}', label: 'Adresse', example: '123 Rue Principale, Abidjan' },
         { key: '{{client.phone}}', label: 'Téléphone', example: '+225 07 00 00 00' },
-        { key: '{{client.email}}', label: 'Email', example: 'contact@abc.ci' }
-      ]
+        { key: '{{client.email}}', label: 'Email', example: 'contact@abc.ci' },
+      ],
     },
     {
       category: 'Facture',
       variables: [
         { key: '{{invoice.number}}', label: 'Numéro', example: 'FAC-2025-0001' },
         { key: '{{invoice.date}}', label: 'Date', example: '20/12/2025' },
-        { key: '{{invoice.due_date}}', label: 'Date d\'échéance', example: '20/01/2026' },
+        { key: '{{invoice.due_date}}', label: "Date d'échéance", example: '20/01/2026' },
         { key: '{{invoice.total}}', label: 'Total TTC', example: '150 000 FCFA' },
         { key: '{{invoice.subtotal}}', label: 'Sous-total HT', example: '127 119 FCFA' },
-        { key: '{{invoice.tax}}', label: 'TVA (0%)', example: '0 FCFA' }
-      ]
+        { key: '{{invoice.tax}}', label: 'TVA (0%)', example: '0 FCFA' },
+      ],
     },
     {
       category: 'Entreprise',
@@ -66,9 +95,9 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
         { key: '{{company.name}}', label: 'Nom société', example: 'TrackYu GPS' },
         { key: '{{company.address}}', label: 'Adresse', example: 'Cocody, Abidjan' },
         { key: '{{company.phone}}', label: 'Téléphone', example: '+225 07 XX XX XX' },
-        { key: '{{company.logo}}', label: 'Logo (URL)', example: 'https://...' }
-      ]
-    }
+        { key: '{{company.logo}}', label: 'Logo (URL)', example: 'https://...' },
+      ],
+    },
   ],
   QUOTE: [
     {
@@ -76,8 +105,8 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
       variables: [
         { key: '{{client.name}}', label: 'Nom du client', example: 'Entreprise XYZ' },
         { key: '{{client.address}}', label: 'Adresse', example: '456 Avenue Commerce' },
-        { key: '{{client.contact}}', label: 'Contact', example: 'M. Koné' }
-      ]
+        { key: '{{client.contact}}', label: 'Contact', example: 'M. Koné' },
+      ],
     },
     {
       category: 'Devis',
@@ -85,9 +114,9 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
         { key: '{{quote.number}}', label: 'Numéro', example: 'DEV-2025-0042' },
         { key: '{{quote.date}}', label: 'Date', example: '20/12/2025' },
         { key: '{{quote.validity}}', label: 'Validité', example: '30 jours' },
-        { key: '{{quote.total}}', label: 'Total TTC', example: '250 000 FCFA' }
-      ]
-    }
+        { key: '{{quote.total}}', label: 'Total TTC', example: '250 000 FCFA' },
+      ],
+    },
   ],
   INTERVENTION_REPORT: [
     {
@@ -98,24 +127,24 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
         { key: '{{intervention.type}}', label: 'Type', example: 'Installation GPS' },
         { key: '{{intervention.status}}', label: 'Statut', example: 'Terminée' },
         { key: '{{intervention.duration}}', label: 'Durée', example: '2h30' },
-        { key: '{{intervention.notes}}', label: 'Notes', example: 'Installation réussie' }
-      ]
+        { key: '{{intervention.notes}}', label: 'Notes', example: 'Installation réussie' },
+      ],
     },
     {
       category: 'Véhicule',
       variables: [
         { key: '{{vehicle.immat}}', label: 'Immatriculation', example: 'AB-123-CD' },
         { key: '{{vehicle.brand}}', label: 'Marque', example: 'Toyota' },
-        { key: '{{vehicle.model}}', label: 'Modèle', example: 'Hilux' }
-      ]
+        { key: '{{vehicle.model}}', label: 'Modèle', example: 'Hilux' },
+      ],
     },
     {
       category: 'Technicien',
       variables: [
         { key: '{{technician.name}}', label: 'Nom', example: 'Jean Dupont' },
-        { key: '{{technician.phone}}', label: 'Téléphone', example: '+225 07 00 00 00' }
-      ]
-    }
+        { key: '{{technician.phone}}', label: 'Téléphone', example: '+225 07 00 00 00' },
+      ],
+    },
   ],
   CONTRACT: [
     {
@@ -123,8 +152,8 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
       variables: [
         { key: '{{client.name}}', label: 'Nom du client', example: 'Société ABC' },
         { key: '{{client.representative}}', label: 'Représentant', example: 'M. Konan' },
-        { key: '{{client.address}}', label: 'Adresse', example: 'Plateau, Abidjan' }
-      ]
+        { key: '{{client.address}}', label: 'Adresse', example: 'Plateau, Abidjan' },
+      ],
     },
     {
       category: 'Contrat',
@@ -133,9 +162,9 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
         { key: '{{contract.start_date}}', label: 'Date de début', example: '01/01/2026' },
         { key: '{{contract.end_date}}', label: 'Date de fin', example: '31/12/2026' },
         { key: '{{contract.duration}}', label: 'Durée', example: '12 mois' },
-        { key: '{{contract.monthly_amount}}', label: 'Tarif', example: '25 000' }
-      ]
-    }
+        { key: '{{contract.monthly_amount}}', label: 'Tarif', example: '25 000' },
+      ],
+    },
   ],
   RECEIPT: [
     {
@@ -144,9 +173,9 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
         { key: '{{payment.amount}}', label: 'Montant', example: '150 000 FCFA' },
         { key: '{{payment.date}}', label: 'Date', example: '20/12/2025' },
         { key: '{{payment.method}}', label: 'Mode', example: 'Wave' },
-        { key: '{{payment.reference}}', label: 'Référence', example: 'PAY-2025-0789' }
-      ]
-    }
+        { key: '{{payment.reference}}', label: 'Référence', example: 'PAY-2025-0789' },
+      ],
+    },
   ],
   DELIVERY_NOTE: [
     {
@@ -154,10 +183,10 @@ const VARIABLES_BY_TYPE: Record<string, { category: string; variables: { key: st
       variables: [
         { key: '{{delivery.number}}', label: 'Numéro BL', example: 'BL-2025-0456' },
         { key: '{{delivery.date}}', label: 'Date', example: '20/12/2025' },
-        { key: '{{delivery.items}}', label: 'Articles', example: '2x GPS Tracker' }
-      ]
-    }
-  ]
+        { key: '{{delivery.items}}', label: 'Articles', example: '2x GPS Tracker' },
+      ],
+    },
+  ],
 };
 
 // Template HTML par défaut
@@ -249,7 +278,7 @@ const DEFAULT_TEMPLATES: Record<string, string> = {
     <p>{{intervention.notes}}</p>
   </div>
 </body>
-</html>`
+</html>`,
 };
 
 export const DocumentTemplatesPanelV2 = () => {
@@ -263,15 +292,15 @@ export const DocumentTemplatesPanelV2 = () => {
   const [previewTemplate, setPreviewTemplate] = useState<DocumentTemplate | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeVariableCategory, setActiveVariableCategory] = useState<string | null>(null);
-  
+
   const [formData, setFormData] = useState<Partial<DocumentTemplate>>({
     name: '',
     type: 'INVOICE',
     content: '',
     variables: [],
-    is_system: false
+    is_system: false,
   });
-  
+
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const { showToast } = useToast();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
@@ -300,17 +329,17 @@ export const DocumentTemplatesPanelV2 = () => {
   // Prévisualisation avec variables remplacées
   const previewContent = useMemo(() => {
     if (!previewTemplate?.content) return '';
-    
+
     let content = previewTemplate.content;
     const variables = VARIABLES_BY_TYPE[previewTemplate.type] || [];
-    
+
     // Remplacer chaque variable par son exemple
-    variables.forEach(category => {
-      category.variables.forEach(v => {
+    variables.forEach((category) => {
+      category.variables.forEach((v) => {
         content = content.replace(new RegExp(v.key.replace(/[{}]/g, '\\$&'), 'g'), v.example);
       });
     });
-    
+
     return content;
   }, [previewTemplate]);
 
@@ -318,7 +347,7 @@ export const DocumentTemplatesPanelV2 = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    
+
     try {
       // Extraire les variables utilisées dans le contenu
       const usedVariables: string[] = [];
@@ -329,9 +358,9 @@ export const DocumentTemplatesPanelV2 = () => {
           usedVariables.push(match[0]);
         }
       }
-      
+
       const dataToSave = { ...formData, variables: usedVariables };
-      
+
       if (editingTemplate) {
         await api.adminFeatures.templates.update(editingTemplate.id, dataToSave);
         showToast(TOAST.ADMIN.TEMPLATE_UPDATED, 'success');
@@ -350,7 +379,15 @@ export const DocumentTemplatesPanelV2 = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!await confirm({ message: 'Êtes-vous sûr de vouloir supprimer ce modèle ?', variant: 'danger', title: 'Confirmer la suppression', confirmLabel: 'Supprimer' })) return;
+    if (
+      !(await confirm({
+        message: 'Êtes-vous sûr de vouloir supprimer ce modèle ?',
+        variant: 'danger',
+        title: 'Confirmer la suppression',
+        confirmLabel: 'Supprimer',
+      }))
+    )
+      return;
     try {
       await api.adminFeatures.templates.delete(id);
       showToast(TOAST.ADMIN.TEMPLATE_DELETED, 'success');
@@ -367,7 +404,7 @@ export const DocumentTemplatesPanelV2 = () => {
       type: template.type,
       content: template.content,
       variables: template.variables,
-      is_system: false
+      is_system: false,
     });
     setIsModalOpen(true);
   };
@@ -379,7 +416,7 @@ export const DocumentTemplatesPanelV2 = () => {
       const text = formData.content || '';
       const newContent = text.substring(0, start) + variable + text.substring(end);
       setFormData({ ...formData, content: newContent });
-      
+
       // Repositionner le curseur après la variable
       setTimeout(() => {
         if (contentRef.current) {
@@ -397,7 +434,7 @@ export const DocumentTemplatesPanelV2 = () => {
       type: 'INVOICE',
       content: '',
       variables: [],
-      is_system: false
+      is_system: false,
     });
     setActiveVariableCategory(null);
   };
@@ -409,7 +446,7 @@ export const DocumentTemplatesPanelV2 = () => {
       type: template.type,
       content: template.content,
       variables: template.variables,
-      is_system: template.is_system
+      is_system: template.is_system,
     });
     setIsModalOpen(true);
   };
@@ -417,10 +454,10 @@ export const DocumentTemplatesPanelV2 = () => {
   const openNewModal = (type?: string) => {
     resetForm();
     if (type) {
-      setFormData(prev => ({ 
-        ...prev, 
+      setFormData((prev) => ({
+        ...prev,
         type: type as DocumentTemplate['type'],
-        content: DEFAULT_TEMPLATES[type] || ''
+        content: DEFAULT_TEMPLATES[type] || '',
       }));
     }
     setIsModalOpen(true);
@@ -432,7 +469,7 @@ export const DocumentTemplatesPanelV2 = () => {
   };
 
   const getTypeConfig = (type: string) => {
-    return DOCUMENT_TYPES.find(t => t.id === type) || DOCUMENT_TYPES[0];
+    return DOCUMENT_TYPES.find((t) => t.id === type) || DOCUMENT_TYPES[0];
   };
 
   if (loading) {
@@ -462,10 +499,10 @@ export const DocumentTemplatesPanelV2 = () => {
 
       {/* Quick Create by Type */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {DOCUMENT_TYPES.map(type => {
+        {DOCUMENT_TYPES.map((type) => {
           const Icon = type.icon;
-          const count = templates.filter(t => t.type === type.id).length;
-          
+          const count = templates.filter((t) => t.type === type.id).length;
+
           return (
             <button
               key={type.id}
@@ -474,9 +511,13 @@ export const DocumentTemplatesPanelV2 = () => {
                 border-${type.color}-200 hover:border-${type.color}-400 hover:bg-${type.color}-50
                 dark:border-${type.color}-800 dark:hover:border-${type.color}-600 dark:hover:bg-${type.color}-900/20`}
             >
-              <Icon className={`w-8 h-8 mx-auto mb-2 text-${type.color}-500 group-hover:scale-110 transition-transform`} />
+              <Icon
+                className={`w-8 h-8 mx-auto mb-2 text-${type.color}-500 group-hover:scale-110 transition-transform`}
+              />
               <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{type.label}</p>
-              <p className="text-xs text-slate-500">{count} modèle{count > 1 ? 's' : ''}</p>
+              <p className="text-xs text-slate-500">
+                {count} modèle{count > 1 ? 's' : ''}
+              </p>
             </button>
           );
         })}
@@ -494,7 +535,7 @@ export const DocumentTemplatesPanelV2 = () => {
           templates.map((template) => {
             const typeConfig = getTypeConfig(template.type);
             const Icon = typeConfig.icon;
-            
+
             return (
               <Card key={template.id} className="p-4 hover:shadow-md transition-shadow group">
                 <div className="flex justify-between items-start mb-3">
@@ -502,30 +543,30 @@ export const DocumentTemplatesPanelV2 = () => {
                     <Icon className={`w-5 h-5 text-${typeConfig.color}-600 dark:text-${typeConfig.color}-400`} />
                   </div>
                   <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => openPreview(template)} 
+                    <button
+                      onClick={() => openPreview(template)}
                       className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
                       title="Prévisualiser"
                     >
                       <Eye className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     </button>
-                    <button 
-                      onClick={() => handleDuplicate(template)} 
+                    <button
+                      onClick={() => handleDuplicate(template)}
                       className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
                       title="Dupliquer"
                     >
                       <Copy className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     </button>
-                    <button 
-                      onClick={() => openEditModal(template)} 
+                    <button
+                      onClick={() => openEditModal(template)}
                       className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
                       title="Modifier"
                     >
                       <Edit2 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
                     </button>
                     {!template.is_system && (
-                      <button 
-                        onClick={() => handleDelete(template.id)} 
+                      <button
+                        onClick={() => handleDelete(template.id)}
                         className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
                         title="Supprimer"
                       >
@@ -534,24 +575,24 @@ export const DocumentTemplatesPanelV2 = () => {
                     )}
                   </div>
                 </div>
-                
-                <span className={`inline-block px-2 py-0.5 text-xs rounded-full mb-2
+
+                <span
+                  className={`inline-block px-2 py-0.5 text-xs rounded-full mb-2
                   bg-${typeConfig.color}-100 text-${typeConfig.color}-700
-                  dark:bg-${typeConfig.color}-900/30 dark:text-${typeConfig.color}-400`}>
+                  dark:bg-${typeConfig.color}-900/30 dark:text-${typeConfig.color}-400`}
+                >
                   {typeConfig.label}
                 </span>
-                
+
                 <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">
                   {template.name}
-                  {template.is_system && (
-                    <span className="ml-2 text-xs text-slate-400">(système)</span>
-                  )}
+                  {template.is_system && <span className="ml-2 text-xs text-slate-400">(système)</span>}
                 </h3>
-                
+
                 <div className="flex flex-wrap gap-1.5">
                   {template.variables?.slice(0, 4).map((variable, index) => (
-                    <span 
-                      key={index} 
+                    <span
+                      key={index}
                       className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-xs rounded text-slate-600 dark:text-slate-400 font-mono"
                     >
                       {variable}
@@ -573,14 +614,12 @@ export const DocumentTemplatesPanelV2 = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingTemplate ? "Modifier le modèle" : "Nouveau modèle"}
+        title={editingTemplate ? 'Modifier le modèle' : 'Nouveau modèle'}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Nom du modèle
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom du modèle</label>
               <input
                 type="text"
                 value={formData.name}
@@ -596,15 +635,19 @@ export const DocumentTemplatesPanelV2 = () => {
               </label>
               <select
                 value={formData.type}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  type: e.target.value as DocumentTemplate['type'],
-                  content: formData.content || DEFAULT_TEMPLATES[e.target.value] || ''
-                })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    type: e.target.value as DocumentTemplate['type'],
+                    content: formData.content || DEFAULT_TEMPLATES[e.target.value] || '',
+                  })
+                }
                 className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
               >
-                {DOCUMENT_TYPES.map(type => (
-                  <option key={type.id} value={type.id}>{type.label}</option>
+                {DOCUMENT_TYPES.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -620,14 +663,12 @@ export const DocumentTemplatesPanelV2 = () => {
                 <div key={category.category} className={idx > 0 ? 'border-t dark:border-slate-700' : ''}>
                   <button
                     type="button"
-                    onClick={() => setActiveVariableCategory(
-                      activeVariableCategory === category.category ? null : category.category
-                    )}
+                    onClick={() =>
+                      setActiveVariableCategory(activeVariableCategory === category.category ? null : category.category)
+                    }
                     className="w-full px-3 py-2 flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
                   >
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      {category.category}
-                    </span>
+                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{category.category}</span>
                     {activeVariableCategory === category.category ? (
                       <ChevronUp className="w-4 h-4 text-slate-400" />
                     ) : (
@@ -636,7 +677,7 @@ export const DocumentTemplatesPanelV2 = () => {
                   </button>
                   {activeVariableCategory === category.category && (
                     <div className="p-2 grid grid-cols-2 gap-1">
-                      {category.variables.map(v => (
+                      {category.variables.map((v) => (
                         <button
                           key={v.key}
                           type="button"
@@ -645,7 +686,9 @@ export const DocumentTemplatesPanelV2 = () => {
                         >
                           <Code className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
                           <div className="min-w-0">
-                            <p className="text-xs font-mono text-[var(--primary)] dark:text-[var(--primary)] truncate">{v.key}</p>
+                            <p className="text-xs font-mono text-[var(--primary)] dark:text-[var(--primary)] truncate">
+                              {v.key}
+                            </p>
                             <p className="text-xs text-slate-500 truncate">{v.label}</p>
                           </div>
                         </button>
@@ -660,9 +703,7 @@ export const DocumentTemplatesPanelV2 = () => {
           {/* Content Editor */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Contenu HTML
-              </label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contenu HTML</label>
               <button
                 type="button"
                 onClick={() => {
@@ -727,9 +768,7 @@ export const DocumentTemplatesPanelV2 = () => {
       >
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">
-              Les variables sont remplacées par des exemples
-            </p>
+            <p className="text-sm text-slate-500">Les variables sont remplacées par des exemples</p>
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
               className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
@@ -737,16 +776,11 @@ export const DocumentTemplatesPanelV2 = () => {
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>
           </div>
-          
+
           <div className={`border rounded-lg overflow-hidden bg-white ${isFullscreen ? 'h-[70vh]' : 'h-96'}`}>
-            <iframe
-              srcDoc={previewContent}
-              className="w-full h-full"
-              title="Preview"
-              sandbox="allow-same-origin"
-            />
+            <iframe srcDoc={previewContent} className="w-full h-full" title="Preview" sandbox="allow-same-origin" />
           </div>
-          
+
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setIsPreviewModalOpen(false)}

@@ -18,6 +18,7 @@ import {
   WifiOff,
   Zap,
 } from 'lucide-react';
+import { getHeaders } from '../../../../services/api/client';
 
 type Tab =
   | 'DASHBOARD'
@@ -95,11 +96,6 @@ const SIGNAL_COLORS: Record<string, string> = {
   FAIR: 'text-yellow-600 bg-yellow-50',
   POOR: 'text-red-600 bg-red-50',
   UNKNOWN: 'text-gray-500 bg-gray-50',
-};
-
-const getHeaders = () => {
-  const token = localStorage.getItem('token');
-  return { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
 };
 
 // ─── Onglet Dashboard ─────────────────────────────────────────────────────────

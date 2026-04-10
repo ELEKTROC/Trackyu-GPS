@@ -3,7 +3,7 @@
  * Se connecte aux endpoints /api/recovery du backend
  */
 
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 
 // ============ TYPES ============
 
@@ -141,7 +141,7 @@ const API_BASE = '/api/recovery';
  */
 export const getRecoveryStats = async (days: number = 30): Promise<RecoveryStats> => {
   const response = await api.get(`${API_BASE}/stats`, {
-    params: { days }
+    params: { days },
   });
   return response.data;
 };
@@ -149,15 +149,17 @@ export const getRecoveryStats = async (days: number = 30): Promise<RecoveryStats
 /**
  * Récupérer la liste des factures en retard
  */
-export const getOverdueInvoices = async (params: {
-  limit?: number;
-  offset?: number;
-  minDays?: number;
-  maxDays?: number;
-  clientId?: string;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-} = {}): Promise<PaginatedResponse<OverdueInvoice> & { summary: { totalAmount: number; totalRemaining: number } }> => {
+export const getOverdueInvoices = async (
+  params: {
+    limit?: number;
+    offset?: number;
+    minDays?: number;
+    maxDays?: number;
+    clientId?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  } = {}
+): Promise<PaginatedResponse<OverdueInvoice> & { summary: { totalAmount: number; totalRemaining: number } }> => {
   const response = await api.get(`${API_BASE}/overdue-invoices`, { params });
   return response.data;
 };
@@ -165,15 +167,17 @@ export const getOverdueInvoices = async (params: {
 /**
  * Récupérer l'historique des actions de relance
  */
-export const getDunningActions = async (params: {
-  limit?: number;
-  offset?: number;
-  invoiceId?: string;
-  actionType?: 'EMAIL' | 'SMS' | 'CALL' | 'LETTER';
-  status?: 'PENDING' | 'SENT' | 'DELIVERED' | 'FAILED';
-  startDate?: string;
-  endDate?: string;
-} = {}): Promise<PaginatedResponse<DunningAction>> => {
+export const getDunningActions = async (
+  params: {
+    limit?: number;
+    offset?: number;
+    invoiceId?: string;
+    actionType?: 'EMAIL' | 'SMS' | 'CALL' | 'LETTER';
+    status?: 'PENDING' | 'SENT' | 'DELIVERED' | 'FAILED';
+    startDate?: string;
+    endDate?: string;
+  } = {}
+): Promise<PaginatedResponse<DunningAction>> => {
   const response = await api.get(`${API_BASE}/dunning-actions`, { params });
   return response.data;
 };
@@ -190,7 +194,7 @@ export const getInvoiceDunningHistory = async (invoiceId: string): Promise<Invoi
  * Envoyer une relance manuelle
  */
 export const sendReminder = async (
-  invoiceId: string, 
+  invoiceId: string,
   data: SendReminderRequest
 ): Promise<{ success: boolean; action: DunningAction }> => {
   const response = await api.post(`${API_BASE}/invoices/${invoiceId}/remind`, data);
@@ -298,7 +302,7 @@ export const useInvoiceDunningHistory = (invoiceId: string) => {
  */
 export const useSendReminder = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ invoiceId, data }: { invoiceId: string; data: SendReminderRequest }) =>
       sendReminder(invoiceId, data),
@@ -313,7 +317,7 @@ export const useSendReminder = () => {
  */
 export const useMarkInvoicePaid = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ invoiceId, data }: { invoiceId: string; data?: MarkPaidRequest }) =>
       markInvoicePaid(invoiceId, data || {}),
@@ -329,7 +333,7 @@ export const useMarkInvoicePaid = () => {
  */
 export const useRecordPartialPayment = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: ({ invoiceId, data }: { invoiceId: string; data: PartialPaymentRequest }) =>
       recordPartialPayment(invoiceId, data),
@@ -345,7 +349,7 @@ export const useRecordPartialPayment = () => {
  */
 export const useRunRecoveryProcess = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: runRecoveryProcess,
     onSuccess: () => {

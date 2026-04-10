@@ -1,6 +1,6 @@
 /**
  * OrganizationPanelV2 - Paramètres de l'Organisation
- * 
+ *
  * Onglets:
  * - Profil: Informations générales de l'entreprise
  * - Localisation: Pays, formats date/heure/nombre
@@ -13,12 +13,38 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  Building2, Save, Globe, Palette, Bell, Shield,
-  Upload, MapPin, Clock, Mail, Phone,
-  Languages, Eye, EyeOff, Copy,
-  RefreshCw, Key, Smartphone, AlertTriangle, Info,
-  Hash, Calculator, Calendar, Banknote, Edit2, Plus, Trash2, Loader2,
-  Repeat, CalendarCheck, Scale, FileText
+  Building2,
+  Save,
+  Globe,
+  Palette,
+  Bell,
+  Shield,
+  Upload,
+  MapPin,
+  Clock,
+  Mail,
+  Phone,
+  Languages,
+  Eye,
+  EyeOff,
+  Copy,
+  RefreshCw,
+  Key,
+  Smartphone,
+  AlertTriangle,
+  Info,
+  Hash,
+  Calculator,
+  Calendar,
+  Banknote,
+  Edit2,
+  Plus,
+  Trash2,
+  Loader2,
+  Repeat,
+  CalendarCheck,
+  Scale,
+  FileText,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { useToast } from '../../../contexts/ToastContext';
@@ -26,18 +52,18 @@ import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import { useAuth } from '../../../contexts/AuthContext';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import { API_BASE_URL } from '../../../utils/apiConfig';
+import { getHeaders } from '../../../services/api/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { logger } from '../../../utils/logger';
-import type {
-  NumberingCounter} from '../../../services/numberingService';
+import type { NumberingCounter } from '../../../services/numberingService';
 import {
   useNumberingCounters,
   useUpdateCounter,
   useResetCounter,
   MODULE_LABELS,
-  generatePreview
+  generatePreview,
 } from '../../../services/numberingService';
 import { CURRENCIES } from '../../../lib/currencies';
 
@@ -162,28 +188,336 @@ interface OrganizationSettings {
 
 // Séries de numérotation par défaut
 const DEFAULT_NUMBERING_SERIES: NumberingSeries[] = [
-  { id: '1', module: 'invoice', label: 'Factures', prefix: 'FAC', separator: '-', startNumber: 1, currentNumber: 1, padding: 5, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '2', module: 'quote', label: 'Devis', prefix: 'DEV', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '3', module: 'receipt', label: 'Reçus', prefix: 'REC', separator: '-', startNumber: 1, currentNumber: 1, padding: 5, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '4', module: 'credit_note', label: 'Avoirs', prefix: 'AV', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '5', module: 'purchase_order', label: 'Bons de Commande', prefix: 'BC', separator: '/', startNumber: 1, currentNumber: 1, padding: 6, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '6', module: 'contract', label: 'Contrats', prefix: 'CTR', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '7', module: 'intervention', label: 'Interventions', prefix: 'INT', separator: '-', startNumber: 1, currentNumber: 1, padding: 5, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '8', module: 'ticket', label: 'Tickets', prefix: 'TKT', separator: '-', startNumber: 1, currentNumber: 1, padding: 6, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '9', module: 'device', label: 'Boîtiers', prefix: 'BOI', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '10', module: 'sim', label: 'Cartes SIM', prefix: 'SIM', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '11', module: 'client', label: 'Clients', prefix: 'CLI', separator: '-', startNumber: 1, currentNumber: 1, padding: 5, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
-  { id: '12', module: 'lead', label: 'Leads', prefix: 'LEAD', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: true, includeMonth: false, includeSlug: false, resetFrequency: 'yearly', locked: false },
-  { id: '13', module: 'prospect', label: 'Prospects', prefix: 'PRO', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '14', module: 'supplier', label: 'Fournisseurs', prefix: 'FRN', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '15', module: 'reseller', label: 'Revendeurs', prefix: 'REV', separator: '-', startNumber: 1, currentNumber: 1, padding: 3, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '16', module: 'technician', label: 'Techniciens', prefix: 'TECH', separator: '-', startNumber: 1, currentNumber: 1, padding: 3, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '17', module: 'product', label: 'Produits', prefix: 'PRD', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '18', module: 'service', label: 'Services', prefix: 'SRV', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '19', module: 'task', label: 'Tâches', prefix: 'TSK', separator: '-', startNumber: 1, currentNumber: 1, padding: 5, includeYear: false, includeMonth: false, includeSlug: false, resetFrequency: 'never', locked: false },
-  { id: '20', module: 'journal_entry', label: 'Écritures Journal', prefix: 'ECR', separator: '-', startNumber: 1, currentNumber: 1, padding: 6, includeYear: true, includeMonth: true, includeSlug: false, resetFrequency: 'monthly', locked: false },
-  { id: '21', module: 'transfer', label: 'Virements', prefix: 'VIR', separator: '-', startNumber: 1, currentNumber: 1, padding: 5, includeYear: true, includeMonth: false, includeSlug: false, resetFrequency: 'yearly', locked: false },
-  { id: '22', module: 'vehicle', label: 'Véhicules', prefix: 'VEH', separator: '-', startNumber: 1, currentNumber: 1, padding: 4, includeYear: false, includeMonth: false, includeSlug: true, resetFrequency: 'never', locked: false },
+  {
+    id: '1',
+    module: 'invoice',
+    label: 'Factures',
+    prefix: 'FAC',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 5,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '2',
+    module: 'quote',
+    label: 'Devis',
+    prefix: 'DEV',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '3',
+    module: 'receipt',
+    label: 'Reçus',
+    prefix: 'REC',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 5,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '4',
+    module: 'credit_note',
+    label: 'Avoirs',
+    prefix: 'AV',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '5',
+    module: 'purchase_order',
+    label: 'Bons de Commande',
+    prefix: 'BC',
+    separator: '/',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 6,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '6',
+    module: 'contract',
+    label: 'Contrats',
+    prefix: 'CTR',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '7',
+    module: 'intervention',
+    label: 'Interventions',
+    prefix: 'INT',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 5,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '8',
+    module: 'ticket',
+    label: 'Tickets',
+    prefix: 'TKT',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 6,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '9',
+    module: 'device',
+    label: 'Boîtiers',
+    prefix: 'BOI',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '10',
+    module: 'sim',
+    label: 'Cartes SIM',
+    prefix: 'SIM',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '11',
+    module: 'client',
+    label: 'Clients',
+    prefix: 'CLI',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 5,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '12',
+    module: 'lead',
+    label: 'Leads',
+    prefix: 'LEAD',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: true,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'yearly',
+    locked: false,
+  },
+  {
+    id: '13',
+    module: 'prospect',
+    label: 'Prospects',
+    prefix: 'PRO',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '14',
+    module: 'supplier',
+    label: 'Fournisseurs',
+    prefix: 'FRN',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '15',
+    module: 'reseller',
+    label: 'Revendeurs',
+    prefix: 'REV',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 3,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '16',
+    module: 'technician',
+    label: 'Techniciens',
+    prefix: 'TECH',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 3,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '17',
+    module: 'product',
+    label: 'Produits',
+    prefix: 'PRD',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '18',
+    module: 'service',
+    label: 'Services',
+    prefix: 'SRV',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '19',
+    module: 'task',
+    label: 'Tâches',
+    prefix: 'TSK',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 5,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'never',
+    locked: false,
+  },
+  {
+    id: '20',
+    module: 'journal_entry',
+    label: 'Écritures Journal',
+    prefix: 'ECR',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 6,
+    includeYear: true,
+    includeMonth: true,
+    includeSlug: false,
+    resetFrequency: 'monthly',
+    locked: false,
+  },
+  {
+    id: '21',
+    module: 'transfer',
+    label: 'Virements',
+    prefix: 'VIR',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 5,
+    includeYear: true,
+    includeMonth: false,
+    includeSlug: false,
+    resetFrequency: 'yearly',
+    locked: false,
+  },
+  {
+    id: '22',
+    module: 'vehicle',
+    label: 'Véhicules',
+    prefix: 'VEH',
+    separator: '-',
+    startNumber: 1,
+    currentNumber: 1,
+    padding: 4,
+    includeYear: false,
+    includeMonth: false,
+    includeSlug: true,
+    resetFrequency: 'never',
+    locked: false,
+  },
 ];
 
 // Valeurs par défaut
@@ -209,21 +543,21 @@ const DEFAULT_SETTINGS: OrganizationSettings = {
   numberingSeries: DEFAULT_NUMBERING_SERIES,
   subscriptionBilling: {
     monthly: {
-      generationDay: 1,      // Génération le 1er du mois
-      dueDayOffset: 5,       // Échéance le 5 du mois
+      generationDay: 1, // Génération le 1er du mois
+      dueDayOffset: 5, // Échéance le 5 du mois
     },
     quarterly: {
       generationMonthOffset: 2, // 2 = dernier mois du trimestre
-      generationDay: 1,         // Le 1er du mois
-      dueEndOfQuarter: true,    // Échéance fin de trimestre
+      generationDay: 1, // Le 1er du mois
+      dueEndOfQuarter: true, // Échéance fin de trimestre
     },
     annual: {
       generationMonthsBefore: 2, // 2 mois avant échéance
-      dueOnAnniversary: true,    // Échéance = date anniversaire
+      dueOnAnniversary: true, // Échéance = date anniversaire
     },
-    autoGenerateEnabled: true,   // Activer génération auto
-    notifyOnGeneration: true,    // Notifier admin
-    defaultStatus: 'DRAFT',      // Factures en brouillon
+    autoGenerateEnabled: true, // Activer génération auto
+    notifyOnGeneration: true, // Notifier admin
+    defaultStatus: 'DRAFT', // Factures en brouillon
   },
   primaryColor: '#2563eb',
   secondaryColor: '#1e40af',
@@ -312,7 +646,8 @@ export const OrganizationPanelV2: React.FC = () => {
   const [mobileViewTabsConfig, setMobileViewTabsConfig] = useState<Record<string, string[]>>({});
 
   // Get tenant slug from user or fallback
-  const tenantSlug = (user as any)?.slug || user?.tenantId?.replace('tenant_', '').split('_')[0]?.toUpperCase() || 'XXX';
+  const tenantSlug =
+    (user as any)?.slug || user?.tenantId?.replace('tenant_', '').split('_')[0]?.toUpperCase() || 'XXX';
 
   // React Query hooks for numbering
   const { data: apiCounters, isLoading: countersLoading, refetch: refetchCounters } = useNumberingCounters();
@@ -357,7 +692,7 @@ export const OrganizationPanelV2: React.FC = () => {
 
         // Fusionner avec les settings JSONB si présents
         if (data.settings) {
-          setSettings(prev => ({
+          setSettings((prev) => ({
             ...prev,
             ...tenantData,
             ...data.settings,
@@ -368,13 +703,13 @@ export const OrganizationPanelV2: React.FC = () => {
             address: tenantData.address || data.settings.address || prev.address,
             subscriptionBilling: {
               ...DEFAULT_SETTINGS.subscriptionBilling,
-              ...data.settings.subscriptionBilling
-            }
+              ...data.settings.subscriptionBilling,
+            },
           }));
         } else {
-          setSettings(prev => ({
+          setSettings((prev) => ({
             ...prev,
-            ...tenantData
+            ...tenantData,
           }));
         }
         // Load API key from tenant settings
@@ -392,7 +727,7 @@ export const OrganizationPanelV2: React.FC = () => {
 
   // Handler de modification
   const handleChange = (field: keyof OrganizationSettings, value: OrganizationSettings[keyof OrganizationSettings]) => {
-    setSettings(prev => ({ ...prev, [field]: value }));
+    setSettings((prev) => ({ ...prev, [field]: value }));
     setHasChanges(true);
   };
 
@@ -413,16 +748,17 @@ export const OrganizationPanelV2: React.FC = () => {
       const formData = new FormData();
       formData.append('logo', file);
 
-      const token = localStorage.getItem('fleet_token');
+      const { 'Content-Type': _, ...uploadHeaders } = getHeaders();
       const response = await fetch(`${API_BASE_URL}/upload/logo`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include',
+        headers: uploadHeaders,
         body: formData,
       });
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Erreur lors de l\'upload');
+        throw new Error(data.error || "Erreur lors de l'upload");
       }
 
       const { url } = await response.json();
@@ -437,7 +773,10 @@ export const OrganizationPanelV2: React.FC = () => {
   };
 
   // Upload legal document via /api/upload/document
-  const handleLegalDocUpload = async (docKey: keyof NonNullable<OrganizationSettings['legalDocuments']>, file: File) => {
+  const handleLegalDocUpload = async (
+    docKey: keyof NonNullable<OrganizationSettings['legalDocuments']>,
+    file: File
+  ) => {
     if (file.size > 5 * 1024 * 1024) {
       showToast('Le fichier est trop volumineux (max 5 Mo)', 'error');
       return;
@@ -452,25 +791,26 @@ export const OrganizationPanelV2: React.FC = () => {
       const formData = new FormData();
       formData.append('document', file);
 
-      const token = localStorage.getItem('fleet_token');
+      const { 'Content-Type': _ct, ...uploadHeaders2 } = getHeaders();
       const response = await fetch(`${API_BASE_URL}/upload/document`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include',
+        headers: uploadHeaders2,
         body: formData,
       });
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Erreur lors de l\'upload');
+        throw new Error(data.error || "Erreur lors de l'upload");
       }
 
       const { url } = await response.json();
-      setSettings(prev => ({
+      setSettings((prev) => ({
         ...prev,
         legalDocuments: {
           ...prev.legalDocuments,
-          [docKey]: url
-        }
+          [docKey]: url,
+        },
       }));
       setHasChanges(true);
       showToast(TOAST.CRUD.UPDATED('Document'), 'success');
@@ -495,10 +835,10 @@ export const OrganizationPanelV2: React.FC = () => {
 
       // Apply appearance changes live to the UI via CSS variables
       const fontMap: Record<string, string> = {
-        'Inter': "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        'Roboto': "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-        'Poppins': "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-        'Nunito': "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        Inter: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        Roboto: "'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        Poppins: "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        Nunito: "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
         'Open Sans': "'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
         'DM Sans': "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
         'Source Sans 3': "'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
@@ -506,8 +846,8 @@ export const OrganizationPanelV2: React.FC = () => {
       const sizeMap: Record<string, string> = { small: '14px', default: '16px', large: '18px' };
       const radiusMap: Record<string, string> = { none: '0px', small: '0.25rem', default: '0.5rem', large: '0.75rem' };
       const sidebarMap: Record<string, { bg: string; text: string; border: string }> = {
-        dark:    { bg: '#0f172a', text: '#e2e8f0', border: '#1e293b' },
-        light:   { bg: '#ffffff', text: '#1e293b', border: '#e2e8f0' },
+        dark: { bg: '#0f172a', text: '#e2e8f0', border: '#1e293b' },
+        light: { bg: '#ffffff', text: '#1e293b', border: '#e2e8f0' },
         colored: { bg: settings.primaryColor, text: '#ffffff', border: 'rgba(255,255,255,0.15)' },
       };
       const densityMap: Record<string, string> = { compact: '0.375rem', standard: '0.75rem', comfortable: '1.25rem' };
@@ -554,8 +894,16 @@ export const OrganizationPanelV2: React.FC = () => {
 
   // Régénérer API key
   const regenerateApiKey = async () => {
-    if (await confirm({ message: 'Régénérer la clé API? L\'ancienne clé sera invalidée.', title: 'Régénérer la clé API', variant: 'warning', confirmLabel: 'Régénérer' })) {
-      const newKey = 'tk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 8);
+    if (
+      await confirm({
+        message: "Régénérer la clé API? L'ancienne clé sera invalidée.",
+        title: 'Régénérer la clé API',
+        variant: 'warning',
+        confirmLabel: 'Régénérer',
+      })
+    ) {
+      const newKey =
+        'tk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 8);
       setApiKey(newKey);
       try {
         await api.tenants.updateSettings({ ...settings, apiKey: newKey });
@@ -572,14 +920,15 @@ export const OrganizationPanelV2: React.FC = () => {
       <div className="w-56 shrink-0">
         <Card className="p-2">
           <div className="space-y-1">
-            {TABS.map(tab => (
+            {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === tab.id
                     ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
                     : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'
-                  }`}
+                }`}
               >
                 <tab.icon className="w-4 h-4" />
                 {tab.label}
@@ -592,16 +941,13 @@ export const OrganizationPanelV2: React.FC = () => {
         <button
           onClick={handleSave}
           disabled={loading || !hasChanges}
-          className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${hasChanges
+          className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${
+            hasChanges
               ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-light)]'
               : 'bg-slate-200 text-slate-400 dark:bg-slate-700 dark:text-slate-500 cursor-not-allowed'
-            } disabled:opacity-50`}
+          } disabled:opacity-50`}
         >
-          {loading ? (
-            <RefreshCw className="w-4 h-4 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4" />
-          )}
+          {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           {hasChanges ? 'Enregistrer' : 'Aucun changement'}
         </button>
       </div>
@@ -631,9 +977,7 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Raison Sociale
-                </label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Raison Sociale</label>
                 <input
                   type="text"
                   value={settings.legalName || ''}
@@ -644,9 +988,7 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  N° RCCM
-                </label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">N° RCCM</label>
                 <input
                   type="text"
                   value={settings.registrationNumber || ''}
@@ -656,9 +998,7 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  NINEA / N° Fiscal
-                </label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">NINEA / N° Fiscal</label>
                 <input
                   type="text"
                   value={settings.taxId || ''}
@@ -698,9 +1038,7 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Site Web
-                </label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Site Web</label>
                 <div className="relative">
                   <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
@@ -714,9 +1052,7 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Adresse
-                </label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Adresse</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
                   <textarea
@@ -728,9 +1064,7 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                  Description
-                </label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
                 <textarea
                   value={settings.description || ''}
                   onChange={(e) => handleChange('description', e.target.value)}
@@ -756,15 +1090,17 @@ export const OrganizationPanelV2: React.FC = () => {
                 <select
                   value={settings.country}
                   onChange={(e) => {
-                    const country = COUNTRIES.find(c => c.name === e.target.value);
+                    const country = COUNTRIES.find((c) => c.name === e.target.value);
                     handleChange('country', e.target.value);
                     if (country) handleChange('timezone', country.timezone);
                   }}
                   className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                   title="Pays"
                 >
-                  {COUNTRIES.map(c => (
-                    <option key={c.code} value={c.name}>{c.name}</option>
+                  {COUNTRIES.map((c) => (
+                    <option key={c.code} value={c.name}>
+                      {c.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -828,8 +1164,10 @@ export const OrganizationPanelV2: React.FC = () => {
                     className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                     title="Format date"
                   >
-                    {DATE_FORMATS.map(f => (
-                      <option key={f.value} value={f.value}>{f.label}</option>
+                    {DATE_FORMATS.map((f) => (
+                      <option key={f.value} value={f.value}>
+                        {f.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -841,8 +1179,10 @@ export const OrganizationPanelV2: React.FC = () => {
                     className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                     title="Format heure"
                   >
-                    {TIME_FORMATS.map(f => (
-                      <option key={f.value} value={f.value}>{f.label}</option>
+                    {TIME_FORMATS.map((f) => (
+                      <option key={f.value} value={f.value}>
+                        {f.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -854,8 +1194,10 @@ export const OrganizationPanelV2: React.FC = () => {
                     className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                     title="Format nombre"
                   >
-                    {NUMBER_FORMATS.map(f => (
-                      <option key={f.value} value={f.value}>{f.label}</option>
+                    {NUMBER_FORMATS.map((f) => (
+                      <option key={f.value} value={f.value}>
+                        {f.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -868,11 +1210,15 @@ export const OrganizationPanelV2: React.FC = () => {
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
                   <p className="text-slate-500">Date</p>
-                  <p className="font-medium font-mono">{DATE_FORMATS.find(f => f.value === settings.dateFormat)?.example}</p>
+                  <p className="font-medium font-mono">
+                    {DATE_FORMATS.find((f) => f.value === settings.dateFormat)?.example}
+                  </p>
                 </div>
                 <div>
                   <p className="text-slate-500">Heure</p>
-                  <p className="font-medium font-mono">{TIME_FORMATS.find(f => f.value === settings.timeFormat)?.example}</p>
+                  <p className="font-medium font-mono">
+                    {TIME_FORMATS.find((f) => f.value === settings.timeFormat)?.example}
+                  </p>
                 </div>
                 <div>
                   <p className="text-slate-500">Nombre</p>
@@ -901,13 +1247,17 @@ export const OrganizationPanelV2: React.FC = () => {
                   className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                   title="Devise"
                 >
-                  {CURRENCIES.map(c => (
-                    <option key={c.code} value={c.code}>{c.name} ({c.symbol})</option>
+                  {CURRENCIES.map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.name} ({c.symbol})
+                    </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Exercice Fiscal en Cours</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  Exercice Fiscal en Cours
+                </label>
                 <input
                   type="number"
                   value={settings.currentFiscalYear}
@@ -932,7 +1282,9 @@ export const OrganizationPanelV2: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Délai de Paiement (jours)</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  Délai de Paiement (jours)
+                </label>
                 <input
                   type="number"
                   value={settings.paymentTerms}
@@ -999,15 +1351,24 @@ export const OrganizationPanelV2: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {settings.bankAccounts.map(account => (
-                    <div key={account.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                  {settings.bankAccounts.map((account) => (
+                    <div
+                      key={account.id}
+                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                    >
                       <div>
                         <p className="font-medium">{account.name}</p>
-                        <p className="text-sm text-slate-500">{account.bank} - {account.iban}</p>
+                        <p className="text-sm text-slate-500">
+                          {account.bank} - {account.iban}
+                        </p>
                       </div>
                       <div className="flex gap-2">
-                        <button className="p-1 hover:text-[var(--primary)]"><Edit2 className="w-4 h-4" /></button>
-                        <button className="p-1 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                        <button className="p-1 hover:text-[var(--primary)]">
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button className="p-1 hover:text-red-600">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -1022,7 +1383,9 @@ export const OrganizationPanelV2: React.FC = () => {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Facturation des Abonnements</h3>
-              <p className="text-sm text-slate-500">Configuration de la génération automatique des factures récurrentes</p>
+              <p className="text-sm text-slate-500">
+                Configuration de la génération automatique des factures récurrentes
+              </p>
             </div>
 
             {/* Activation */}
@@ -1034,16 +1397,20 @@ export const OrganizationPanelV2: React.FC = () => {
                   </div>
                   <div>
                     <p className="font-medium text-slate-800 dark:text-white">Génération Automatique des Factures</p>
-                    <p className="text-sm text-slate-500">Les factures seront créées automatiquement selon les règles ci-dessous</p>
+                    <p className="text-sm text-slate-500">
+                      Les factures seront créées automatiquement selon les règles ci-dessous
+                    </p>
                   </div>
                 </div>
                 <input
                   type="checkbox"
                   checked={settings.subscriptionBilling?.autoGenerateEnabled ?? true}
-                  onChange={(e) => handleChange('subscriptionBilling', {
-                    ...settings.subscriptionBilling,
-                    autoGenerateEnabled: e.target.checked
-                  })}
+                  onChange={(e) =>
+                    handleChange('subscriptionBilling', {
+                      ...settings.subscriptionBilling,
+                      autoGenerateEnabled: e.target.checked,
+                    })
+                  }
                   className="w-5 h-5 text-[var(--primary)] rounded"
                 />
               </label>
@@ -1052,13 +1419,17 @@ export const OrganizationPanelV2: React.FC = () => {
             {/* Paramètres généraux */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Statut des Factures Générées</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  Statut des Factures Générées
+                </label>
                 <select
                   value={settings.subscriptionBilling?.defaultStatus ?? 'DRAFT'}
-                  onChange={(e) => handleChange('subscriptionBilling', {
-                    ...settings.subscriptionBilling,
-                    defaultStatus: e.target.value as 'PENDING' | 'DRAFT'
-                  })}
+                  onChange={(e) =>
+                    handleChange('subscriptionBilling', {
+                      ...settings.subscriptionBilling,
+                      defaultStatus: e.target.value as 'PENDING' | 'DRAFT',
+                    })
+                  }
                   className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                   title="Statut des factures"
                 >
@@ -1071,10 +1442,12 @@ export const OrganizationPanelV2: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={settings.subscriptionBilling?.notifyOnGeneration ?? true}
-                    onChange={(e) => handleChange('subscriptionBilling', {
-                      ...settings.subscriptionBilling,
-                      notifyOnGeneration: e.target.checked
-                    })}
+                    onChange={(e) =>
+                      handleChange('subscriptionBilling', {
+                        ...settings.subscriptionBilling,
+                        notifyOnGeneration: e.target.checked,
+                      })
+                    }
                     className="w-4 h-4 text-[var(--primary)] rounded"
                   />
                   <div>
@@ -1093,39 +1466,43 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-6 p-4 bg-green-50 dark:bg-green-900/10 rounded-lg">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                    Jour de Génération
-                  </label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jour de Génération</label>
                   <select
                     value={settings.subscriptionBilling?.monthly?.generationDay ?? 1}
-                    onChange={(e) => handleChange('subscriptionBilling', {
-                      ...settings.subscriptionBilling,
-                      monthly: { ...settings.subscriptionBilling?.monthly, generationDay: parseInt(e.target.value) }
-                    })}
+                    onChange={(e) =>
+                      handleChange('subscriptionBilling', {
+                        ...settings.subscriptionBilling,
+                        monthly: { ...settings.subscriptionBilling?.monthly, generationDay: parseInt(e.target.value) },
+                      })
+                    }
                     className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                     title="Jour de génération"
                   >
                     {[...Array(28)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1}</option>
+                      <option key={i + 1} value={i + 1}>
+                        {i + 1}
+                      </option>
                     ))}
                   </select>
                   <p className="text-xs text-slate-500 mt-1">Jour du mois où la facture est générée</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                    Jour d'Échéance
-                  </label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jour d'Échéance</label>
                   <select
                     value={settings.subscriptionBilling?.monthly?.dueDayOffset ?? 5}
-                    onChange={(e) => handleChange('subscriptionBilling', {
-                      ...settings.subscriptionBilling,
-                      monthly: { ...settings.subscriptionBilling?.monthly, dueDayOffset: parseInt(e.target.value) }
-                    })}
+                    onChange={(e) =>
+                      handleChange('subscriptionBilling', {
+                        ...settings.subscriptionBilling,
+                        monthly: { ...settings.subscriptionBilling?.monthly, dueDayOffset: parseInt(e.target.value) },
+                      })
+                    }
                     className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                     title="Jour d'échéance"
                   >
                     {[...Array(28)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1}</option>
+                      <option key={i + 1} value={i + 1}>
+                        {i + 1}
+                      </option>
                     ))}
                   </select>
                   <p className="text-xs text-slate-500 mt-1">Jour du mois pour l'échéance de paiement</p>
@@ -1149,10 +1526,15 @@ export const OrganizationPanelV2: React.FC = () => {
                   </label>
                   <select
                     value={settings.subscriptionBilling?.quarterly?.generationMonthOffset ?? 2}
-                    onChange={(e) => handleChange('subscriptionBilling', {
-                      ...settings.subscriptionBilling,
-                      quarterly: { ...settings.subscriptionBilling?.quarterly, generationMonthOffset: parseInt(e.target.value) }
-                    })}
+                    onChange={(e) =>
+                      handleChange('subscriptionBilling', {
+                        ...settings.subscriptionBilling,
+                        quarterly: {
+                          ...settings.subscriptionBilling?.quarterly,
+                          generationMonthOffset: parseInt(e.target.value),
+                        },
+                      })
+                    }
                     className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                     title="Mois dans le trimestre"
                   >
@@ -1162,20 +1544,25 @@ export const OrganizationPanelV2: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                    Jour de Génération
-                  </label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jour de Génération</label>
                   <select
                     value={settings.subscriptionBilling?.quarterly?.generationDay ?? 1}
-                    onChange={(e) => handleChange('subscriptionBilling', {
-                      ...settings.subscriptionBilling,
-                      quarterly: { ...settings.subscriptionBilling?.quarterly, generationDay: parseInt(e.target.value) }
-                    })}
+                    onChange={(e) =>
+                      handleChange('subscriptionBilling', {
+                        ...settings.subscriptionBilling,
+                        quarterly: {
+                          ...settings.subscriptionBilling?.quarterly,
+                          generationDay: parseInt(e.target.value),
+                        },
+                      })
+                    }
                     className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                     title="Jour de génération"
                   >
                     {[...Array(28)].map((_, i) => (
-                      <option key={i + 1} value={i + 1}>{i + 1}</option>
+                      <option key={i + 1} value={i + 1}>
+                        {i + 1}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -1184,10 +1571,12 @@ export const OrganizationPanelV2: React.FC = () => {
                 <input
                   type="checkbox"
                   checked={settings.subscriptionBilling?.quarterly?.dueEndOfQuarter ?? true}
-                  onChange={(e) => handleChange('subscriptionBilling', {
-                    ...settings.subscriptionBilling,
-                    quarterly: { ...settings.subscriptionBilling?.quarterly, dueEndOfQuarter: e.target.checked }
-                  })}
+                  onChange={(e) =>
+                    handleChange('subscriptionBilling', {
+                      ...settings.subscriptionBilling,
+                      quarterly: { ...settings.subscriptionBilling?.quarterly, dueEndOfQuarter: e.target.checked },
+                    })
+                  }
                   className="w-4 h-4 text-orange-600 rounded"
                 />
                 <span className="text-sm">Échéance à la fin du trimestre en cours</span>
@@ -1211,10 +1600,15 @@ export const OrganizationPanelV2: React.FC = () => {
                     </label>
                     <select
                       value={settings.subscriptionBilling?.annual?.generationMonthsBefore ?? 2}
-                      onChange={(e) => handleChange('subscriptionBilling', {
-                        ...settings.subscriptionBilling,
-                        annual: { ...settings.subscriptionBilling?.annual, generationMonthsBefore: parseInt(e.target.value) }
-                      })}
+                      onChange={(e) =>
+                        handleChange('subscriptionBilling', {
+                          ...settings.subscriptionBilling,
+                          annual: {
+                            ...settings.subscriptionBilling?.annual,
+                            generationMonthsBefore: parseInt(e.target.value),
+                          },
+                        })
+                      }
                       className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                       title="Mois avant échéance"
                     >
@@ -1228,10 +1622,12 @@ export const OrganizationPanelV2: React.FC = () => {
                       <input
                         type="checkbox"
                         checked={settings.subscriptionBilling?.annual?.dueOnAnniversary ?? true}
-                        onChange={(e) => handleChange('subscriptionBilling', {
-                          ...settings.subscriptionBilling,
-                          annual: { ...settings.subscriptionBilling?.annual, dueOnAnniversary: e.target.checked }
-                        })}
+                        onChange={(e) =>
+                          handleChange('subscriptionBilling', {
+                            ...settings.subscriptionBilling,
+                            annual: { ...settings.subscriptionBilling?.annual, dueOnAnniversary: e.target.checked },
+                          })
+                        }
                         className="w-4 h-4 text-purple-600 rounded"
                       />
                       <span className="text-sm">Échéance = Date anniversaire du contrat</span>
@@ -1240,32 +1636,40 @@ export const OrganizationPanelV2: React.FC = () => {
                 </div>
               </div>
               <p className="text-sm text-slate-600 mt-2 italic">
-                📅 Exemple: Contrat expire le <strong>1er avril</strong> → Facture générée le <strong>1er février</strong>, échéance <strong>1er avril</strong>
+                📅 Exemple: Contrat expire le <strong>1er avril</strong> → Facture générée le{' '}
+                <strong>1er février</strong>, échéance <strong>1er avril</strong>
               </p>
             </div>
 
             {/* Résumé */}
             <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
-              <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">📊 Résumé de la Configuration</h4>
+              <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">
+                📊 Résumé de la Configuration
+              </h4>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
                   <p className="font-bold text-green-700 dark:text-green-400">Mensuel</p>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Généré le {settings.subscriptionBilling?.monthly?.generationDay ?? 1}<br />
+                    Généré le {settings.subscriptionBilling?.monthly?.generationDay ?? 1}
+                    <br />
                     Échéance le {settings.subscriptionBilling?.monthly?.dueDayOffset ?? 5}
                   </p>
                 </div>
                 <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
                   <p className="font-bold text-orange-700 dark:text-orange-400">Trimestriel</p>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Généré le {settings.subscriptionBilling?.quarterly?.generationDay ?? 1} du {['1er', '2ème', 'dernier'][settings.subscriptionBilling?.quarterly?.generationMonthOffset ?? 2]} mois<br />
+                    Généré le {settings.subscriptionBilling?.quarterly?.generationDay ?? 1} du{' '}
+                    {['1er', '2ème', 'dernier'][settings.subscriptionBilling?.quarterly?.generationMonthOffset ?? 2]}{' '}
+                    mois
+                    <br />
                     Échéance fin trimestre
                   </p>
                 </div>
                 <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                   <p className="font-bold text-purple-700 dark:text-purple-400">Annuel</p>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Généré {settings.subscriptionBilling?.annual?.generationMonthsBefore ?? 2} mois avant<br />
+                    Généré {settings.subscriptionBilling?.annual?.generationMonthsBefore ?? 2} mois avant
+                    <br />
                     Échéance = Anniversaire
                   </p>
                 </div>
@@ -1280,11 +1684,18 @@ export const OrganizationPanelV2: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Séries de Numérotation</h3>
-                <p className="text-sm text-slate-500">Configuration des préfixes et formats de numéros pour chaque module</p>
+                <p className="text-sm text-slate-500">
+                  Configuration des préfixes et formats de numéros pour chaque module
+                </p>
                 <div className="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-[var(--border)]">
                   <p className="text-sm text-[var(--primary)]">
-                    💡 Votre slug : <code className="px-2 py-0.5 bg-[var(--primary-dim)] rounded font-mono font-bold">{tenantSlug}</code>
-                    <span className="ml-2 text-slate-500">→ Exemple: FAC-<strong>{tenantSlug}</strong>-00001</span>
+                    💡 Votre slug :{' '}
+                    <code className="px-2 py-0.5 bg-[var(--primary-dim)] rounded font-mono font-bold">
+                      {tenantSlug}
+                    </code>
+                    <span className="ml-2 text-slate-500">
+                      → Exemple: FAC-<strong>{tenantSlug}</strong>-00001
+                    </span>
                   </p>
                 </div>
               </div>
@@ -1311,23 +1722,32 @@ export const OrganizationPanelV2: React.FC = () => {
                       <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Module</th>
                       <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Préfixe</th>
                       <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Sép.</th>
-                      <th className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400" title="Inclure le slug du revendeur">Slug</th>
+                      <th
+                        className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400"
+                        title="Inclure le slug du revendeur"
+                      >
+                        Slug
+                      </th>
                       <th className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400">Année</th>
                       <th className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400">Mois</th>
-                      <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Prochain N°</th>
+                      <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">
+                        Prochain N°
+                      </th>
                       <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Aperçu</th>
                       <th className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y dark:divide-slate-700">
                     {DEFAULT_NUMBERING_SERIES.map((defaultSeries) => {
-                      const apiCounter = apiCounters?.find(c => c.module === defaultSeries.module);
-                      const counter = apiCounter || {
-                        ...defaultSeries,
-                        tenantId: user?.tenantId || 'tenant_default',
-                        lastResetDate: null,
-                        lastNumberDate: null,
-                      } as NumberingCounter;
+                      const apiCounter = apiCounters?.find((c) => c.module === defaultSeries.module);
+                      const counter =
+                        apiCounter ||
+                        ({
+                          ...defaultSeries,
+                          tenantId: user?.tenantId || 'tenant_default',
+                          lastResetDate: null,
+                          lastNumberDate: null,
+                        } as NumberingCounter);
                       const preview = generatePreview(counter, tenantSlug);
                       const label = MODULE_LABELS[counter.module as keyof typeof MODULE_LABELS] || counter.module;
 
@@ -1339,13 +1759,16 @@ export const OrganizationPanelV2: React.FC = () => {
                               type="text"
                               value={counter.prefix}
                               onChange={(e) => {
-                                updateCounterMutation.mutate({
-                                  module: counter.module,
-                                  updates: { prefix: e.target.value.toUpperCase() }
-                                }, {
-                                  onSuccess: () => showToast(TOAST.CRUD.UPDATED('Préfixe'), 'success'),
-                                  onError: (err: unknown) => showToast(mapError(err, 'préfixe'), 'error')
-                                });
+                                updateCounterMutation.mutate(
+                                  {
+                                    module: counter.module,
+                                    updates: { prefix: e.target.value.toUpperCase() },
+                                  },
+                                  {
+                                    onSuccess: () => showToast(TOAST.CRUD.UPDATED('Préfixe'), 'success'),
+                                    onError: (err: unknown) => showToast(mapError(err, 'préfixe'), 'error'),
+                                  }
+                                );
                               }}
                               className="w-16 px-2 py-1 border rounded text-center font-mono dark:bg-slate-900 dark:border-slate-700"
                               maxLength={5}
@@ -1358,7 +1781,7 @@ export const OrganizationPanelV2: React.FC = () => {
                               onChange={(e) => {
                                 updateCounterMutation.mutate({
                                   module: counter.module,
-                                  updates: { separator: e.target.value }
+                                  updates: { separator: e.target.value },
                                 });
                               }}
                               className="w-14 px-2 py-1 border rounded dark:bg-slate-900 dark:border-slate-700"
@@ -1380,8 +1803,8 @@ export const OrganizationPanelV2: React.FC = () => {
                                   updates: {
                                     includeSlug: e.target.checked,
                                     includeYear: e.target.checked ? false : counter.includeYear,
-                                    resetFrequency: e.target.checked ? 'never' : counter.resetFrequency
-                                  }
+                                    resetFrequency: e.target.checked ? 'never' : counter.resetFrequency,
+                                  },
                                 });
                               }}
                               className="rounded text-[var(--primary)]"
@@ -1397,8 +1820,8 @@ export const OrganizationPanelV2: React.FC = () => {
                                   module: counter.module,
                                   updates: {
                                     includeYear: e.target.checked,
-                                    includeSlug: e.target.checked ? false : counter.includeSlug
-                                  }
+                                    includeSlug: e.target.checked ? false : counter.includeSlug,
+                                  },
                                 });
                               }}
                               className="rounded"
@@ -1413,7 +1836,7 @@ export const OrganizationPanelV2: React.FC = () => {
                               onChange={(e) => {
                                 updateCounterMutation.mutate({
                                   module: counter.module,
-                                  updates: { includeMonth: e.target.checked }
+                                  updates: { includeMonth: e.target.checked },
                                 });
                               }}
                               className="rounded"
@@ -1426,17 +1849,26 @@ export const OrganizationPanelV2: React.FC = () => {
                             </span>
                           </td>
                           <td className="px-3 py-2">
-                            <span className={`font-mono ${counter.includeSlug ? 'text-[var(--primary)] font-bold' : 'text-slate-600 dark:text-slate-400'}`}>
+                            <span
+                              className={`font-mono ${counter.includeSlug ? 'text-[var(--primary)] font-bold' : 'text-slate-600 dark:text-slate-400'}`}
+                            >
                               {preview}
                             </span>
                           </td>
                           <td className="px-3 py-2 text-center">
                             <button
                               onClick={async () => {
-                                if (await confirm({ message: `Réinitialiser le compteur "${label}" à 1 ?`, title: 'Réinitialiser le compteur', variant: 'warning', confirmLabel: 'Réinitialiser' })) {
+                                if (
+                                  await confirm({
+                                    message: `Réinitialiser le compteur "${label}" à 1 ?`,
+                                    title: 'Réinitialiser le compteur',
+                                    variant: 'warning',
+                                    confirmLabel: 'Réinitialiser',
+                                  })
+                                ) {
                                   resetCounterMutation.mutate(counter.module, {
                                     onSuccess: () => showToast(TOAST.CRUD.UPDATED(`Compteur ${label}`), 'success'),
-                                    onError: (err: unknown) => showToast(mapError(err, 'compteur'), 'error')
+                                    onError: (err: unknown) => showToast(mapError(err, 'compteur'), 'error'),
                                   });
                                 }
                               }}
@@ -1459,10 +1891,19 @@ export const OrganizationPanelV2: React.FC = () => {
                 <Info className="w-5 h-5 text-[var(--primary)] mt-0.5" />
                 <div className="text-sm text-[var(--primary)]">
                   <p className="font-medium">Variables disponibles :</p>
-                  <p>• <strong>Slug</strong> : Code unique du revendeur (ex: ABJ, DKR) - <span className="text-green-600">Recommandé</span></p>
-                  <p>• <strong>Année</strong> : Inclut l'année en cours (2025)</p>
-                  <p>• <strong>Mois</strong> : Inclut le mois en cours (01-12)</p>
-                  <p>• <strong>Reset</strong> : Remet le compteur à 1 selon la fréquence (désactivé si slug actif)</p>
+                  <p>
+                    • <strong>Slug</strong> : Code unique du revendeur (ex: ABJ, DKR) -{' '}
+                    <span className="text-green-600">Recommandé</span>
+                  </p>
+                  <p>
+                    • <strong>Année</strong> : Inclut l'année en cours (2025)
+                  </p>
+                  <p>
+                    • <strong>Mois</strong> : Inclut le mois en cours (01-12)
+                  </p>
+                  <p>
+                    • <strong>Reset</strong> : Remet le compteur à 1 selon la fréquence (désactivé si slug actif)
+                  </p>
                 </div>
               </div>
             </div>
@@ -1474,21 +1915,30 @@ export const OrganizationPanelV2: React.FC = () => {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Documents Juridiques</h3>
-              <p className="text-sm text-slate-500">Gérez les documents contractuels accessibles à vos clients via le Centre d'Aide.</p>
+              <p className="text-sm text-slate-500">
+                Gérez les documents contractuels accessibles à vos clients via le Centre d'Aide.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 gap-4">
               {[
-                { key: 'cgv', label: 'Conditions Générales de Vente (CGV)', desc: 'Le contrat global pour vos clients' },
-                { key: 'contract', label: 'Contrat de Service', desc: 'Règles et SLAs spécifiques d\'utilisation' },
+                {
+                  key: 'cgv',
+                  label: 'Conditions Générales de Vente (CGV)',
+                  desc: 'Le contrat global pour vos clients',
+                },
+                { key: 'contract', label: 'Contrat de Service', desc: "Règles et SLAs spécifiques d'utilisation" },
                 { key: 'policy', label: 'Politique de Confidentialité', desc: 'Gestion des données personnelles' },
-                { key: 'guide', label: 'Guide Utilisateur', desc: 'Manuel d\'utilisation de la plateforme' },
-              ].map(doc => {
+                { key: 'guide', label: 'Guide Utilisateur', desc: "Manuel d'utilisation de la plateforme" },
+              ].map((doc) => {
                 const docKey = doc.key as keyof NonNullable<OrganizationSettings['legalDocuments']>;
                 const docUrl = settings.legalDocuments?.[docKey];
-                
+
                 return (
-                  <div key={docKey} className="p-4 border dark:border-slate-700 rounded-lg flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                  <div
+                    key={docKey}
+                    className="p-4 border dark:border-slate-700 rounded-lg flex items-center justify-between bg-slate-50 dark:bg-slate-800/50"
+                  >
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-lg bg-[var(--primary-dim)] text-[var(--primary)] flex items-center justify-center shrink-0">
                         <FileText className="w-6 h-6" />
@@ -1497,7 +1947,12 @@ export const OrganizationPanelV2: React.FC = () => {
                         <h4 className="font-bold text-slate-800 dark:text-white uppercase text-sm">{doc.label}</h4>
                         <p className="text-xs text-slate-500 mb-1">{doc.desc}</p>
                         {docUrl ? (
-                          <a href={docUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--primary)] hover:text-[var(--primary)] flex items-center gap-1 font-medium">
+                          <a
+                            href={docUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-[var(--primary)] hover:text-[var(--primary)] flex items-center gap-1 font-medium"
+                          >
                             <Eye className="w-3 h-3" /> Voir le document actuel
                           </a>
                         ) : (
@@ -1507,7 +1962,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                       <input
                         id={`doc-upload-${docKey}`}
@@ -1538,12 +1993,14 @@ export const OrganizationPanelV2: React.FC = () => {
                 );
               })}
             </div>
-            
+
             <div className="p-4 bg-[var(--primary-dim)] rounded-lg flex gap-3 text-sm text-[var(--text-primary)] border border-[var(--border)] mt-6">
-               <Info className="w-5 h-5 shrink-0 mt-0.5 text-[var(--primary)]" />
-               <p>
-                 Ces documents seront automatiquement accessibles pour tous vos clients via le menu <strong>Service Client & Centre d'aide</strong>. Assurez-vous d'utiliser uniquement des fichiers au format PDF.
-               </p>
+              <Info className="w-5 h-5 shrink-0 mt-0.5 text-[var(--primary)]" />
+              <p>
+                Ces documents seront automatiquement accessibles pour tous vos clients via le menu{' '}
+                <strong>Service Client & Centre d'aide</strong>. Assurez-vous d'utiliser uniquement des fichiers au
+                format PDF.
+              </p>
             </div>
           </div>
         )}
@@ -1564,8 +2021,13 @@ export const OrganizationPanelV2: React.FC = () => {
                   <div
                     className="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center bg-slate-50 dark:bg-slate-800 relative cursor-pointer hover:border-[var(--border)] transition-colors"
                     onClick={() => document.getElementById('logo-file-input')?.click()}
-                    onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-[var(--primary)]', 'bg-[var(--primary-dim)]'); }}
-                    onDragLeave={(e) => { e.currentTarget.classList.remove('border-[var(--primary)]', 'bg-[var(--primary-dim)]'); }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.add('border-[var(--primary)]', 'bg-[var(--primary-dim)]');
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.classList.remove('border-[var(--primary)]', 'bg-[var(--primary-dim)]');
+                    }}
                     onDrop={async (e) => {
                       e.preventDefault();
                       e.currentTarget.classList.remove('border-[var(--primary)]', 'bg-[var(--primary-dim)]');
@@ -1670,11 +2132,13 @@ export const OrganizationPanelV2: React.FC = () => {
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Taille de texte</label>
                 <div className="flex gap-2">
-                  {([
-                    { value: 'small', label: 'Petit', desc: '14px' },
-                    { value: 'default', label: 'Normal', desc: '16px' },
-                    { value: 'large', label: 'Grand', desc: '18px' },
-                  ] as const).map(opt => (
+                  {(
+                    [
+                      { value: 'small', label: 'Petit', desc: '14px' },
+                      { value: 'default', label: 'Normal', desc: '16px' },
+                      { value: 'large', label: 'Grand', desc: '18px' },
+                    ] as const
+                  ).map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
@@ -1696,12 +2160,14 @@ export const OrganizationPanelV2: React.FC = () => {
               <div className="col-span-2">
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Arrondi des bords</label>
                 <div className="flex gap-2">
-                  {([
-                    { value: 'none', label: 'Aucun', preview: 'rounded-none' },
-                    { value: 'small', label: 'Léger', preview: 'rounded' },
-                    { value: 'default', label: 'Normal', preview: 'rounded-lg' },
-                    { value: 'large', label: 'Arrondi', preview: 'rounded-xl' },
-                  ] as const).map(opt => (
+                  {(
+                    [
+                      { value: 'none', label: 'Aucun', preview: 'rounded-none' },
+                      { value: 'small', label: 'Léger', preview: 'rounded' },
+                      { value: 'default', label: 'Normal', preview: 'rounded-lg' },
+                      { value: 'large', label: 'Arrondi', preview: 'rounded-xl' },
+                    ] as const
+                  ).map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
@@ -1712,7 +2178,9 @@ export const OrganizationPanelV2: React.FC = () => {
                           : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                       }`}
                     >
-                      <div className={`w-10 h-10 mx-auto mb-2 border-2 border-slate-300 dark:border-slate-500 ${opt.preview}`} />
+                      <div
+                        className={`w-10 h-10 mx-auto mb-2 border-2 border-slate-300 dark:border-slate-500 ${opt.preview}`}
+                      />
                       <span className="block text-sm font-medium">{opt.label}</span>
                     </button>
                   ))}
@@ -1721,10 +2189,10 @@ export const OrganizationPanelV2: React.FC = () => {
 
               {/* Couleur d'accentuation */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">
-                  Couleur d'accentuation
-                </label>
-                <p className="text-xs text-slate-400 mb-2">Utilisée pour les indicateurs temps réel (Flotte, Alertes GPS)</p>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Couleur d'accentuation</label>
+                <p className="text-xs text-slate-400 mb-2">
+                  Utilisée pour les indicateurs temps réel (Flotte, Alertes GPS)
+                </p>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -1751,14 +2219,22 @@ export const OrganizationPanelV2: React.FC = () => {
 
               {/* Style de la barre latérale */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Style de la barre latérale</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">
+                  Style de la barre latérale
+                </label>
                 <p className="text-xs text-slate-400 mb-2">Apparence du menu de navigation principal</p>
                 <div className="flex gap-2">
-                  {([
+                  {[
                     { value: 'dark' as const, label: 'Sombre', bg: '#0f172a', text: '#e2e8f0', desc: 'Classique' },
                     { value: 'light' as const, label: 'Clair', bg: '#ffffff', text: '#1e293b', desc: 'Épuré' },
-                    { value: 'colored' as const, label: 'Coloré', bg: settings.primaryColor, text: '#ffffff', desc: 'Identitaire' },
-                  ]).map(opt => (
+                    {
+                      value: 'colored' as const,
+                      label: 'Coloré',
+                      bg: settings.primaryColor,
+                      text: '#ffffff',
+                      desc: 'Identitaire',
+                    },
+                  ].map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
@@ -1774,8 +2250,12 @@ export const OrganizationPanelV2: React.FC = () => {
                         style={{ backgroundColor: opt.bg }}
                       >
                         <div className="flex-1 flex flex-col gap-1 p-1 pt-2">
-                          {[1,2,3].map(i => (
-                            <div key={i} className="h-1.5 rounded-full mx-1" style={{ backgroundColor: i === 1 ? settings.primaryColor : `${opt.text}30` }} />
+                          {[1, 2, 3].map((i) => (
+                            <div
+                              key={i}
+                              className="h-1.5 rounded-full mx-1"
+                              style={{ backgroundColor: i === 1 ? settings.primaryColor : `${opt.text}30` }}
+                            />
                           ))}
                         </div>
                       </div>
@@ -1789,9 +2269,11 @@ export const OrganizationPanelV2: React.FC = () => {
               {/* Densité des tableaux */}
               <div className="col-span-2">
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Densité des tableaux</label>
-                <p className="text-xs text-slate-400 mb-2">Contrôle l'espacement des lignes dans tous les tableaux (Flotte, Finance, Support…)</p>
+                <p className="text-xs text-slate-400 mb-2">
+                  Contrôle l'espacement des lignes dans tous les tableaux (Flotte, Finance, Support…)
+                </p>
                 <div className="flex gap-3">
-                  {([
+                  {[
                     {
                       value: 'compact' as const,
                       label: 'Compact',
@@ -1813,7 +2295,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       rows: [6, 6, 6],
                       gap: 'gap-2',
                     },
-                  ]).map(opt => (
+                  ].map((opt) => (
                     <button
                       key={opt.value}
                       type="button"
@@ -1844,29 +2326,54 @@ export const OrganizationPanelV2: React.FC = () => {
             <div className="p-5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
               <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-4">Aperçu en direct</h4>
               {(() => {
-                const r = { none: '0px', small: '0.25rem', default: '0.5rem', large: '0.75rem' }[settings.borderRadius] || '0.5rem';
+                const r =
+                  { none: '0px', small: '0.25rem', default: '0.5rem', large: '0.75rem' }[settings.borderRadius] ||
+                  '0.5rem';
                 const fontFamilyMap: Record<string, string> = {
-                  'Inter': "'Inter', sans-serif", 'Roboto': "'Roboto', sans-serif",
-                  'Poppins': "'Poppins', sans-serif", 'Nunito': "'Nunito', sans-serif",
-                  'Open Sans': "'Open Sans', sans-serif", 'DM Sans': "'DM Sans', sans-serif",
+                  Inter: "'Inter', sans-serif",
+                  Roboto: "'Roboto', sans-serif",
+                  Poppins: "'Poppins', sans-serif",
+                  Nunito: "'Nunito', sans-serif",
+                  'Open Sans': "'Open Sans', sans-serif",
+                  'DM Sans': "'DM Sans', sans-serif",
                   'Source Sans 3': "'Source Sans 3', sans-serif",
                 };
-                const sidebarBg = { dark: '#0f172a', light: '#ffffff', colored: settings.primaryColor }[settings.sidebarStyle] || '#0f172a';
-                const sidebarText = { dark: '#e2e8f0', light: '#1e293b', colored: '#ffffff' }[settings.sidebarStyle] || '#e2e8f0';
-                const sidebarBorder = { dark: '#1e293b', light: '#e2e8f0', colored: 'rgba(255,255,255,0.15)' }[settings.sidebarStyle] || '#1e293b';
+                const sidebarBg =
+                  { dark: '#0f172a', light: '#ffffff', colored: settings.primaryColor }[settings.sidebarStyle] ||
+                  '#0f172a';
+                const sidebarText =
+                  { dark: '#e2e8f0', light: '#1e293b', colored: '#ffffff' }[settings.sidebarStyle] || '#e2e8f0';
+                const sidebarBorder =
+                  { dark: '#1e293b', light: '#e2e8f0', colored: 'rgba(255,255,255,0.15)' }[settings.sidebarStyle] ||
+                  '#1e293b';
                 return (
                   <div
                     className="overflow-hidden border border-slate-200 dark:border-slate-700 flex"
-                    style={{ borderRadius: r, fontFamily: fontFamilyMap[settings.fontFamily] || "'Inter', sans-serif", fontSize: { small: '14px', default: '16px', large: '18px' }[settings.fontSize] || '16px' }}
+                    style={{
+                      borderRadius: r,
+                      fontFamily: fontFamilyMap[settings.fontFamily] || "'Inter', sans-serif",
+                      fontSize: { small: '14px', default: '16px', large: '18px' }[settings.fontSize] || '16px',
+                    }}
                   >
                     {/* Sidebar preview */}
-                    <div className="w-28 flex-shrink-0 p-3 flex flex-col gap-2" style={{ backgroundColor: sidebarBg, borderRight: `1px solid ${sidebarBorder}` }}>
+                    <div
+                      className="w-28 flex-shrink-0 p-3 flex flex-col gap-2"
+                      style={{ backgroundColor: sidebarBg, borderRight: `1px solid ${sidebarBorder}` }}
+                    >
                       <div className="flex items-center gap-1.5 mb-2">
-                        {settings.logoUrl
-                          ? <img src={settings.logoUrl} alt="Logo" className="w-5 h-5 object-contain" />
-                          : <div className="w-5 h-5 rounded flex items-center justify-center text-white text-[8px] font-bold" style={{ backgroundColor: settings.primaryColor }}>T</div>
-                        }
-                        <span className="text-[10px] font-bold truncate" style={{ color: sidebarText }}>{settings.name || 'TrackYu'}</span>
+                        {settings.logoUrl ? (
+                          <img src={settings.logoUrl} alt="Logo" className="w-5 h-5 object-contain" />
+                        ) : (
+                          <div
+                            className="w-5 h-5 rounded flex items-center justify-center text-white text-[8px] font-bold"
+                            style={{ backgroundColor: settings.primaryColor }}
+                          >
+                            T
+                          </div>
+                        )}
+                        <span className="text-[10px] font-bold truncate" style={{ color: sidebarText }}>
+                          {settings.name || 'TrackYu'}
+                        </span>
                       </div>
                       {['Tableau de bord', 'Flotte', 'CRM', 'Finance', 'Support'].map((item, i) => (
                         <div
@@ -1887,30 +2394,66 @@ export const OrganizationPanelV2: React.FC = () => {
                     <div className="flex-1 p-3 bg-white dark:bg-slate-900">
                       {/* Buttons */}
                       <div className="flex flex-wrap gap-2 mb-3">
-                        <button className="px-3 py-1.5 text-white text-[11px] font-medium" style={{ backgroundColor: settings.primaryColor, borderRadius: r }}>Primaire</button>
-                        <button className="px-3 py-1.5 text-white text-[11px] font-medium" style={{ backgroundColor: settings.secondaryColor, borderRadius: r }}>Secondaire</button>
-                        <button className="px-3 py-1.5 text-[11px] font-medium border-2" style={{ borderColor: settings.primaryColor, color: settings.primaryColor, borderRadius: r, background: 'transparent' }}>Outline</button>
+                        <button
+                          className="px-3 py-1.5 text-white text-[11px] font-medium"
+                          style={{ backgroundColor: settings.primaryColor, borderRadius: r }}
+                        >
+                          Primaire
+                        </button>
+                        <button
+                          className="px-3 py-1.5 text-white text-[11px] font-medium"
+                          style={{ backgroundColor: settings.secondaryColor, borderRadius: r }}
+                        >
+                          Secondaire
+                        </button>
+                        <button
+                          className="px-3 py-1.5 text-[11px] font-medium border-2"
+                          style={{
+                            borderColor: settings.primaryColor,
+                            color: settings.primaryColor,
+                            borderRadius: r,
+                            background: 'transparent',
+                          }}
+                        >
+                          Outline
+                        </button>
                       </div>
                       {/* Accent badges — GPS / Support */}
                       <div className="flex flex-wrap gap-1.5 mb-3">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-white text-[10px] font-bold rounded-full" style={{ backgroundColor: settings.accentColor }}>
-                          <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />EN MOUVEMENT
+                        <span
+                          className="inline-flex items-center gap-1 px-2 py-0.5 text-white text-[10px] font-bold rounded-full"
+                          style={{ backgroundColor: settings.accentColor }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
+                          EN MOUVEMENT
                         </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-orange-100 text-orange-700">ALERTE</span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">ARRÊTÉ</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-orange-100 text-orange-700">
+                          ALERTE
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                          ARRÊTÉ
+                        </span>
                       </div>
                       {/* Fake table row */}
                       <div className="border rounded overflow-hidden" style={{ borderRadius: r }}>
                         <div className="grid grid-cols-3 text-[9px] font-bold uppercase text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 border-b">
-                          <span>Véhicule</span><span>Statut</span><span>KM</span>
+                          <span>Véhicule</span>
+                          <span>Statut</span>
+                          <span>KM</span>
                         </div>
                         {[
                           { v: 'AB-1234-CD', km: '142 340', live: true },
                           { v: 'EF-5678-GH', km: '89 210', live: false },
-                        ].map(row => (
-                          <div key={row.v} className="grid grid-cols-3 text-[9px] px-2 border-b last:border-0 items-center" style={{ paddingTop: '0.35rem', paddingBottom: '0.35rem' }}>
+                        ].map((row) => (
+                          <div
+                            key={row.v}
+                            className="grid grid-cols-3 text-[9px] px-2 border-b last:border-0 items-center"
+                            style={{ paddingTop: '0.35rem', paddingBottom: '0.35rem' }}
+                          >
                             <span className="font-mono font-semibold">{row.v}</span>
-                            <span className="font-bold" style={{ color: row.live ? settings.accentColor : '#94a3b8' }}>{row.live ? '● LIVE' : '○ STOP'}</span>
+                            <span className="font-bold" style={{ color: row.live ? settings.accentColor : '#94a3b8' }}>
+                              {row.live ? '● LIVE' : '○ STOP'}
+                            </span>
                             <span className="text-slate-500">{row.km}</span>
                           </div>
                         ))}
@@ -2082,11 +2625,7 @@ export const OrganizationPanelV2: React.FC = () => {
                     >
                       {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
-                    <button
-                      onClick={copyApiKey}
-                      className="p-3 border rounded-lg hover:bg-slate-50"
-                      title="Copier"
-                    >
+                    <button onClick={copyApiKey} className="p-3 border rounded-lg hover:bg-slate-50" title="Copier">
                       <Copy className="w-4 h-4" />
                     </button>
                     <button
@@ -2107,34 +2646,38 @@ export const OrganizationPanelV2: React.FC = () => {
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Interface Mobile</h3>
-              <p className="text-sm text-slate-500">Configurez quels onglets sont visibles dans chaque section sur mobile. Décochez pour masquer un onglet aux utilisateurs mobiles.</p>
+              <p className="text-sm text-slate-500">
+                Configurez quels onglets sont visibles dans chaque section sur mobile. Décochez pour masquer un onglet
+                aux utilisateurs mobiles.
+              </p>
             </div>
 
             {/* TechView */}
             {(() => {
               const techTabs = [
-                { id: 'LIST',  label: 'Liste des interventions' },
+                { id: 'LIST', label: 'Liste des interventions' },
                 { id: 'STOCK', label: 'Stock matériel' },
-                { id: 'TEAM',  label: 'Équipe' },
+                { id: 'TEAM', label: 'Équipe' },
               ];
-              const current: string[] = mobileViewTabsConfig.techView || techTabs.map(t => t.id);
+              const current: string[] = mobileViewTabsConfig.techView || techTabs.map((t) => t.id);
               return (
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-[var(--primary)]" />
                     <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Tech / SAV</h4>
                   </div>
-                  {techTabs.map(tab => (
-                    <label key={tab.id} className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer">
+                  {techTabs.map((tab) => (
+                    <label
+                      key={tab.id}
+                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                    >
                       <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}
                         onChange={(e) => {
-                          const next = e.target.checked
-                            ? [...current, tab.id]
-                            : current.filter(id => id !== tab.id);
-                          setMobileViewTabsConfig(prev => ({ ...prev, techView: next }));
+                          const next = e.target.checked ? [...current, tab.id] : current.filter((id) => id !== tab.id);
+                          setMobileViewTabsConfig((prev) => ({ ...prev, techView: next }));
                           setHasChanges(true);
                         }}
                         className="w-4 h-4 text-[var(--primary)] rounded"
@@ -2148,31 +2691,32 @@ export const OrganizationPanelV2: React.FC = () => {
             {/* AdminView */}
             {(() => {
               const adminTabs = [
-                { id: 'staff',        label: 'Équipe' },
-                { id: 'devices',      label: 'Paramètres Boîtiers' },
-                { id: 'help',         label: "Centre d'Aide" },
-                { id: 'messages',     label: 'Messages' },
+                { id: 'staff', label: 'Équipe' },
+                { id: 'devices', label: 'Paramètres Boîtiers' },
+                { id: 'help', label: "Centre d'Aide" },
+                { id: 'messages', label: 'Messages' },
                 { id: 'organization', label: 'Organisation' },
-                { id: 'resellers',    label: 'Revendeurs' },
+                { id: 'resellers', label: 'Revendeurs' },
               ];
-              const current: string[] = mobileViewTabsConfig.adminView || adminTabs.map(t => t.id);
+              const current: string[] = mobileViewTabsConfig.adminView || adminTabs.map((t) => t.id);
               return (
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-purple-500" />
                     <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Administration</h4>
                   </div>
-                  {adminTabs.map(tab => (
-                    <label key={tab.id} className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer">
+                  {adminTabs.map((tab) => (
+                    <label
+                      key={tab.id}
+                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                    >
                       <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}
                         onChange={(e) => {
-                          const next = e.target.checked
-                            ? [...current, tab.id]
-                            : current.filter(id => id !== tab.id);
-                          setMobileViewTabsConfig(prev => ({ ...prev, adminView: next }));
+                          const next = e.target.checked ? [...current, tab.id] : current.filter((id) => id !== tab.id);
+                          setMobileViewTabsConfig((prev) => ({ ...prev, adminView: next }));
                           setHasChanges(true);
                         }}
                         className="w-4 h-4 text-purple-600 rounded"
@@ -2187,27 +2731,28 @@ export const OrganizationPanelV2: React.FC = () => {
             {(() => {
               const supportTabs = [
                 { id: 'DASHBOARD', label: 'Dashboard' },
-                { id: 'TICKETS',   label: 'Tickets' },
-                { id: 'LIVECHAT',  label: 'Live Chat' },
+                { id: 'TICKETS', label: 'Tickets' },
+                { id: 'LIVECHAT', label: 'Live Chat' },
               ];
-              const current: string[] = mobileViewTabsConfig.supportView || supportTabs.map(t => t.id);
+              const current: string[] = mobileViewTabsConfig.supportView || supportTabs.map((t) => t.id);
               return (
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-[var(--primary)]" />
                     <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Support</h4>
                   </div>
-                  {supportTabs.map(tab => (
-                    <label key={tab.id} className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer">
+                  {supportTabs.map((tab) => (
+                    <label
+                      key={tab.id}
+                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                    >
                       <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}
                         onChange={(e) => {
-                          const next = e.target.checked
-                            ? [...current, tab.id]
-                            : current.filter(id => id !== tab.id);
-                          setMobileViewTabsConfig(prev => ({ ...prev, supportView: next }));
+                          const next = e.target.checked ? [...current, tab.id] : current.filter((id) => id !== tab.id);
+                          setMobileViewTabsConfig((prev) => ({ ...prev, supportView: next }));
                           setHasChanges(true);
                         }}
                         className="w-4 h-4 text-[var(--primary)] rounded"
@@ -2221,29 +2766,30 @@ export const OrganizationPanelV2: React.FC = () => {
             {/* MonitoringView */}
             {(() => {
               const monitoringTabs = [
-                { id: 'OVERVIEW',  label: "Vue d'ensemble" },
-                { id: 'OFFLINE',   label: 'Silence Radio' },
+                { id: 'OVERVIEW', label: "Vue d'ensemble" },
+                { id: 'OFFLINE', label: 'Silence Radio' },
                 { id: 'ANOMALIES', label: 'Anomalies' },
-                { id: 'ALERTS',    label: "Console d'Alertes" },
+                { id: 'ALERTS', label: "Console d'Alertes" },
               ];
-              const current: string[] = mobileViewTabsConfig.monitoringView || monitoringTabs.map(t => t.id);
+              const current: string[] = mobileViewTabsConfig.monitoringView || monitoringTabs.map((t) => t.id);
               return (
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-orange-500" />
                     <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Monitoring</h4>
                   </div>
-                  {monitoringTabs.map(tab => (
-                    <label key={tab.id} className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer">
+                  {monitoringTabs.map((tab) => (
+                    <label
+                      key={tab.id}
+                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                    >
                       <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}
                         onChange={(e) => {
-                          const next = e.target.checked
-                            ? [...current, tab.id]
-                            : current.filter(id => id !== tab.id);
-                          setMobileViewTabsConfig(prev => ({ ...prev, monitoringView: next }));
+                          const next = e.target.checked ? [...current, tab.id] : current.filter((id) => id !== tab.id);
+                          setMobileViewTabsConfig((prev) => ({ ...prev, monitoringView: next }));
                           setHasChanges(true);
                         }}
                         className="w-4 h-4 text-orange-600 rounded"
@@ -2256,7 +2802,10 @@ export const OrganizationPanelV2: React.FC = () => {
 
             <div className="flex items-start gap-2 p-3 bg-[var(--primary-dim)] rounded-lg text-xs text-[var(--primary)]">
               <Info className="w-4 h-4 shrink-0 mt-0.5" />
-              <span>Les modifications s'appliquent après enregistrement. Les onglets masqués restent accessibles sur desktop.</span>
+              <span>
+                Les modifications s'appliquent après enregistrement. Les onglets masqués restent accessibles sur
+                desktop.
+              </span>
             </div>
           </div>
         )}

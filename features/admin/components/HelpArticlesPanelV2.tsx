@@ -1,6 +1,6 @@
 /**
  * HelpArticlesPanelV2 - Centre d'Aide Amélioré
- * 
+ *
  * Fonctionnalités:
  * - Catégories structurées avec icônes
  * - FAQ avec accordion
@@ -12,11 +12,32 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
-  BookOpen, Plus, Edit2, Trash2, Search, Save, X, Eye,
-  Video, FileText, HelpCircle,
-  Lightbulb, Settings, Users, Car, Map,
-  CreditCard, Wrench, BarChart3, Play, ExternalLink,
-  Clock, TrendingUp, Star, LayoutGrid, List
+  BookOpen,
+  Plus,
+  Edit2,
+  Trash2,
+  Search,
+  Save,
+  X,
+  Eye,
+  Video,
+  FileText,
+  HelpCircle,
+  Lightbulb,
+  Settings,
+  Users,
+  Car,
+  Map,
+  CreditCard,
+  Wrench,
+  BarChart3,
+  Play,
+  ExternalLink,
+  Clock,
+  TrendingUp,
+  Star,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { Modal } from '../../../components/Modal';
@@ -24,7 +45,7 @@ import { useToast } from '../../../contexts/ToastContext';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import { useTableSort } from '../../../hooks/useTableSort';
 import { SortableHeader } from '../../../components/SortableHeader';
 
@@ -55,14 +76,49 @@ interface Category {
 
 // Map statique des classes Tailwind par couleur
 const HELP_COLOR_CLASSES: Record<string, { bg100: string; text600: string; text700: string; darkBg: string }> = {
-  amber:   { bg100: 'bg-amber-100',   text600: 'text-amber-600',   text700: 'text-amber-700',   darkBg: 'dark:bg-amber-900/30' },
-  blue:    { bg100: 'bg-[var(--primary-dim)]',    text600: 'text-[var(--primary)]',    text700: 'text-[var(--primary)]',    darkBg: 'dark:bg-[var(--primary-dim)]' },
-  green:   { bg100: 'bg-green-100',   text600: 'text-green-600',   text700: 'text-green-700',   darkBg: 'dark:bg-green-900/30' },
-  purple:  { bg100: 'bg-purple-100',  text600: 'text-purple-600',  text700: 'text-purple-700',  darkBg: 'dark:bg-purple-900/30' },
-  cyan:    { bg100: 'bg-cyan-100',    text600: 'text-cyan-600',    text700: 'text-cyan-700',    darkBg: 'dark:bg-cyan-900/30' },
-  emerald: { bg100: 'bg-emerald-100', text600: 'text-emerald-600', text700: 'text-emerald-700', darkBg: 'dark:bg-emerald-900/30' },
-  orange:  { bg100: 'bg-orange-100',  text600: 'text-orange-600',  text700: 'text-orange-700',  darkBg: 'dark:bg-orange-900/30' },
-  slate:   { bg100: 'bg-slate-100',   text600: 'text-slate-600',   text700: 'text-slate-700',   darkBg: 'dark:bg-slate-900/30' },
+  amber: {
+    bg100: 'bg-amber-100',
+    text600: 'text-amber-600',
+    text700: 'text-amber-700',
+    darkBg: 'dark:bg-amber-900/30',
+  },
+  blue: {
+    bg100: 'bg-[var(--primary-dim)]',
+    text600: 'text-[var(--primary)]',
+    text700: 'text-[var(--primary)]',
+    darkBg: 'dark:bg-[var(--primary-dim)]',
+  },
+  green: {
+    bg100: 'bg-green-100',
+    text600: 'text-green-600',
+    text700: 'text-green-700',
+    darkBg: 'dark:bg-green-900/30',
+  },
+  purple: {
+    bg100: 'bg-purple-100',
+    text600: 'text-purple-600',
+    text700: 'text-purple-700',
+    darkBg: 'dark:bg-purple-900/30',
+  },
+  cyan: { bg100: 'bg-cyan-100', text600: 'text-cyan-600', text700: 'text-cyan-700', darkBg: 'dark:bg-cyan-900/30' },
+  emerald: {
+    bg100: 'bg-emerald-100',
+    text600: 'text-emerald-600',
+    text700: 'text-emerald-700',
+    darkBg: 'dark:bg-emerald-900/30',
+  },
+  orange: {
+    bg100: 'bg-orange-100',
+    text600: 'text-orange-600',
+    text700: 'text-orange-700',
+    darkBg: 'dark:bg-orange-900/30',
+  },
+  slate: {
+    bg100: 'bg-slate-100',
+    text600: 'text-slate-600',
+    text700: 'text-slate-700',
+    darkBg: 'dark:bg-slate-900/30',
+  },
 };
 
 const getHelpColor = (color: string) => HELP_COLOR_CLASSES[color] || HELP_COLOR_CLASSES.slate;
@@ -70,7 +126,13 @@ const getHelpColor = (color: string) => HELP_COLOR_CLASSES[color] || HELP_COLOR_
 // Catégories
 const CATEGORIES: Category[] = [
   { id: 'getting-started', label: 'Premiers Pas', icon: Lightbulb, color: 'amber', description: 'Guide de démarrage' },
-  { id: 'dashboard', label: 'Tableau de Bord', icon: BarChart3, color: 'blue', description: 'Utilisation du dashboard' },
+  {
+    id: 'dashboard',
+    label: 'Tableau de Bord',
+    icon: BarChart3,
+    color: 'blue',
+    description: 'Utilisation du dashboard',
+  },
   { id: 'vehicles', label: 'Véhicules', icon: Car, color: 'green', description: 'Gestion de la flotte' },
   { id: 'map', label: 'Carte & GPS', icon: Map, color: 'purple', description: 'Suivi en temps réel' },
   { id: 'clients', label: 'Clients & CRM', icon: Users, color: 'cyan', description: 'Gestion commerciale' },
@@ -105,7 +167,7 @@ Le véhicule apparaîtra immédiatement sur la carte.`,
     isFeatured: true,
     views: 342,
     createdAt: '2024-01-15',
-    updatedAt: '2024-12-01'
+    updatedAt: '2024-12-01',
   },
   {
     id: '2',
@@ -127,7 +189,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     isFeatured: true,
     views: 256,
     createdAt: '2024-02-10',
-    updatedAt: '2024-11-15'
+    updatedAt: '2024-11-15',
   },
   {
     id: '3',
@@ -140,11 +202,11 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     isFeatured: false,
     views: 189,
     createdAt: '2024-03-05',
-    updatedAt: '2024-10-20'
+    updatedAt: '2024-10-20',
   },
   {
     id: '4',
-    title: 'Qu\'est-ce que le MRR ?',
+    title: "Qu'est-ce que le MRR ?",
     content: `Le **MRR** (Monthly Recurring Revenue) représente le revenu mensuel récurrent. C'est la somme de tous les abonnements actifs.`,
     category: 'billing',
     type: 'faq',
@@ -153,7 +215,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     isFeatured: false,
     views: 98,
     createdAt: '2024-04-12',
-    updatedAt: '2024-09-01'
+    updatedAt: '2024-09-01',
   },
   {
     id: '5',
@@ -168,7 +230,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     videoUrl: 'https://www.youtube.com/watch?v=example',
     duration: '5:32',
     createdAt: '2024-01-01',
-    updatedAt: '2024-12-10'
+    updatedAt: '2024-12-10',
   },
   {
     id: '6',
@@ -181,7 +243,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     isFeatured: false,
     views: 423,
     createdAt: '2024-01-10',
-    updatedAt: '2024-08-15'
+    updatedAt: '2024-08-15',
   },
 ];
 
@@ -196,7 +258,7 @@ const CONTENT_TYPES = [
 export const HelpArticlesPanelV2: React.FC = () => {
   const { showToast } = useToast();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
-  
+
   // State
   const [articles, setArticles] = useState<HelpArticle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,16 +267,15 @@ export const HelpArticlesPanelV2: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  
+
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<HelpArticle | null>(null);
   const [previewArticle, setPreviewArticle] = useState<HelpArticle | null>(null);
-  
+
   // Form state
   const [formData, setFormData] = useState<Partial<HelpArticle>>({
-
     title: '',
     content: '',
     category: 'getting-started',
@@ -232,21 +293,37 @@ export const HelpArticlesPanelV2: React.FC = () => {
       const data = await api.adminFeatures.helpArticles.list();
       if (Array.isArray(data) && data.length > 0) {
         // Mapper snake_case → camelCase
-        const mapped = data.map((a: { id: string; title: string; content: string; category?: string; type?: string; tags?: string[]; is_published?: boolean; is_featured?: boolean; view_count?: number; created_at?: string; updated_at?: string; video_url?: string; duration?: string }) => ({
-          id: a.id,
-          title: a.title,
-          content: a.content,
-          category: a.category || 'getting-started',
-          type: (a.type || 'article') as 'article' | 'video' | 'faq' | 'tutorial',
-          tags: Array.isArray(a.tags) ? a.tags : [],
-          isPublished: a.is_published ?? true,
-          isFeatured: a.is_featured ?? false,
-          views: a.view_count || 0,
-          createdAt: a.created_at,
-          updatedAt: a.updated_at,
-          videoUrl: a.video_url,
-          duration: a.duration,
-        }));
+        const mapped = data.map(
+          (a: {
+            id: string;
+            title: string;
+            content: string;
+            category?: string;
+            type?: string;
+            tags?: string[];
+            is_published?: boolean;
+            is_featured?: boolean;
+            view_count?: number;
+            created_at?: string;
+            updated_at?: string;
+            video_url?: string;
+            duration?: string;
+          }) => ({
+            id: a.id,
+            title: a.title,
+            content: a.content,
+            category: a.category || 'getting-started',
+            type: (a.type || 'article') as 'article' | 'video' | 'faq' | 'tutorial',
+            tags: Array.isArray(a.tags) ? a.tags : [],
+            isPublished: a.is_published ?? true,
+            isFeatured: a.is_featured ?? false,
+            views: a.view_count || 0,
+            createdAt: a.created_at,
+            updatedAt: a.updated_at,
+            videoUrl: a.video_url,
+            duration: a.duration,
+          })
+        );
         setArticles(mapped);
       } else {
         // Fallback aux données de démo si la table est vide
@@ -259,52 +336,59 @@ export const HelpArticlesPanelV2: React.FC = () => {
     }
   }, []);
 
-  useEffect(() => { loadArticles(); }, [loadArticles]);
+  useEffect(() => {
+    loadArticles();
+  }, [loadArticles]);
 
   // Filtrage
   const filteredArticles = useMemo(() => {
     let result = [...articles];
-    
+
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(a => 
-        a.title.toLowerCase().includes(query) ||
-        a.content.toLowerCase().includes(query) ||
-        a.tags.some(t => t.toLowerCase().includes(query))
+      result = result.filter(
+        (a) =>
+          a.title.toLowerCase().includes(query) ||
+          a.content.toLowerCase().includes(query) ||
+          a.tags.some((t) => t.toLowerCase().includes(query))
       );
     }
-    
+
     if (selectedCategory !== 'all') {
-      result = result.filter(a => a.category === selectedCategory);
+      result = result.filter((a) => a.category === selectedCategory);
     }
-    
+
     if (selectedType !== 'all') {
-      result = result.filter(a => a.type === selectedType);
+      result = result.filter((a) => a.type === selectedType);
     }
-    
+
     return result;
   }, [articles, searchQuery, selectedCategory, selectedType]);
 
-  const { sortedItems: sortedArticles, sortConfig: articleSortConfig, handleSort: handleArticleSort } = useTableSort(
-    filteredArticles,
-    { key: 'views', direction: 'desc' }
-  );
+  const {
+    sortedItems: sortedArticles,
+    sortConfig: articleSortConfig,
+    handleSort: handleArticleSort,
+  } = useTableSort(filteredArticles, { key: 'views', direction: 'desc' });
 
   // Stats
-  const stats = useMemo(() => ({
-    total: articles.length,
-    published: articles.filter(a => a.isPublished).length,
-    featured: articles.filter(a => a.isFeatured).length,
-    totalViews: articles.reduce((acc, a) => acc + a.views, 0),
-    byCategory: CATEGORIES.map(cat => ({
-      ...cat,
-      count: articles.filter(a => a.category === cat.id).length
-    })),
-    byType: CONTENT_TYPES.map(type => ({
-      ...type,
-      count: articles.filter(a => a.type === type.id).length
-    }))
-  }), [articles]);
+  const stats = useMemo(
+    () => ({
+      total: articles.length,
+      published: articles.filter((a) => a.isPublished).length,
+      featured: articles.filter((a) => a.isFeatured).length,
+      totalViews: articles.reduce((acc, a) => acc + a.views, 0),
+      byCategory: CATEGORIES.map((cat) => ({
+        ...cat,
+        count: articles.filter((a) => a.category === cat.id).length,
+      })),
+      byType: CONTENT_TYPES.map((type) => ({
+        ...type,
+        count: articles.filter((a) => a.type === type.id).length,
+      })),
+    }),
+    [articles]
+  );
 
   // Handlers
   const handleCreate = () => {
@@ -337,7 +421,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
       showToast(TOAST.VALIDATION.REQUIRED_FIELDS, 'error');
       return;
     }
-    
+
     // Mapper camelCase → snake_case pour l'API
     const payload = {
       title: formData.title,
@@ -363,12 +447,19 @@ export const HelpArticlesPanelV2: React.FC = () => {
     } catch (error) {
       showToast(mapError(error, 'article'), 'error');
     }
-    
+
     setIsModalOpen(false);
   };
 
   const handleDelete = async (id: string) => {
-    if (await confirm({ message: 'Supprimer cet article ?', title: 'Supprimer l\'article', variant: 'danger', confirmLabel: 'Supprimer' })) {
+    if (
+      await confirm({
+        message: 'Supprimer cet article ?',
+        title: "Supprimer l'article",
+        variant: 'danger',
+        confirmLabel: 'Supprimer',
+      })
+    ) {
       try {
         await api.adminFeatures.helpArticles.delete(id);
         await loadArticles();
@@ -381,51 +472,59 @@ export const HelpArticlesPanelV2: React.FC = () => {
 
   const handleAddTag = () => {
     if (tagInput && !formData.tags?.includes(tagInput)) {
-      setFormData(prev => ({ ...prev, tags: [...(prev.tags || []), tagInput] }));
+      setFormData((prev) => ({ ...prev, tags: [...(prev.tags || []), tagInput] }));
       setTagInput('');
     }
   };
 
   const handleRemoveTag = (tag: string) => {
-    setFormData(prev => ({ ...prev, tags: prev.tags?.filter(t => t !== tag) }));
+    setFormData((prev) => ({ ...prev, tags: prev.tags?.filter((t) => t !== tag) }));
   };
 
   const toggleFeatured = async (id: string) => {
-    const article = articles.find(a => a.id === id);
+    const article = articles.find((a) => a.id === id);
     if (!article) return;
     try {
       await api.adminFeatures.helpArticles.update(id, {
-        title: article.title, content: article.content, category: article.category,
-        is_featured: !article.isFeatured, is_published: article.isPublished,
-        type: article.type, tags: article.tags,
+        title: article.title,
+        content: article.content,
+        category: article.category,
+        is_featured: !article.isFeatured,
+        is_published: article.isPublished,
+        type: article.type,
+        tags: article.tags,
       });
-      setArticles(prev => prev.map(a => a.id === id ? { ...a, isFeatured: !a.isFeatured } : a));
+      setArticles((prev) => prev.map((a) => (a.id === id ? { ...a, isFeatured: !a.isFeatured } : a)));
     } catch (error) {
       showToast(mapError(error), 'error');
     }
   };
 
   const togglePublished = async (id: string) => {
-    const article = articles.find(a => a.id === id);
+    const article = articles.find((a) => a.id === id);
     if (!article) return;
     try {
       await api.adminFeatures.helpArticles.update(id, {
-        title: article.title, content: article.content, category: article.category,
-        is_published: !article.isPublished, is_featured: article.isFeatured,
-        type: article.type, tags: article.tags,
+        title: article.title,
+        content: article.content,
+        category: article.category,
+        is_published: !article.isPublished,
+        is_featured: article.isFeatured,
+        type: article.type,
+        tags: article.tags,
       });
-      setArticles(prev => prev.map(a => a.id === id ? { ...a, isPublished: !a.isPublished } : a));
+      setArticles((prev) => prev.map((a) => (a.id === id ? { ...a, isPublished: !a.isPublished } : a)));
     } catch (error) {
       showToast(mapError(error), 'error');
     }
   };
 
   const getCategoryConfig = (categoryId: string) => {
-    return CATEGORIES.find(c => c.id === categoryId) || CATEGORIES[0];
+    return CATEGORIES.find((c) => c.id === categoryId) || CATEGORIES[0];
   };
 
   const getTypeConfig = (typeId: string) => {
-    return CONTENT_TYPES.find(t => t.id === typeId) || CONTENT_TYPES[0];
+    return CONTENT_TYPES.find((t) => t.id === typeId) || CONTENT_TYPES[0];
   };
 
   return (
@@ -456,7 +555,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
           { id: 'articles', label: 'Articles', icon: FileText },
           { id: 'categories', label: 'Par Catégorie', icon: LayoutGrid },
           { id: 'stats', label: 'Statistiques', icon: BarChart3 },
-        ].map(tab => (
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
@@ -487,7 +586,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                   className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
                 />
               </div>
-              
+
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
@@ -495,11 +594,13 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 title="Catégorie"
               >
                 <option value="all">Toutes les catégories</option>
-                {CATEGORIES.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.label}
+                  </option>
                 ))}
               </select>
-              
+
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
@@ -507,11 +608,13 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 title="Type de contenu"
               >
                 <option value="all">Tous les types</option>
-                {CONTENT_TYPES.map(type => (
-                  <option key={type.id} value={type.id}>{type.label}</option>
+                {CONTENT_TYPES.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.label}
+                  </option>
                 ))}
               </select>
-              
+
               <div className="flex border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -541,12 +644,12 @@ export const HelpArticlesPanelV2: React.FC = () => {
               </div>
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredArticles.map(article => {
+                {filteredArticles.map((article) => {
                   const category = getCategoryConfig(article.category);
                   const typeConfig = getTypeConfig(article.type);
                   return (
-                    <Card 
-                      key={article.id} 
+                    <Card
+                      key={article.id}
                       className={`p-4 hover:shadow-lg transition-all cursor-pointer ${
                         !article.isPublished ? 'opacity-60' : ''
                       }`}
@@ -554,34 +657,37 @@ export const HelpArticlesPanelV2: React.FC = () => {
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <div className={`p-1.5 rounded ${getHelpColor(category.color).bg100} ${getHelpColor(category.color).darkBg}`}>
+                          <div
+                            className={`p-1.5 rounded ${getHelpColor(category.color).bg100} ${getHelpColor(category.color).darkBg}`}
+                          >
                             <category.icon className={`w-4 h-4 ${getHelpColor(category.color).text600}`} />
                           </div>
                           <span className="text-xs font-medium text-slate-500">{category.label}</span>
                         </div>
                         <div className="flex items-center gap-1">
-                          {article.isFeatured && (
-                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                          )}
-                          <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                            article.type === 'video' ? 'bg-purple-100 text-purple-700' :
-                            article.type === 'faq' ? 'bg-green-100 text-green-700' :
-                            article.type === 'tutorial' ? 'bg-amber-100 text-amber-700' :
-                            'bg-[var(--primary-dim)] text-[var(--primary)]'
-                          }`}>
+                          {article.isFeatured && <Star className="w-4 h-4 text-amber-500 fill-amber-500" />}
+                          <span
+                            className={`px-2 py-0.5 rounded text-xs font-medium ${
+                              article.type === 'video'
+                                ? 'bg-purple-100 text-purple-700'
+                                : article.type === 'faq'
+                                  ? 'bg-green-100 text-green-700'
+                                  : article.type === 'tutorial'
+                                    ? 'bg-amber-100 text-amber-700'
+                                    : 'bg-[var(--primary-dim)] text-[var(--primary)]'
+                            }`}
+                          >
                             {typeConfig.label}
                           </span>
                         </div>
                       </div>
-                      
-                      <h3 className="font-bold text-slate-800 dark:text-white mb-2 line-clamp-2">
-                        {article.title}
-                      </h3>
-                      
+
+                      <h3 className="font-bold text-slate-800 dark:text-white mb-2 line-clamp-2">{article.title}</h3>
+
                       <p className="text-sm text-slate-500 line-clamp-2 mb-4">
                         {article.content.replace(/[#*`]/g, '').substring(0, 100)}...
                       </p>
-                      
+
                       <div className="flex items-center justify-between text-xs text-slate-400">
                         <div className="flex items-center gap-3">
                           <span className="flex items-center gap-1">
@@ -595,7 +701,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                             </span>
                           )}
                         </div>
-                        <div className="flex gap-1" onClick={e => e.stopPropagation()}>
+                        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => toggleFeatured(article.id)}
                             className={`p-1 rounded hover:bg-slate-100 ${article.isFeatured ? 'text-amber-500' : ''}`}
@@ -628,16 +734,51 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 <table className="w-full">
                   <thead className="bg-slate-50 dark:bg-slate-800">
                     <tr>
-                      <SortableHeader label="Article" sortKey="title" currentSortKey={articleSortConfig.key} currentDirection={articleSortConfig.direction} onSort={handleArticleSort} className="text-xs font-bold text-slate-500 uppercase" />
-                      <SortableHeader label="Catégorie" sortKey="category" currentSortKey={articleSortConfig.key} currentDirection={articleSortConfig.direction} onSort={handleArticleSort} className="text-xs font-bold text-slate-500 uppercase" />
-                      <SortableHeader label="Type" sortKey="type" currentSortKey={articleSortConfig.key} currentDirection={articleSortConfig.direction} onSort={handleArticleSort} className="text-xs font-bold text-slate-500 uppercase" />
-                      <SortableHeader label="Vues" sortKey="views" currentSortKey={articleSortConfig.key} currentDirection={articleSortConfig.direction} onSort={handleArticleSort} className="text-xs font-bold text-slate-500 uppercase" />
-                      <SortableHeader label="Statut" sortKey="isPublished" currentSortKey={articleSortConfig.key} currentDirection={articleSortConfig.direction} onSort={handleArticleSort} className="text-xs font-bold text-slate-500 uppercase" />
+                      <SortableHeader
+                        label="Article"
+                        sortKey="title"
+                        currentSortKey={articleSortConfig.key}
+                        currentDirection={articleSortConfig.direction}
+                        onSort={handleArticleSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      <SortableHeader
+                        label="Catégorie"
+                        sortKey="category"
+                        currentSortKey={articleSortConfig.key}
+                        currentDirection={articleSortConfig.direction}
+                        onSort={handleArticleSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      <SortableHeader
+                        label="Type"
+                        sortKey="type"
+                        currentSortKey={articleSortConfig.key}
+                        currentDirection={articleSortConfig.direction}
+                        onSort={handleArticleSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      <SortableHeader
+                        label="Vues"
+                        sortKey="views"
+                        currentSortKey={articleSortConfig.key}
+                        currentDirection={articleSortConfig.direction}
+                        onSort={handleArticleSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      <SortableHeader
+                        label="Statut"
+                        sortKey="isPublished"
+                        currentSortKey={articleSortConfig.key}
+                        currentDirection={articleSortConfig.direction}
+                        onSort={handleArticleSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
                       <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                    {sortedArticles.map(article => {
+                    {sortedArticles.map((article) => {
                       const category = getCategoryConfig(article.category);
                       return (
                         <tr key={article.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
@@ -648,7 +789,9 @@ export const HelpArticlesPanelV2: React.FC = () => {
                             </div>
                           </td>
                           <td className="px-4 py-3">
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${getHelpColor(category.color).bg100} ${getHelpColor(category.color).text700}`}>
+                            <span
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${getHelpColor(category.color).bg100} ${getHelpColor(category.color).text700}`}
+                            >
                               <category.icon className="w-3 h-3" />
                               {category.label}
                             </span>
@@ -659,9 +802,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                             <button
                               onClick={() => togglePublished(article.id)}
                               className={`px-2 py-1 rounded text-xs font-medium ${
-                                article.isPublished 
-                                  ? 'bg-green-100 text-green-700' 
-                                  : 'bg-slate-100 text-slate-500'
+                                article.isPublished ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
                               }`}
                             >
                               {article.isPublished ? 'Publié' : 'Brouillon'}
@@ -669,13 +810,25 @@ export const HelpArticlesPanelV2: React.FC = () => {
                           </td>
                           <td className="px-4 py-3 text-right">
                             <div className="flex justify-end gap-1">
-                              <button onClick={() => handlePreview(article)} className="p-1.5 hover:bg-slate-100 rounded" title="Voir">
+                              <button
+                                onClick={() => handlePreview(article)}
+                                className="p-1.5 hover:bg-slate-100 rounded"
+                                title="Voir"
+                              >
                                 <Eye className="w-4 h-4 text-slate-500" />
                               </button>
-                              <button onClick={() => handleEdit(article)} className="p-1.5 hover:bg-slate-100 rounded" title="Modifier">
+                              <button
+                                onClick={() => handleEdit(article)}
+                                className="p-1.5 hover:bg-slate-100 rounded"
+                                title="Modifier"
+                              >
                                 <Edit2 className="w-4 h-4 text-slate-500" />
                               </button>
-                              <button onClick={() => handleDelete(article.id)} className="p-1.5 hover:bg-red-50 rounded" title="Supprimer">
+                              <button
+                                onClick={() => handleDelete(article.id)}
+                                className="p-1.5 hover:bg-red-50 rounded"
+                                title="Supprimer"
+                              >
                                 <Trash2 className="w-4 h-4 text-red-500" />
                               </button>
                             </div>
@@ -693,15 +846,20 @@ export const HelpArticlesPanelV2: React.FC = () => {
 
       {activeTab === 'categories' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.byCategory.map(cat => (
-            <Card 
-              key={cat.id} 
+          {stats.byCategory.map((cat) => (
+            <Card
+              key={cat.id}
               className={`p-4 cursor-pointer hover:shadow-lg transition-all ${
                 selectedCategory === cat.id ? 'ring-2 ring-[var(--primary-dim)]' : ''
               }`}
-              onClick={() => { setSelectedCategory(cat.id); setActiveTab('articles'); }}
+              onClick={() => {
+                setSelectedCategory(cat.id);
+                setActiveTab('articles');
+              }}
             >
-              <div className={`p-3 rounded-lg ${getHelpColor(cat.color).bg100} ${getHelpColor(cat.color).darkBg} w-fit mb-3`}>
+              <div
+                className={`p-3 rounded-lg ${getHelpColor(cat.color).bg100} ${getHelpColor(cat.color).darkBg} w-fit mb-3`}
+              >
                 <cat.icon className={`w-6 h-6 ${getHelpColor(cat.color).text600}`} />
               </div>
               <h3 className="font-bold text-slate-800 dark:text-white">{cat.label}</h3>
@@ -734,7 +892,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
               <p className="text-3xl font-bold text-purple-600">{stats.totalViews.toLocaleString()}</p>
             </Card>
           </div>
-          
+
           {/* Top articles */}
           <Card className="p-4">
             <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
@@ -742,18 +900,21 @@ export const HelpArticlesPanelV2: React.FC = () => {
               Articles les plus consultés
             </h3>
             <div className="space-y-3">
-              {[...articles].sort((a, b) => b.views - a.views).slice(0, 5).map((article, i) => (
-                <div key={article.id} className="flex items-center gap-4">
-                  <span className="w-6 h-6 flex items-center justify-center bg-slate-100 rounded-full text-sm font-bold text-slate-600">
-                    {i + 1}
-                  </span>
-                  <div className="flex-1">
-                    <p className="font-medium text-slate-800 dark:text-white">{article.title}</p>
-                    <p className="text-xs text-slate-500">{getCategoryConfig(article.category).label}</p>
+              {[...articles]
+                .sort((a, b) => b.views - a.views)
+                .slice(0, 5)
+                .map((article, i) => (
+                  <div key={article.id} className="flex items-center gap-4">
+                    <span className="w-6 h-6 flex items-center justify-center bg-slate-100 rounded-full text-sm font-bold text-slate-600">
+                      {i + 1}
+                    </span>
+                    <div className="flex-1">
+                      <p className="font-medium text-slate-800 dark:text-white">{article.title}</p>
+                      <p className="text-xs text-slate-500">{getCategoryConfig(article.category).label}</p>
+                    </div>
+                    <span className="text-sm font-bold text-slate-600">{article.views} vues</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-600">{article.views} vues</span>
-                </div>
-              ))}
+                ))}
             </div>
           </Card>
         </div>
@@ -763,14 +924,17 @@ export const HelpArticlesPanelV2: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingArticle ? 'Modifier l\'article' : 'Nouvel Article'}
+        title={editingArticle ? "Modifier l'article" : 'Nouvel Article'}
         maxWidth="max-w-2xl"
         footer={
           <>
             <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 border rounded-lg">
               Annuler
             </button>
-            <button onClick={handleSave} className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-bold flex items-center gap-2">
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-bold flex items-center gap-2"
+            >
               <Save className="w-4 h-4" />
               Enregistrer
             </button>
@@ -788,7 +952,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
               placeholder="Titre de l'article"
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Catégorie</label>
@@ -798,8 +962,10 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                 title="Catégorie"
               >
-                {CATEGORIES.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.label}</option>
+                {CATEGORIES.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -811,13 +977,15 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
                 title="Type de contenu"
               >
-                {CONTENT_TYPES.map(type => (
-                  <option key={type.id} value={type.id}>{type.label}</option>
+                {CONTENT_TYPES.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.label}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-          
+
           {formData.type === 'video' && (
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -842,7 +1010,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Contenu (Markdown)</label>
             <textarea
@@ -852,12 +1020,15 @@ export const HelpArticlesPanelV2: React.FC = () => {
               placeholder="# Titre&#10;&#10;Contenu de l'article..."
             />
           </div>
-          
+
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tags</label>
             <div className="flex flex-wrap gap-2 mb-2">
-              {formData.tags?.map(tag => (
-                <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-sm">
+              {formData.tags?.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-sm"
+                >
                   {tag}
                   <button onClick={() => handleRemoveTag(tag)} className="hover:text-red-500">
                     <X className="w-3 h-3" />
@@ -879,7 +1050,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
               </button>
             </div>
           </div>
-          
+
           <div className="flex gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -913,41 +1084,70 @@ export const HelpArticlesPanelV2: React.FC = () => {
         {previewArticle && (
           <div className="p-6">
             <div className="flex items-center gap-4 mb-4">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getHelpColor(getCategoryConfig(previewArticle.category).color).bg100} ${getHelpColor(getCategoryConfig(previewArticle.category).color).text700}`}>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${getHelpColor(getCategoryConfig(previewArticle.category).color).bg100} ${getHelpColor(getCategoryConfig(previewArticle.category).color).text700}`}
+              >
                 {getCategoryConfig(previewArticle.category).label}
               </span>
-              <span className="text-sm text-slate-500">
-                {previewArticle.views} vues
-              </span>
+              <span className="text-sm text-slate-500">{previewArticle.views} vues</span>
             </div>
-            
+
             {previewArticle.type === 'video' && previewArticle.videoUrl && (
               <div className="mb-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center gap-3">
                 <Play className="w-8 h-8 text-[var(--primary)]" />
                 <div>
                   <p className="font-medium">Vidéo: {previewArticle.duration}</p>
-                  <a href={previewArticle.videoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--primary)] flex items-center gap-1">
+                  <a
+                    href={previewArticle.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-[var(--primary)] flex items-center gap-1"
+                  >
                     Ouvrir <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>
               </div>
             )}
-            
+
             <div className="prose dark:prose-invert max-w-none">
               {previewArticle.content.split('\n').map((line, i) => {
-                if (line.startsWith('# ')) return <h1 key={i} className="text-2xl font-bold mt-4 mb-2">{line.substring(2)}</h1>;
-                if (line.startsWith('## ')) return <h2 key={i} className="text-xl font-bold mt-3 mb-2">{line.substring(3)}</h2>;
-                if (line.startsWith('- ')) return <li key={i} className="ml-4">{line.substring(2)}</li>;
-                if (line.match(/^\d+\. /)) return <li key={i} className="ml-4">{line.substring(line.indexOf(' ') + 1)}</li>;
+                if (line.startsWith('# '))
+                  return (
+                    <h1 key={i} className="text-2xl font-bold mt-4 mb-2">
+                      {line.substring(2)}
+                    </h1>
+                  );
+                if (line.startsWith('## '))
+                  return (
+                    <h2 key={i} className="text-xl font-bold mt-3 mb-2">
+                      {line.substring(3)}
+                    </h2>
+                  );
+                if (line.startsWith('- '))
+                  return (
+                    <li key={i} className="ml-4">
+                      {line.substring(2)}
+                    </li>
+                  );
+                if (line.match(/^\d+\. /))
+                  return (
+                    <li key={i} className="ml-4">
+                      {line.substring(line.indexOf(' ') + 1)}
+                    </li>
+                  );
                 if (line.trim() === '') return <br key={i} />;
-                return <p key={i} className="my-1">{line}</p>;
+                return (
+                  <p key={i} className="my-1">
+                    {line}
+                  </p>
+                );
               })}
             </div>
-            
+
             {previewArticle.tags.length > 0 && (
               <div className="mt-6 pt-4 border-t dark:border-slate-700">
                 <div className="flex flex-wrap gap-2">
-                  {previewArticle.tags.map(tag => (
+                  {previewArticle.tags.map((tag) => (
                     <span key={tag} className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">
                       #{tag}
                     </span>

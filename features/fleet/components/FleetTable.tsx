@@ -52,7 +52,7 @@ import { exportToExcel } from '../../../services/exportService';
 import { useTenantBranding } from '../../../hooks/useTenantBranding';
 import { useDataContext } from '../../../contexts/DataContext';
 import { ImportModal } from '../../../components/ImportModal';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import { FixedSizeList as List } from 'react-window';
 import { useAppearance } from '../../../contexts/AppearanceContext';
 import { FleetTableSkeleton } from '../../../components/Skeleton';

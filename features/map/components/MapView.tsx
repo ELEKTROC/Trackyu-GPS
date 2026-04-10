@@ -3,14 +3,42 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline, Circle, Polyg
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 // Minimal cluster type (MarkerCluster is not exported from leaflet directly)
-interface MarkerCluster { getChildCount(): number; }
+interface MarkerCluster {
+  getChildCount(): number;
+}
 import { type Vehicle, VehicleStatus, View, type Zone, type Coordinate } from '../../../types';
 import {
-  MapPin, ChevronDown, ChevronRight, Search,
-  Eye, EyeOff, Battery, RefreshCw, Plus,
-  CheckSquare, Square, ChevronLeft, Layers, Hexagon, Truck, Car, Bike, Bus, Hammer,
-  Settings2, X,
-  AlertTriangle, Gauge, Route, Timer, Volume2, VolumeX, MapPinOff, Activity, Zap, Filter
+  MapPin,
+  ChevronDown,
+  ChevronRight,
+  Search,
+  Eye,
+  EyeOff,
+  Battery,
+  RefreshCw,
+  Plus,
+  CheckSquare,
+  Square,
+  ChevronLeft,
+  Layers,
+  Hexagon,
+  Truck,
+  Car,
+  Bike,
+  Bus,
+  Hammer,
+  Settings2,
+  X,
+  AlertTriangle,
+  Gauge,
+  Route,
+  Timer,
+  Volume2,
+  VolumeX,
+  MapPinOff,
+  Activity,
+  Zap,
+  Filter,
 } from 'lucide-react';
 import { VehicleDetailPanel } from '../../fleet/components/VehicleDetailPanel';
 import { StatusBadge } from '../../../components/StatusBadge';
@@ -30,6 +58,7 @@ import { GoogleMapComponent } from './GoogleMapComponent';
 import { ReplayControlPanel, type StopEvent, type SpeedEvent } from './ReplayControlPanel';
 import { HeatmapLayer } from './HeatmapLayer';
 import { AnimatedVehicleMarker } from './AnimatedVehicleMarker';
+import { getHeaders } from '../../../services/api/client';
 
 // Fix for default marker icon assets
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -39,7 +68,7 @@ const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
   iconSize: [25, 41],
-  iconAnchor: [12, 41]
+  iconAnchor: [12, 41],
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -58,8 +87,10 @@ const createVehicleIcon = (vehicle: Vehicle) => {
     _vehicleIconCache.delete(_vehicleIconCache.keys().next().value!);
   }
   let color = '#64748b'; // Default Slate (Offline)
-  if (status === VehicleStatus.MOVING) color = '#22c55e'; // Green
-  else if (status === VehicleStatus.IDLE) color = '#f97316'; // Orange
+  if (status === VehicleStatus.MOVING)
+    color = '#22c55e'; // Green
+  else if (status === VehicleStatus.IDLE)
+    color = '#f97316'; // Orange
   else if (status === VehicleStatus.STOPPED) color = '#ef4444'; // Red
 
   // Determine Icon
@@ -78,41 +109,47 @@ const createVehicleIcon = (vehicle: Vehicle) => {
   }
 
   const iconHtml = renderToStaticMarkup(
-    <div style={{
-      width: '36px',
-      height: '36px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'white',
-      borderRadius: '50%',
-      border: `2px solid ${color}`,
-      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-      position: 'relative'
-    }}>
+    <div
+      style={{
+        width: '36px',
+        height: '36px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        borderRadius: '50%',
+        border: `2px solid ${color}`,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+        position: 'relative',
+      }}
+    >
       <IconComponent size={20} color={color} fill={color} fillOpacity={0.1} />
       {/* Heading Arrow if moving */}
       {status === VehicleStatus.MOVING && (
-        <div style={{
-          position: 'absolute',
-          top: -5,
-          left: '50%',
-          transform: `translateX(-50%) rotate(${heading}deg)`,
-          transformOrigin: 'bottom center',
-          height: '24px',
-          width: '2px',
-          // pointer to show direction
-        }}>
-          <div style={{
-            width: 0,
-            height: 0,
-            borderLeft: '4px solid transparent',
-            borderRight: '4px solid transparent',
-            borderBottom: `6px solid ${color}`,
+        <div
+          style={{
             position: 'absolute',
-            top: 0,
-            left: '-4px'
-          }} />
+            top: -5,
+            left: '50%',
+            transform: `translateX(-50%) rotate(${heading}deg)`,
+            transformOrigin: 'bottom center',
+            height: '24px',
+            width: '2px',
+            // pointer to show direction
+          }}
+        >
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: '4px solid transparent',
+              borderRight: '4px solid transparent',
+              borderBottom: `6px solid ${color}`,
+              position: 'absolute',
+              top: 0,
+              left: '-4px',
+            }}
+          />
         </div>
       )}
     </div>
@@ -143,26 +180,28 @@ const createStopMarkerIcon = (num: number, type: 'STOP' | 'IDLE') => {
 const createClusterCustomIcon = (cluster: MarkerCluster) => {
   return L.divIcon({
     html: renderToStaticMarkup(
-      <div style={{
-        backgroundColor: '#3b82f6', // Blue-500
-        color: 'white',
-        width: '32px',
-        height: '32px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '50%',
-        fontWeight: 'bold',
-        fontSize: '14px',
-        border: '2px solid white',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-      }}>
+      <div
+        style={{
+          backgroundColor: '#3b82f6', // Blue-500
+          color: 'white',
+          width: '32px',
+          height: '32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          fontWeight: 'bold',
+          fontSize: '14px',
+          border: '2px solid white',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        }}
+      >
         {cluster.getChildCount()}
       </div>
     ),
     className: 'custom-cluster-icon',
     iconSize: [32, 32],
-    iconAnchor: [16, 16]
+    iconAnchor: [16, 16],
   });
 };
 
@@ -175,11 +214,7 @@ interface MobileVehicleBottomSheetProps {
   onReplay?: () => void;
 }
 
-const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({
-  vehicle,
-  onClose,
-  onReplay
-}) => {
+const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({ vehicle, onClose, onReplay }) => {
   const [sheetState, setSheetState] = useState<SheetState>('collapsed');
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
@@ -246,8 +281,9 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({
 
   return (
     <div
-      className={`lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl border-t border-slate-200 dark:border-slate-700 ${isDragging ? '' : 'transition-all duration-300 ease-out'
-        }`}
+      className={`lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl border-t border-slate-200 dark:border-slate-700 ${
+        isDragging ? '' : 'transition-all duration-300 ease-out'
+      }`}
       style={{
         height: `${currentHeight}vh`,
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -259,7 +295,10 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        onMouseDown={(e) => { e.preventDefault(); handleDragStart(e.clientY); }}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          handleDragStart(e.clientY);
+        }}
       >
         <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full" />
         <span className="text-xs text-slate-400 mt-1">
@@ -269,12 +308,7 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({
 
       {/* Content — overflow-y-auto so all VehicleDetailPanel blocks are reachable */}
       <div className="overflow-y-auto" style={{ height: 'calc(100% - 48px)' }}>
-        <VehicleDetailPanel
-          vehicle={vehicle}
-          onClose={onClose}
-          variant="sidebar"
-          onReplay={onReplay}
-        />
+        <VehicleDetailPanel vehicle={vehicle} onClose={onClose} variant="sidebar" onReplay={onReplay} />
       </div>
 
       {/* State indicator dots */}
@@ -283,10 +317,9 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({
           <button
             key={state}
             onClick={() => setSheetState(state)}
-            className={`w-2.5 h-2.5 rounded-full transition-colors ${sheetState === state
-              ? 'bg-[var(--primary-dim)]0'
-              : 'bg-slate-300 dark:bg-slate-600'
-              }`}
+            className={`w-2.5 h-2.5 rounded-full transition-colors ${
+              sheetState === state ? 'bg-[var(--primary-dim)]0' : 'bg-slate-300 dark:bg-slate-600'
+            }`}
             aria-label={`Taille ${state}`}
           />
         ))}
@@ -332,7 +365,10 @@ const ReplayFollower: React.FC<{ progress: number; path: Coordinate[] }> = ({ pr
     if (now - lastPanTime.current < 2000) return;
     const idx = Math.min(Math.floor((progress / 100) * (path.length - 1)), path.length - 1);
     const pos = path[idx];
-    if (pos) { map.panTo([pos.lat, pos.lng]); lastPanTime.current = now; }
+    if (pos) {
+      map.panTo([pos.lat, pos.lng]);
+      lastPanTime.current = now;
+    }
   }, [progress, path, map]);
   return null;
 };
@@ -398,10 +434,16 @@ const MapUpdater: React.FC<{
 
 // Helper: validate GPS coordinate bounds
 const isValidCoord = (lat: number, lng: number): boolean =>
-  !isNaN(lat) && !isNaN(lng) && isFinite(lat) && isFinite(lng) &&
-  lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+  !isNaN(lat) && !isNaN(lng) && isFinite(lat) && isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
 
-export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedVehicle, replayVehicle, onNavigate, onReplay }) => {
+export const MapView: React.FC<MapViewProps> = ({
+  vehicles,
+  zones = [],
+  focusedVehicle,
+  replayVehicle,
+  onNavigate,
+  onReplay,
+}) => {
   const { isDarkMode: _isDarkMode } = useTheme();
   const { getVehicleHistory, clients, branches, isSocketConnected, isDataStale, isLoading } = useDataContext();
   const { showToast } = useToast();
@@ -412,11 +454,11 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
   const isSousCompte = user?.role?.toUpperCase() === 'SOUS_COMPTE';
   const accessibleVehicles = useMemo(() => {
     if (isClientRole && user?.clientId) {
-      return vehicles.filter(v => v.clientId === user.clientId);
+      return vehicles.filter((v) => v.clientId === user.clientId);
     }
     if (isSousCompte) {
       if (user?.allVehicles) return vehicles;
-      if (user?.vehicleIds?.length) return vehicles.filter(v => user.vehicleIds!.includes(v.id));
+      if (user?.vehicleIds?.length) return vehicles.filter((v) => user.vehicleIds!.includes(v.id));
       return [];
     }
     return vehicles;
@@ -428,11 +470,9 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
   useEffect(() => {
     const loadFleetStats = async () => {
       try {
-        const token = localStorage.getItem('fleet_token') || localStorage.getItem('token');
         const response = await fetch('/api/fleet/stats', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          credentials: 'include',
+          headers: getHeaders(),
         });
         if (response.ok) {
           const stats = await response.json();
@@ -455,19 +495,15 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
   useEffect(() => {
     // Fetch Google Maps Key - use dedicated map-config route (no special permissions needed)
-    const token = localStorage.getItem('fleet_token') || localStorage.getItem('token');
-    if (!token) {
-      setMapProvider('leaflet');
-      return;
-    }
     fetch('/api/settings/map-config', {
-      headers: { 'Authorization': `Bearer ${token}` }
+      credentials: 'include',
+      headers: getHeaders(),
     })
-      .then(res => {
+      .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch map config');
         return res.json();
       })
-      .then(data => {
+      .then((data) => {
         if (data.googleMapsApiKey) {
           setGoogleMapsKey(data.googleMapsApiKey);
           setMapProvider('google');
@@ -475,7 +511,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           setMapProvider('leaflet');
         }
       })
-      .catch(_err => {
+      .catch((_err) => {
         setMapProvider('leaflet');
       });
   }, []);
@@ -506,11 +542,11 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
     showDriver: true,
     showTime: true,
     showStatusText: true,
-    displayNameOptions: ['name']
+    displayNameOptions: ['name'],
   });
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  
+
   // --- FILTRES AVANCÉS ---
   const [filterClient, setFilterClient] = useState<string>('');
   const [filterBranch, setFilterBranch] = useState<string>('');
@@ -569,9 +605,15 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
   // Alertes temps réel calculées
   const liveAlerts = useMemo(() => {
-    const alerts: { id: string; type: 'SPEED' | 'ZONE' | 'BATTERY' | 'FUEL'; vehicle: Vehicle; message: string; severity: 'critical' | 'warning' }[] = [];
+    const alerts: {
+      id: string;
+      type: 'SPEED' | 'ZONE' | 'BATTERY' | 'FUEL';
+      vehicle: Vehicle;
+      message: string;
+      severity: 'critical' | 'warning';
+    }[] = [];
 
-    vehicles.forEach(v => {
+    vehicles.forEach((v) => {
       // Excès de vitesse (>120 km/h par défaut ou maxSpeed du véhicule)
       const maxSpeed = v.maxSpeed || 120;
       if (v.speed > maxSpeed) {
@@ -580,18 +622,21 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           type: 'SPEED',
           vehicle: v,
           message: `${v.name} : ${v.speed} km/h (limite: ${maxSpeed})`,
-          severity: v.speed > maxSpeed + 20 ? 'critical' : 'warning'
+          severity: v.speed > maxSpeed + 20 ? 'critical' : 'warning',
         });
       }
 
       // Batterie faible (<20%)
-      if ((v as Vehicle & { battery?: number }).battery !== undefined && (v as Vehicle & { battery?: number }).battery < 20) {
+      if (
+        (v as Vehicle & { battery?: number }).battery !== undefined &&
+        (v as Vehicle & { battery?: number }).battery < 20
+      ) {
         alerts.push({
           id: `battery-${v.id}`,
           type: 'BATTERY',
           vehicle: v,
           message: `${v.name} : Batterie ${(v as Vehicle & { battery?: number }).battery}%`,
-          severity: (v as Vehicle & { battery?: number }).battery < 10 ? 'critical' : 'warning'
+          severity: (v as Vehicle & { battery?: number }).battery < 10 ? 'critical' : 'warning',
         });
       }
 
@@ -602,20 +647,21 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           type: 'FUEL',
           vehicle: v,
           message: `${v.name} : Carburant ${v.fuelLevel}%`,
-          severity: v.fuelLevel < 5 ? 'critical' : 'warning'
+          severity: v.fuelLevel < 5 ? 'critical' : 'warning',
         });
       }
     });
 
     // Vérifier véhicules hors zone (si zones définies)
     if (zones.length > 0) {
-      vehicles.forEach(v => {
-        const isInsideAnyZone = zones.some(zone => {
+      vehicles.forEach((v) => {
+        const isInsideAnyZone = zones.some((zone) => {
           if (zone.type === 'CIRCLE' && zone.center && zone.radius) {
-            const dist = Math.sqrt(
-              Math.pow((v.location.lat - zone.center.lat) * 111, 2) +
-              Math.pow((v.location.lng - zone.center.lng) * 111 * Math.cos(v.location.lat * Math.PI / 180), 2)
-            ) * 1000; // en mètres
+            const dist =
+              Math.sqrt(
+                Math.pow((v.location.lat - zone.center.lat) * 111, 2) +
+                  Math.pow((v.location.lng - zone.center.lng) * 111 * Math.cos((v.location.lat * Math.PI) / 180), 2)
+              ) * 1000; // en mètres
             return dist <= zone.radius;
           }
           return false;
@@ -628,7 +674,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
             type: 'ZONE',
             vehicle: v,
             message: `${v.name} : Hors zone autorisée`,
-            severity: 'warning'
+            severity: 'warning',
           });
         }
       });
@@ -639,10 +685,12 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
   // Jouer son d'alerte si nouvelles alertes critiques
   useEffect(() => {
-    if (isSoundEnabled && liveAlerts.some(a => a.severity === 'critical')) {
+    if (isSoundEnabled && liveAlerts.some((a) => a.severity === 'critical')) {
       // Créer un son simple (beep)
       try {
-        const audioContext = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)();
+        const audioContext = new (
+          window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+        )();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         oscillator.connect(gainNode);
@@ -657,7 +705,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
         // Audio non supporté
       }
     }
-  }, [liveAlerts.filter(a => a.severity === 'critical').length, isSoundEnabled]);
+  }, [liveAlerts.filter((a) => a.severity === 'critical').length, isSoundEnabled]);
 
   // Auto-refresh toutes les 30 secondes
   useEffect(() => {
@@ -678,10 +726,10 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     // Compteurs par statut
-    const moving = vehicles.filter(v => v.status === VehicleStatus.MOVING).length;
-    const idle = vehicles.filter(v => v.status === VehicleStatus.IDLE).length;
-    const stopped = vehicles.filter(v => v.status === VehicleStatus.STOPPED).length;
-    const offline = vehicles.filter(v => v.status === VehicleStatus.OFFLINE).length;
+    const moving = vehicles.filter((v) => v.status === VehicleStatus.MOVING).length;
+    const idle = vehicles.filter((v) => v.status === VehicleStatus.IDLE).length;
+    const stopped = vehicles.filter((v) => v.status === VehicleStatus.STOPPED).length;
+    const offline = vehicles.filter((v) => v.status === VehicleStatus.OFFLINE).length;
 
     // % Flotte active (moving + idle)
     const activePercent = vehicles.length > 0 ? Math.round(((moving + idle) / vehicles.length) * 100) : 0;
@@ -691,14 +739,14 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
     const estimatedKmToday = realKmToday > 0 ? Math.round(realKmToday) : 0;
 
     // Temps arrêt moyen (estimation basée sur ratio stopped/total)
-    const stoppedPercent = vehicles.length > 0 ? (stopped / vehicles.length) : 0;
+    const stoppedPercent = vehicles.length > 0 ? stopped / vehicles.length : 0;
     const avgStopMinutes = Math.round(stoppedPercent * 60 * 4); // 4h de référence
 
     // Véhicules hors zone
-    const outOfZoneCount = liveAlerts.filter(a => a.type === 'ZONE').length;
+    const outOfZoneCount = liveAlerts.filter((a) => a.type === 'ZONE').length;
 
     // Alertes critiques
-    const criticalAlerts = liveAlerts.filter(a => a.severity === 'critical').length;
+    const criticalAlerts = liveAlerts.filter((a) => a.severity === 'critical').length;
 
     return {
       total: vehicles.length,
@@ -711,7 +759,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
       avgStopMinutes,
       outOfZoneCount,
       criticalAlerts,
-      totalAlerts: liveAlerts.length
+      totalAlerts: liveAlerts.length,
     };
   }, [vehicles, liveAlerts]);
 
@@ -727,7 +775,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
       );
       const data = await response.json();
       const address = data.display_name?.split(',').slice(0, 3).join(', ') || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      setAddressCache(prev => ({ ...prev, [cacheKey]: address }));
+      setAddressCache((prev) => ({ ...prev, [cacheKey]: address }));
       return address;
     } catch {
       return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
@@ -738,7 +786,9 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
     if (!searchAddress.trim() || isSearchingAddress) return;
     // Debounce: ignore if a request was triggered in the last 1 second
     if (nominatimDebounceRef.current) return;
-    nominatimDebounceRef.current = setTimeout(() => { nominatimDebounceRef.current = null; }, 1000);
+    nominatimDebounceRef.current = setTimeout(() => {
+      nominatimDebounceRef.current = null;
+    }, 1000);
     setIsSearchingAddress(true);
 
     try {
@@ -760,7 +810,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
         showToast('Adresse introuvable', 'info');
       }
     } catch {
-      showToast('Erreur lors de la recherche d\'adresse', 'error');
+      showToast("Erreur lors de la recherche d'adresse", 'error');
     } finally {
       setIsSearchingAddress(false);
     }
@@ -775,13 +825,13 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
   // Véhicules filtrés pour la LISTE (sidebar) - sans la contrainte showAllVehicles
   const listFilteredVehicles = useMemo(() => {
-    return accessibleVehicles.filter(v => {
+    return accessibleVehicles.filter((v) => {
       // Filtre par statut (cliquable dans la barre de stats)
       if (activeStatusFilter && v.status !== activeStatusFilter) return false;
-      
+
       // Filtre par client
       if (filterClient) {
-        const client = clients.find(c => c.id === v.client);
+        const client = clients.find((c) => c.id === v.client);
         const clientName = client?.name?.toLowerCase() || v.client?.toLowerCase() || '';
         if (!clientName.includes(filterClient.toLowerCase())) return false;
       }
@@ -791,36 +841,46 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
       // Filtre par modèle de boîtier
       if (filterDeviceModel && v.deviceModel !== filterDeviceModel) return false;
-      
+
       // Filtre par type d'engin
       if (filterVehicleType && v.type !== filterVehicleType) return false;
-      
+
       // Filtre par statut paiement du client
       if (filterContractStatus) {
-        const client = clients.find(c => c.id === v.client);
+        const client = clients.find((c) => c.id === v.client);
         const paymentStatus = client?.paymentStatus;
         if (filterContractStatus === 'UP_TO_DATE' && paymentStatus !== 'UP_TO_DATE') return false;
         if (filterContractStatus === 'OVERDUE' && paymentStatus !== 'OVERDUE') return false;
       }
-      
+
       return true;
     });
-  }, [accessibleVehicles, activeStatusFilter, filterClient, filterBranch, filterDeviceModel, filterVehicleType, filterContractStatus, clients, branches]);
+  }, [
+    accessibleVehicles,
+    activeStatusFilter,
+    filterClient,
+    filterBranch,
+    filterDeviceModel,
+    filterVehicleType,
+    filterContractStatus,
+    clients,
+    branches,
+  ]);
 
   // Véhicules filtrés pour la CARTE (avec showAllVehicles)
-  const uniqueMapClients = useMemo(() =>
-    Array.from(new Set(accessibleVehicles.map(v => v.client).filter(Boolean))).sort() as string[],
+  const uniqueMapClients = useMemo(
+    () => Array.from(new Set(accessibleVehicles.map((v) => v.client).filter(Boolean))).sort() as string[],
     [accessibleVehicles]
   );
 
-  const uniqueMapBranches = useMemo(() =>
-    branches.filter(b => accessibleVehicles.some(v => v.branchId === b.id)),
+  const uniqueMapBranches = useMemo(
+    () => branches.filter((b) => accessibleVehicles.some((v) => v.branchId === b.id)),
     [accessibleVehicles, branches]
   );
 
   const filteredVehicles = useMemo(() => {
-    return listFilteredVehicles.filter(v => {
-      const isSelected = selectedVehicleIds.has(v.id) || (selectedVehicle?.id === v.id);
+    return listFilteredVehicles.filter((v) => {
+      const isSelected = selectedVehicleIds.has(v.id) || selectedVehicle?.id === v.id;
       if (!showAllVehicles && !isSelected) return false;
       return true;
     });
@@ -834,17 +894,18 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           // Appeler API history réelle au lieu de generatePath mockée
           const today = new Date().toISOString().split('T')[0];
           const response = await fetch(`/api/fleet/vehicles/${selectedVehicle.id}/history/snapped?date=${today}`, {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('fleet_token') || localStorage.getItem('token')}`
-            }
+            credentials: 'include',
+            headers: getHeaders(),
           });
           if (response.ok) {
             const history = await response.json();
             // Prendre TOUT le trajet de la journée pour quick trace
-            const recentPath = history.map((point: { lat?: number; latitude?: number; lng?: number; longitude?: number }) => ({
-              lat: point.lat || point.latitude,
-              lng: point.lng || point.longitude
-            }));
+            const recentPath = history.map(
+              (point: { lat?: number; latitude?: number; lng?: number; longitude?: number }) => ({
+                lat: point.lat || point.latitude,
+                lng: point.lng || point.longitude,
+              })
+            );
             setQuickTracePath(recentPath.length > 0 ? recentPath : [selectedVehicle.location]);
           } else {
             // Fallback: juste position actuelle
@@ -882,35 +943,56 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
       if (activeReplayVehicle && isReplayActive) {
         try {
           const dateStr = replayDateRange.start.toISOString().split('T')[0];
-          const response = await fetch(`/api/fleet/vehicles/${activeReplayVehicle.id}/history/snapped?date=${dateStr}`, {
-            signal: abortController.signal,
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('fleet_token') || localStorage.getItem('token')}`
+          const response = await fetch(
+            `/api/fleet/vehicles/${activeReplayVehicle.id}/history/snapped?date=${dateStr}`,
+            {
+              signal: abortController.signal,
+              credentials: 'include',
+              headers: getHeaders(),
             }
-          });
+          );
 
           if (response.ok) {
             const history = await response.json();
             if (history && history.length > 0) {
-              const path = history.map((point: { lat?: number; latitude?: number; lng?: number; longitude?: number }) => ({
-                lat: point.lat || point.latitude,
-                lng: point.lng || point.longitude
-              }));
+              const path = history.map(
+                (point: { lat?: number; latitude?: number; lng?: number; longitude?: number }) => ({
+                  lat: point.lat || point.latitude,
+                  lng: point.lng || point.longitude,
+                })
+              );
               setReplayPath(path);
-              setReplayHistory(history.map((point: { lat?: number; latitude?: number; lng?: number; longitude?: number; time?: string; speed?: number; heading?: number; ignition?: boolean; fuel_level?: number }, idx: number) => ({
-                vehicleId: activeReplayVehicle.id,
-                timestamp: point.time || new Date(replayDateRange.start.getTime() + idx * 60000).toISOString(),
-                location: { lat: point.lat || point.latitude, lng: point.lng || point.longitude },
-                speed: point.speed || 0,
-                heading: point.heading || 0,
-                ignition: point.ignition !== undefined ? point.ignition : null,
-                fuelLevel: point.fuel_level || 0
-              })));
+              setReplayHistory(
+                history.map(
+                  (
+                    point: {
+                      lat?: number;
+                      latitude?: number;
+                      lng?: number;
+                      longitude?: number;
+                      time?: string;
+                      speed?: number;
+                      heading?: number;
+                      ignition?: boolean;
+                      fuel_level?: number;
+                    },
+                    idx: number
+                  ) => ({
+                    vehicleId: activeReplayVehicle.id,
+                    timestamp: point.time || new Date(replayDateRange.start.getTime() + idx * 60000).toISOString(),
+                    location: { lat: point.lat || point.latitude, lng: point.lng || point.longitude },
+                    speed: point.speed || 0,
+                    heading: point.heading || 0,
+                    ignition: point.ignition !== undefined ? point.ignition : null,
+                    fuelLevel: point.fuel_level || 0,
+                  })
+                )
+              );
             } else {
               // Pas de données, fallback
               const rawHistory = await getVehicleHistory(activeReplayVehicle.id, replayDateRange.start);
               if (rawHistory && rawHistory.length > 0) {
-                setReplayPath(rawHistory.map(h => h.location));
+                setReplayPath(rawHistory.map((h) => h.location));
                 setReplayHistory(rawHistory);
               } else {
                 // No data available
@@ -922,7 +1004,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
             // Fallback en cas d'erreur API
             const rawHistory = await getVehicleHistory(activeReplayVehicle.id, replayDateRange.start);
             if (rawHistory && rawHistory.length > 0) {
-              setReplayPath(rawHistory.map(h => h.location));
+              setReplayPath(rawHistory.map((h) => h.location));
               setReplayHistory(rawHistory);
             } else {
               setReplayPath([]);
@@ -943,7 +1025,9 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
       }
     };
     loadReplayData();
-    return () => { abortController.abort(); };
+    return () => {
+      abortController.abort();
+    };
   }, [activeReplayVehicle, isReplayActive, replayDateRange, getVehicleHistory]);
 
   // --- HEATMAP DATA ---
@@ -966,22 +1050,18 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
         const allPoints: { lat: number; lng: number; count: number }[] = [];
 
         // Use current vehicle positions as base
-        vehicles.forEach(vehicle => {
+        vehicles.forEach((vehicle) => {
           if (vehicle.location) {
             allPoints.push({
               lat: vehicle.location.lat,
               lng: vehicle.location.lng,
-              count: 1
+              count: 1,
             });
           }
         });
 
         // Convert to heatmap format [lat, lng, intensity]
-        const heatPoints: [number, number, number][] = allPoints.map(p => [
-          p.lat,
-          p.lng,
-          p.count
-        ]);
+        const heatPoints: [number, number, number][] = allPoints.map((p) => [p.lat, p.lng, p.count]);
 
         setHeatmapPoints(heatPoints);
       } catch (error) {
@@ -1004,8 +1084,8 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
       let lastTime = performance.now();
       const animate = (time: number) => {
         const delta = time - lastTime;
-        if (delta > (50 / playbackSpeed)) {
-          setReplayProgress(prev => {
+        if (delta > 50 / playbackSpeed) {
+          setReplayProgress((prev) => {
             if (prev >= 100) {
               setIsPlaying(false);
               return 100;
@@ -1041,16 +1121,19 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
   // Initialiser les clients comme étendus par défaut
   useEffect(() => {
     const uniqueClients: string[] = Array.from(new Set(vehicles.map((v: Vehicle) => v.client)));
-    const initialExpanded = uniqueClients.reduce((acc, client: string) => {
-      acc[client] = false; // Collapsed by default
-      return acc;
-    }, {} as Record<string, boolean>);
+    const initialExpanded = uniqueClients.reduce(
+      (acc, client: string) => {
+        acc[client] = false; // Collapsed by default
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
     setExpandedClients(initialExpanded);
   }, [vehicles]);
 
   const toggleBranch = (branchId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setExpandedBranches(prev => ({ ...prev, [branchId]: !prev[branchId] }));
+    setExpandedBranches((prev) => ({ ...prev, [branchId]: !prev[branchId] }));
   };
 
   // --- GESTION REDIMENSIONNEMENT SIDEBAR ---
@@ -1079,7 +1162,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
   }, [isResizing]);
 
   const toggleClient = (clientName: string) => {
-    setExpandedClients(prev => ({ ...prev, [clientName]: !prev[clientName] }));
+    setExpandedClients((prev) => ({ ...prev, [clientName]: !prev[clientName] }));
   };
 
   // --- GESTION SELECTION ---
@@ -1097,8 +1180,9 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
   // Fonction utilitaire pour obtenir les véhicules visibles dans la liste
   const getVisibleVehiclesInList = () => {
     if (activeTab !== 'vehicles') return [];
-    return vehicles.filter(v => {
-      const matchesSearch = searchText === '' ||
+    return vehicles.filter((v) => {
+      const matchesSearch =
+        searchText === '' ||
         v.name.toLowerCase().includes(searchText.toLowerCase()) ||
         v.id.toLowerCase().includes(searchText.toLowerCase()) ||
         v.client.toLowerCase().includes(searchText.toLowerCase());
@@ -1111,27 +1195,27 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
   const handleSelectAll = () => {
     const visibleVehicles = getVisibleVehiclesInList();
-    const allVisibleSelected = visibleVehicles.length > 0 && visibleVehicles.every(v => selectedVehicleIds.has(v.id));
+    const allVisibleSelected = visibleVehicles.length > 0 && visibleVehicles.every((v) => selectedVehicleIds.has(v.id));
     const newSet = new Set(selectedVehicleIds);
 
     if (allVisibleSelected) {
-      visibleVehicles.forEach(v => newSet.delete(v.id));
+      visibleVehicles.forEach((v) => newSet.delete(v.id));
     } else {
-      visibleVehicles.forEach(v => newSet.add(v.id));
+      visibleVehicles.forEach((v) => newSet.add(v.id));
     }
     setSelectedVehicleIds(newSet);
   };
 
   const isAllVisibleSelected = () => {
     const visibleVehicles = getVisibleVehiclesInList();
-    return visibleVehicles.length > 0 && visibleVehicles.every(v => selectedVehicleIds.has(v.id));
+    return visibleVehicles.length > 0 && visibleVehicles.every((v) => selectedVehicleIds.has(v.id));
   };
 
   const handleStatusFilterClick = (status: VehicleStatus | null) => {
     if (status === null) {
       setActiveStatusFilter(null);
     } else {
-      setActiveStatusFilter(prev => prev === status ? null : status);
+      setActiveStatusFilter((prev) => (prev === status ? null : status));
     }
   };
 
@@ -1158,7 +1242,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
   // --- STATS MINI DASHBOARD ---
   const stats = useMemo(() => {
     const s = { total: vehicles.length, moving: 0, idle: 0, stopped: 0, offline: 0 };
-    vehicles.forEach(v => {
+    vehicles.forEach((v) => {
       if (v.status === VehicleStatus.MOVING) s.moving++;
       else if (v.status === VehicleStatus.IDLE) s.idle++;
       else if (v.status === VehicleStatus.STOPPED) s.stopped++;
@@ -1174,42 +1258,40 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
     if (activeTab === 'vehicles') {
       // Appliquer la recherche sur les véhicules filtrés pour la liste (pas pour la carte)
-      const filtered = listFilteredVehicles.filter(v => {
+      const filtered = listFilteredVehicles.filter((v) => {
         if (searchText === '') return true;
-        
+
         const search = searchText.toLowerCase();
-        
+
         // Recherche dynamique dans tous les champs pertinents
-        const client = clients.find(c => c.id === v.client);
-        const branch = branches.find(b => b.id === v.branchId);
-        
+        const client = clients.find((c) => c.id === v.client);
+        const branch = branches.find((b) => b.id === v.branchId);
+
         const searchableFields = [
-          v.name,                    // Nom du véhicule
-          v.plate,                   // Plaque
-          v.licensePlate,            // Plaque (alias)
-          v.wwPlate,                 // Plaque WW
-          v.imei,                    // IMEI du boîtier
-          v.sim,                     // Numéro SIM
-          v.driver,                  // Chauffeur
-          v.vin,                     // Numéro VIN
-          v.brand,                   // Marque
-          v.model,                   // Modèle
-          v.deviceModel,             // Modèle du tracker
-          v.group,                   // Groupe
-          client?.name,              // Nom du client / société
-          branch?.name,              // Nom de la branche
+          v.name, // Nom du véhicule
+          v.plate, // Plaque
+          v.licensePlate, // Plaque (alias)
+          v.wwPlate, // Plaque WW
+          v.imei, // IMEI du boîtier
+          v.sim, // Numéro SIM
+          v.driver, // Chauffeur
+          v.vin, // Numéro VIN
+          v.brand, // Marque
+          v.model, // Modèle
+          v.deviceModel, // Modèle du tracker
+          v.group, // Groupe
+          client?.name, // Nom du client / société
+          branch?.name, // Nom de la branche
         ].filter(Boolean);
-        
-        const matchesSearch = searchableFields.some(field => 
-          field!.toLowerCase().includes(search)
-        );
+
+        const matchesSearch = searchableFields.some((field) => field!.toLowerCase().includes(search));
         return matchesSearch;
       });
 
-      filtered.forEach(v => {
+      filtered.forEach((v) => {
         const clientId = v.client;
         if (!groups[clientId]) {
-          const client = clients.find(c => c.id === clientId);
+          const client = clients.find((c) => c.id === clientId);
           groups[clientId] = {
             id: clientId,
             client: client,
@@ -1217,7 +1299,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
             branches: {},
             directVehicles: [],
             totalCount: 0,
-            isClientGroup: true
+            isClientGroup: true,
           };
         }
 
@@ -1226,12 +1308,12 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
         if (v.branchId) {
           const branchId = v.branchId;
           if (!groups[clientId].branches[branchId]) {
-            const branch = branches.find(b => b.id === branchId);
+            const branch = branches.find((b) => b.id === branchId);
             groups[clientId].branches[branchId] = {
               id: branchId,
               branch: branch,
               name: branch ? branch.name : branchId,
-              vehicles: []
+              vehicles: [],
             };
           }
           groups[clientId].branches[branchId].vehicles.push(v);
@@ -1239,8 +1321,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           groups[clientId].directVehicles.push(v);
         }
       });
-    }
-    else if (activeTab === 'places') {
+    } else if (activeTab === 'places') {
       // Group zones by category
       zones.forEach((z: Zone) => {
         if (z.name.toLowerCase().includes(searchText.toLowerCase()) || searchText === '') {
@@ -1248,15 +1329,14 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           groups[z.category].push(z);
         }
       });
-    }
-    else if (activeTab === 'drivers') {
+    } else if (activeTab === 'drivers') {
       const uniqueClients: string[] = (Array.from(new Set(vehicles.map((v: Vehicle) => v.client))) as string[]).sort();
-      uniqueClients.forEach((c) => groups[c] = []);
+      uniqueClients.forEach((c) => (groups[c] = []));
 
-      const filteredDriversVehicles = vehicles.filter(v => {
+      const filteredDriversVehicles = vehicles.filter((v) => {
         if (searchText === '') return true;
         const search = searchText.toLowerCase();
-        const client = clients.find(c => c.id === v.client);
+        const client = clients.find((c) => c.id === v.client);
         return (
           v.driver?.toLowerCase().includes(search) ||
           v.name?.toLowerCase().includes(search) ||
@@ -1264,10 +1344,14 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           client?.name?.toLowerCase().includes(search)
         );
       });
-      filteredDriversVehicles.forEach(v => {
+      filteredDriversVehicles.forEach((v) => {
         if (groups[v.client]) {
           groups[v.client].push({
-            id: `DRV-${v.id}`, name: v.driver, currentVehicle: v.name, score: v.driverScore, status: 'Actif'
+            id: `DRV-${v.id}`,
+            name: v.driver,
+            currentVehicle: v.name,
+            score: v.driverScore,
+            status: 'Actif',
           });
         }
       });
@@ -1278,10 +1362,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
   // Format Time Helper for Replay
   const getReplayTime = () => {
     if (replayHistory.length > 0) {
-      const idx = Math.min(
-        Math.floor((replayProgress / 100) * (replayHistory.length - 1)),
-        replayHistory.length - 1
-      );
+      const idx = Math.min(Math.floor((replayProgress / 100) * (replayHistory.length - 1)), replayHistory.length - 1);
       const point = replayHistory[idx];
       if (point) {
         const t = new Date(point.timestamp || point.time);
@@ -1295,19 +1376,17 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
   };
 
-  const CENTER_LAT = 5.3600; // Abidjan, CI
+  const CENTER_LAT = 5.36; // Abidjan, CI
   const CENTER_LNG = -4.0083;
 
   return (
     <div className="flex h-full w-full absolute inset-0 lg:relative overflow-hidden bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg select-none">
-
       {/* ── Socket connectivity banner ─────────────────────────────────────── */}
       {!isSocketConnected && (
-        <div className={`absolute lg:top-2 bottom-24 lg:bottom-auto left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium shadow-lg pointer-events-none
-          ${isDataStale
-            ? 'bg-red-600 text-white'
-            : 'bg-amber-500 text-white'
-          }`}>
+        <div
+          className={`absolute lg:top-2 bottom-24 lg:bottom-auto left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium shadow-lg pointer-events-none
+          ${isDataStale ? 'bg-red-600 text-white' : 'bg-amber-500 text-white'}`}
+        >
           <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           {isDataStale ? 'Données périmées — reconnexion…' : 'Connexion temps réel interrompue…'}
         </div>
@@ -1322,23 +1401,38 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           {/* ... Sidebar Content ... */}
           <div className="grid grid-cols-5 gap-0 p-3 bg-slate-900 text-white text-center shrink-0 h-20 items-center select-none">
             {/* ... Stats ... */}
-            <div onClick={() => handleStatusFilterClick(null)} className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 px-1 cursor-pointer transition-colors ${activeStatusFilter === null ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}>
+            <div
+              onClick={() => handleStatusFilterClick(null)}
+              className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 px-1 cursor-pointer transition-colors ${activeStatusFilter === null ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
+            >
               <span className="font-bold text-xl leading-none">{stats.total}</span>
               <span className="text-[8px] uppercase text-slate-400 mt-1 truncate w-full">Total</span>
             </div>
-            <div onClick={() => handleStatusFilterClick(VehicleStatus.MOVING)} className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-green-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.MOVING ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}>
+            <div
+              onClick={() => handleStatusFilterClick(VehicleStatus.MOVING)}
+              className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-green-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.MOVING ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
+            >
               <span className="font-bold text-xl leading-none">{stats.moving}</span>
               <span className="text-[8px] uppercase text-green-400/70 mt-1 truncate w-full">Route</span>
             </div>
-            <div onClick={() => handleStatusFilterClick(VehicleStatus.IDLE)} className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-orange-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.IDLE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}>
+            <div
+              onClick={() => handleStatusFilterClick(VehicleStatus.IDLE)}
+              className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-orange-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.IDLE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
+            >
               <span className="font-bold text-xl leading-none">{stats.idle}</span>
               <span className="text-[8px] uppercase text-orange-400/70 mt-1 truncate w-full">Ralenti</span>
             </div>
-            <div onClick={() => handleStatusFilterClick(VehicleStatus.STOPPED)} className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-red-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.STOPPED ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}>
+            <div
+              onClick={() => handleStatusFilterClick(VehicleStatus.STOPPED)}
+              className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-red-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.STOPPED ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
+            >
               <span className="font-bold text-xl leading-none">{stats.stopped}</span>
               <span className="text-[8px] uppercase text-red-400/70 mt-1 truncate w-full">Arrêt</span>
             </div>
-            <div onClick={() => handleStatusFilterClick(VehicleStatus.OFFLINE)} className={`flex flex-col items-center justify-center h-full text-slate-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}>
+            <div
+              onClick={() => handleStatusFilterClick(VehicleStatus.OFFLINE)}
+              className={`flex flex-col items-center justify-center h-full text-slate-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
+            >
               <span className="font-bold text-xl leading-none">{stats.offline}</span>
               <span className="text-[8px] uppercase text-slate-500 mt-1 truncate w-full">Hors ligne</span>
             </div>
@@ -1347,12 +1441,34 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           {/* Toolbar */}
           <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700">
             <div className="flex gap-2">
-              <button onClick={handleAddVehicleClick} title="Ajouter un véhicule" className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-slate-600 dark:text-slate-300"><Plus className="w-4 h-4" /></button>
-              <button onClick={handleCreateGeofenceClick} title="Créer une geofence" className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-slate-600 dark:text-slate-300"><Hexagon className="w-4 h-4" /></button>
+              <button
+                onClick={handleAddVehicleClick}
+                title="Ajouter un véhicule"
+                className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-slate-600 dark:text-slate-300"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+              <button
+                onClick={handleCreateGeofenceClick}
+                title="Créer une geofence"
+                className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-slate-600 dark:text-slate-300"
+              >
+                <Hexagon className="w-4 h-4" />
+              </button>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => setIsConfigOpen(!isConfigOpen)} title="Configurer l'affichage" className={`p-2 border border-slate-200 dark:border-slate-600 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm ${isConfigOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}><Settings2 className="w-4 h-4" /></button>
-              <button onClick={() => setIsFilterOpen(!isFilterOpen)} title="Filtres avancés" className={`p-2 border border-slate-200 dark:border-slate-600 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm relative ${isFilterOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}>
+              <button
+                onClick={() => setIsConfigOpen(!isConfigOpen)}
+                title="Configurer l'affichage"
+                className={`p-2 border border-slate-200 dark:border-slate-600 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm ${isConfigOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
+              >
+                <Settings2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                title="Filtres avancés"
+                className={`p-2 border border-slate-200 dark:border-slate-600 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm relative ${isFilterOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
+              >
                 <Filter className="w-4 h-4" />
                 {(filterClient || filterBranch || filterDeviceModel || filterVehicleType || filterContractStatus) && (
                   <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--primary-dim)]0 rounded-full"></span>
@@ -1366,31 +1482,63 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
             <div className="p-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-2">
               <div className="flex justify-between items-center mb-2">
                 <h4 className="text-xs font-bold uppercase text-slate-500">Affichage Carte</h4>
-                <button onClick={() => setIsConfigOpen(false)} aria-label="Fermer la configuration" title="Fermer"><X className="w-3 h-3 text-slate-400 hover:text-slate-600" /></button>
+                <button onClick={() => setIsConfigOpen(false)} aria-label="Fermer la configuration" title="Fermer">
+                  <X className="w-3 h-3 text-slate-400 hover:text-slate-600" />
+                </button>
               </div>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-                  <input type="checkbox" checked={cardConfig.showSpeed} onChange={(e) => setCardConfig({ ...cardConfig, showSpeed: e.target.checked })} className="rounded text-[var(--primary)] focus:ring-[var(--primary)]" />
+                  <input
+                    type="checkbox"
+                    checked={cardConfig.showSpeed}
+                    onChange={(e) => setCardConfig({ ...cardConfig, showSpeed: e.target.checked })}
+                    className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+                  />
                   Vitesse
                 </label>
                 <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-                  <input type="checkbox" checked={cardConfig.showFuel} onChange={(e) => setCardConfig({ ...cardConfig, showFuel: e.target.checked })} className="rounded text-[var(--primary)] focus:ring-[var(--primary)]" />
+                  <input
+                    type="checkbox"
+                    checked={cardConfig.showFuel}
+                    onChange={(e) => setCardConfig({ ...cardConfig, showFuel: e.target.checked })}
+                    className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+                  />
                   Carburant
                 </label>
                 <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-                  <input type="checkbox" checked={cardConfig.showIgnition} onChange={(e) => setCardConfig({ ...cardConfig, showIgnition: e.target.checked })} className="rounded text-[var(--primary)] focus:ring-[var(--primary)]" />
+                  <input
+                    type="checkbox"
+                    checked={cardConfig.showIgnition}
+                    onChange={(e) => setCardConfig({ ...cardConfig, showIgnition: e.target.checked })}
+                    className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+                  />
                   Contact
                 </label>
                 <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-                  <input type="checkbox" checked={cardConfig.showDriver} onChange={(e) => setCardConfig({ ...cardConfig, showDriver: e.target.checked })} className="rounded text-[var(--primary)] focus:ring-[var(--primary)]" />
+                  <input
+                    type="checkbox"
+                    checked={cardConfig.showDriver}
+                    onChange={(e) => setCardConfig({ ...cardConfig, showDriver: e.target.checked })}
+                    className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+                  />
                   Chauffeur
                 </label>
                 <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-                  <input type="checkbox" checked={cardConfig.showTime} onChange={(e) => setCardConfig({ ...cardConfig, showTime: e.target.checked })} className="rounded text-[var(--primary)] focus:ring-[var(--primary)]" />
+                  <input
+                    type="checkbox"
+                    checked={cardConfig.showTime}
+                    onChange={(e) => setCardConfig({ ...cardConfig, showTime: e.target.checked })}
+                    className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+                  />
                   Heure
                 </label>
                 <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
-                  <input type="checkbox" checked={cardConfig.showStatusText} onChange={(e) => setCardConfig({ ...cardConfig, showStatusText: e.target.checked })} className="rounded text-[var(--primary)] focus:ring-[var(--primary)]" />
+                  <input
+                    type="checkbox"
+                    checked={cardConfig.showStatusText}
+                    onChange={(e) => setCardConfig({ ...cardConfig, showStatusText: e.target.checked })}
+                    className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
+                  />
                   Statut (Texte)
                 </label>
 
@@ -1398,7 +1546,10 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                   <h5 className="text-[10px] font-bold uppercase text-slate-500 mb-1">Affichage Nom (Max 2)</h5>
                   <div className="flex flex-col gap-1">
                     {['name', 'plate', 'wwPlate', 'vin'].map((opt) => (
-                      <label key={opt} className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                      <label
+                        key={opt}
+                        className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer"
+                      >
                         <input
                           type="checkbox"
                           checked={cardConfig.displayNameOptions?.includes(opt as 'name' | 'plate' | 'wwPlate' | 'vin')}
@@ -1408,7 +1559,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                             if (e.target.checked) {
                               if (newOpts.length < 2) newOpts.push(opt as 'name' | 'plate' | 'wwPlate' | 'vin');
                             } else {
-                              newOpts = newOpts.filter(o => o !== opt);
+                              newOpts = newOpts.filter((o) => o !== opt);
                             }
                             setCardConfig({ ...cardConfig, displayNameOptions: newOpts });
                           }}
@@ -1431,64 +1582,84 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                 <div className="flex items-center gap-2">
                   {(filterClient || filterBranch || filterDeviceModel || filterVehicleType || filterContractStatus) && (
                     <button
-                      onClick={() => { setFilterClient(''); setFilterBranch(''); setFilterDeviceModel(''); setFilterVehicleType(''); setFilterContractStatus(''); }}
+                      onClick={() => {
+                        setFilterClient('');
+                        setFilterBranch('');
+                        setFilterDeviceModel('');
+                        setFilterVehicleType('');
+                        setFilterContractStatus('');
+                      }}
                       className="text-[10px] text-red-500 hover:text-red-600 font-medium"
                     >
                       Réinitialiser
                     </button>
                   )}
-                  <button onClick={() => setIsFilterOpen(false)} aria-label="Fermer les filtres" title="Fermer"><X className="w-3 h-3 text-slate-400 hover:text-slate-600" /></button>
+                  <button onClick={() => setIsFilterOpen(false)} aria-label="Fermer les filtres" title="Fermer">
+                    <X className="w-3 h-3 text-slate-400 hover:text-slate-600" />
+                  </button>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {!isClientRole && !isSousCompte && (
-                <div>
-                  <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Client</label>
-                  <select
-                    value={filterClient}
-                    onChange={(e) => setFilterClient(e.target.value)}
-                    className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
-                  >
-                    <option value="">Tous les clients</option>
-                    {Array.from(new Set(accessibleVehicles.map(v => v.client))).sort().map(clientId => {
-                      const client = clients.find(c => c.id === clientId);
-                      return <option key={clientId} value={client?.name || clientId}>{client?.name || clientId}</option>;
-                    })}
-                  </select>
-                </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Client</label>
+                    <select
+                      value={filterClient}
+                      onChange={(e) => setFilterClient(e.target.value)}
+                      className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                    >
+                      <option value="">Tous les clients</option>
+                      {Array.from(new Set(accessibleVehicles.map((v) => v.client)))
+                        .sort()
+                        .map((clientId) => {
+                          const client = clients.find((c) => c.id === clientId);
+                          return (
+                            <option key={clientId} value={client?.name || clientId}>
+                              {client?.name || clientId}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
                 )}
                 {uniqueMapBranches.length > 0 && (
-                <div>
-                  <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Branche</label>
-                  <select
-                    value={filterBranch}
-                    onChange={(e) => setFilterBranch(e.target.value)}
-                    className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
-                  >
-                    <option value="">Toutes les branches</option>
-                    {uniqueMapBranches.map(b => (
-                      <option key={b.id} value={b.id}>{b.name}</option>
-                    ))}
-                  </select>
-                </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Branche</label>
+                    <select
+                      value={filterBranch}
+                      onChange={(e) => setFilterBranch(e.target.value)}
+                      className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                    >
+                      <option value="">Toutes les branches</option>
+                      {uniqueMapBranches.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 )}
                 <div>
                   <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Modèle Boîtier</label>
-                  <select 
-                    value={filterDeviceModel} 
+                  <select
+                    value={filterDeviceModel}
                     onChange={(e) => setFilterDeviceModel(e.target.value)}
                     className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                   >
                     <option value="">Tous les modèles</option>
-                    {Array.from(new Set(vehicles.map(v => v.deviceModel).filter(Boolean))).sort().map(model => (
-                      <option key={model} value={model}>{model}</option>
-                    ))}
+                    {Array.from(new Set(vehicles.map((v) => v.deviceModel).filter(Boolean)))
+                      .sort()
+                      .map((model) => (
+                        <option key={model} value={model}>
+                          {model}
+                        </option>
+                      ))}
                   </select>
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Type d'Engin</label>
-                  <select 
-                    value={filterVehicleType} 
+                  <select
+                    value={filterVehicleType}
                     onChange={(e) => setFilterVehicleType(e.target.value)}
                     className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                   >
@@ -1503,8 +1674,8 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                 </div>
                 <div>
                   <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Statut Paiement</label>
-                  <select 
-                    value={filterContractStatus} 
+                  <select
+                    value={filterContractStatus}
                     onChange={(e) => setFilterContractStatus(e.target.value)}
                     className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                   >
@@ -1524,22 +1695,52 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           <div className="p-3 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
             <div className="flex items-center gap-2 mb-1">
               {activeTab === 'vehicles' && (
-                <button onClick={handleSelectAll} className="p-2.5 text-slate-400 hover:text-[var(--primary)] transition-colors border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-800" aria-label="Tout sélectionner" title="Tout sélectionner">
-                  {selectedVehicleIds.size > 0 && isAllVisibleSelected() ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" /> : <Square className="w-4 h-4" />}
+                <button
+                  onClick={handleSelectAll}
+                  className="p-2.5 text-slate-400 hover:text-[var(--primary)] transition-colors border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-800"
+                  aria-label="Tout sélectionner"
+                  title="Tout sélectionner"
+                >
+                  {selectedVehicleIds.size > 0 && isAllVisibleSelected() ? (
+                    <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
+                  ) : (
+                    <Square className="w-4 h-4" />
+                  )}
                 </button>
               )}
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input type="text" placeholder="Nom, plaque, IMEI, client..." value={searchText} onChange={(e) => setSearchText(e.target.value)} className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-slate-50 dark:bg-slate-900 dark:text-white transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Nom, plaque, IMEI, client..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-slate-50 dark:bg-slate-900 dark:text-white transition-colors"
+                />
               </div>
             </div>
           </div>
 
           {/* Tabs */}
           <div className="flex border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-            <button onClick={() => setActiveTab('vehicles')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'vehicles' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Véhicules</button>
-            <button onClick={() => setActiveTab('places')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'places' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Geofence</button>
-            <button onClick={() => setActiveTab('drivers')} className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'drivers' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}>Chauffeurs</button>
+            <button
+              onClick={() => setActiveTab('vehicles')}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'vehicles' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+            >
+              Véhicules
+            </button>
+            <button
+              onClick={() => setActiveTab('places')}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'places' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+            >
+              Geofence
+            </button>
+            <button
+              onClick={() => setActiveTab('drivers')}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'drivers' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+            >
+              Chauffeurs
+            </button>
           </div>
 
           {/* List Content */}
@@ -1566,137 +1767,201 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                 </div>
                 <p className="text-slate-400 text-sm font-medium">Aucun élément trouvé</p>
                 <p className="text-slate-300 dark:text-slate-600 text-xs mt-1">
-                  {activeTab === 'vehicles' ? 'Modifiez vos filtres ou votre recherche' : 
-                   activeTab === 'places' ? 'Créez une geofence pour commencer' : 
-                   'Aucun chauffeur assigné'}
+                  {activeTab === 'vehicles'
+                    ? 'Modifiez vos filtres ou votre recherche'
+                    : activeTab === 'places'
+                      ? 'Créez une geofence pour commencer'
+                      : 'Aucun chauffeur assigné'}
                 </p>
               </div>
             ) : (
               Object.entries(groupedData)
                 .sort(([, a], [, b]) => (a.name || '').localeCompare(b.name || ''))
                 .map(([groupKey, data]) => {
-                const group = data;
-                if (group.isClientGroup) {
-                  return (
-                    <div key={groupKey} className="border-b border-slate-100 dark:border-slate-700 last:border-0">
-                      <button onClick={() => toggleClient(groupKey)} className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 dark:bg-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-700 transition-colors">
-                        <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider">
-                          {expandedClients[groupKey] ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                          {group.name}
-                        </div>
-                        <span className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 text-[10px] px-1.5 py-0.5 rounded font-medium">{group.totalCount}</span>
-                      </button>
+                  const group = data;
+                  if (group.isClientGroup) {
+                    return (
+                      <div key={groupKey} className="border-b border-slate-100 dark:border-slate-700 last:border-0">
+                        <button
+                          onClick={() => toggleClient(groupKey)}
+                          className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 dark:bg-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-700 transition-colors"
+                        >
+                          <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider">
+                            {expandedClients[groupKey] ? (
+                              <ChevronDown className="w-3 h-3" />
+                            ) : (
+                              <ChevronRight className="w-3 h-3" />
+                            )}
+                            {group.name}
+                          </div>
+                          <span className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                            {group.totalCount}
+                          </span>
+                        </button>
 
-                      {expandedClients[groupKey] && (
-                        <div className="bg-white dark:bg-slate-800/50">
-                          {/* Branches within Client - juste un label, pas de dropdown */}
-                          {Object.values(group.branches).map((branch: { id: string; name?: string; vehicles: Vehicle[] }) => (
-                            <div key={branch.id}>
-                              {/* Branch name as simple label - aligned left */}
-                              <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-700/30">
-                                <span className="font-medium text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
-                                  {branch.name}
-                                </span>
-                                <span className="text-[10px] text-slate-400 font-medium">{branch.vehicles.length}</span>
-                              </div>
-                              {/* Vehicles of this branch - always visible */}
-                              <VirtualVehicleList
-                                vehicles={branch.vehicles}
-                                selectedVehicleIds={selectedVehicleIds}
-                                focusedVehicleId={selectedVehicle?.id}
-                                onFocus={focusOnVehicle}
-                                onToggleSelection={toggleSelection}
-                                config={cardConfig}
-                                onEdit={(v) => onNavigate && onNavigate(View.SETTINGS, { action: 'edit_vehicle', id: v.id })}
-                              />
-                            </div>
-                          ))}
-
-                          {/* Direct Vehicles (sans branche) */}
-                          {group.directVehicles.length > 0 && (
-                            <>
-                              {Object.keys(group.branches).length > 0 && (
-                                <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-700/30">
-                                  <span className="font-medium text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
-                                    Sans branche
-                                  </span>
-                                  <span className="text-[10px] text-slate-400 font-medium">{group.directVehicles.length}</span>
+                        {expandedClients[groupKey] && (
+                          <div className="bg-white dark:bg-slate-800/50">
+                            {/* Branches within Client - juste un label, pas de dropdown */}
+                            {Object.values(group.branches).map(
+                              (branch: { id: string; name?: string; vehicles: Vehicle[] }) => (
+                                <div key={branch.id}>
+                                  {/* Branch name as simple label - aligned left */}
+                                  <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-700/30">
+                                    <span className="font-medium text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
+                                      {branch.name}
+                                    </span>
+                                    <span className="text-[10px] text-slate-400 font-medium">
+                                      {branch.vehicles.length}
+                                    </span>
+                                  </div>
+                                  {/* Vehicles of this branch - always visible */}
+                                  <VirtualVehicleList
+                                    vehicles={branch.vehicles}
+                                    selectedVehicleIds={selectedVehicleIds}
+                                    focusedVehicleId={selectedVehicle?.id}
+                                    onFocus={focusOnVehicle}
+                                    onToggleSelection={toggleSelection}
+                                    config={cardConfig}
+                                    onEdit={(v) =>
+                                      onNavigate && onNavigate(View.SETTINGS, { action: 'edit_vehicle', id: v.id })
+                                    }
+                                  />
                                 </div>
+                              )
+                            )}
+
+                            {/* Direct Vehicles (sans branche) */}
+                            {group.directVehicles.length > 0 && (
+                              <>
+                                {Object.keys(group.branches).length > 0 && (
+                                  <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-700/30">
+                                    <span className="font-medium text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
+                                      Sans branche
+                                    </span>
+                                    <span className="text-[10px] text-slate-400 font-medium">
+                                      {group.directVehicles.length}
+                                    </span>
+                                  </div>
+                                )}
+                                <VirtualVehicleList
+                                  vehicles={group.directVehicles}
+                                  selectedVehicleIds={selectedVehicleIds}
+                                  focusedVehicleId={selectedVehicle?.id}
+                                  onFocus={focusOnVehicle}
+                                  onToggleSelection={toggleSelection}
+                                  config={cardConfig}
+                                  onEdit={(v) =>
+                                    onNavigate && onNavigate(View.SETTINGS, { action: 'edit_vehicle', id: v.id })
+                                  }
+                                />
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  } else {
+                    // Legacy render for Places/Drivers where data is just Array
+                    const items = data as unknown[];
+                    return (
+                      items &&
+                      items.length > 0 && (
+                        <div key={groupKey} className="border-b border-slate-100 dark:border-slate-700 last:border-0">
+                          <button
+                            onClick={() => toggleClient(groupKey)}
+                            className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 dark:bg-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-700 transition-colors"
+                          >
+                            <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider">
+                              {expandedClients[groupKey] ? (
+                                <ChevronDown className="w-3 h-3" />
+                              ) : (
+                                <ChevronRight className="w-3 h-3" />
                               )}
-                              <VirtualVehicleList
-                                vehicles={group.directVehicles}
-                                selectedVehicleIds={selectedVehicleIds}
-                                focusedVehicleId={selectedVehicle?.id}
-                                onFocus={focusOnVehicle}
-                                onToggleSelection={toggleSelection}
-                                config={cardConfig}
-                                onEdit={(v) => onNavigate && onNavigate(View.SETTINGS, { action: 'edit_vehicle', id: v.id })}
-                              />
-                            </>
+                              {groupKey}
+                            </div>
+                            <span className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                              {items.length}
+                            </span>
+                          </button>
+
+                          {expandedClients[groupKey] && (
+                            <div className="bg-white dark:bg-slate-800/50">
+                              {/* PLACE LIST */}
+                              {activeTab === 'places' &&
+                                (items as Zone[]).map((z: Zone) => (
+                                  <div
+                                    key={z.id}
+                                    onClick={() => focusOnZone(z)}
+                                    className="px-4 py-3 border-b border-slate-50 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                                  >
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <Layers className="w-4 h-4 text-slate-400" />
+                                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                                        {z.name}
+                                      </span>
+                                    </div>
+                                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                                      <span>{z.type}</span>
+                                      <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-[10px]">
+                                        {z.category}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ))}
+                              {/* DRIVERS LIST */}
+                              {activeTab === 'drivers' &&
+                                (
+                                  items as Array<{ id: string; name: string; score: number; currentVehicle: string }>
+                                ).map((d) => (
+                                  <div
+                                    key={d.id}
+                                    className="px-4 py-3 border-b border-slate-50 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                                  >
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                                        {d.name}
+                                      </span>
+                                      <span className="text-[10px] font-bold text-green-600">{d.score}/100</span>
+                                    </div>
+                                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                                      Véhicule: {d.currentVehicle}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                  );
-                } else {
-                  // Legacy render for Places/Drivers where data is just Array
-                  const items = data as unknown[];
-                  return items && items.length > 0 && (
-                    <div key={groupKey} className="border-b border-slate-100 dark:border-slate-700 last:border-0">
-                      <button onClick={() => toggleClient(groupKey)} className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 dark:bg-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-700 transition-colors">
-                        <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider">
-                          {expandedClients[groupKey] ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
-                          {groupKey}
-                        </div>
-                        <span className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 text-[10px] px-1.5 py-0.5 rounded font-medium">{items.length}</span>
-                      </button>
-
-                      {expandedClients[groupKey] && (
-                        <div className="bg-white dark:bg-slate-800/50">
-                          {/* PLACE LIST */}
-                          {activeTab === 'places' && (items as Zone[]).map((z: Zone) => (
-                            <div key={z.id} onClick={() => focusOnZone(z)} className="px-4 py-3 border-b border-slate-50 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Layers className="w-4 h-4 text-slate-400" />
-                                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{z.name}</span>
-                              </div>
-                              <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
-                                <span>{z.type}</span>
-                                <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-[10px]">{z.category}</span>
-                              </div>
-                            </div>
-                          ))}
-                          {/* DRIVERS LIST */}
-                          {activeTab === 'drivers' && (items as Array<{ id: string; name: string; score: number; currentVehicle: string }>).map((d) => (
-                            <div key={d.id} className="px-4 py-3 border-b border-slate-50 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{d.name}</span>
-                                <span className="text-[10px] font-bold text-green-600">{d.score}/100</span>
-                              </div>
-                              <div className="text-xs text-slate-500 dark:text-slate-400">
-                                Véhicule: {d.currentVehicle}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-              })
+                      )
+                    );
+                  }
+                })
             )}
           </div>
 
-          <div onMouseDown={() => setIsResizing(true)} className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-[var(--primary-dim)] bg-transparent z-20 transition-colors" />
+          <div
+            onMouseDown={() => setIsResizing(true)}
+            className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-[var(--primary-dim)] bg-transparent z-20 transition-colors"
+          />
         </div>
       )}
 
       {!isSidebarOpen && !isReplayActive && (
-        <button onClick={() => setIsSidebarOpen(true)} className="hidden lg:block absolute top-4 left-4 z-20 bg-white dark:bg-slate-800 p-2 rounded shadow-md border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:text-[var(--primary)]" aria-label="Ouvrir le panneau latéral" title="Ouvrir le panneau latéral"><ChevronRight className="w-5 h-5" /></button>
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="hidden lg:block absolute top-4 left-4 z-20 bg-white dark:bg-slate-800 p-2 rounded shadow-md border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:text-[var(--primary)]"
+          aria-label="Ouvrir le panneau latéral"
+          title="Ouvrir le panneau latéral"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
       )}
 
       {isSidebarOpen && !isReplayActive && (
-        <div className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-white dark:bg-slate-800 border border-l-0 border-slate-200 dark:border-slate-600 rounded-r-md shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-[var(--primary)] text-slate-400" style={{ left: sidebarWidth, top: '50%', transform: 'translateY(-50%)' }} onClick={() => setIsSidebarOpen(false)}>
+        <div
+          className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-white dark:bg-slate-800 border border-l-0 border-slate-200 dark:border-slate-600 rounded-r-md shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-[var(--primary)] text-slate-400"
+          style={{ left: sidebarWidth, top: '50%', transform: 'translateY(-50%)' }}
+          onClick={() => setIsSidebarOpen(false)}
+        >
           <ChevronLeft className="w-4 h-4" />
         </div>
       )}
@@ -1706,23 +1971,53 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
         <>
           {/* Mobile Stats Bar - Top */}
           <div className="lg:hidden absolute top-2 left-2 right-2 z-20 flex items-center gap-1 bg-slate-900/95 backdrop-blur text-white rounded-lg p-2 shadow-lg">
-            <div onClick={() => { setActiveStatusFilter(null); setIsMobileVehicleListOpen(true); }} className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === null ? 'bg-white/10' : ''}`}>
+            <div
+              onClick={() => {
+                setActiveStatusFilter(null);
+                setIsMobileVehicleListOpen(true);
+              }}
+              className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === null ? 'bg-white/10' : ''}`}
+            >
               <span className="font-bold text-sm">{stats.total}</span>
               <span className="text-[8px] text-slate-400">Total</span>
             </div>
-            <div onClick={() => { setActiveStatusFilter(VehicleStatus.MOVING); setIsMobileVehicleListOpen(true); }} className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.MOVING ? 'bg-white/10' : ''}`}>
+            <div
+              onClick={() => {
+                setActiveStatusFilter(VehicleStatus.MOVING);
+                setIsMobileVehicleListOpen(true);
+              }}
+              className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.MOVING ? 'bg-white/10' : ''}`}
+            >
               <span className="font-bold text-sm text-green-400">{stats.moving}</span>
               <span className="text-[8px] text-green-400/70">Route</span>
             </div>
-            <div onClick={() => { setActiveStatusFilter(VehicleStatus.IDLE); setIsMobileVehicleListOpen(true); }} className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.IDLE ? 'bg-white/10' : ''}`}>
+            <div
+              onClick={() => {
+                setActiveStatusFilter(VehicleStatus.IDLE);
+                setIsMobileVehicleListOpen(true);
+              }}
+              className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.IDLE ? 'bg-white/10' : ''}`}
+            >
               <span className="font-bold text-sm text-orange-400">{stats.idle}</span>
               <span className="text-[8px] text-orange-400/70">Ralenti</span>
             </div>
-            <div onClick={() => { setActiveStatusFilter(VehicleStatus.STOPPED); setIsMobileVehicleListOpen(true); }} className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.STOPPED ? 'bg-white/10' : ''}`}>
+            <div
+              onClick={() => {
+                setActiveStatusFilter(VehicleStatus.STOPPED);
+                setIsMobileVehicleListOpen(true);
+              }}
+              className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.STOPPED ? 'bg-white/10' : ''}`}
+            >
               <span className="font-bold text-sm text-red-400">{stats.stopped}</span>
               <span className="text-[8px] text-red-400/70">Arrêt</span>
             </div>
-            <div onClick={() => { setActiveStatusFilter(VehicleStatus.OFFLINE); setIsMobileVehicleListOpen(true); }} className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10' : ''}`}>
+            <div
+              onClick={() => {
+                setActiveStatusFilter(VehicleStatus.OFFLINE);
+                setIsMobileVehicleListOpen(true);
+              }}
+              className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10' : ''}`}
+            >
               <span className="font-bold text-sm text-slate-400">{stats.offline}</span>
               <span className="text-[8px] text-slate-500">Offline</span>
             </div>
@@ -1731,17 +2026,21 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
               <button
                 onClick={() => setMapProvider('leaflet')}
                 className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary-dim)]0 text-white' : 'text-slate-300'}`}
-              >OSM</button>
+              >
+                OSM
+              </button>
               <button
                 onClick={() => googleMapsKey && setMapProvider('google')}
                 className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white' : googleMapsKey ? 'text-slate-300' : 'text-slate-600 cursor-not-allowed'}`}
                 disabled={!googleMapsKey}
-              >G</button>
+              >
+                G
+              </button>
             </div>
             {/* Filter button */}
             <button
               onClick={() => setShowMobileMapFilter(true)}
-              className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${(activeStatusFilter || filterClient || filterBranch) ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+              className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${activeStatusFilter || filterClient || filterBranch ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
               aria-label="Filtres"
               title="Filtres"
             >
@@ -1753,7 +2052,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
             {/* Satellite toggle — visible uniquement quand Google Maps actif */}
             {mapProvider === 'google' && (
               <button
-                onClick={() => setGoogleMapType(t => t === 'roadmap' ? 'satellite' : 'roadmap')}
+                onClick={() => setGoogleMapType((t) => (t === 'roadmap' ? 'satellite' : 'roadmap'))}
                 className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${googleMapType === 'satellite' ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
                 aria-label="Vue satellite"
                 title={googleMapType === 'satellite' ? 'Vue carte' : 'Vue satellite'}
@@ -1762,7 +2061,6 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
               </button>
             )}
           </div>
-
         </>
       )}
 
@@ -1781,7 +2079,12 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
               <h3 className="font-bold text-slate-800 dark:text-white">Véhicules ({listFilteredVehicles.length})</h3>
               <div className="flex items-center gap-2">
-                <button onClick={() => setIsMobileVehicleListOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full" aria-label="Fermer la liste" title="Fermer">
+                <button
+                  onClick={() => setIsMobileVehicleListOpen(false)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
+                  aria-label="Fermer la liste"
+                  title="Fermer"
+                >
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
@@ -1800,36 +2103,59 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
               </div>
             </div>
             {/* Vehicle List */}
-            <div className="flex-1 overflow-y-auto overscroll-contain pb-16" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <div
+              className="flex-1 overflow-y-auto overscroll-contain pb-16"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               {filteredVehicles.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
                   <Filter className="w-10 h-10 text-slate-300 dark:text-slate-600 mb-3" />
                   <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Aucun véhicule trouvé</p>
                   <p className="text-sm text-slate-500 mb-4">Aucun véhicule ne correspond aux filtres actifs.</p>
                   <button
-                    onClick={() => { setActiveStatusFilter(null); setFilterClient(''); setFilterBranch(''); }}
+                    onClick={() => {
+                      setActiveStatusFilter(null);
+                      setFilterClient('');
+                      setFilterBranch('');
+                    }}
                     className="px-4 py-2 bg-[var(--primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--primary-light)] transition-colors"
                   >
                     Effacer les filtres
                   </button>
                 </div>
               )}
-              {filteredVehicles.map(v => (
+              {filteredVehicles.map((v) => (
                 <div
                   key={v.id}
-                  onClick={() => { focusOnVehicle(v); setIsMobileVehicleListOpen(false); }}
+                  onClick={() => {
+                    focusOnVehicle(v);
+                    setIsMobileVehicleListOpen(false);
+                  }}
                   className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-800 active:bg-slate-50 dark:active:bg-slate-800 cursor-pointer"
                 >
-                  <div className={`w-3 h-3 rounded-full shrink-0 ${v.status === VehicleStatus.MOVING ? 'bg-green-500' :
-                    v.status === VehicleStatus.IDLE ? 'bg-orange-500' :
-                      v.status === VehicleStatus.STOPPED ? 'bg-red-500' : 'bg-slate-400'
-                    }`} />
+                  <div
+                    className={`w-3 h-3 rounded-full shrink-0 ${
+                      v.status === VehicleStatus.MOVING
+                        ? 'bg-green-500'
+                        : v.status === VehicleStatus.IDLE
+                          ? 'bg-orange-500'
+                          : v.status === VehicleStatus.STOPPED
+                            ? 'bg-red-500'
+                            : 'bg-slate-400'
+                    }`}
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm text-slate-800 dark:text-white truncate">{v.name}</p>
-                      {v.plate && <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0 rounded shrink-0">{v.plate}</span>}
+                      {v.plate && (
+                        <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0 rounded shrink-0">
+                          {v.plate}
+                        </span>
+                      )}
                     </div>
-                    <p className="text-xs text-slate-500 truncate">{v.speed} km/h • {v.client || 'Non assigné'}</p>
+                    <p className="text-xs text-slate-500 truncate">
+                      {v.speed} km/h • {v.client || 'Non assigné'}
+                    </p>
                     {(v.address || v.geofence) && (
                       <p className="text-xs text-slate-400 truncate mt-0.5">{v.address || v.geofence}</p>
                     )}
@@ -1847,36 +2173,92 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
         isOpen={showMobileMapFilter}
         onClose={() => setShowMobileMapFilter(false)}
         activeCount={(activeStatusFilter ? 1 : 0) + (filterClient ? 1 : 0) + (filterBranch ? 1 : 0)}
-        onReset={() => { setActiveStatusFilter(null); setFilterClient(''); setFilterBranch(''); }}
+        onReset={() => {
+          setActiveStatusFilter(null);
+          setFilterClient('');
+          setFilterBranch('');
+        }}
         tabs={[
           {
-            id: 'status', label: 'Statut', activeCount: activeStatusFilter ? 1 : 0,
-            content: <>
-              <FilterRadioRow value="" label="Tous" checked={activeStatusFilter === null} onChange={() => setActiveStatusFilter(null)} count={accessibleVehicles.length} />
-              {Object.values(VehicleStatus).map(s => (
-                <FilterRadioRow key={s} value={s} label={<StatusBadge status={s} />} checked={activeStatusFilter === s} onChange={() => setActiveStatusFilter(s)} count={accessibleVehicles.filter(v => v.status === s).length} />
-              ))}
-            </>
+            id: 'status',
+            label: 'Statut',
+            activeCount: activeStatusFilter ? 1 : 0,
+            content: (
+              <>
+                <FilterRadioRow
+                  value=""
+                  label="Tous"
+                  checked={activeStatusFilter === null}
+                  onChange={() => setActiveStatusFilter(null)}
+                  count={accessibleVehicles.length}
+                />
+                {Object.values(VehicleStatus).map((s) => (
+                  <FilterRadioRow
+                    key={s}
+                    value={s}
+                    label={<StatusBadge status={s} />}
+                    checked={activeStatusFilter === s}
+                    onChange={() => setActiveStatusFilter(s)}
+                    count={accessibleVehicles.filter((v) => v.status === s).length}
+                  />
+                ))}
+              </>
+            ),
           },
           {
-            id: 'client', label: 'Client', activeCount: filterClient ? 1 : 0,
-            content: <>
-              <FilterRadioRow value="" label="Tous" checked={filterClient === ''} onChange={() => setFilterClient('')} count={accessibleVehicles.length} />
-              {uniqueMapClients.map(c => (
-                <FilterRadioRow key={c} value={c} label={c} checked={filterClient === c} onChange={() => setFilterClient(c)} count={accessibleVehicles.filter(v => v.client === c).length} />
-              ))}
-            </>
+            id: 'client',
+            label: 'Client',
+            activeCount: filterClient ? 1 : 0,
+            content: (
+              <>
+                <FilterRadioRow
+                  value=""
+                  label="Tous"
+                  checked={filterClient === ''}
+                  onChange={() => setFilterClient('')}
+                  count={accessibleVehicles.length}
+                />
+                {uniqueMapClients.map((c) => (
+                  <FilterRadioRow
+                    key={c}
+                    value={c}
+                    label={c}
+                    checked={filterClient === c}
+                    onChange={() => setFilterClient(c)}
+                    count={accessibleVehicles.filter((v) => v.client === c).length}
+                  />
+                ))}
+              </>
+            ),
           },
           {
-            id: 'branche', label: 'Branche', activeCount: filterBranch ? 1 : 0,
-            content: uniqueMapBranches.length === 0
-              ? <p className="text-sm text-slate-400 text-center py-4">Aucune branche disponible</p>
-              : <>
-                  <FilterRadioRow value="" label="Toutes" checked={filterBranch === ''} onChange={() => setFilterBranch('')} count={accessibleVehicles.length} />
-                  {uniqueMapBranches.map(b => (
-                    <FilterRadioRow key={b.id} value={b.id} label={b.name} checked={filterBranch === b.id} onChange={() => setFilterBranch(b.id)} count={accessibleVehicles.filter(v => v.branchId === b.id).length} />
+            id: 'branche',
+            label: 'Branche',
+            activeCount: filterBranch ? 1 : 0,
+            content:
+              uniqueMapBranches.length === 0 ? (
+                <p className="text-sm text-slate-400 text-center py-4">Aucune branche disponible</p>
+              ) : (
+                <>
+                  <FilterRadioRow
+                    value=""
+                    label="Toutes"
+                    checked={filterBranch === ''}
+                    onChange={() => setFilterBranch('')}
+                    count={accessibleVehicles.length}
+                  />
+                  {uniqueMapBranches.map((b) => (
+                    <FilterRadioRow
+                      key={b.id}
+                      value={b.id}
+                      label={b.name}
+                      checked={filterBranch === b.id}
+                      onChange={() => setFilterBranch(b.id)}
+                      count={accessibleVehicles.filter((v) => v.branchId === b.id).length}
+                    />
                   ))}
                 </>
+              ),
           },
         ]}
       />
@@ -1888,7 +2270,9 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           <div className="flex flex-col items-center gap-2">
             <RefreshCw className="w-8 h-8 animate-spin" />
             <p className="text-sm font-medium">Initialisation de la carte...</p>
-            <p className="text-[10px] text-slate-500">Si cet écran reste blanc, vérifiez votre connexion ou le fournisseur ({mapProvider})</p>
+            <p className="text-[10px] text-slate-500">
+              Si cet écran reste blanc, vérifiez votre connexion ou le fournisseur ({mapProvider})
+            </p>
           </div>
         </div>
 
@@ -1897,7 +2281,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
             <GoogleMapComponent
               apiKey={googleMapsKey}
               vehicles={isReplayActive && replayVehicle ? [replayVehicle] : filteredVehicles}
-              zones={(!isReplayActive && (showZones || activeTab === 'places')) ? zones : []}
+              zones={!isReplayActive && (showZones || activeTab === 'places') ? zones : []}
               replayPath={isReplayActive ? replayPath : quickTracePath}
               selectedVehicle={selectedVehicle || replayVehicle}
               onVehicleSelect={setSelectedVehicle}
@@ -1907,269 +2291,314 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
           </div>
         ) : (
           <div className="absolute inset-0">
-          <MapContainer
-            center={[CENTER_LAT, CENTER_LNG]}
-            zoom={6}
-            style={{ height: '100%', width: '100%' }}
-            className="z-0"
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-              crossOrigin="anonymous"
-            />
-
-            <MapUpdater
-              focusedVehicle={focusedVehicle}
-              selectedVehicle={selectedVehicle}
-              isReplayActive={isReplayActive}
-              focusPosition={mapFocusPosition}
-              onFocusHandled={() => setMapFocusPosition(null)}
-            />
-
-            {/* Zones Layer */}
-            {!isReplayActive && (showZones || activeTab === 'places') && zones.map(zone => {
-              if (zone.type === 'CIRCLE' && zone.center) {
-                return (
-                  <Circle
-                    key={zone.id}
-                    center={[zone.center.lat, zone.center.lng]}
-                    radius={zone.radius || 100}
-                    pathOptions={{ color: zone.color, fillColor: zone.color, fillOpacity: 0.2 }}
-                  >
-                    <Popup>
-                      <div className="font-bold">{zone.name}</div>
-                      <div className="text-xs text-slate-500">{zone.category}</div>
-                    </Popup>
-                  </Circle>
-                );
-              } else if (zone.type === 'POLYGON' && zone.coordinates) {
-                return (
-                  <Polygon
-                    key={zone.id}
-                    positions={zone.coordinates.map(c => [c.lat, c.lng])}
-                    pathOptions={{ color: zone.color, fillColor: zone.color, fillOpacity: 0.2 }}
-                  >
-                    <Popup>
-                      <div className="font-bold">{zone.name}</div>
-                      <div className="text-xs text-slate-500">{zone.category}</div>
-                    </Popup>
-                  </Polygon>
-                );
-              }
-              return null;
-            })}
-
-            {/* Quick Trace for Selected Vehicle */}
-            {!isReplayActive && quickTracePath.length > 0 && (
-              <Polyline
-                positions={quickTracePath.map(p => [p.lat, p.lng])}
-                pathOptions={{ color: '#3b82f6', weight: 4, opacity: 0.6, dashArray: '10, 10' }}
+            <MapContainer
+              center={[CENTER_LAT, CENTER_LNG]}
+              zoom={6}
+              style={{ height: '100%', width: '100%' }}
+              className="z-0"
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                crossOrigin="anonymous"
               />
-            )}
 
-            {/* Heatmap Layer */}
-            {showHeatmap && heatmapPoints.length > 0 && (
-              <HeatmapLayer
-                points={heatmapPoints}
-                options={{
-                  radius: 25,
-                  blur: 15,
-                  maxZoom: 17,
-                  max: 1.0
-                }}
+              <MapUpdater
+                focusedVehicle={focusedVehicle}
+                selectedVehicle={selectedVehicle}
+                isReplayActive={isReplayActive}
+                focusPosition={mapFocusPosition}
+                onFocusHandled={() => setMapFocusPosition(null)}
               />
-            )}
 
-            {/* Vehicles Markers with Clustering */}
-            {!isReplayActive && (
-              <MarkerClusterGroup
-                chunkedLoading
-                iconCreateFunction={createClusterCustomIcon}
-                maxClusterRadius={60}
-                spiderfyOnMaxZoom={true}
-              >
-                {filteredVehicles.map(v => (
-                  <AnimatedVehicleMarker
-                    key={v.id}
-                    vehicle={v}
-                    icon={createVehicleIcon(v)}
-                    onClick={() => setSelectedVehicle(v)}
-                  />
-                ))}
-              </MarkerClusterGroup>
-            )}
+              {/* Zones Layer */}
+              {!isReplayActive &&
+                (showZones || activeTab === 'places') &&
+                zones.map((zone) => {
+                  if (zone.type === 'CIRCLE' && zone.center) {
+                    return (
+                      <Circle
+                        key={zone.id}
+                        center={[zone.center.lat, zone.center.lng]}
+                        radius={zone.radius || 100}
+                        pathOptions={{ color: zone.color, fillColor: zone.color, fillOpacity: 0.2 }}
+                      >
+                        <Popup>
+                          <div className="font-bold">{zone.name}</div>
+                          <div className="text-xs text-slate-500">{zone.category}</div>
+                        </Popup>
+                      </Circle>
+                    );
+                  } else if (zone.type === 'POLYGON' && zone.coordinates) {
+                    return (
+                      <Polygon
+                        key={zone.id}
+                        positions={zone.coordinates.map((c) => [c.lat, c.lng])}
+                        pathOptions={{ color: zone.color, fillColor: zone.color, fillOpacity: 0.2 }}
+                      >
+                        <Popup>
+                          <div className="font-bold">{zone.name}</div>
+                          <div className="text-xs text-slate-500">{zone.category}</div>
+                        </Popup>
+                      </Polygon>
+                    );
+                  }
+                  return null;
+                })}
 
-            {/* Replay Path */}
-            {isReplayActive && replayPath.length > 0 && activeReplayVehicle && (
-              <>
-                {/* Polyline segmentée :
+              {/* Quick Trace for Selected Vehicle */}
+              {!isReplayActive && quickTracePath.length > 0 && (
+                <Polyline
+                  positions={quickTracePath.map((p) => [p.lat, p.lng])}
+                  pathOptions={{ color: '#3b82f6', weight: 4, opacity: 0.6, dashArray: '10, 10' }}
+                />
+              )}
+
+              {/* Heatmap Layer */}
+              {showHeatmap && heatmapPoints.length > 0 && (
+                <HeatmapLayer
+                  points={heatmapPoints}
+                  options={{
+                    radius: 25,
+                    blur: 15,
+                    maxZoom: 17,
+                    max: 1.0,
+                  }}
+                />
+              )}
+
+              {/* Vehicles Markers with Clustering */}
+              {!isReplayActive && (
+                <MarkerClusterGroup
+                  chunkedLoading
+                  iconCreateFunction={createClusterCustomIcon}
+                  maxClusterRadius={60}
+                  spiderfyOnMaxZoom={true}
+                >
+                  {filteredVehicles.map((v) => (
+                    <AnimatedVehicleMarker
+                      key={v.id}
+                      vehicle={v}
+                      icon={createVehicleIcon(v)}
+                      onClick={() => setSelectedVehicle(v)}
+                    />
+                  ))}
+                </MarkerClusterGroup>
+              )}
+
+              {/* Replay Path */}
+              {isReplayActive && replayPath.length > 0 && activeReplayVehicle && (
+                <>
+                  {/* Polyline segmentée :
                     - Bleu  = conduite normale
                     - Rouge = excès de vitesse (speed > maxAllowed)
                     - Pas de trait sur les gaps > 5 min
                 */}
-                {(() => {
-                  const GAP_MS = 5 * 60 * 1000;
-                  const maxSpeed = (activeReplayVehicle as any).maxSpeed || 120;
-                  type Seg = { coords: [number, number][]; speeding: boolean };
-                  const segs: Seg[] = [];
-                  let cur: Seg | null = null;
+                  {(() => {
+                    const GAP_MS = 5 * 60 * 1000;
+                    const maxSpeed = (activeReplayVehicle as any).maxSpeed || 120;
+                    type Seg = { coords: [number, number][]; speeding: boolean };
+                    const segs: Seg[] = [];
+                    let cur: Seg | null = null;
 
-                  for (let i = 0; i < replayHistory.length; i++) {
-                    const p = replayHistory[i];
-                    if (!p.location?.lat || !p.location?.lng) continue;
-                    const speeding = (p.speed || 0) > maxSpeed;
-                    const gap = i > 0
-                      ? new Date(p.timestamp).getTime() - new Date(replayHistory[i-1].timestamp).getTime()
-                      : 0;
+                    for (let i = 0; i < replayHistory.length; i++) {
+                      const p = replayHistory[i];
+                      if (!p.location?.lat || !p.location?.lng) continue;
+                      const speeding = (p.speed || 0) > maxSpeed;
+                      const gap =
+                        i > 0
+                          ? new Date(p.timestamp).getTime() - new Date(replayHistory[i - 1].timestamp).getTime()
+                          : 0;
 
-                    // Rupture sur gap ou changement de couleur
-                    if (!cur || gap > GAP_MS || cur.speeding !== speeding) {
-                      // Relier au dernier point du segment précédent pour éviter les trous
-                      if (cur && gap <= GAP_MS) cur.coords.push([p.location.lat, p.location.lng]);
-                      if (cur) segs.push(cur);
-                      cur = { coords: [], speeding };
+                      // Rupture sur gap ou changement de couleur
+                      if (!cur || gap > GAP_MS || cur.speeding !== speeding) {
+                        // Relier au dernier point du segment précédent pour éviter les trous
+                        if (cur && gap <= GAP_MS) cur.coords.push([p.location.lat, p.location.lng]);
+                        if (cur) segs.push(cur);
+                        cur = { coords: [], speeding };
+                      }
+                      cur.coords.push([p.location.lat, p.location.lng]);
                     }
-                    cur.coords.push([p.location.lat, p.location.lng]);
-                  }
-                  if (cur) segs.push(cur);
+                    if (cur) segs.push(cur);
 
-                  return segs.map((s, i) => (
-                    <Polyline
-                      key={`seg-${i}`}
-                      positions={s.coords}
-                      pathOptions={{ color: s.speeding ? '#dc2626' : '#3b82f6', weight: s.speeding ? 5 : 3, opacity: s.speeding ? 0.95 : 0.75 }}
-                    />
-                  ));
-                })()}
+                    return segs.map((s, i) => (
+                      <Polyline
+                        key={`seg-${i}`}
+                        positions={s.coords}
+                        pathOptions={{
+                          color: s.speeding ? '#dc2626' : '#3b82f6',
+                          weight: s.speeding ? 5 : 3,
+                          opacity: s.speeding ? 0.95 : 0.75,
+                        }}
+                      />
+                    ));
+                  })()}
 
-                {/* Marqueurs numérotés Arrêts / Ralentis */}
-                {replayStops.map((stop, index) => (
-                  <Marker
-                    key={`stop-${stop.id}`}
-                    position={[stop.location.lat, stop.location.lng]}
-                    icon={createStopMarkerIcon(index + 1, stop.type)}
-                    eventHandlers={{ click: () => { setHighlightedStop(stop.id); setHighlightedEvent(null); } }}
-                  >
-                    <Popup>
-                      <div style={{ minWidth: 160 }} className="text-sm">
-                        <p className="font-bold mb-1" style={{ color: stop.type === 'STOP' ? '#dc2626' : '#f97316' }}>
-                          {stop.type === 'STOP' ? '🅿️ Arrêt' : '⏸️ Ralenti'} #{index + 1}
-                        </p>
-                        <p className="text-slate-700 font-medium">
-                          {Math.floor(stop.duration)}min {Math.round((stop.duration % 1) * 60)}s
-                        </p>
-                        <p className="text-xs text-slate-500 mt-1">
-                          {new Date(stop.startTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                          {' → '}
-                          {new Date(stop.endTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                        {stop.address && <p className="text-xs text-slate-500 mt-1 truncate max-w-[180px]">{stop.address}</p>}
-                        {stop.location && (
-                          <p className="text-[10px] text-slate-400 mt-1 font-mono">
-                            {stop.location.lat.toFixed(5)}, {stop.location.lng.toFixed(5)}
-                          </p>
-                        )}
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-
-                {/* Marqueurs excès de vitesse */}
-                {replaySpeedEvents.map((event, index) => (
-                  <Circle
-                    key={`event-${event.id}`}
-                    center={[event.location.lat, event.location.lng]}
-                    radius={highlightedEvent === event.id ? 55 : 35}
-                    pathOptions={{
-                      color: '#dc2626',
-                      fillColor: '#fca5a5',
-                      fillOpacity: highlightedEvent === event.id ? 0.9 : 0.6,
-                      weight: 2,
-                      dashArray: '4 3'
-                    }}
-                    eventHandlers={{ click: () => { setHighlightedEvent(event.id); setHighlightedStop(null); } }}
-                  >
-                    <Popup>
-                      <div style={{ minWidth: 150 }} className="text-sm">
-                        <p className="font-bold text-red-600 mb-1">🚨 Excès #{index + 1}</p>
-                        <p className="text-slate-700 font-medium">{Math.round(event.speed)} km/h</p>
-                        <p className="text-xs text-slate-500">Limite : {event.maxAllowed} km/h</p>
-                        <p className="text-xs text-slate-500">Durée : {Math.round(event.duration)}s</p>
-                        <p className="text-xs text-slate-500 mt-1">
-                          {new Date(event.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                        </p>
-                      </div>
-                    </Popup>
-                  </Circle>
-                ))}
-
-                {/* Marqueurs Départ / Arrivée */}
-                {replayPath.length > 1 && (() => {
-                  const startIcon = L.divIcon({
-                    html: `<div style="width:32px;height:32px;border-radius:50%;background:#22c55e;color:white;font-size:16px;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3)">▶</div>`,
-                    className: '', iconSize: [32, 32], iconAnchor: [16, 16]
-                  });
-                  const endIcon = L.divIcon({
-                    html: `<div style="width:32px;height:32px;border-radius:50%;background:#3b82f6;color:white;font-size:16px;display:flex;align-items:center;justify-content:middle;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);font-weight:700;line-height:32px;text-align:center">■</div>`,
-                    className: '', iconSize: [32, 32], iconAnchor: [16, 16]
-                  });
-                  const first = replayHistory[0];
-                  const last = replayHistory[replayHistory.length - 1];
-                  return (
-                    <>
-                      <Marker position={[replayPath[0].lat, replayPath[0].lng]} icon={startIcon}>
-                        <Popup>
-                          <div className="text-sm font-bold text-green-600">
-                            🏁 Départ
-                            {first && <p className="text-xs font-normal text-slate-500 mt-1">{new Date(first.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>}
-                          </div>
-                        </Popup>
-                      </Marker>
-                      <Marker position={[replayPath[replayPath.length-1].lat, replayPath[replayPath.length-1].lng]} icon={endIcon}>
-                        <Popup>
-                          <div className="text-sm font-bold text-[var(--primary)]">
-                            📍 Arrivée
-                            {last && <p className="text-xs font-normal text-slate-500 mt-1">{new Date(last.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</p>}
-                          </div>
-                        </Popup>
-                      </Marker>
-                    </>
-                  );
-                })()}
-
-                {/* Marqueur véhicule — statut dérivé de la vitesse courante, pas du statut live */}
-                {(() => {
-                  if (replayPath.length === 0) return null;
-                  const pathIndex = Math.min(
-                    Math.floor((replayProgress / 100) * (replayPath.length - 1)),
-                    replayPath.length - 1
-                  );
-                  const currentPos = replayPath[pathIndex];
-                  const histPoint = replayHistory[Math.min(pathIndex, replayHistory.length - 1)];
-                  if (!currentPos || !activeReplayVehicle) return null;
-                  const speed = histPoint?.speed ?? 0;
-                  const ign = histPoint?.ignition;
-                  const replayStatus: VehicleStatus =
-                    speed >= 2 ? VehicleStatus.MOVING :
-                    (ign === true ? VehicleStatus.IDLE : VehicleStatus.STOPPED);
-                  const heading = histPoint?.heading ?? 0;
-                  return (
+                  {/* Marqueurs numérotés Arrêts / Ralentis */}
+                  {replayStops.map((stop, index) => (
                     <Marker
-                      position={[currentPos.lat, currentPos.lng]}
-                      icon={createVehicleIcon({ ...activeReplayVehicle, status: replayStatus, heading })}
-                      zIndexOffset={1000}
-                    />
-                  );
-                })()}
+                      key={`stop-${stop.id}`}
+                      position={[stop.location.lat, stop.location.lng]}
+                      icon={createStopMarkerIcon(index + 1, stop.type)}
+                      eventHandlers={{
+                        click: () => {
+                          setHighlightedStop(stop.id);
+                          setHighlightedEvent(null);
+                        },
+                      }}
+                    >
+                      <Popup>
+                        <div style={{ minWidth: 160 }} className="text-sm">
+                          <p className="font-bold mb-1" style={{ color: stop.type === 'STOP' ? '#dc2626' : '#f97316' }}>
+                            {stop.type === 'STOP' ? '🅿️ Arrêt' : '⏸️ Ralenti'} #{index + 1}
+                          </p>
+                          <p className="text-slate-700 font-medium">
+                            {Math.floor(stop.duration)}min {Math.round((stop.duration % 1) * 60)}s
+                          </p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {new Date(stop.startTime).toLocaleTimeString('fr-FR', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                            {' → '}
+                            {new Date(stop.endTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                          {stop.address && (
+                            <p className="text-xs text-slate-500 mt-1 truncate max-w-[180px]">{stop.address}</p>
+                          )}
+                          {stop.location && (
+                            <p className="text-[10px] text-slate-400 mt-1 font-mono">
+                              {stop.location.lat.toFixed(5)}, {stop.location.lng.toFixed(5)}
+                            </p>
+                          )}
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
 
-                {/* Auto-follow: pan map to current replay position every ~2s */}
-                {isPlaying && (
-                  <ReplayFollower progress={replayProgress} path={replayPath} />
-                )}
-              </>
-            )}
-          </MapContainer>
+                  {/* Marqueurs excès de vitesse */}
+                  {replaySpeedEvents.map((event, index) => (
+                    <Circle
+                      key={`event-${event.id}`}
+                      center={[event.location.lat, event.location.lng]}
+                      radius={highlightedEvent === event.id ? 55 : 35}
+                      pathOptions={{
+                        color: '#dc2626',
+                        fillColor: '#fca5a5',
+                        fillOpacity: highlightedEvent === event.id ? 0.9 : 0.6,
+                        weight: 2,
+                        dashArray: '4 3',
+                      }}
+                      eventHandlers={{
+                        click: () => {
+                          setHighlightedEvent(event.id);
+                          setHighlightedStop(null);
+                        },
+                      }}
+                    >
+                      <Popup>
+                        <div style={{ minWidth: 150 }} className="text-sm">
+                          <p className="font-bold text-red-600 mb-1">🚨 Excès #{index + 1}</p>
+                          <p className="text-slate-700 font-medium">{Math.round(event.speed)} km/h</p>
+                          <p className="text-xs text-slate-500">Limite : {event.maxAllowed} km/h</p>
+                          <p className="text-xs text-slate-500">Durée : {Math.round(event.duration)}s</p>
+                          <p className="text-xs text-slate-500 mt-1">
+                            {new Date(event.timestamp).toLocaleTimeString('fr-FR', {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                            })}
+                          </p>
+                        </div>
+                      </Popup>
+                    </Circle>
+                  ))}
+
+                  {/* Marqueurs Départ / Arrivée */}
+                  {replayPath.length > 1 &&
+                    (() => {
+                      const startIcon = L.divIcon({
+                        html: `<div style="width:32px;height:32px;border-radius:50%;background:#22c55e;color:white;font-size:16px;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3)">▶</div>`,
+                        className: '',
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16],
+                      });
+                      const endIcon = L.divIcon({
+                        html: `<div style="width:32px;height:32px;border-radius:50%;background:#3b82f6;color:white;font-size:16px;display:flex;align-items:center;justify-content:middle;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);font-weight:700;line-height:32px;text-align:center">■</div>`,
+                        className: '',
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16],
+                      });
+                      const first = replayHistory[0];
+                      const last = replayHistory[replayHistory.length - 1];
+                      return (
+                        <>
+                          <Marker position={[replayPath[0].lat, replayPath[0].lng]} icon={startIcon}>
+                            <Popup>
+                              <div className="text-sm font-bold text-green-600">
+                                🏁 Départ
+                                {first && (
+                                  <p className="text-xs font-normal text-slate-500 mt-1">
+                                    {new Date(first.timestamp).toLocaleTimeString('fr-FR', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </p>
+                                )}
+                              </div>
+                            </Popup>
+                          </Marker>
+                          <Marker
+                            position={[replayPath[replayPath.length - 1].lat, replayPath[replayPath.length - 1].lng]}
+                            icon={endIcon}
+                          >
+                            <Popup>
+                              <div className="text-sm font-bold text-[var(--primary)]">
+                                📍 Arrivée
+                                {last && (
+                                  <p className="text-xs font-normal text-slate-500 mt-1">
+                                    {new Date(last.timestamp).toLocaleTimeString('fr-FR', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </p>
+                                )}
+                              </div>
+                            </Popup>
+                          </Marker>
+                        </>
+                      );
+                    })()}
+
+                  {/* Marqueur véhicule — statut dérivé de la vitesse courante, pas du statut live */}
+                  {(() => {
+                    if (replayPath.length === 0) return null;
+                    const pathIndex = Math.min(
+                      Math.floor((replayProgress / 100) * (replayPath.length - 1)),
+                      replayPath.length - 1
+                    );
+                    const currentPos = replayPath[pathIndex];
+                    const histPoint = replayHistory[Math.min(pathIndex, replayHistory.length - 1)];
+                    if (!currentPos || !activeReplayVehicle) return null;
+                    const speed = histPoint?.speed ?? 0;
+                    const ign = histPoint?.ignition;
+                    const replayStatus: VehicleStatus =
+                      speed >= 2 ? VehicleStatus.MOVING : ign === true ? VehicleStatus.IDLE : VehicleStatus.STOPPED;
+                    const heading = histPoint?.heading ?? 0;
+                    return (
+                      <Marker
+                        position={[currentPos.lat, currentPos.lng]}
+                        icon={createVehicleIcon({ ...activeReplayVehicle, status: replayStatus, heading })}
+                        zIndexOffset={1000}
+                      />
+                    );
+                  })()}
+
+                  {/* Auto-follow: pan map to current replay position every ~2s */}
+                  {isPlaying && <ReplayFollower progress={replayProgress} path={replayPath} />}
+                </>
+              )}
+            </MapContainer>
           </div>
         )}
 
@@ -2186,7 +2615,9 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                 </div>
                 <div className="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
                   <Route className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm font-bold text-[var(--primary)]">{mapKpis.estimatedKmToday.toLocaleString()}</span>
+                  <span className="text-sm font-bold text-[var(--primary)]">
+                    {mapKpis.estimatedKmToday.toLocaleString()}
+                  </span>
                   <span className="text-xs text-slate-400">km today</span>
                 </div>
                 <div className="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
@@ -2207,8 +2638,14 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                     onClick={() => setShowAlertsPanel(!showAlertsPanel)}
                     className={`flex items-center gap-2 px-3 py-1 rounded-full transition-colors ${showAlertsPanel ? 'bg-red-100 dark:bg-red-900' : 'hover:bg-red-50 dark:hover:bg-red-900/50'}`}
                   >
-                    <AlertTriangle className={`w-4 h-4 ${mapKpis.criticalAlerts > 0 ? 'text-red-600 animate-pulse' : 'text-amber-500'}`} />
-                    <span className={`text-sm font-bold ${mapKpis.criticalAlerts > 0 ? 'text-red-600' : 'text-amber-600'}`}>{mapKpis.totalAlerts}</span>
+                    <AlertTriangle
+                      className={`w-4 h-4 ${mapKpis.criticalAlerts > 0 ? 'text-red-600 animate-pulse' : 'text-amber-500'}`}
+                    />
+                    <span
+                      className={`text-sm font-bold ${mapKpis.criticalAlerts > 0 ? 'text-red-600' : 'text-amber-600'}`}
+                    >
+                      {mapKpis.totalAlerts}
+                    </span>
                     <span className="text-xs text-slate-400">alertes</span>
                   </button>
                 )}
@@ -2221,15 +2658,24 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
 
               {/* Boutons flotte/zones/heatmap + son + Toggle OSM/Google */}
               <div className="flex gap-2 items-center">
-                <button onClick={() => setShowAllVehicles(!showAllVehicles)} className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showAllVehicles ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}>
+                <button
+                  onClick={() => setShowAllVehicles(!showAllVehicles)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showAllVehicles ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                >
                   {showAllVehicles ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   {showAllVehicles ? 'Masquer Flotte' : 'Voir toute la flotte'}
                 </button>
-                <button onClick={() => setShowZones(!showZones)} className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showZones ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}>
+                <button
+                  onClick={() => setShowZones(!showZones)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showZones ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                >
                   {showZones ? <EyeOff className="w-4 h-4" /> : <Hexagon className="w-4 h-4" />}
                   {showZones ? 'Masquer Zones' : 'Voir Zones'}
                 </button>
-                <button onClick={() => setShowHeatmap(!showHeatmap)} className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showHeatmap ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}>
+                <button
+                  onClick={() => setShowHeatmap(!showHeatmap)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showHeatmap ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                >
                   {showHeatmap ? <EyeOff className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
                   {showHeatmap ? 'Masquer Heatmap' : 'Voir Heatmap'}
                 </button>
@@ -2253,7 +2699,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                   <button
                     onClick={() => googleMapsKey && setMapProvider('google')}
                     className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white shadow' : googleMapsKey ? 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700' : 'text-slate-300 cursor-not-allowed'}`}
-                    title={googleMapsKey ? "Carte Google Maps" : "Google Maps (Clé API requise)"}
+                    title={googleMapsKey ? 'Carte Google Maps' : 'Google Maps (Clé API requise)'}
                     disabled={!googleMapsKey}
                   >
                     Google
@@ -2295,14 +2741,19 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                   <div className="flex items-center gap-2">
                     <AlertTriangle className="w-5 h-5 text-red-500" />
                     <h3 className="font-bold text-slate-800 dark:text-white">Alertes en direct</h3>
-                    <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 text-xs font-bold rounded-full">{liveAlerts.length}</span>
+                    <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 text-xs font-bold rounded-full">
+                      {liveAlerts.length}
+                    </span>
                   </div>
-                  <button onClick={() => setShowAlertsPanel(false)} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded">
+                  <button
+                    onClick={() => setShowAlertsPanel(false)}
+                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded"
+                  >
                     <X className="w-4 h-4 text-slate-500" />
                   </button>
                 </div>
                 <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700">
-                  {liveAlerts.map(alert => (
+                  {liveAlerts.map((alert) => (
                     <div
                       key={alert.id}
                       onClick={() => {
@@ -2311,26 +2762,43 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
                       }}
                       className={`px-4 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
                     >
-                      <div className={`p-2 rounded-full ${alert.type === 'SPEED' ? 'bg-orange-100 text-orange-600' :
-                        alert.type === 'ZONE' ? 'bg-purple-100 text-purple-600' :
-                          alert.type === 'BATTERY' ? 'bg-yellow-100 text-yellow-600' :
-                            'bg-red-100 text-red-600'
-                        }`}>
-                        {alert.type === 'SPEED' ? <Gauge className="w-4 h-4" /> :
-                          alert.type === 'ZONE' ? <MapPinOff className="w-4 h-4" /> :
-                            alert.type === 'BATTERY' ? <Battery className="w-4 h-4" /> :
-                              <Zap className="w-4 h-4" />}
+                      <div
+                        className={`p-2 rounded-full ${
+                          alert.type === 'SPEED'
+                            ? 'bg-orange-100 text-orange-600'
+                            : alert.type === 'ZONE'
+                              ? 'bg-purple-100 text-purple-600'
+                              : alert.type === 'BATTERY'
+                                ? 'bg-yellow-100 text-yellow-600'
+                                : 'bg-red-100 text-red-600'
+                        }`}
+                      >
+                        {alert.type === 'SPEED' ? (
+                          <Gauge className="w-4 h-4" />
+                        ) : alert.type === 'ZONE' ? (
+                          <MapPinOff className="w-4 h-4" />
+                        ) : alert.type === 'BATTERY' ? (
+                          <Battery className="w-4 h-4" />
+                        ) : (
+                          <Zap className="w-4 h-4" />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-slate-800 dark:text-white truncate">{alert.message}</p>
                         <p className="text-xs text-slate-500 mt-0.5">
-                          {alert.type === 'SPEED' ? 'Excès de vitesse' :
-                            alert.type === 'ZONE' ? 'Hors zone' :
-                              alert.type === 'BATTERY' ? 'Batterie faible' : 'Carburant bas'}
+                          {alert.type === 'SPEED'
+                            ? 'Excès de vitesse'
+                            : alert.type === 'ZONE'
+                              ? 'Hors zone'
+                              : alert.type === 'BATTERY'
+                                ? 'Batterie faible'
+                                : 'Carburant bas'}
                         </p>
                       </div>
                       {alert.severity === 'critical' && (
-                        <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded animate-pulse">CRITIQUE</span>
+                        <span className="px-2 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded animate-pulse">
+                          CRITIQUE
+                        </span>
                       )}
                     </div>
                   ))}
@@ -2364,7 +2832,7 @@ export const MapView: React.FC<MapViewProps> = ({ vehicles, zones = [], focusedV
               setReplayProgress(0);
               setIsPlaying(true);
             } else {
-              setIsPlaying(prev => !prev);
+              setIsPlaying((prev) => !prev);
             }
           }}
           playbackSpeed={playbackSpeed}

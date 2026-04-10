@@ -1,6 +1,6 @@
 /**
  * StaffPanelV2 - Gestion de l'Équipe Améliorée
- * 
+ *
  * Fonctionnalités:
  * - Dashboard KPIs (total, actifs, par rôle)
  * - Tableau avec filtres, recherche, tri, pagination
@@ -12,13 +12,35 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { 
-  Users, Plus, Search, Edit2, Trash2, Shield, Save, Eye, X,
-  Mail, Phone, Key, Lock, Unlock, Clock, Calendar,
-  CheckCircle, XCircle, AlertTriangle,
-  Copy, Settings,
-  Activity, TrendingUp, UserCheck, UserX, Send, PenTool,
-  Building2
+import {
+  Users,
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  Shield,
+  Save,
+  Eye,
+  X,
+  Mail,
+  Phone,
+  Key,
+  Lock,
+  Unlock,
+  Clock,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Copy,
+  Settings,
+  Activity,
+  TrendingUp,
+  UserCheck,
+  UserX,
+  Send,
+  PenTool,
+  Building2,
 } from 'lucide-react';
 import { Card } from '../../../../components/Card';
 import { Pagination } from '../../../../components/Pagination';
@@ -36,7 +58,7 @@ import { SortableHeader } from '../../../../components/SortableHeader';
 import { useConfirmDialog } from '../../../../components/ConfirmDialog';
 import { RoleManagerV2 } from '../RoleManagerV2';
 import { useCurrency } from '../../../../hooks/useCurrency';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { MobileCard, MobileCardList } from '../../../../components/MobileCard';
@@ -63,7 +85,7 @@ interface UserFormData {
   sendInvite?: boolean;
   require2FA?: boolean;
   signature?: string; // Signature du technicien (base64)
-  
+
   // Champs d'identification RH
   matricule?: string; // Numéro matricule / Numéro employé
   cin?: string; // Carte d'identité nationale / CNI / CIN
@@ -76,7 +98,7 @@ interface UserFormData {
   ville?: string; // Ville
   codePostal?: string; // Code postal
   pays?: string; // Pays
-  
+
   // Contrat de travail
   dateEmbauche?: string; // Date d'embauche
   typeContrat?: 'CDI' | 'CDD' | 'Stage' | 'Freelance' | 'Prestataire'; // Type de contrat
@@ -84,12 +106,12 @@ interface UserFormData {
   poste?: string; // Intitulé du poste
   manager?: string; // ID du manager
   salaire?: number; // Salaire (optionnel)
-  
+
   // Contacts d'urgence
   contactUrgenceNom?: string; // Nom contact urgence
   contactUrgenceTel?: string; // Téléphone contact urgence
   contactUrgenceLien?: string; // Lien de parenté
-  
+
   // Champs spécifiques Technicien
   specialite?: string;
   niveau?: 'Junior' | 'Confirmé' | 'Expert';
@@ -128,15 +150,99 @@ type StaffUser = SystemUser & {
 };
 
 // Map statique des classes Tailwind par couleur (évite le purge dynamique)
-const COLOR_CLASSES: Record<string, { bg50: string; bg100: string; text600: string; text700: string; ring400: string; hoverBg100: string; darkBg: string; darkText: string }> = {
-  purple: { bg50: 'bg-purple-50', bg100: 'bg-purple-100', text600: 'text-purple-600', text700: 'text-purple-700', ring400: 'ring-purple-400', hoverBg100: 'hover:bg-purple-100', darkBg: 'dark:bg-purple-900/30', darkText: 'dark:text-purple-400' },
-  blue:   { bg50: 'bg-[var(--primary-dim)]',   bg100: 'bg-[var(--primary-dim)]',   text600: 'text-[var(--primary)]',   text700: 'text-[var(--primary)]',   ring400: 'ring-[var(--primary-dim)]',   hoverBg100: 'hover:bg-[var(--primary-dim)]',   darkBg: 'dark:bg-[var(--primary-dim)]',   darkText: 'dark:text-[var(--primary)]' },
-  green:  { bg50: 'bg-green-50',  bg100: 'bg-green-100',  text600: 'text-green-600',  text700: 'text-green-700',  ring400: 'ring-green-400',  hoverBg100: 'hover:bg-green-100',  darkBg: 'dark:bg-green-900/30',  darkText: 'dark:text-green-400' },
-  amber:  { bg50: 'bg-amber-50',  bg100: 'bg-amber-100',  text600: 'text-amber-600',  text700: 'text-amber-700',  ring400: 'ring-amber-400',  hoverBg100: 'hover:bg-amber-100',  darkBg: 'dark:bg-amber-900/30',  darkText: 'dark:text-amber-400' },
-  orange: { bg50: 'bg-orange-50', bg100: 'bg-orange-100', text600: 'text-orange-600', text700: 'text-orange-700', ring400: 'ring-orange-400', hoverBg100: 'hover:bg-orange-100', darkBg: 'dark:bg-orange-900/30', darkText: 'dark:text-orange-400' },
-  cyan:   { bg50: 'bg-cyan-50',   bg100: 'bg-cyan-100',   text600: 'text-cyan-600',   text700: 'text-cyan-700',   ring400: 'ring-cyan-400',   hoverBg100: 'hover:bg-cyan-100',   darkBg: 'dark:bg-cyan-900/30',   darkText: 'dark:text-cyan-400' },
-  slate:  { bg50: 'bg-slate-50',  bg100: 'bg-slate-100',  text600: 'text-slate-600',  text700: 'text-slate-700',  ring400: 'ring-slate-400',  hoverBg100: 'hover:bg-slate-100',  darkBg: 'dark:bg-slate-900/30',  darkText: 'dark:text-slate-400' },
-  red:    { bg50: 'bg-red-50',    bg100: 'bg-red-100',    text600: 'text-red-600',    text700: 'text-red-700',    ring400: 'ring-red-400',    hoverBg100: 'hover:bg-red-100',    darkBg: 'dark:bg-red-900/30',    darkText: 'dark:text-red-400' },
+const COLOR_CLASSES: Record<
+  string,
+  {
+    bg50: string;
+    bg100: string;
+    text600: string;
+    text700: string;
+    ring400: string;
+    hoverBg100: string;
+    darkBg: string;
+    darkText: string;
+  }
+> = {
+  purple: {
+    bg50: 'bg-purple-50',
+    bg100: 'bg-purple-100',
+    text600: 'text-purple-600',
+    text700: 'text-purple-700',
+    ring400: 'ring-purple-400',
+    hoverBg100: 'hover:bg-purple-100',
+    darkBg: 'dark:bg-purple-900/30',
+    darkText: 'dark:text-purple-400',
+  },
+  blue: {
+    bg50: 'bg-[var(--primary-dim)]',
+    bg100: 'bg-[var(--primary-dim)]',
+    text600: 'text-[var(--primary)]',
+    text700: 'text-[var(--primary)]',
+    ring400: 'ring-[var(--primary-dim)]',
+    hoverBg100: 'hover:bg-[var(--primary-dim)]',
+    darkBg: 'dark:bg-[var(--primary-dim)]',
+    darkText: 'dark:text-[var(--primary)]',
+  },
+  green: {
+    bg50: 'bg-green-50',
+    bg100: 'bg-green-100',
+    text600: 'text-green-600',
+    text700: 'text-green-700',
+    ring400: 'ring-green-400',
+    hoverBg100: 'hover:bg-green-100',
+    darkBg: 'dark:bg-green-900/30',
+    darkText: 'dark:text-green-400',
+  },
+  amber: {
+    bg50: 'bg-amber-50',
+    bg100: 'bg-amber-100',
+    text600: 'text-amber-600',
+    text700: 'text-amber-700',
+    ring400: 'ring-amber-400',
+    hoverBg100: 'hover:bg-amber-100',
+    darkBg: 'dark:bg-amber-900/30',
+    darkText: 'dark:text-amber-400',
+  },
+  orange: {
+    bg50: 'bg-orange-50',
+    bg100: 'bg-orange-100',
+    text600: 'text-orange-600',
+    text700: 'text-orange-700',
+    ring400: 'ring-orange-400',
+    hoverBg100: 'hover:bg-orange-100',
+    darkBg: 'dark:bg-orange-900/30',
+    darkText: 'dark:text-orange-400',
+  },
+  cyan: {
+    bg50: 'bg-cyan-50',
+    bg100: 'bg-cyan-100',
+    text600: 'text-cyan-600',
+    text700: 'text-cyan-700',
+    ring400: 'ring-cyan-400',
+    hoverBg100: 'hover:bg-cyan-100',
+    darkBg: 'dark:bg-cyan-900/30',
+    darkText: 'dark:text-cyan-400',
+  },
+  slate: {
+    bg50: 'bg-slate-50',
+    bg100: 'bg-slate-100',
+    text600: 'text-slate-600',
+    text700: 'text-slate-700',
+    ring400: 'ring-slate-400',
+    hoverBg100: 'hover:bg-slate-100',
+    darkBg: 'dark:bg-slate-900/30',
+    darkText: 'dark:text-slate-400',
+  },
+  red: {
+    bg50: 'bg-red-50',
+    bg100: 'bg-red-100',
+    text600: 'text-red-600',
+    text700: 'text-red-700',
+    ring400: 'ring-red-400',
+    hoverBg100: 'hover:bg-red-100',
+    darkBg: 'dark:bg-red-900/30',
+    darkText: 'dark:text-red-400',
+  },
 };
 
 const getColorClasses = (color: string) => COLOR_CLASSES[color] || COLOR_CLASSES.slate;
@@ -173,8 +279,8 @@ export const StaffPanelV2: React.FC = () => {
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
 
   // Organisations (Resellers) pour les checkboxes
-  const organizations = useMemo(() => (tiers || []).filter(t => t.type === 'RESELLER'), [tiers]);
-  
+  const organizations = useMemo(() => (tiers || []).filter((t) => t.type === 'RESELLER'), [tiers]);
+
   // State
   const [activeTab, setActiveTab] = useState<'users' | 'roles'>('users');
 
@@ -183,11 +289,11 @@ export const StaffPanelV2: React.FC = () => {
     role: 'ALL',
     status: 'ALL',
     sortBy: 'name',
-    sortOrder: 'asc'
+    sortOrder: 'asc',
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  
+
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -197,7 +303,7 @@ export const StaffPanelV2: React.FC = () => {
   const [resetPasswordUser, setResetPasswordUser] = useState<SystemUser | null>(null);
   const [newPasswordInput, setNewPasswordInput] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
-  
+
   // Form state
   const [formData, setFormData] = useState<UserFormData>({
     name: '',
@@ -207,7 +313,7 @@ export const StaffPanelV2: React.FC = () => {
     status: 'Actif',
     permissions: ['VIEW_DASHBOARD'],
     sendInvite: true,
-    require2FA: false
+    require2FA: false,
   });
   const [inviteEmail, setInviteEmail] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -215,65 +321,67 @@ export const StaffPanelV2: React.FC = () => {
   // Filtrage et tri
   // Rôles internes uniquement — les clients (CLIENT / CLIENT_ADMIN) ont leur propre panel
   const STAFF_ROLES = new Set([
-    'SUPERADMIN', 'ADMIN', 'MANAGER', 'TECH', 'COMMERCIAL',
-    'SUPPORT_AGENT', 'AGENT_TRACKING', 'COMPTABLE', 'RESELLER_ADMIN',
+    'SUPERADMIN',
+    'ADMIN',
+    'MANAGER',
+    'TECH',
+    'COMMERCIAL',
+    'SUPPORT_AGENT',
+    'AGENT_TRACKING',
+    'COMPTABLE',
+    'RESELLER_ADMIN',
   ]);
 
   const filteredUsers = useMemo(() => {
-    let result = users.filter(u => STAFF_ROLES.has((u.role || '').toUpperCase()));
+    let result = users.filter((u) => STAFF_ROLES.has((u.role || '').toUpperCase()));
 
     // Recherche
     if (filters.search) {
       const search = filters.search.toLowerCase();
-      result = result.filter(u => 
-        u.name.toLowerCase().includes(search) ||
-        u.email.toLowerCase().includes(search)
-      );
+      result = result.filter((u) => u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
     }
-    
+
     // Filtre rôle
     if (filters.role !== 'ALL') {
-      result = result.filter(u => u.role === filters.role);
+      result = result.filter((u) => u.role === filters.role);
     }
-    
+
     // Filtre statut
     if (filters.status !== 'ALL') {
-      result = result.filter(u => u.status === filters.status);
+      result = result.filter((u) => u.status === filters.status);
     }
-    
+
     // Tri
     // (sorting handled by useTableSort below)
-    
+
     return result;
   }, [users, filters]);
 
-  const { sortedItems: sortedUsers, sortConfig: staffSortConfig, handleSort: handleStaffSort } = useTableSort(
-    filteredUsers,
-    { key: 'name', direction: 'asc' }
-  );
+  const {
+    sortedItems: sortedUsers,
+    sortConfig: staffSortConfig,
+    handleSort: handleStaffSort,
+  } = useTableSort(filteredUsers, { key: 'name', direction: 'asc' });
 
   // Pagination
   const totalPages = Math.ceil(sortedUsers.length / itemsPerPage);
-  const paginatedUsers = sortedUsers.slice(
-    (currentPage - 1) * itemsPerPage, 
-    currentPage * itemsPerPage
-  );
+  const paginatedUsers = sortedUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // Stats
   const stats = useMemo(() => {
     const total = users.length;
-    const active = users.filter(u => u.status === 'Actif').length;
-    const byRole = AVAILABLE_ROLES.map(r => ({
+    const active = users.filter((u) => u.status === 'Actif').length;
+    const byRole = AVAILABLE_ROLES.map((r) => ({
       ...r,
-      count: users.filter(u => u.role === r.id).length
+      count: users.filter((u) => u.role === r.id).length,
     }));
-    const recentLogins = users.filter(u => {
+    const recentLogins = users.filter((u) => {
       if (!u.lastLogin) return false;
       const lastLogin = new Date(u.lastLogin);
       const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
       return lastLogin > dayAgo;
     }).length;
-    
+
     return { total, active, byRole, recentLogins };
   }, [users]);
 
@@ -290,7 +398,7 @@ export const StaffPanelV2: React.FC = () => {
       permissions: ['VIEW_DASHBOARD'],
       allowedTenants: [],
       sendInvite: false, // Par défaut false car on demande le password
-      require2FA: false
+      require2FA: false,
     });
     setIsModalOpen(true);
   };
@@ -308,7 +416,7 @@ export const StaffPanelV2: React.FC = () => {
       allowedTenants: user.allowedTenants || [],
       require2FA: user.require2FA || false,
       signature: user.signature || '',
-      
+
       // Identification RH
       matricule: user.matricule || '',
       cin: user.cin || '',
@@ -320,8 +428,8 @@ export const StaffPanelV2: React.FC = () => {
       adresse: user.adresse || '',
       ville: user.ville || '',
       codePostal: user.codePostal || '',
-      pays: user.pays || 'Côte d\'Ivoire',
-      
+      pays: user.pays || "Côte d'Ivoire",
+
       // Contrat
       dateEmbauche: user.dateEmbauche || '',
       typeContrat: user.typeContrat,
@@ -329,11 +437,11 @@ export const StaffPanelV2: React.FC = () => {
       poste: user.poste || '',
       manager: user.manager || '',
       salaire: user.salaire,
-      
+
       // Contact urgence
       contactUrgenceNom: user.contactUrgenceNom || '',
       contactUrgenceTel: user.contactUrgenceTel || '',
-      contactUrgenceLien: user.contactUrgenceLien || ''
+      contactUrgenceLien: user.contactUrgenceLien || '',
     });
     setIsModalOpen(true);
   };
@@ -373,7 +481,7 @@ export const StaffPanelV2: React.FC = () => {
       showToast('Veuillez sélectionner le tenant client (organisation) pour cet utilisateur.', 'error');
       return;
     }
-    
+
     setIsSaving(true);
     try {
       if (editingUser) {
@@ -381,7 +489,7 @@ export const StaffPanelV2: React.FC = () => {
         const updateData: any = {
           ...editingUser,
           ...formData,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
         if (!formData.password) {
           delete updateData.password;
@@ -394,12 +502,13 @@ export const StaffPanelV2: React.FC = () => {
           ...formData,
           avatar: `https://i.pravatar.cc/150?u=${formData.email}`,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
         try {
-          const effectiveTenantId = formData.role === 'CLIENT' && formData.tenantId
-            ? formData.tenantId
-            : currentUser?.tenantId || 'tenant_default';
+          const effectiveTenantId =
+            formData.role === 'CLIENT' && formData.tenantId
+              ? formData.tenantId
+              : currentUser?.tenantId || 'tenant_default';
           await api.users.create({ ...newUser, tenantId: effectiveTenantId });
           queryClient.invalidateQueries({ queryKey: ['users'] });
         } catch (err: unknown) {
@@ -426,7 +535,7 @@ export const StaffPanelV2: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const user = users.find(u => u.id === id);
+    const user = users.find((u) => u.id === id);
 
     // Prevent self-deletion
     if (user?.id === currentUser?.id) {
@@ -436,7 +545,7 @@ export const StaffPanelV2: React.FC = () => {
 
     // Prevent deleting the last SUPERADMIN
     if (user?.role === 'SUPERADMIN') {
-      const superadminCount = users.filter(u => u.role === 'SUPERADMIN').length;
+      const superadminCount = users.filter((u) => u.role === 'SUPERADMIN').length;
       if (superadminCount <= 1) {
         showToast('Impossible de supprimer le dernier superadmin.', 'error');
         return;
@@ -445,7 +554,14 @@ export const StaffPanelV2: React.FC = () => {
       return;
     }
 
-    if (await confirm({ message: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?', variant: 'danger', title: 'Confirmer la suppression', confirmLabel: 'Supprimer' })) {
+    if (
+      await confirm({
+        message: 'Êtes-vous sûr de vouloir supprimer cet utilisateur ?',
+        variant: 'danger',
+        title: 'Confirmer la suppression',
+        confirmLabel: 'Supprimer',
+      })
+    ) {
       deleteUser(id);
       showToast(TOAST.ADMIN.USER_DELETED, 'info');
     }
@@ -492,14 +608,14 @@ export const StaffPanelV2: React.FC = () => {
   };
 
   const getRoleConfig = (roleId: string) => {
-    return AVAILABLE_ROLES.find(r => r.id === roleId) || AVAILABLE_ROLES[AVAILABLE_ROLES.length - 1];
+    return AVAILABLE_ROLES.find((r) => r.id === roleId) || AVAILABLE_ROLES[AVAILABLE_ROLES.length - 1];
   };
 
   const getStatusBadge = (status: string) => {
     const config: Record<string, { bg: string; text: string; icon: typeof CheckCircle }> = {
-      'Actif': { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: CheckCircle },
-      'Inactif': { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-600 dark:text-slate-400', icon: XCircle },
-      'Suspendu': { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', icon: AlertTriangle }
+      Actif: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: CheckCircle },
+      Inactif: { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-600 dark:text-slate-400', icon: XCircle },
+      Suspendu: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', icon: AlertTriangle },
     };
     const c = config[status] || config['Inactif'];
     return (
@@ -515,8 +631,8 @@ export const StaffPanelV2: React.FC = () => {
     const d = new Date(date);
     const now = new Date();
     const diff = now.getTime() - d.getTime();
-    
-    if (diff < 60 * 1000) return 'À l\'instant';
+
+    if (diff < 60 * 1000) return "À l'instant";
     if (diff < 60 * 60 * 1000) return `Il y a ${Math.floor(diff / 60000)} min`;
     if (diff < 24 * 60 * 60 * 1000) return `Il y a ${Math.floor(diff / 3600000)} h`;
     return d.toLocaleDateString('fr-FR');
@@ -537,25 +653,23 @@ export const StaffPanelV2: React.FC = () => {
     <div className="space-y-6 h-full flex flex-col">
       {/* Tabs */}
       <div className="flex gap-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
-        <button 
+        <button
           onClick={() => setActiveTab('users')}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-            activeTab === 'users' 
-              ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]' 
+            activeTab === 'users'
+              ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
               : 'border-transparent text-slate-500 hover:text-slate-700'
           }`}
         >
           <Users className="w-4 h-4" />
           Utilisateurs
-          <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded-full text-xs">
-            {users.length}
-          </span>
+          <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded-full text-xs">{users.length}</span>
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('roles')}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
-            activeTab === 'roles' 
-              ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]' 
+            activeTab === 'roles'
+              ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
               : 'border-transparent text-slate-500 hover:text-slate-700'
           }`}
         >
@@ -579,20 +693,22 @@ export const StaffPanelV2: React.FC = () => {
                 </div>
               </div>
             </Card>
-            
+
             <Card className="bg-white dark:bg-slate-800">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs text-slate-500 uppercase font-bold">Actifs</p>
                   <p className="text-2xl font-bold text-green-600">{stats.active}</p>
-                  <p className="text-xs text-slate-500">{stats.total > 0 ? ((stats.active / stats.total) * 100).toFixed(0) : 0}% du total</p>
+                  <p className="text-xs text-slate-500">
+                    {stats.total > 0 ? ((stats.active / stats.total) * 100).toFixed(0) : 0}% du total
+                  </p>
                 </div>
                 <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
                   <UserCheck className="w-6 h-6 text-green-600" />
                 </div>
               </div>
             </Card>
-            
+
             <Card className="bg-white dark:bg-slate-800">
               <div className="flex items-center justify-between">
                 <div>
@@ -604,7 +720,7 @@ export const StaffPanelV2: React.FC = () => {
                 </div>
               </div>
             </Card>
-            
+
             <Card className="bg-white dark:bg-slate-800">
               <div className="flex items-center justify-between">
                 <div>
@@ -620,21 +736,23 @@ export const StaffPanelV2: React.FC = () => {
 
           {/* Répartition par rôle */}
           <div className="flex flex-wrap gap-2 shrink-0">
-            {stats.byRole.filter(r => r.count > 0).map(role => (
-              <button
-                key={role.id}
-                onClick={() => setFilters({ ...filters, role: filters.role === role.id ? 'ALL' : role.id })}
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${(() => {
-                  const cc = getColorClasses(role.color);
-                  return filters.role === role.id
-                    ? `${cc.bg100} ${cc.text700} ring-2 ${cc.ring400}`
-                    : `${cc.bg50} ${cc.text600} ${cc.hoverBg100}`;
-                })()}`}
-              >
-                <role.icon className="w-3 h-3" />
-                {role.label}: {role.count}
-              </button>
-            ))}
+            {stats.byRole
+              .filter((r) => r.count > 0)
+              .map((role) => (
+                <button
+                  key={role.id}
+                  onClick={() => setFilters({ ...filters, role: filters.role === role.id ? 'ALL' : role.id })}
+                  className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${(() => {
+                    const cc = getColorClasses(role.color);
+                    return filters.role === role.id
+                      ? `${cc.bg100} ${cc.text700} ring-2 ${cc.ring400}`
+                      : `${cc.bg50} ${cc.text600} ${cc.hoverBg100}`;
+                  })()}`}
+                >
+                  <role.icon className="w-3 h-3" />
+                  {role.label}: {role.count}
+                </button>
+              ))}
           </div>
 
           {/* Filters & Actions */}
@@ -652,7 +770,7 @@ export const StaffPanelV2: React.FC = () => {
                     className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
                   />
                 </div>
-                
+
                 {/* Status Filter */}
                 <select
                   value={filters.status}
@@ -665,12 +783,15 @@ export const StaffPanelV2: React.FC = () => {
                   <option value="Inactif">Inactifs</option>
                   <option value="Suspendu">Suspendus</option>
                 </select>
-                
+
                 {/* Sort */}
                 <select
                   value={`${filters.sortBy}-${filters.sortOrder}`}
                   onChange={(e) => {
-                    const [sortBy, sortOrder] = e.target.value.split('-') as [typeof filters.sortBy, typeof filters.sortOrder];
+                    const [sortBy, sortOrder] = e.target.value.split('-') as [
+                      typeof filters.sortBy,
+                      typeof filters.sortOrder,
+                    ];
                     setFilters({ ...filters, sortBy, sortOrder });
                   }}
                   className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
@@ -683,7 +804,7 @@ export const StaffPanelV2: React.FC = () => {
                   <option value="createdAt-desc">Plus récent</option>
                 </select>
               </div>
-              
+
               <div className="flex gap-2">
                 <button
                   onClick={() => setIsInviteModalOpen(true)}
@@ -712,177 +833,239 @@ export const StaffPanelV2: React.FC = () => {
                     <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                     <p className="font-medium">Aucun utilisateur trouvé</p>
                   </div>
-                ) : paginatedUsers.map(user => {
-                  const roleConfig = getRoleConfig(user.role);
-                  return (
-                    <MobileCard key={user.id} onClick={() => handleViewDetails(user)} className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="relative shrink-0">
-                          <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700" />
-                          {user.status === 'Actif' && <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full" />}
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-bold text-slate-800 dark:text-white text-sm truncate">{user.name}</p>
-                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
-                          <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
-                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700}`}>
-                              <roleConfig.icon className="w-2.5 h-2.5" />
-                              {roleConfig.label}
-                            </span>
-                            <span className="text-[10px] text-slate-400">{formatLastLogin(user.lastLogin)}</span>
+                ) : (
+                  paginatedUsers.map((user) => {
+                    const roleConfig = getRoleConfig(user.role);
+                    return (
+                      <MobileCard
+                        key={user.id}
+                        onClick={() => handleViewDetails(user)}
+                        className="flex items-center justify-between gap-3"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="relative shrink-0">
+                            <img
+                              src={user.avatar}
+                              alt={user.name}
+                              className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
+                            />
+                            {user.status === 'Actif' && (
+                              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold text-slate-800 dark:text-white text-sm truncate">{user.name}</p>
+                            <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                            <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
+                              <span
+                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700}`}
+                              >
+                                <roleConfig.icon className="w-2.5 h-2.5" />
+                                {roleConfig.label}
+                              </span>
+                              <span className="text-[10px] text-slate-400">{formatLastLogin(user.lastLogin)}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                        {getStatusBadge(user.status)}
-                        <button onClick={() => handleEditClick(user)} className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded">
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </MobileCard>
-                  );
-                })}
+                        <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                          {getStatusBadge(user.status)}
+                          <button
+                            onClick={() => handleEditClick(user)}
+                            className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </MobileCard>
+                    );
+                  })
+                )}
               </MobileCardList>
             ) : (
-            <div className="flex-1 overflow-auto pb-16 lg:pb-0">
-              <table className="w-full text-left">
-                <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
-                  <tr>
-                    <SortableHeader label="Utilisateur" sortKey="name" currentSortKey={staffSortConfig.key} currentDirection={staffSortConfig.direction} onSort={handleStaffSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="Rôle" sortKey="role" currentSortKey={staffSortConfig.key} currentDirection={staffSortConfig.direction} onSort={handleStaffSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="Dernière Connexion" sortKey="lastLogin" currentSortKey={staffSortConfig.key} currentDirection={staffSortConfig.direction} onSort={handleStaffSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="Statut" sortKey="status" currentSortKey={staffSortConfig.key} currentDirection={staffSortConfig.direction} onSort={handleStaffSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    {isSuperAdmin && <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase">Mot de passe</th>}
-                    <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                  {paginatedUsers.length === 0 ? (
+              <div className="flex-1 overflow-auto pb-16 lg:pb-0">
+                <table className="w-full text-left">
+                  <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
                     <tr>
-                      <td colSpan={isSuperAdmin ? 7 : 6} className="px-6 py-12 text-center text-slate-500">
-                        <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                        <p className="font-medium">Aucun utilisateur trouvé</p>
-                        <p className="text-sm">Modifiez vos filtres ou créez un nouvel utilisateur</p>
-                      </td>
+                      <SortableHeader
+                        label="Utilisateur"
+                        sortKey="name"
+                        currentSortKey={staffSortConfig.key}
+                        currentDirection={staffSortConfig.direction}
+                        onSort={handleStaffSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      <SortableHeader
+                        label="Rôle"
+                        sortKey="role"
+                        currentSortKey={staffSortConfig.key}
+                        currentDirection={staffSortConfig.direction}
+                        onSort={handleStaffSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      <SortableHeader
+                        label="Dernière Connexion"
+                        sortKey="lastLogin"
+                        currentSortKey={staffSortConfig.key}
+                        currentDirection={staffSortConfig.direction}
+                        onSort={handleStaffSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      <SortableHeader
+                        label="Statut"
+                        sortKey="status"
+                        currentSortKey={staffSortConfig.key}
+                        currentDirection={staffSortConfig.direction}
+                        onSort={handleStaffSort}
+                        className="text-xs font-bold text-slate-500 uppercase"
+                      />
+                      {isSuperAdmin && (
+                        <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase">Mot de passe</th>
+                      )}
+                      <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase text-right">Actions</th>
                     </tr>
-                  ) : (
-                    paginatedUsers.map(user => {
-                      const roleConfig = getRoleConfig(user.role);
-                      return (
-                        <tr 
-                          key={user.id} 
-                          className="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer"
-                          onClick={() => handleViewDetails(user)}
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="relative">
-                                <img 
-                                  src={user.avatar} 
-                                  alt={user.name} 
-                                  className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700" 
-                                />
-                                {user.status === 'Actif' && (
-                                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                    {paginatedUsers.length === 0 ? (
+                      <tr>
+                        <td colSpan={isSuperAdmin ? 7 : 6} className="px-6 py-12 text-center text-slate-500">
+                          <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                          <p className="font-medium">Aucun utilisateur trouvé</p>
+                          <p className="text-sm">Modifiez vos filtres ou créez un nouvel utilisateur</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedUsers.map((user) => {
+                        const roleConfig = getRoleConfig(user.role);
+                        return (
+                          <tr
+                            key={user.id}
+                            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer"
+                            onClick={() => handleViewDetails(user)}
+                          >
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="relative">
+                                  <img
+                                    src={user.avatar}
+                                    alt={user.name}
+                                    className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
+                                  />
+                                  {user.status === 'Actif' && (
+                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="font-bold text-slate-800 dark:text-white">{user.name}</p>
+                                  <p className="text-xs text-slate-500">{user.email}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700} ${getColorClasses(roleConfig.color).darkBg} ${getColorClasses(roleConfig.color).darkText}`}
+                              >
+                                <roleConfig.icon className="w-3 h-3" />
+                                {roleConfig.label}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                <Clock className="w-4 h-4" />
+                                {formatLastLogin(user.lastLogin)}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">{getStatusBadge(user.status)}</td>
+                            {isSuperAdmin && (
+                              <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center gap-1">
+                                  {(user as StaffUser).plainPassword ? (
+                                    <>
+                                      <code className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded select-all">
+                                        {visiblePasswords[user.id] ? (user as StaffUser).plainPassword : '••••••••'}
+                                      </code>
+                                      <button
+                                        onClick={() =>
+                                          setVisiblePasswords((prev) => ({ ...prev, [user.id]: !prev[user.id] }))
+                                        }
+                                        className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
+                                        title={visiblePasswords[user.id] ? 'Masquer' : 'Afficher'}
+                                      >
+                                        {visiblePasswords[user.id] ? (
+                                          <XCircle className="w-3.5 h-3.5" />
+                                        ) : (
+                                          <Eye className="w-3.5 h-3.5" />
+                                        )}
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText((user as StaffUser).plainPassword);
+                                          showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success');
+                                        }}
+                                        className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
+                                        title="Copier"
+                                      >
+                                        <Copy className="w-3.5 h-3.5" />
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <span className="text-xs text-slate-400 italic">Non disponible</span>
+                                  )}
+                                </div>
+                              </td>
+                            )}
+                            <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-1">
+                                <button
+                                  onClick={() => handleEditClick(user)}
+                                  className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded"
+                                  title="Modifier"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleResetPassword(user)}
+                                  className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded"
+                                  title="Réinitialiser mot de passe"
+                                >
+                                  <Key className="w-4 h-4" />
+                                </button>
+                                {user.role !== 'SUPERADMIN' && (
+                                  <button
+                                    onClick={() =>
+                                      handleStatusChange(user, user.status === 'Actif' ? 'Inactif' : 'Actif')
+                                    }
+                                    className={`p-1.5 rounded ${
+                                      user.status === 'Actif'
+                                        ? 'text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20'
+                                        : 'text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                    }`}
+                                    title={user.status === 'Actif' ? 'Désactiver' : 'Activer'}
+                                  >
+                                    {user.status === 'Actif' ? (
+                                      <Lock className="w-4 h-4" />
+                                    ) : (
+                                      <Unlock className="w-4 h-4" />
+                                    )}
+                                  </button>
+                                )}
+                                {user.role !== 'SUPERADMIN' && (
+                                  <button
+                                    onClick={() => handleDelete(user.id)}
+                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                    title="Supprimer"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
                                 )}
                               </div>
-                              <div>
-                                <p className="font-bold text-slate-800 dark:text-white">{user.name}</p>
-                                <p className="text-xs text-slate-500">{user.email}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700} ${getColorClasses(roleConfig.color).darkBg} ${getColorClasses(roleConfig.color).darkText}`}>
-                              <roleConfig.icon className="w-3 h-3" />
-                              {roleConfig.label}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                              <Clock className="w-4 h-4" />
-                              {formatLastLogin(user.lastLogin)}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            {getStatusBadge(user.status)}
-                          </td>
-                          {isSuperAdmin && (
-                          <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center gap-1">
-                              {(user as StaffUser).plainPassword ? (
-                                <>
-                                  <code className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded select-all">
-                                    {visiblePasswords[user.id] ? (user as StaffUser).plainPassword : '••••••••'}
-                                  </code>
-                                  <button
-                                    onClick={() => setVisiblePasswords(prev => ({ ...prev, [user.id]: !prev[user.id] }))}
-                                    className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
-                                    title={visiblePasswords[user.id] ? 'Masquer' : 'Afficher'}
-                                  >
-                                    {visiblePasswords[user.id] ? <XCircle className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                                  </button>
-                                  <button
-                                    onClick={() => { navigator.clipboard.writeText((user as StaffUser).plainPassword); showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success'); }}
-                                    className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
-                                    title="Copier"
-                                  >
-                                    <Copy className="w-3.5 h-3.5" />
-                                  </button>
-                                </>
-                              ) : (
-                                <span className="text-xs text-slate-400 italic">Non disponible</span>
-                              )}
-                            </div>
-                          </td>
-                          )}
-                          <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-end gap-1">
-                              <button
-                                onClick={() => handleEditClick(user)}
-                                className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded"
-                                title="Modifier"
-                              >
-                                <Edit2 className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleResetPassword(user)}
-                                className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded"
-                                title="Réinitialiser mot de passe"
-                              >
-                                <Key className="w-4 h-4" />
-                              </button>
-                              {user.role !== 'SUPERADMIN' && (
-                                <button
-                                  onClick={() => handleStatusChange(user, user.status === 'Actif' ? 'Inactif' : 'Actif')}
-                                  className={`p-1.5 rounded ${
-                                    user.status === 'Actif' 
-                                      ? 'text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20' 
-                                      : 'text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
-                                  }`}
-                                  title={user.status === 'Actif' ? 'Désactiver' : 'Activer'}
-                                >
-                                  {user.status === 'Actif' ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                                </button>
-                              )}
-                              {user.role !== 'SUPERADMIN' && (
-                                <button
-                                  onClick={() => handleDelete(user.id)}
-                                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
-                                  title="Supprimer"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
             )}
 
             {/* Pagination */}
@@ -906,13 +1089,15 @@ export const StaffPanelV2: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingUser ? `Modifier ${editingUser.name}` : "Nouvel Utilisateur"}
+        title={editingUser ? `Modifier ${editingUser.name}` : 'Nouvel Utilisateur'}
         maxWidth="max-w-lg"
         footer={
           <div className="flex items-center justify-between w-full">
-            <p className="text-xs text-slate-400"><span className="text-red-500">*</span> Champs obligatoires</p>
+            <p className="text-xs text-slate-400">
+              <span className="text-red-500">*</span> Champs obligatoires
+            </p>
             <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => setIsModalOpen(false)}
                 className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50"
               >
@@ -946,7 +1131,7 @@ export const StaffPanelV2: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
                 Email <span className="text-red-500">*</span>
@@ -955,7 +1140,7 @@ export const StaffPanelV2: React.FC = () => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700 ${!formData.email ? 'border-red-300' : (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? 'border-red-500' : '')}`}
+                className={`w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700 ${!formData.email ? 'border-red-300' : formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? 'border-red-500' : ''}`}
                 placeholder="email@entreprise.com"
                 required
               />
@@ -963,11 +1148,9 @@ export const StaffPanelV2: React.FC = () => {
                 <p className="text-xs text-red-500 mt-1">Format email invalide</p>
               )}
             </div>
-            
+
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                Téléphone
-              </label>
+              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Téléphone</label>
               <input
                 type="tel"
                 value={formData.phone}
@@ -990,7 +1173,7 @@ export const StaffPanelV2: React.FC = () => {
                 value={formData.password || ''}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
-                placeholder={editingUser ? "Laisser vide pour ne pas modifier" : "Minimum 6 caractères"}
+                placeholder={editingUser ? 'Laisser vide pour ne pas modifier' : 'Minimum 6 caractères'}
               />
               {editingUser && (
                 <p className="text-xs text-slate-500 mt-1">Laisser vide pour conserver le mot de passe actuel</p>
@@ -1004,7 +1187,7 @@ export const StaffPanelV2: React.FC = () => {
               <Users className="w-4 h-4" />
               Identification RH
             </h4>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Matricule</label>
@@ -1016,7 +1199,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="EMP-001"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">CIN / CNI</label>
                 <input
@@ -1027,7 +1210,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="Numéro pièce d'identité"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date de naissance</label>
                 <input
@@ -1037,7 +1220,7 @@ export const StaffPanelV2: React.FC = () => {
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Lieu de naissance</label>
                 <input
@@ -1048,7 +1231,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="Ville, Pays"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nationalité</label>
                 <select
@@ -1069,7 +1252,7 @@ export const StaffPanelV2: React.FC = () => {
                   <option value="Autre">🌍 Autre</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Sexe</label>
                 <select
@@ -1083,12 +1266,17 @@ export const StaffPanelV2: React.FC = () => {
                   <option value="Autre">Autre</option>
                 </select>
               </div>
-              
+
               <div className="col-span-2">
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Situation familiale</label>
                 <select
                   value={formData.situationFamiliale || ''}
-                  onChange={(e) => setFormData({ ...formData, situationFamiliale: e.target.value as UserFormData['situationFamiliale'] })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      situationFamiliale: e.target.value as UserFormData['situationFamiliale'],
+                    })
+                  }
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
                 >
                   <option value="">Sélectionner...</option>
@@ -1099,7 +1287,7 @@ export const StaffPanelV2: React.FC = () => {
                 </select>
               </div>
             </div>
-            
+
             {/* Adresse */}
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
@@ -1112,7 +1300,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="Numéro, rue, quartier"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Ville</label>
                 <input
@@ -1123,7 +1311,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="Abidjan, Dakar..."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Code postal</label>
                 <input
@@ -1134,11 +1322,11 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="BP 01"
                 />
               </div>
-              
+
               <div className="col-span-2">
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pays</label>
                 <select
-                  value={formData.pays || 'Côte d\'Ivoire'}
+                  value={formData.pays || "Côte d'Ivoire"}
                   onChange={(e) => setFormData({ ...formData, pays: e.target.value })}
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
                 >
@@ -1162,7 +1350,7 @@ export const StaffPanelV2: React.FC = () => {
               <Calendar className="w-4 h-4" />
               Contrat de Travail
             </h4>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date d'embauche</label>
@@ -1173,12 +1361,14 @@ export const StaffPanelV2: React.FC = () => {
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type de contrat</label>
                 <select
                   value={formData.typeContrat || ''}
-                  onChange={(e) => setFormData({ ...formData, typeContrat: e.target.value as UserFormData['typeContrat'] })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, typeContrat: e.target.value as UserFormData['typeContrat'] })
+                  }
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
                 >
                   <option value="">Sélectionner...</option>
@@ -1189,7 +1379,7 @@ export const StaffPanelV2: React.FC = () => {
                   <option value="Prestataire">Prestataire</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Département</label>
                 <input
@@ -1200,7 +1390,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="Technique, Commercial, Support..."
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Intitulé du poste</label>
                 <input
@@ -1220,7 +1410,7 @@ export const StaffPanelV2: React.FC = () => {
               <Phone className="w-4 h-4" />
               Contact d'Urgence
             </h4>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nom & Prénom</label>
@@ -1232,7 +1422,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="Personne à contacter"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Téléphone</label>
                 <input
@@ -1243,7 +1433,7 @@ export const StaffPanelV2: React.FC = () => {
                   placeholder="+225 XX XX XX XX"
                 />
               </div>
-              
+
               <div className="col-span-2">
                 <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Lien de parenté</label>
                 <select
@@ -1279,23 +1469,27 @@ export const StaffPanelV2: React.FC = () => {
                   className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
                   title="Rôle de l'utilisateur"
                 >
-                  {AVAILABLE_ROLES.filter(r => !r.system).map(role => (
-                    <option key={role.id} value={role.id}>{role.label}</option>
+                  {AVAILABLE_ROLES.filter((r) => !r.system).map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.label}
+                    </option>
                   ))}
                 </select>
               )}
             </div>
-            
+
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Statut</label>
               {editingUser ? (
-                <div className={`p-2 rounded-lg flex items-center gap-2 text-sm font-medium ${
-                  formData.status === 'Actif' 
-                    ? 'bg-green-50 text-green-700 border border-green-200' 
-                    : formData.status === 'Suspendu'
-                    ? 'bg-red-50 text-red-700 border border-red-200'
-                    : 'bg-slate-100 text-slate-600 border border-slate-200'
-                }`}>
+                <div
+                  className={`p-2 rounded-lg flex items-center gap-2 text-sm font-medium ${
+                    formData.status === 'Actif'
+                      ? 'bg-green-50 text-green-700 border border-green-200'
+                      : formData.status === 'Suspendu'
+                        ? 'bg-red-50 text-red-700 border border-red-200'
+                        : 'bg-slate-100 text-slate-600 border border-slate-200'
+                  }`}
+                >
                   {formData.status === 'Actif' ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
                   {formData.status}
                   <span className="text-xs text-slate-500 ml-auto">(via Actions)</span>
@@ -1323,13 +1517,11 @@ export const StaffPanelV2: React.FC = () => {
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Envoyer une invitation par email
                   </p>
-                  <p className="text-xs text-slate-500">
-                    L'utilisateur recevra un lien pour définir son mot de passe
-                  </p>
+                  <p className="text-xs text-slate-500">L'utilisateur recevra un lien pour définir son mot de passe</p>
                 </div>
               </label>
             )}
-            
+
             <label className="flex items-center gap-3 cursor-pointer">
               <input
                 type="checkbox"
@@ -1341,9 +1533,7 @@ export const StaffPanelV2: React.FC = () => {
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Exiger l'authentification à deux facteurs
                 </p>
-                <p className="text-xs text-slate-500">
-                  L'utilisateur devra configurer 2FA à sa prochaine connexion
-                </p>
+                <p className="text-xs text-slate-500">L'utilisateur devra configurer 2FA à sa prochaine connexion</p>
               </div>
             </label>
           </div>
@@ -1356,26 +1546,29 @@ export const StaffPanelV2: React.FC = () => {
                 Organisations Accessibles
               </h4>
               <p className="text-xs text-slate-500">
-                Sélectionnez les organisations auxquelles cet utilisateur aura accès. 
-                Si aucune n'est sélectionnée, il aura accès à toutes les organisations.
+                Sélectionnez les organisations auxquelles cet utilisateur aura accès. Si aucune n'est sélectionnée, il
+                aura accès à toutes les organisations.
               </p>
               <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                {organizations.map(org => (
-                  <label key={org.id} className="flex items-center gap-2 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-700 rounded">
+                {organizations.map((org) => (
+                  <label
+                    key={org.id}
+                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-700 rounded"
+                  >
                     <input
                       type="checkbox"
                       checked={formData.allowedTenants?.includes(org.tenantId) || false}
                       onChange={(e) => {
                         const tenantId = org.tenantId;
                         if (e.target.checked) {
-                          setFormData({ 
-                            ...formData, 
-                            allowedTenants: [...(formData.allowedTenants || []), tenantId] 
+                          setFormData({
+                            ...formData,
+                            allowedTenants: [...(formData.allowedTenants || []), tenantId],
                           });
                         } else {
-                          setFormData({ 
-                            ...formData, 
-                            allowedTenants: (formData.allowedTenants || []).filter(id => id !== tenantId) 
+                          setFormData({
+                            ...formData,
+                            allowedTenants: (formData.allowedTenants || []).filter((id) => id !== tenantId),
                           });
                         }
                       }}
@@ -1403,7 +1596,9 @@ export const StaffPanelV2: React.FC = () => {
               >
                 <option value="">Sélectionner l'organisation...</option>
                 {clientTenants.map((t: any) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
                 ))}
               </select>
               <p className="text-xs text-slate-500">
@@ -1420,7 +1615,7 @@ export const StaffPanelV2: React.FC = () => {
                   <Settings className="w-4 h-4" />
                   Informations Technicien
                 </h4>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Spécialité *</label>
@@ -1440,7 +1635,7 @@ export const StaffPanelV2: React.FC = () => {
                       <option value="Polyvalent">Polyvalent</option>
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Niveau</label>
                     <select
@@ -1455,7 +1650,7 @@ export const StaffPanelV2: React.FC = () => {
                     </select>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Zone d'intervention</label>
@@ -1467,9 +1662,11 @@ export const StaffPanelV2: React.FC = () => {
                       placeholder="Ex: Abidjan, Dakar, National..."
                     />
                   </div>
-                  
+
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Société (si externe)</label>
+                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                      Société (si externe)
+                    </label>
                     <input
                       type="text"
                       value={formData.societe || ''}
@@ -1496,11 +1693,7 @@ export const StaffPanelV2: React.FC = () => {
             {formData.signature ? (
               <div className="space-y-2">
                 <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-                  <img 
-                    src={formData.signature} 
-                    alt="Signature" 
-                    className="max-h-24 mx-auto"
-                  />
+                  <img src={formData.signature} alt="Signature" className="max-h-24 mx-auto" />
                 </div>
                 <button
                   type="button"
@@ -1511,9 +1704,7 @@ export const StaffPanelV2: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <SignaturePad
-                onSave={(sig) => setFormData({ ...formData, signature: sig })}
-              />
+              <SignaturePad onSave={(sig) => setFormData({ ...formData, signature: sig })} />
             )}
           </div>
 
@@ -1524,7 +1715,7 @@ export const StaffPanelV2: React.FC = () => {
                 <TrendingUp className="w-4 h-4" />
                 Informations Commercial
               </h4>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Secteur</label>
@@ -1543,7 +1734,7 @@ export const StaffPanelV2: React.FC = () => {
                     <option value="Tous secteurs">Tous secteurs</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Région</label>
                   <input
@@ -1555,10 +1746,12 @@ export const StaffPanelV2: React.FC = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Objectif mensuel ({currency})</label>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                    Objectif mensuel ({currency})
+                  </label>
                   <input
                     type="number"
                     value={formData.objectifMensuel || ''}
@@ -1567,7 +1760,7 @@ export const StaffPanelV2: React.FC = () => {
                     placeholder="5000000"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Commission (%)</label>
                   <input
@@ -1591,7 +1784,7 @@ export const StaffPanelV2: React.FC = () => {
                 <Mail className="w-4 h-4" />
                 Informations Support
               </h4>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Niveau support</label>
@@ -1607,7 +1800,7 @@ export const StaffPanelV2: React.FC = () => {
                     <option value="N3">🔴 Niveau 3 - Expert</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Langues</label>
                   <input
@@ -1619,13 +1812,16 @@ export const StaffPanelV2: React.FC = () => {
                   />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Canaux</label>
                   <div className="flex flex-wrap gap-2 mt-1">
-                    {['Téléphone', 'Email', 'Chat', 'WhatsApp'].map(canal => (
-                      <label key={canal} className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded cursor-pointer text-sm">
+                    {['Téléphone', 'Email', 'Chat', 'WhatsApp'].map((canal) => (
+                      <label
+                        key={canal}
+                        className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded cursor-pointer text-sm"
+                      >
                         <input
                           type="checkbox"
                           checked={(formData.canaux || []).includes(canal)}
@@ -1643,7 +1839,7 @@ export const StaffPanelV2: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Horaires</label>
                   <select
@@ -1671,7 +1867,7 @@ export const StaffPanelV2: React.FC = () => {
                 <Users className="w-4 h-4" />
                 Informations Manager
               </h4>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Département</label>
@@ -1690,7 +1886,7 @@ export const StaffPanelV2: React.FC = () => {
                     <option value="RH">Ressources Humaines</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Équipe</label>
                   <input
@@ -1715,13 +1911,10 @@ export const StaffPanelV2: React.FC = () => {
         maxWidth="max-w-md"
         footer={
           <>
-            <button 
-              onClick={() => setIsInviteModalOpen(false)}
-              className="px-4 py-2 border rounded-lg text-sm"
-            >
+            <button onClick={() => setIsInviteModalOpen(false)} className="px-4 py-2 border rounded-lg text-sm">
               Annuler
             </button>
-            <button 
+            <button
               onClick={handleSendInvite}
               className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold flex items-center gap-2"
             >
@@ -1756,10 +1949,7 @@ export const StaffPanelV2: React.FC = () => {
         maxWidth="max-w-md"
         footer={
           <>
-            <button
-              onClick={() => setResetPasswordUser(null)}
-              className="px-4 py-2 border rounded-lg text-sm"
-            >
+            <button onClick={() => setResetPasswordUser(null)} className="px-4 py-2 border rounded-lg text-sm">
               Annuler
             </button>
             <button
@@ -1805,16 +1995,15 @@ export const StaffPanelV2: React.FC = () => {
       </Modal>
 
       {/* User Detail Drawer */}
-      <Drawer
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        width="max-w-md"
-      >
+      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} width="max-w-md">
         {selectedUser && (
           <UserDetailContent
             user={selectedUser}
             onClose={() => setIsDrawerOpen(false)}
-            onEdit={() => { setIsDrawerOpen(false); handleEditClick(selectedUser); }}
+            onEdit={() => {
+              setIsDrawerOpen(false);
+              handleEditClick(selectedUser);
+            }}
             onResetPassword={() => handleResetPassword(selectedUser)}
             onStatusChange={(status) => handleStatusChange(selectedUser, status)}
             formatLastLogin={formatLastLogin}
@@ -1836,15 +2025,22 @@ interface UserDetailContentProps {
   onResetPassword: () => void;
   onStatusChange: (status: 'Actif' | 'Inactif') => void;
   formatLastLogin: (date?: string) => string;
-  getRoleConfig: (roleId: string) => typeof AVAILABLE_ROLES[0];
+  getRoleConfig: (roleId: string) => (typeof AVAILABLE_ROLES)[0];
   getStatusBadge: (status: string) => React.ReactNode;
 }
 
 const UserDetailContent: React.FC<UserDetailContentProps> = ({
-  user, onClose, onEdit, onResetPassword, onStatusChange, formatLastLogin, getRoleConfig, getStatusBadge
+  user,
+  onClose,
+  onEdit,
+  onResetPassword,
+  onStatusChange,
+  formatLastLogin,
+  getRoleConfig,
+  getStatusBadge,
 }) => {
   const roleConfig = getRoleConfig(user.role);
-  
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -1860,8 +2056,8 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
         {/* Avatar & Name */}
         <div className="text-center mb-6">
           <div className="relative inline-block">
-            <img 
-              src={user.avatar} 
+            <img
+              src={user.avatar}
               alt={user.name}
               className="w-24 h-24 rounded-full object-cover border-4 border-slate-200 dark:border-slate-700"
             />
@@ -1872,7 +2068,9 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
           <h2 className="text-xl font-bold text-slate-800 dark:text-white mt-4">{user.name}</h2>
           <p className="text-slate-500">{user.email}</p>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700}`}>
+            <span
+              className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700}`}
+            >
               <roleConfig.icon className="w-4 h-4" />
               {roleConfig.label}
             </span>
@@ -1940,11 +2138,15 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-600 dark:text-slate-400">Niveau</span>
-                  <span className={`font-medium px-2 py-0.5 rounded-full text-xs ${
-                    (user as StaffUser).niveau === 'Expert' ? 'bg-purple-100 text-purple-700' :
-                    (user as StaffUser).niveau === 'Confirmé' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' :
-                    'bg-slate-100 text-slate-700'
-                  }`}>
+                  <span
+                    className={`font-medium px-2 py-0.5 rounded-full text-xs ${
+                      (user as StaffUser).niveau === 'Expert'
+                        ? 'bg-purple-100 text-purple-700'
+                        : (user as StaffUser).niveau === 'Confirmé'
+                          ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
+                          : 'bg-slate-100 text-slate-700'
+                    }`}
+                  >
                     {(user as StaffUser).niveau || 'Junior'}
                   </span>
                 </div>

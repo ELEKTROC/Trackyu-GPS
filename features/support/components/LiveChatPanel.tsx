@@ -1,15 +1,28 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  MessageSquare, Send, X, User, Clock, Headset, Wifi, WifiOff,
-  RefreshCw, ChevronLeft, Circle, AlertCircle, CheckCircle2,
-  Users, Plus, Search
+  MessageSquare,
+  Send,
+  X,
+  User,
+  Clock,
+  Headset,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  ChevronLeft,
+  Circle,
+  AlertCircle,
+  CheckCircle2,
+  Users,
+  Plus,
+  Search,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import { getSocket } from '../../../services/socket';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -59,8 +72,18 @@ type ChatTab = 'support' | 'internal';
 // STATUS CONFIG
 // ============================================================================
 const STATUS_CONFIG = {
-  open: { label: 'En attente', color: 'text-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/30', dot: 'bg-orange-500' },
-  assigned: { label: 'En cours', color: 'text-[var(--primary)]', bg: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]', dot: 'bg-[var(--primary-dim)]0' },
+  open: {
+    label: 'En attente',
+    color: 'text-orange-500',
+    bg: 'bg-orange-100 dark:bg-orange-900/30',
+    dot: 'bg-orange-500',
+  },
+  assigned: {
+    label: 'En cours',
+    color: 'text-[var(--primary)]',
+    bg: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]',
+    dot: 'bg-[var(--primary-dim)]0',
+  },
   closed: { label: 'Fermée', color: 'text-slate-400', bg: 'bg-slate-100 dark:bg-slate-800', dot: 'bg-slate-400' },
 };
 
@@ -122,34 +145,49 @@ export const LiveChatPanel: React.FC = () => {
     socket.emit('support:join-agent');
 
     // New conversation from a client
-    socket.on('support:new-conversation', (data: { conversationId: string; userName: string; tenantId: string; timestamp: string }) => {
-      showToast(TOAST.SUPPORT.NEW_SUPPORT_REQUEST(data.userName), 'info');
-      loadConversations();
-    });
+    socket.on(
+      'support:new-conversation',
+      (data: { conversationId: string; userName: string; tenantId: string; timestamp: string }) => {
+        showToast(TOAST.SUPPORT.NEW_SUPPORT_REQUEST(data.userName), 'info');
+        loadConversations();
+      }
+    );
 
     // New message in any joined conversation
-    socket.on('support:new-message', (data: { conversationId: string; senderId: string; senderName: string; senderRole: string; message: string; timestamp: string }) => {
-      // If this message belongs to the active conversation, add it
-      setActiveConversation(prev => {
-        if (prev && prev.id === data.conversationId) {
-          const newMsg: ChatMessage = {
-            id: `rt-${Date.now()}`,
-            conversation_id: data.conversationId,
-            sender_id: data.senderId,
-            sender_name: data.senderName,
-            sender_role: data.senderRole as 'user' | 'agent' | 'system',
-            message: data.message,
-            created_at: data.timestamp,
-          };
-          setMessages(prevMsgs => [...prevMsgs, newMsg]);
-        }
-        return prev;
-      });
-      // Also update last_message in conversation list
-      setConversations(prev => prev.map(c =>
-        c.id === data.conversationId ? { ...c, last_message: data.message, updated_at: data.timestamp } : c
-      ));
-    });
+    socket.on(
+      'support:new-message',
+      (data: {
+        conversationId: string;
+        senderId: string;
+        senderName: string;
+        senderRole: string;
+        message: string;
+        timestamp: string;
+      }) => {
+        // If this message belongs to the active conversation, add it
+        setActiveConversation((prev) => {
+          if (prev && prev.id === data.conversationId) {
+            const newMsg: ChatMessage = {
+              id: `rt-${Date.now()}`,
+              conversation_id: data.conversationId,
+              sender_id: data.senderId,
+              sender_name: data.senderName,
+              sender_role: data.senderRole as 'user' | 'agent' | 'system',
+              message: data.message,
+              created_at: data.timestamp,
+            };
+            setMessages((prevMsgs) => [...prevMsgs, newMsg]);
+          }
+          return prev;
+        });
+        // Also update last_message in conversation list
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === data.conversationId ? { ...c, last_message: data.message, updated_at: data.timestamp } : c
+          )
+        );
+      }
+    );
 
     // Typing indicator
     socket.on('support:typing', (data: { userName: string }) => {
@@ -160,10 +198,8 @@ export const LiveChatPanel: React.FC = () => {
 
     // Conversation closed
     socket.on('support:conversation-closed', (data: { conversationId: string; closedBy: string }) => {
-      setConversations(prev => prev.map(c =>
-        c.id === data.conversationId ? { ...c, status: 'closed' } : c
-      ));
-      setActiveConversation(prev => {
+      setConversations((prev) => prev.map((c) => (c.id === data.conversationId ? { ...c, status: 'closed' } : c)));
+      setActiveConversation((prev) => {
         if (prev && prev.id === data.conversationId) {
           return { ...prev, status: 'closed' };
         }
@@ -187,7 +223,7 @@ export const LiveChatPanel: React.FC = () => {
       setIsLoading(true);
       const filterParam = statusFilter === 'all' ? '' : statusFilter;
       const data = await api.ai.getConversations(filterParam || 'open');
-      setConversations(Array.isArray(data) ? data : (data.conversations || []));
+      setConversations(Array.isArray(data) ? data : data.conversations || []);
     } catch (error) {
       logger.error('Error loading conversations:', error);
     } finally {
@@ -200,7 +236,7 @@ export const LiveChatPanel: React.FC = () => {
       setIsLoading(true);
       const filterParam = statusFilter === 'all' ? 'all' : statusFilter === 'open' ? 'assigned' : statusFilter;
       const data = await api.ai.getInternalConversations(filterParam);
-      setInternalConversations(Array.isArray(data) ? data : (data.conversations || []));
+      setInternalConversations(Array.isArray(data) ? data : data.conversations || []);
     } catch (error) {
       logger.error('Error loading internal conversations:', error);
     } finally {
@@ -244,10 +280,8 @@ export const LiveChatPanel: React.FC = () => {
       }
 
       const isInternal = conv.conversation_type === 'internal' || chatTab === 'internal';
-      const data = isInternal
-        ? await api.ai.getInternalMessages(conv.id)
-        : await api.ai.getMessages(conv.id);
-      setMessages(Array.isArray(data) ? data : (data.messages || []));
+      const data = isInternal ? await api.ai.getInternalMessages(conv.id) : await api.ai.getMessages(conv.id);
+      setMessages(Array.isArray(data) ? data : data.messages || []);
     } catch (error) {
       logger.error('Error loading messages:', error);
       showToast(TOAST.CRUD.ERROR_LOAD('messages'), 'error');
@@ -281,7 +315,7 @@ export const LiveChatPanel: React.FC = () => {
         message: text,
         created_at: new Date().toISOString(),
       };
-      setMessages(prev => [...prev, optimisticMsg]);
+      setMessages((prev) => [...prev, optimisticMsg]);
 
       // Socket emit for real-time
       const socket = getSocket();
@@ -289,7 +323,7 @@ export const LiveChatPanel: React.FC = () => {
         socket.emit('support:send-message', {
           conversationId: activeConversation.id,
           message: text,
-          senderRole: 'agent'
+          senderRole: 'agent',
         });
       }
 
@@ -312,14 +346,10 @@ export const LiveChatPanel: React.FC = () => {
       if (socket) {
         socket.emit('support:close-conversation', { conversationId: convId });
       }
-      setConversations(prev => prev.map(c =>
-        c.id === convId ? { ...c, status: 'closed' } : c
-      ));
-      setInternalConversations(prev => prev.map(c =>
-        c.id === convId ? { ...c, status: 'closed' } : c
-      ));
+      setConversations((prev) => prev.map((c) => (c.id === convId ? { ...c, status: 'closed' } : c)));
+      setInternalConversations((prev) => prev.map((c) => (c.id === convId ? { ...c, status: 'closed' } : c)));
       if (activeConversation?.id === convId) {
-        setActiveConversation(prev => prev ? { ...prev, status: 'closed' } : null);
+        setActiveConversation((prev) => (prev ? { ...prev, status: 'closed' } : null));
       }
       showToast(TOAST.COMM.CHAT_CLOSED, 'success');
     } catch (error) {
@@ -376,15 +406,17 @@ export const LiveChatPanel: React.FC = () => {
 
   // ========== RENDER HELPERS ==========
   const currentConversations = chatTab === 'support' ? conversations : internalConversations;
-  const filteredConversations = currentConversations.filter(c => {
+  const filteredConversations = currentConversations.filter((c) => {
     if (statusFilter === 'all') return true;
     if (chatTab === 'internal' && statusFilter === 'open') return c.status === 'assigned';
     return c.status === statusFilter;
   });
 
-  const filteredAgents = agents.filter(a =>
-    !agentSearch || (a.name || a.email || '').toLowerCase().includes(agentSearch.toLowerCase()) ||
-    (a.role || '').toLowerCase().includes(agentSearch.toLowerCase())
+  const filteredAgents = agents.filter(
+    (a) =>
+      !agentSearch ||
+      (a.name || a.email || '').toLowerCase().includes(agentSearch.toLowerCase()) ||
+      (a.role || '').toLowerCase().includes(agentSearch.toLowerCase())
   );
 
   const reloadCurrent = () => {
@@ -404,20 +436,26 @@ export const LiveChatPanel: React.FC = () => {
   const formatTime = (dateStr: string) => {
     try {
       return format(new Date(dateStr), 'HH:mm', { locale: fr });
-    } catch { return ''; }
+    } catch {
+      return '';
+    }
   };
 
   const formatDate = (dateStr: string) => {
     try {
       return format(new Date(dateStr), 'dd MMM yyyy HH:mm', { locale: fr });
-    } catch { return ''; }
+    } catch {
+      return '';
+    }
   };
 
   // ========== RENDER ==========
   return (
     <div className="flex-1 flex h-full overflow-hidden">
       {/* ---- LEFT: CONVERSATION LIST ---- */}
-      <div className={`${showMobileList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900`}>
+      <div
+        className={`${showMobileList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900`}
+      >
         {/* Header */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between mb-3">
@@ -430,12 +468,19 @@ export const LiveChatPanel: React.FC = () => {
             </div>
             <div className="flex items-center gap-1">
               {chatTab === 'internal' && (
-                <button onClick={() => setShowNewInternalModal(true)}
-                  className="p-1.5 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] rounded-lg" title="Nouvelle conversation">
+                <button
+                  onClick={() => setShowNewInternalModal(true)}
+                  className="p-1.5 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] rounded-lg"
+                  title="Nouvelle conversation"
+                >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               )}
-              <button onClick={reloadCurrent} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg" title="Rafraîchir">
+              <button
+                onClick={reloadCurrent}
+                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                title="Rafraîchir"
+              >
                 <RefreshCw className={`w-4 h-4 text-slate-500 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
             </div>
@@ -443,18 +488,32 @@ export const LiveChatPanel: React.FC = () => {
 
           {/* Support / Internal tab switcher */}
           <div className="flex gap-1 mb-3 bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5">
-            <button onClick={() => { setChatTab('support'); setActiveConversation(null); setMessages([]); }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors ${chatTab === 'support'
-                ? 'bg-white dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
-                }`}>
+            <button
+              onClick={() => {
+                setChatTab('support');
+                setActiveConversation(null);
+                setMessages([]);
+              }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                chatTab === 'support'
+                  ? 'bg-white dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+              }`}
+            >
               <Headset className="w-3.5 h-3.5" /> Support
             </button>
-            <button onClick={() => { setChatTab('internal'); setActiveConversation(null); setMessages([]); }}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors ${chatTab === 'internal'
-                ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
-                }`}>
+            <button
+              onClick={() => {
+                setChatTab('internal');
+                setActiveConversation(null);
+                setMessages([]);
+              }}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                chatTab === 'internal'
+                  ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+              }`}
+            >
               <Users className="w-3.5 h-3.5" /> Équipe
             </button>
           </div>
@@ -465,18 +524,24 @@ export const LiveChatPanel: React.FC = () => {
               ? [
                   { value: 'open' as const, label: 'En attente' },
                   { value: 'assigned' as const, label: 'En cours' },
-                  { value: 'all' as const, label: 'Toutes' }
+                  { value: 'all' as const, label: 'Toutes' },
                 ]
               : [
                   { value: 'assigned' as const, label: 'Actives' },
-                  { value: 'all' as const, label: 'Toutes' }
+                  { value: 'all' as const, label: 'Toutes' },
                 ]
-            ).map(f => (
-              <button key={f.value} onClick={() => setStatusFilter(f.value)}
-                className={`px-3 py-1 text-xs rounded-full font-medium transition-colors ${statusFilter === f.value
-                  ? (chatTab === 'support' ? 'bg-[var(--primary)] text-white' : 'bg-green-600 text-white')
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}>
+            ).map((f) => (
+              <button
+                key={f.value}
+                onClick={() => setStatusFilter(f.value)}
+                className={`px-3 py-1 text-xs rounded-full font-medium transition-colors ${
+                  statusFilter === f.value
+                    ? chatTab === 'support'
+                      ? 'bg-[var(--primary)] text-white'
+                      : 'bg-green-600 text-white'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
                 {f.label}
               </button>
             ))}
@@ -493,46 +558,65 @@ export const LiveChatPanel: React.FC = () => {
             <div className="text-center py-12 px-4">
               <MessageSquare className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                {chatTab === 'internal' ? 'Aucune conversation d\'équipe' : 'Aucune conversation de support'}
+                {chatTab === 'internal' ? "Aucune conversation d'équipe" : 'Aucune conversation de support'}
               </p>
               {chatTab === 'internal' && (
-                <button onClick={() => setShowNewInternalModal(true)}
-                  className="mt-3 text-xs text-[var(--primary)] hover:underline flex items-center gap-1 mx-auto">
+                <button
+                  onClick={() => setShowNewInternalModal(true)}
+                  className="mt-3 text-xs text-[var(--primary)] hover:underline flex items-center gap-1 mx-auto"
+                >
                   <Plus className="w-3 h-3" /> Démarrer une conversation
                 </button>
               )}
             </div>
           ) : (
-            filteredConversations.map(conv => {
-              const displayName = chatTab === 'internal'
-                ? getInternalDisplayName(conv)
-                : (conv.user_name || conv.user_email || 'Utilisateur');
+            filteredConversations.map((conv) => {
+              const displayName =
+                chatTab === 'internal'
+                  ? getInternalDisplayName(conv)
+                  : conv.user_name || conv.user_email || 'Utilisateur';
               const isInternal = chatTab === 'internal';
 
               return (
-                <button key={conv.id} onClick={() => openConversation({ ...conv, conversation_type: isInternal ? 'internal' : 'support' })}
-                  className={`w-full text-left p-4 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${activeConversation?.id === conv.id ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-2 border-l-blue-500' : ''
-                    }`}>
+                <button
+                  key={conv.id}
+                  onClick={() => openConversation({ ...conv, conversation_type: isInternal ? 'internal' : 'support' })}
+                  className={`w-full text-left p-4 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+                    activeConversation?.id === conv.id
+                      ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-2 border-l-blue-500'
+                      : ''
+                  }`}
+                >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="relative">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-green-100 dark:bg-green-900/30' : 'bg-slate-200 dark:bg-slate-700'}`}>
-                          {isInternal ? <Users className="w-4 h-4 text-green-600" /> : <User className="w-4 h-4 text-slate-500" />}
+                        <div
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-green-100 dark:bg-green-900/30' : 'bg-slate-200 dark:bg-slate-700'}`}
+                        >
+                          {isInternal ? (
+                            <Users className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <User className="w-4 h-4 text-slate-500" />
+                          )}
                         </div>
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-slate-900 ${STATUS_CONFIG[conv.status]?.dot || 'bg-slate-400'}`} />
+                        <div
+                          className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-slate-900 ${STATUS_CONFIG[conv.status]?.dot || 'bg-slate-400'}`}
+                        />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
-                          {displayName}
-                        </p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{displayName}</p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
                           {conv.last_message || 'Nouvelle conversation'}
                         </p>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className="text-[10px] text-slate-400">{formatTime(conv.updated_at || conv.created_at)}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${STATUS_CONFIG[conv.status]?.bg} ${STATUS_CONFIG[conv.status]?.color}`}>
+                      <span className="text-[10px] text-slate-400">
+                        {formatTime(conv.updated_at || conv.created_at)}
+                      </span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full ${STATUS_CONFIG[conv.status]?.bg} ${STATUS_CONFIG[conv.status]?.color}`}
+                      >
                         {STATUS_CONFIG[conv.status]?.label}
                       </span>
                     </div>
@@ -551,19 +635,29 @@ export const LiveChatPanel: React.FC = () => {
             {/* Chat Header */}
             <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-sm">
               <div className="flex items-center gap-3">
-                <button onClick={() => { setShowMobileList(true); }} className="md:hidden p-1" title="Retour à la liste">
+                <button
+                  onClick={() => {
+                    setShowMobileList(true);
+                  }}
+                  className="md:hidden p-1"
+                  title="Retour à la liste"
+                >
                   <ChevronLeft className="w-5 h-5 text-slate-500" />
                 </button>
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${activeConversation.conversation_type === 'internal' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'}`}>
-                  {activeConversation.conversation_type === 'internal'
-                    ? <Users className="w-5 h-5 text-green-600" />
-                    : <User className="w-5 h-5 text-[var(--primary)]" />}
+                <div
+                  className={`w-9 h-9 rounded-full flex items-center justify-center ${activeConversation.conversation_type === 'internal' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'}`}
+                >
+                  {activeConversation.conversation_type === 'internal' ? (
+                    <Users className="w-5 h-5 text-green-600" />
+                  ) : (
+                    <User className="w-5 h-5 text-[var(--primary)]" />
+                  )}
                 </div>
                 <div>
                   <p className="text-sm font-bold text-slate-800 dark:text-white">
                     {activeConversation.conversation_type === 'internal'
                       ? getInternalDisplayName(activeConversation)
-                      : (activeConversation.user_name || activeConversation.user_email || 'Utilisateur')}
+                      : activeConversation.user_name || activeConversation.user_email || 'Utilisateur'}
                   </p>
                   <div className="flex items-center gap-2 text-xs text-slate-500">
                     {activeConversation.conversation_type === 'internal' && (
@@ -580,9 +674,11 @@ export const LiveChatPanel: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 {activeConversation.status !== 'closed' && (
-                  <button onClick={() => closeConversation(activeConversation.id)}
+                  <button
+                    onClick={() => closeConversation(activeConversation.id)}
                     className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    title="Fermer la conversation">
+                    title="Fermer la conversation"
+                  >
                     <X className="w-3.5 h-3.5" /> Fermer
                   </button>
                 )}
@@ -601,7 +697,7 @@ export const LiveChatPanel: React.FC = () => {
                   <p className="text-sm">Aucun message pour le moment</p>
                 </div>
               ) : (
-                messages.map(msg => {
+                messages.map((msg) => {
                   const isSelf = msg.sender_id === user?.id;
                   const isSystem = msg.sender_role === 'system';
 
@@ -617,10 +713,13 @@ export const LiveChatPanel: React.FC = () => {
 
                   return (
                     <div key={msg.id} className={`flex ${isSelf ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[75%] ${isSelf
-                        ? 'bg-[var(--primary)] text-white rounded-2xl rounded-br-md'
-                        : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-2xl rounded-bl-md shadow-sm border border-slate-200 dark:border-slate-700'
-                        } px-4 py-2.5`}>
+                      <div
+                        className={`max-w-[75%] ${
+                          isSelf
+                            ? 'bg-[var(--primary)] text-white rounded-2xl rounded-br-md'
+                            : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-2xl rounded-bl-md shadow-sm border border-slate-200 dark:border-slate-700'
+                        } px-4 py-2.5`}
+                      >
                         {!isSelf && (
                           <p className="text-xs font-semibold text-[var(--primary)] dark:text-[var(--primary)] mb-1">
                             {msg.sender_name || 'Utilisateur'}
@@ -653,7 +752,7 @@ export const LiveChatPanel: React.FC = () => {
                   <input
                     type="text"
                     value={messageInput}
-                    onChange={e => {
+                    onChange={(e) => {
                       setMessageInput(e.target.value);
                       // Send typing indicator
                       const socket = getSocket();
@@ -661,14 +760,23 @@ export const LiveChatPanel: React.FC = () => {
                         socket.emit('support:typing', { conversationId: activeConversation.id });
                       }
                     }}
-                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                      }
+                    }}
                     className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                    placeholder={activeConversation.conversation_type === 'internal' ? 'Message...' : 'Répondre au client...'}
+                    placeholder={
+                      activeConversation.conversation_type === 'internal' ? 'Message...' : 'Répondre au client...'
+                    }
                   />
-                  <button onClick={sendMessage}
+                  <button
+                    onClick={sendMessage}
                     disabled={!messageInput.trim()}
                     title="Envoyer"
-                    className="p-2.5 bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    className="p-2.5 bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
                     <Send className="w-4 h-4" />
                   </button>
                 </div>
@@ -685,73 +793,98 @@ export const LiveChatPanel: React.FC = () => {
         ) : (
           /* No conversation selected */
           <div className="flex-1 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600">
-            {chatTab === 'internal' ? <Users className="w-16 h-16 mb-4 opacity-30" /> : <Headset className="w-16 h-16 mb-4 opacity-30" />}
+            {chatTab === 'internal' ? (
+              <Users className="w-16 h-16 mb-4 opacity-30" />
+            ) : (
+              <Headset className="w-16 h-16 mb-4 opacity-30" />
+            )}
             <h3 className="text-lg font-semibold mb-1">
               {chatTab === 'internal' ? 'Chat Équipe' : 'Support Live Chat'}
             </h3>
             <p className="text-sm">Sélectionnez une conversation pour commencer</p>
             {chatTab === 'internal' && (
-              <button onClick={() => setShowNewInternalModal(true)}
-                className="mt-4 flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+              <button
+                onClick={() => setShowNewInternalModal(true)}
+                className="mt-4 flex items-center gap-2 px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+              >
                 <Plus className="w-4 h-4" /> Nouvelle conversation
+                {/* ---- MODAL: New Internal Conversation ---- */}
+                {showNewInternalModal && (
+                  <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                    onClick={() => setShowNewInternalModal(false)}
+                  >
+                    <div
+                      className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md mx-4 max-h-[70vh] flex flex-col"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-5 h-5 text-green-600" />
+                          <h3 className="font-bold text-slate-800 dark:text-white">Nouvelle conversation</h3>
+                        </div>
+                        <button
+                          onClick={() => setShowNewInternalModal(false)}
+                          className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                          title="Fermer"
+                        >
+                          <X className="w-4 h-4 text-slate-500" />
+                        </button>
+                      </div>
 
-      {/* ---- MODAL: New Internal Conversation ---- */}
-      {showNewInternalModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowNewInternalModal(false)}>
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md mx-4 max-h-[70vh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-              <div className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-green-600" />
-                <h3 className="font-bold text-slate-800 dark:text-white">Nouvelle conversation</h3>
-              </div>
-              <button onClick={() => setShowNewInternalModal(false)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg" title="Fermer">
-                <X className="w-4 h-4 text-slate-500" />
-              </button>
-            </div>
+                      {/* Search */}
+                      <div className="p-3 border-b border-slate-100 dark:border-slate-800">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                          <input
+                            type="text"
+                            value={agentSearch}
+                            onChange={(e) => setAgentSearch(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            placeholder="Rechercher un collègue..."
+                            autoFocus
+                          />
+                        </div>
+                      </div>
 
-            {/* Search */}
-            <div className="p-3 border-b border-slate-100 dark:border-slate-800">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input type="text" value={agentSearch} onChange={e => setAgentSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Rechercher un collègue..." autoFocus />
-              </div>
-            </div>
-
-            {/* Agent list */}
-            <div className="flex-1 overflow-y-auto">
-              {filteredAgents.length === 0 ? (
-                <div className="text-center py-8 text-slate-400">
-                  <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Aucun agent trouvé</p>
-                </div>
-              ) : (
-                filteredAgents.map(agent => (
-                  <button key={agent.id} onClick={() => startInternalChat(agent)}
-                    className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 transition-colors flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                      <User className="w-4.5 h-4.5 text-green-600" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
-                        {agent.name || agent.email}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{agent.email}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">
-                          {ROLE_LABELS[agent.role?.toUpperCase()] || agent.role}
-                        </span>
+                      {/* Agent list */}
+                      <div className="flex-1 overflow-y-auto">
+                        {filteredAgents.length === 0 ? (
+                          <div className="text-center py-8 text-slate-400">
+                            <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">Aucun agent trouvé</p>
+                          </div>
+                        ) : (
+                          filteredAgents.map((agent) => (
+                            <button
+                              key={agent.id}
+                              onClick={() => startInternalChat(agent)}
+                              className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 transition-colors flex items-center gap-3"
+                            >
+                              <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+                                <User className="w-4.5 h-4.5 text-green-600" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
+                                  {agent.name || agent.email}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                    {agent.email}
+                                  </span>
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">
+                                    {ROLE_LABELS[agent.role?.toUpperCase()] || agent.role}
+                                  </span>
+                                </div>
+                              </div>
+                              <MessageSquare className="w-4 h-4 text-green-500 shrink-0" />
+                            </button>
+                          ))
+                        )}
                       </div>
                     </div>
-                    <MessageSquare className="w-4 h-4 text-green-500 shrink-0" />
-                  </button>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+                  </div>
+                )}
               </button>
             )}
             <p className="text-xs mt-2 text-slate-400">

@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import type { Intervention, Vehicle } from '../../../../types';
 import { TOAST } from '../../../../constants/toastMessages';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { GPS_SERVER_IP, GPS_SERVER_PORT, DEFAULT_APN } from '../../constants';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';

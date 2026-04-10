@@ -10,7 +10,7 @@ import { ColumnManager, type ColumnDef } from '../../../components/ColumnManager
 import { SubscriptionDetailModal } from './SubscriptionDetailModal';
 import { SubscriptionForm, type SubscriptionFormData } from './SubscriptionForm';
 import { MobileFilterSheet, FilterRadioRow, type MobileFilterTab } from '../../../components/MobileFilterSheet';
-import { api } from '../../../services/api';
+import { api } from '../../../services/apiLazy';
 import {
   Search,
   TrendingUp,

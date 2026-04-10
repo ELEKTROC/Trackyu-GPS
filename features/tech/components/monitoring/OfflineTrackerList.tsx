@@ -9,7 +9,7 @@ import { TOAST } from '../../../../constants/toastMessages';
 import { MONITORING_THRESHOLDS } from '../../constants';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { useConfirmDialog } from '../../../../components/ConfirmDialog';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 

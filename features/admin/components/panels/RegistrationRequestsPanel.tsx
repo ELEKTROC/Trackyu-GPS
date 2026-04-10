@@ -1,6 +1,6 @@
 /**
  * RegistrationRequestsPanel - Gestion des demandes d'inscription
- * 
+ *
  * Fonctionnalités:
  * - Dashboard KPIs (en attente, approuvées, rejetées)
  * - Tableau des demandes avec filtres
@@ -12,17 +12,32 @@ import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { MobileCard, MobileCardList, MobileCardAction } from '../../../../components/MobileCard';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  UserPlus, Check, X, Clock, Search, Filter, RefreshCw,
-  Mail, Phone, Building, Calendar, AlertCircle, CheckCircle,
-  XCircle, Eye, ChevronDown, Send, MessageSquare
+import {
+  UserPlus,
+  Check,
+  X,
+  Clock,
+  Search,
+  Filter,
+  RefreshCw,
+  Mail,
+  Phone,
+  Building,
+  Calendar,
+  AlertCircle,
+  CheckCircle,
+  XCircle,
+  Eye,
+  ChevronDown,
+  Send,
+  MessageSquare,
 } from 'lucide-react';
 import { Card } from '../../../../components/Card';
 import { Modal } from '../../../../components/Modal';
 import { useToast } from '../../../../contexts/ToastContext';
 import { TOAST } from '../../../../constants/toastMessages';
 import { mapError } from '../../../../utils/errorMapper';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
 
@@ -59,12 +74,10 @@ interface Stats {
   oldest_pending?: string;
 }
 
-
-
 export const RegistrationRequestsPanel: React.FC = () => {
   const isMobile = useIsMobile();
   const { showToast } = useToast();
-  
+
   // State
   const [requests, setRequests] = useState<RegistrationRequest[]>([]);
   const [tenants, setTenants] = useState<Tenant[]>([]);
@@ -72,7 +85,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [search, setSearch] = useState('');
-  
+
   // Modal states
   const [approveModalOpen, setApproveModalOpen] = useState(false);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -83,7 +96,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
   const [selectedTenantId, setSelectedTenantId] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
   const [processing, setProcessing] = useState(false);
-  
+
   // Preview states
   const [emailSubject, setEmailSubject] = useState('');
   const [emailContent, setEmailContent] = useState('');
@@ -96,7 +109,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
       const [requestsData, tenantsData, statsData] = await Promise.all([
         api.registrationRequests.list(),
         api.registrationRequests.listTenants(),
-        api.registrationRequests.getStats()
+        api.registrationRequests.getStats(),
       ]);
 
       setRequests(requestsData || []);
@@ -114,10 +127,10 @@ export const RegistrationRequestsPanel: React.FC = () => {
   }, []);
 
   // Filter requests
-  const filteredRequests = requests.filter(req => {
+  const filteredRequests = requests.filter((req) => {
     // Status filter
     if (filter !== 'all' && req.status !== filter) return false;
-    
+
     // Search filter
     if (search) {
       const searchLower = search.toLowerCase();
@@ -128,14 +141,15 @@ export const RegistrationRequestsPanel: React.FC = () => {
         req.company_name?.toLowerCase().includes(searchLower)
       );
     }
-    
+
     return true;
   });
 
-  const { sortedItems: sortedRequests, sortConfig: regSortConfig, handleSort: handleRegSort } = useTableSort(
-    filteredRequests,
-    { key: 'created_at', direction: 'desc' }
-  );
+  const {
+    sortedItems: sortedRequests,
+    sortConfig: regSortConfig,
+    handleSort: handleRegSort,
+  } = useTableSort(filteredRequests, { key: 'created_at', direction: 'desc' });
 
   // Handle approve
   const handleApprove = async () => {
@@ -201,7 +215,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
   // Send email to request
   const handleSendEmail = async () => {
     if (!selectedRequest) return;
-    
+
     // First, get preview
     setProcessing(true);
     try {
@@ -219,7 +233,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
   // Actually send email (after preview confirmation)
   const confirmSendEmail = async () => {
     if (!selectedRequest) return;
-    
+
     setProcessing(true);
     try {
       await api.registrationRequests.sendEmail(selectedRequest.id);
@@ -235,12 +249,12 @@ export const RegistrationRequestsPanel: React.FC = () => {
   // Send SMS to request
   const handleSendSMS = async () => {
     if (!selectedRequest) return;
-    
+
     if (!selectedRequest.phone) {
       showToast(TOAST.VALIDATION.REQUIRED_FIELD('téléphone'), 'error');
       return;
     }
-    
+
     // First, get preview
     setProcessing(true);
     try {
@@ -257,7 +271,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
   // Actually send SMS (after preview confirmation)
   const confirmSendSMS = async () => {
     if (!selectedRequest) return;
-    
+
     setProcessing(true);
     try {
       await api.registrationRequests.sendSms(selectedRequest.id);
@@ -277,7 +291,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -298,15 +312,32 @@ export const RegistrationRequestsPanel: React.FC = () => {
   // Status badge
   const StatusBadge = ({ status }: { status: string }) => {
     const configs = {
-      pending: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400', icon: Clock, label: 'En attente' },
-      approved: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: CheckCircle, label: 'Approuvée' },
-      rejected: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', icon: XCircle, label: 'Rejetée' }
+      pending: {
+        bg: 'bg-amber-100 dark:bg-amber-900/30',
+        text: 'text-amber-700 dark:text-amber-400',
+        icon: Clock,
+        label: 'En attente',
+      },
+      approved: {
+        bg: 'bg-green-100 dark:bg-green-900/30',
+        text: 'text-green-700 dark:text-green-400',
+        icon: CheckCircle,
+        label: 'Approuvée',
+      },
+      rejected: {
+        bg: 'bg-red-100 dark:bg-red-900/30',
+        text: 'text-red-700 dark:text-red-400',
+        icon: XCircle,
+        label: 'Rejetée',
+      },
     };
     const config = configs[status as keyof typeof configs] || configs.pending;
     const Icon = config.icon;
-    
+
     return (
-      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
+      <span
+        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}
+      >
         <Icon size={12} />
         {config.label}
       </span>
@@ -322,11 +353,9 @@ export const RegistrationRequestsPanel: React.FC = () => {
             <UserPlus className="text-[var(--primary)]" />
             Demandes d'inscription
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
-            Gérer les nouvelles demandes d'inscription
-          </p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Gérer les nouvelles demandes d'inscription</p>
         </div>
-        
+
         <button
           onClick={fetchData}
           className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
@@ -338,63 +367,57 @@ export const RegistrationRequestsPanel: React.FC = () => {
 
       {/* KPIs */}
       {!isMobile && (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
-          <div className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-amber-600 dark:text-amber-400">En attente</p>
-                <p className="text-3xl font-bold text-amber-700 dark:text-amber-300">
-                  {stats?.pending_count || 0}
-                </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600 dark:text-amber-400">En attente</p>
+                  <p className="text-3xl font-bold text-amber-700 dark:text-amber-300">{stats?.pending_count || 0}</p>
+                </div>
+                <Clock className="text-amber-500" size={32} />
               </div>
-              <Clock className="text-amber-500" size={32} />
             </div>
-          </div>
-        </Card>
-        
-        <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
-          <div className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-green-600 dark:text-green-400">Approuvées</p>
-                <p className="text-3xl font-bold text-green-700 dark:text-green-300">
-                  {stats?.approved_count || 0}
-                </p>
+          </Card>
+
+          <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-green-600 dark:text-green-400">Approuvées</p>
+                  <p className="text-3xl font-bold text-green-700 dark:text-green-300">{stats?.approved_count || 0}</p>
+                </div>
+                <CheckCircle className="text-green-500" size={32} />
               </div>
-              <CheckCircle className="text-green-500" size={32} />
             </div>
-          </div>
-        </Card>
-        
-        <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
-          <div className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-red-600 dark:text-red-400">Rejetées</p>
-                <p className="text-3xl font-bold text-red-700 dark:text-red-300">
-                  {stats?.rejected_count || 0}
-                </p>
+          </Card>
+
+          <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-red-600 dark:text-red-400">Rejetées</p>
+                  <p className="text-3xl font-bold text-red-700 dark:text-red-300">{stats?.rejected_count || 0}</p>
+                </div>
+                <XCircle className="text-red-500" size={32} />
               </div>
-              <XCircle className="text-red-500" size={32} />
             </div>
-          </div>
-        </Card>
-        
-        <Card className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]">
-          <div className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">Total</p>
-                <p className="text-3xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">
-                  {stats?.total_count || 0}
-                </p>
+          </Card>
+
+          <Card className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]">
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">Total</p>
+                  <p className="text-3xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">
+                    {stats?.total_count || 0}
+                  </p>
+                </div>
+                <UserPlus className="text-[var(--primary)]" size={32} />
               </div>
-              <UserPlus className="text-[var(--primary)]" size={32} />
             </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
       )}
 
       {/* Filters */}
@@ -411,15 +434,15 @@ export const RegistrationRequestsPanel: React.FC = () => {
               className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
             />
           </div>
-          
+
           {/* Status filter */}
           <div className="flex flex-wrap gap-2">
             {[
               { value: 'all', label: 'Toutes', count: stats?.total_count },
               { value: 'pending', label: 'En attente', count: stats?.pending_count },
               { value: 'approved', label: 'Approuvées', count: stats?.approved_count },
-              { value: 'rejected', label: 'Rejetées', count: stats?.rejected_count }
-            ].map(item => (
+              { value: 'rejected', label: 'Rejetées', count: stats?.rejected_count },
+            ].map((item) => (
               <button
                 key={item.value}
                 onClick={() => setFilter(item.value as any)}
@@ -450,10 +473,13 @@ export const RegistrationRequestsPanel: React.FC = () => {
           </div>
         ) : isMobile ? (
           <MobileCardList bordered={false}>
-            {sortedRequests.map(request => {
-              const borderColor = request.status === 'pending' ? 'border-l-amber-500'
-                : request.status === 'approved' ? 'border-l-green-500'
-                : 'border-l-red-500';
+            {sortedRequests.map((request) => {
+              const borderColor =
+                request.status === 'pending'
+                  ? 'border-l-amber-500'
+                  : request.status === 'approved'
+                    ? 'border-l-green-500'
+                    : 'border-l-red-500';
               return (
                 <MobileCard key={request.id} borderColor={borderColor} onClick={() => openDetailModal(request)}>
                   {/* Primary: nom + statut */}
@@ -469,23 +495,58 @@ export const RegistrationRequestsPanel: React.FC = () => {
                   {/* Secondary: entreprise + téléphone + date */}
                   <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 mb-2 flex-wrap">
                     {request.company_name && (
-                      <span className="flex items-center gap-1"><Building size={10} />{request.company_name}</span>
+                      <span className="flex items-center gap-1">
+                        <Building size={10} />
+                        {request.company_name}
+                      </span>
                     )}
                     {request.phone && (
-                      <span className="flex items-center gap-1"><Phone size={10} />{request.phone}</span>
+                      <span className="flex items-center gap-1">
+                        <Phone size={10} />
+                        {request.phone}
+                      </span>
                     )}
                     <span>{getTimeAgo(request.created_at)}</span>
                     {request.status === 'pending' && request.reminder_count > 0 && (
-                      <span className="text-amber-500">{request.reminder_count} relance{request.reminder_count > 1 ? 's' : ''}</span>
+                      <span className="text-amber-500">
+                        {request.reminder_count} relance{request.reminder_count > 1 ? 's' : ''}
+                      </span>
                     )}
                   </div>
                   {/* Actions */}
                   <div className="flex items-center gap-2">
-                    <MobileCardAction icon={<Eye size={12} />} color="slate" onClick={(e) => { e.stopPropagation(); openDetailModal(request); }}>Voir</MobileCardAction>
+                    <MobileCardAction
+                      icon={<Eye size={12} />}
+                      color="slate"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openDetailModal(request);
+                      }}
+                    >
+                      Voir
+                    </MobileCardAction>
                     {request.status === 'pending' && (
                       <>
-                        <MobileCardAction icon={<Check size={12} />} color="green" onClick={(e) => { e.stopPropagation(); openApproveModal(request); }}>Approuver</MobileCardAction>
-                        <MobileCardAction icon={<X size={12} />} color="red" onClick={(e) => { e.stopPropagation(); openRejectModal(request); }}>Rejeter</MobileCardAction>
+                        <MobileCardAction
+                          icon={<Check size={12} />}
+                          color="green"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openApproveModal(request);
+                          }}
+                        >
+                          Approuver
+                        </MobileCardAction>
+                        <MobileCardAction
+                          icon={<X size={12} />}
+                          color="red"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openRejectModal(request);
+                          }}
+                        >
+                          Rejeter
+                        </MobileCardAction>
                       </>
                     )}
                   </div>
@@ -498,16 +559,53 @@ export const RegistrationRequestsPanel: React.FC = () => {
             <table className="w-full">
               <thead className="bg-slate-50 dark:bg-slate-800/50">
                 <tr>
-                  <SortableHeader label="Utilisateur" sortKey="name" currentSortKey={regSortConfig.key} currentDirection={regSortConfig.direction} onSort={handleRegSort} className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase" />
-                  <SortableHeader label="Contact" sortKey="phone" currentSortKey={regSortConfig.key} currentDirection={regSortConfig.direction} onSort={handleRegSort} className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase" />
-                  <SortableHeader label="Entreprise" sortKey="company_name" currentSortKey={regSortConfig.key} currentDirection={regSortConfig.direction} onSort={handleRegSort} className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase" />
-                  <SortableHeader label="Status" sortKey="status" currentSortKey={regSortConfig.key} currentDirection={regSortConfig.direction} onSort={handleRegSort} className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase" />
-                  <SortableHeader label="Date" sortKey="created_at" currentSortKey={regSortConfig.key} currentDirection={regSortConfig.direction} onSort={handleRegSort} className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase" />
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">Actions</th>
+                  <SortableHeader
+                    label="Utilisateur"
+                    sortKey="name"
+                    currentSortKey={regSortConfig.key}
+                    currentDirection={regSortConfig.direction}
+                    onSort={handleRegSort}
+                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                  />
+                  <SortableHeader
+                    label="Contact"
+                    sortKey="phone"
+                    currentSortKey={regSortConfig.key}
+                    currentDirection={regSortConfig.direction}
+                    onSort={handleRegSort}
+                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                  />
+                  <SortableHeader
+                    label="Entreprise"
+                    sortKey="company_name"
+                    currentSortKey={regSortConfig.key}
+                    currentDirection={regSortConfig.direction}
+                    onSort={handleRegSort}
+                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                  />
+                  <SortableHeader
+                    label="Status"
+                    sortKey="status"
+                    currentSortKey={regSortConfig.key}
+                    currentDirection={regSortConfig.direction}
+                    onSort={handleRegSort}
+                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                  />
+                  <SortableHeader
+                    label="Date"
+                    sortKey="created_at"
+                    currentSortKey={regSortConfig.key}
+                    currentDirection={regSortConfig.direction}
+                    onSort={handleRegSort}
+                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                  />
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                {sortedRequests.map(request => (
+                {sortedRequests.map((request) => (
                   <tr key={request.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                     <td className="px-4 py-3">
                       <div>
@@ -590,11 +688,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
       </Card>
 
       {/* Approve Modal */}
-      <Modal
-        isOpen={approveModalOpen}
-        onClose={() => setApproveModalOpen(false)}
-        title="Approuver l'inscription"
-      >
+      <Modal isOpen={approveModalOpen} onClose={() => setApproveModalOpen(false)} title="Approuver l'inscription">
         <div className="space-y-4">
           {selectedRequest && (
             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
@@ -602,7 +696,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               <p className="text-sm text-green-600 dark:text-green-400">{selectedRequest.email}</p>
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Assigner un espace (tenant) *
@@ -614,13 +708,13 @@ export const RegistrationRequestsPanel: React.FC = () => {
               required
             >
               <option value="">-- Sélectionner un espace --</option>
-              {tenants.map(tenant => (
-                <option key={tenant.id} value={tenant.id}>{tenant.name}</option>
+              {tenants.map((tenant) => (
+                <option key={tenant.id} value={tenant.id}>
+                  {tenant.name}
+                </option>
               ))}
             </select>
-            <p className="text-xs text-slate-500 mt-1">
-              L'utilisateur sera créé avec le rôle "USER" dans cet espace.
-            </p>
+            <p className="text-xs text-slate-500 mt-1">L'utilisateur sera créé avec le rôle "USER" dans cet espace.</p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
@@ -644,11 +738,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
       </Modal>
 
       {/* Reject Modal */}
-      <Modal
-        isOpen={rejectModalOpen}
-        onClose={() => setRejectModalOpen(false)}
-        title="Rejeter la demande"
-      >
+      <Modal isOpen={rejectModalOpen} onClose={() => setRejectModalOpen(false)} title="Rejeter la demande">
         <div className="space-y-4">
           {selectedRequest && (
             <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
@@ -656,7 +746,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               <p className="text-sm text-red-600 dark:text-red-400">{selectedRequest.email}</p>
             </div>
           )}
-          
+
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Motif du rejet (optionnel)
@@ -668,9 +758,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               rows={3}
               className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
             />
-            <p className="text-xs text-slate-500 mt-1">
-              Ce motif sera communiqué à l'utilisateur par email.
-            </p>
+            <p className="text-xs text-slate-500 mt-1">Ce motif sera communiqué à l'utilisateur par email.</p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
@@ -720,7 +808,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                 <p className="text-slate-900 dark:text-white">{selectedRequest.company_name || '-'}</p>
               </div>
             </div>
-            
+
             {selectedRequest.message && (
               <div>
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Message</label>
@@ -729,7 +817,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                 </p>
               </div>
             )}
-            
+
             <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -743,7 +831,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                   <p className="text-slate-900 dark:text-white">{formatDate(selectedRequest.created_at)}</p>
                 </div>
               </div>
-              
+
               {selectedRequest.reviewed_at && (
                 <div className="mt-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg">
                   <p className="text-sm text-slate-600 dark:text-slate-300">
@@ -777,7 +865,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     onClick={handleSendSMS}
                     disabled={processing || !selectedRequest.phone}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    title={selectedRequest.phone ? "Envoyer un SMS" : "Aucun numéro de téléphone"}
+                    title={selectedRequest.phone ? 'Envoyer un SMS' : 'Aucun numéro de téléphone'}
                   >
                     {processing ? <RefreshCw size={16} className="animate-spin" /> : <MessageSquare size={16} />}
                     Envoyer SMS
@@ -825,9 +913,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-3 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
             <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] font-medium mb-1">📧 Destinataire</p>
-            <p className="text-slate-900 dark:text-white font-medium">
-              {selectedRequest?.email}
-            </p>
+            <p className="text-slate-900 dark:text-white font-medium">{selectedRequest?.email}</p>
           </div>
 
           <div>
@@ -888,19 +974,17 @@ export const RegistrationRequestsPanel: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
             <p className="text-xs text-green-600 dark:text-green-400 font-medium mb-1">📱 Destinataire</p>
-            <p className="text-slate-900 dark:text-white font-medium">
-              {selectedRequest?.phone}
-            </p>
+            <p className="text-slate-900 dark:text-white font-medium">{selectedRequest?.phone}</p>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Message SMS
-              </label>
-              <span className={`text-xs font-medium ${
-                smsMessage.length > 140 ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'
-              }`}>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Message SMS</label>
+              <span
+                className={`text-xs font-medium ${
+                  smsMessage.length > 140 ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'
+                }`}
+              >
                 {smsMessage.length}/160 caractères
               </span>
             </div>
@@ -914,7 +998,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
             />
             <div className="flex items-center gap-2 mt-2">
               <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                <div 
+                <div
                   className={`h-2 rounded-full transition-all ${
                     smsMessage.length > 140 ? 'bg-red-500' : 'bg-green-500'
                   }`}

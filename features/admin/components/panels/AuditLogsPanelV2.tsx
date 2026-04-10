@@ -1,6 +1,6 @@
 /**
  * AuditLogsPanelV2 - Journal d'Audit Amélioré
- * 
+ *
  * Fonctionnalités:
  * - Timeline visuelle des événements
  * - Filtres avancés (date, utilisateur, action, entité)
@@ -13,18 +13,41 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import {
-  Activity, Search, Filter, Download, RefreshCw, Eye,
-  ChevronRight, User, Clock, FileText, Trash2, Edit2,
-  Plus, LogIn, LogOut, Shield, AlertTriangle, Check, X, Settings,
-  Database, Key, Users, Car, CreditCard, MapPin, BarChart3,
-  ArrowUpRight
+  Activity,
+  Search,
+  Filter,
+  Download,
+  RefreshCw,
+  Eye,
+  ChevronRight,
+  User,
+  Clock,
+  FileText,
+  Trash2,
+  Edit2,
+  Plus,
+  LogIn,
+  LogOut,
+  Shield,
+  AlertTriangle,
+  Check,
+  X,
+  Settings,
+  Database,
+  Key,
+  Users,
+  Car,
+  CreditCard,
+  MapPin,
+  BarChart3,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Card } from '../../../../components/Card';
 import { Modal } from '../../../../components/Modal';
 import { useToast } from '../../../../contexts/ToastContext';
 import { TOAST } from '../../../../constants/toastMessages';
 import { mapError } from '../../../../utils/errorMapper';
-import { api } from '../../../../services/api';
+import { api } from '../../../../services/apiLazy';
 import { useTableSort } from '../../../../hooks/useTableSort';
 import { SortableHeader } from '../../../../components/SortableHeader';
 import { logger } from '../../../../utils/logger';
@@ -33,14 +56,14 @@ import { useAuth } from '../../../../contexts/AuthContext';
 
 // Helper: Safely parse date to Date object or null
 const safeToDate = (dateValue: string | Date | null | undefined): Date | null => {
-    if (!dateValue) return null;
-    try {
-        const dateObj = new Date(dateValue);
-        if (isNaN(dateObj.getTime())) return null;
-        return dateObj;
-    } catch {
-        return null;
-    }
+  if (!dateValue) return null;
+  try {
+    const dateObj = new Date(dateValue);
+    if (isNaN(dateObj.getTime())) return null;
+    return dateObj;
+  } catch {
+    return null;
+  }
 };
 
 // API Row interface for mapping
@@ -109,16 +132,55 @@ interface AuditFilter {
 }
 
 // Actions avec config
-const ACTION_CONFIG: Record<string, { label: string; icon: React.ElementType; color: string; bgColor: string; barColor: string }> = {
+const ACTION_CONFIG: Record<
+  string,
+  { label: string; icon: React.ElementType; color: string; bgColor: string; barColor: string }
+> = {
   CREATE: { label: 'Création', icon: Plus, color: 'text-green-600', bgColor: 'bg-green-100', barColor: 'bg-green-500' },
-  UPDATE: { label: 'Modification', icon: Edit2, color: 'text-[var(--primary)]', bgColor: 'bg-[var(--primary-dim)]', barColor: 'bg-[var(--primary-dim)]0' },
+  UPDATE: {
+    label: 'Modification',
+    icon: Edit2,
+    color: 'text-[var(--primary)]',
+    bgColor: 'bg-[var(--primary-dim)]',
+    barColor: 'bg-[var(--primary-dim)]0',
+  },
   DELETE: { label: 'Suppression', icon: Trash2, color: 'text-red-600', bgColor: 'bg-red-100', barColor: 'bg-red-500' },
-  LOGIN: { label: 'Connexion', icon: LogIn, color: 'text-purple-600', bgColor: 'bg-purple-100', barColor: 'bg-purple-500' },
-  LOGOUT: { label: 'Déconnexion', icon: LogOut, color: 'text-slate-600', bgColor: 'bg-slate-100', barColor: 'bg-slate-500' },
+  LOGIN: {
+    label: 'Connexion',
+    icon: LogIn,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-100',
+    barColor: 'bg-purple-500',
+  },
+  LOGOUT: {
+    label: 'Déconnexion',
+    icon: LogOut,
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-100',
+    barColor: 'bg-slate-500',
+  },
   EXPORT: { label: 'Export', icon: Download, color: 'text-cyan-600', bgColor: 'bg-cyan-100', barColor: 'bg-cyan-500' },
-  IMPORT: { label: 'Import', icon: ArrowUpRight, color: 'text-indigo-600', bgColor: 'bg-indigo-100', barColor: 'bg-indigo-500' },
-  VIEW: { label: 'Consultation', icon: Eye, color: 'text-slate-600', bgColor: 'bg-slate-100', barColor: 'bg-slate-500' },
-  SECURITY: { label: 'Sécurité', icon: Shield, color: 'text-amber-600', bgColor: 'bg-amber-100', barColor: 'bg-amber-500' },
+  IMPORT: {
+    label: 'Import',
+    icon: ArrowUpRight,
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-100',
+    barColor: 'bg-indigo-500',
+  },
+  VIEW: {
+    label: 'Consultation',
+    icon: Eye,
+    color: 'text-slate-600',
+    bgColor: 'bg-slate-100',
+    barColor: 'bg-slate-500',
+  },
+  SECURITY: {
+    label: 'Sécurité',
+    icon: Shield,
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-100',
+    barColor: 'bg-amber-500',
+  },
 };
 
 // Entités
@@ -155,7 +217,7 @@ const DEMO_LOGS: AuditLog[] = [
     oldValues: { status: 'active' },
     newValues: { status: 'maintenance' },
     status: 'success',
-    duration: 45
+    duration: 45,
   },
   {
     id: '2',
@@ -172,7 +234,7 @@ const DEMO_LOGS: AuditLog[] = [
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
     details: { source: 'form' },
     status: 'success',
-    duration: 120
+    duration: 120,
   },
   {
     id: '3',
@@ -189,7 +251,7 @@ const DEMO_LOGS: AuditLog[] = [
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
     details: { reason: 'Compte inactif' },
     status: 'success',
-    duration: 35
+    duration: 35,
   },
   {
     id: '4',
@@ -205,7 +267,7 @@ const DEMO_LOGS: AuditLog[] = [
     ipAddress: '192.168.1.1',
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
     details: { change: 'permissions_updated', added: ['VIEW_REPORTS'] },
-    status: 'warning'
+    status: 'warning',
   },
   {
     id: '5',
@@ -219,7 +281,7 @@ const DEMO_LOGS: AuditLog[] = [
     ipAddress: '41.82.100.50',
     userAgent: 'Mozilla/5.0 (Linux; Android 10)',
     details: { method: 'password', attempts: 3 },
-    status: 'failure'
+    status: 'failure',
   },
   {
     id: '6',
@@ -235,7 +297,7 @@ const DEMO_LOGS: AuditLog[] = [
     userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
     details: { format: 'xlsx', records: 156 },
     status: 'success',
-    duration: 2500
+    duration: 2500,
   },
   {
     id: '7',
@@ -249,7 +311,7 @@ const DEMO_LOGS: AuditLog[] = [
     ipAddress: '192.168.1.100',
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
     details: { method: '2fa', device: 'Desktop' },
-    status: 'success'
+    status: 'success',
   },
 ];
 
@@ -257,13 +319,13 @@ const DEMO_LOGS: AuditLog[] = [
 const formatRelativeTime = (date: string): string => {
   const dateObj = safeToDate(date);
   if (!dateObj) return 'Date invalide';
-  
+
   const diff = Date.now() - dateObj.getTime();
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
-  
-  if (minutes < 1) return 'À l\'instant';
+
+  if (minutes < 1) return "À l'instant";
   if (minutes < 60) return `Il y a ${minutes} min`;
   if (hours < 24) return `Il y a ${hours}h`;
   if (days < 7) return `Il y a ${days}j`;
@@ -276,7 +338,7 @@ export const AuditLogsPanelV2: React.FC = () => {
   const { tiers, users: allUsers } = useDataContext();
   const { user } = useAuth();
   const isSuperAdmin = user?.role === 'SUPERADMIN' || user?.role === 'SUPER_ADMIN';
-  
+
   // State
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [activeTab, setActiveTab] = useState<'timeline' | 'table' | 'stats'>('timeline');
@@ -288,7 +350,7 @@ export const AuditLogsPanelV2: React.FC = () => {
     tenantId: 'all',
     action: 'all',
     entityType: 'all',
-    status: 'all'
+    status: 'all',
   });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
@@ -331,7 +393,7 @@ export const AuditLogsPanelV2: React.FC = () => {
             oldValues: row.old_values || row.oldValues,
             newValues: row.new_values || row.newValues,
             status: (row.status || 'success') as AuditLog['status'],
-            duration: row.duration
+            duration: row.duration,
           }));
           setLogs(mapped);
         }
@@ -348,49 +410,50 @@ export const AuditLogsPanelV2: React.FC = () => {
   // Filtrage
   const filteredLogs = useMemo(() => {
     let result = [...logs];
-    
+
     if (filters.search) {
       const query = filters.search.toLowerCase();
-      result = result.filter(l => 
-        l.userName.toLowerCase().includes(query) ||
-        l.userEmail.toLowerCase().includes(query) ||
-        l.entityName?.toLowerCase().includes(query) ||
-        l.entityId?.toLowerCase().includes(query)
+      result = result.filter(
+        (l) =>
+          l.userName.toLowerCase().includes(query) ||
+          l.userEmail.toLowerCase().includes(query) ||
+          l.entityName?.toLowerCase().includes(query) ||
+          l.entityId?.toLowerCase().includes(query)
       );
     }
-    
+
     if (filters.action !== 'all') {
-      result = result.filter(l => l.action === filters.action);
+      result = result.filter((l) => l.action === filters.action);
     }
-    
+
     if (filters.entityType !== 'all') {
-      result = result.filter(l => l.entityType === filters.entityType);
+      result = result.filter((l) => l.entityType === filters.entityType);
     }
-    
+
     if (filters.status !== 'all') {
-      result = result.filter(l => l.status === filters.status);
+      result = result.filter((l) => l.status === filters.status);
     }
-    
+
     if (filters.dateFrom) {
       const fromDate = safeToDate(filters.dateFrom);
       if (fromDate) {
-        result = result.filter(l => {
+        result = result.filter((l) => {
           const logDate = safeToDate(l.timestamp);
           return logDate && logDate >= fromDate;
         });
       }
     }
-    
+
     if (filters.dateTo) {
       const toDate = safeToDate(filters.dateTo + 'T23:59:59');
       if (toDate) {
-        result = result.filter(l => {
+        result = result.filter((l) => {
           const logDate = safeToDate(l.timestamp);
           return logDate && logDate <= toDate;
         });
       }
     }
-    
+
     return result;
   }, [logs, filters]);
 
@@ -403,33 +466,33 @@ export const AuditLogsPanelV2: React.FC = () => {
     ip: (l) => l.ipAddress || '',
   };
 
-  const { sortedItems: sortedLogs, sortConfig: auditSortConfig, handleSort: handleAuditSort } = useTableSort(
-    filteredLogs,
-    { key: 'date', direction: 'desc' },
-    AUDIT_SORT_ACCESSORS
-  );
+  const {
+    sortedItems: sortedLogs,
+    sortConfig: auditSortConfig,
+    handleSort: handleAuditSort,
+  } = useTableSort(filteredLogs, { key: 'date', direction: 'desc' }, AUDIT_SORT_ACCESSORS);
 
   // Stats
   const stats = useMemo(() => {
     const today = new Date().toDateString();
-    const todayLogs = logs.filter(l => new Date(l.timestamp).toDateString() === today);
-    
+    const todayLogs = logs.filter((l) => new Date(l.timestamp).toDateString() === today);
+
     return {
       total: logs.length,
       today: todayLogs.length,
       byAction: Object.entries(ACTION_CONFIG).map(([key, config]) => ({
         action: key,
         ...config,
-        count: logs.filter(l => l.action === key).length
+        count: logs.filter((l) => l.action === key).length,
       })),
       byEntity: Object.entries(ENTITY_CONFIG).map(([key, config]) => ({
         entity: key,
         ...config,
-        count: logs.filter(l => l.entityType === key).length
+        count: logs.filter((l) => l.entityType === key).length,
       })),
-      failures: logs.filter(l => l.status === 'failure').length,
-      warnings: logs.filter(l => l.status === 'warning').length,
-      uniqueUsers: new Set(logs.map(l => l.userId)).size
+      failures: logs.filter((l) => l.status === 'failure').length,
+      warnings: logs.filter((l) => l.status === 'warning').length,
+      uniqueUsers: new Set(logs.map((l) => l.userId)).size,
     };
   }, [logs]);
 
@@ -446,7 +509,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           userName: row.user_name || row.userName || 'Inconnu',
           userEmail: row.user_email || row.userEmail || '',
           userRole: row.user_role || row.userRole || '',
-          action: ((row.action || 'VIEW').toUpperCase()) as AuditLog['action'],
+          action: (row.action || 'VIEW').toUpperCase() as AuditLog['action'],
           entityType: (row.entity_type || row.entityType || '').toUpperCase(),
           entityId: row.entity_id || row.entityId,
           entityName: row.entity_name || row.entityName,
@@ -456,7 +519,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           oldValues: (row.old_values || row.oldValues) as Record<string, unknown> | undefined,
           newValues: (row.new_values || row.newValues) as Record<string, unknown> | undefined,
           status: (row.status || 'success') as AuditLog['status'],
-          duration: row.duration
+          duration: row.duration,
         }));
         setLogs(mapped);
       }
@@ -477,7 +540,7 @@ export const AuditLogsPanelV2: React.FC = () => {
       }
       if (format === 'csv') {
         const headers = ['Date', 'Utilisateur', 'Email', 'Action', 'Entité', 'ID Entité', 'IP', 'Statut'];
-        const rows = filteredLogs.map(l => [
+        const rows = filteredLogs.map((l) => [
           l.timestamp,
           l.userName,
           l.userEmail,
@@ -485,9 +548,9 @@ export const AuditLogsPanelV2: React.FC = () => {
           l.entityType,
           l.entityId || '',
           l.ipAddress,
-          l.status
+          l.status,
         ]);
-        const csvContent = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+        const csvContent = [headers.join(';'), ...rows.map((r) => r.join(';'))].join('\n');
         const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -525,7 +588,7 @@ export const AuditLogsPanelV2: React.FC = () => {
       tenantId: 'all',
       action: 'all',
       entityType: 'all',
-      status: 'all'
+      status: 'all',
     });
   };
 
@@ -566,63 +629,63 @@ export const AuditLogsPanelV2: React.FC = () => {
 
       {/* KPIs rapides - Hidden on mobile */}
       {!isMobile && (
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 shrink-0">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <Activity className="w-5 h-5 text-purple-600" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 shrink-0">
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <Activity className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.total}</p>
+                <p className="text-xs text-slate-500">Total</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.total}</p>
-              <p className="text-xs text-slate-500">Total</p>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                <Clock className="w-5 h-5 text-[var(--primary)]" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.today}</p>
+                <p className="text-xs text-slate-500">Aujourd'hui</p>
+              </div>
             </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
-              <Clock className="w-5 h-5 text-[var(--primary)]" />
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <Users className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.uniqueUsers}</p>
+                <p className="text-xs text-slate-500">Utilisateurs</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.today}</p>
-              <p className="text-xs text-slate-500">Aujourd'hui</p>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.warnings}</p>
+                <p className="text-xs text-slate-500">Avertissements</p>
+              </div>
             </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <Users className="w-5 h-5 text-green-600" />
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                <X className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.failures}</p>
+                <p className="text-xs text-slate-500">Échecs</p>
+              </div>
             </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.uniqueUsers}</p>
-              <p className="text-xs text-slate-500">Utilisateurs</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.warnings}</p>
-              <p className="text-xs text-slate-500">Avertissements</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-              <X className="w-5 h-5 text-red-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.failures}</p>
-              <p className="text-xs text-slate-500">Échecs</p>
-            </div>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
       )}
 
       {/* Tabs */}
@@ -631,7 +694,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           { id: 'timeline', label: 'Timeline', icon: Clock },
           { id: 'table', label: 'Tableau', icon: FileText },
           { id: 'stats', label: 'Statistiques', icon: BarChart3 },
-        ].map(tab => (
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
@@ -660,7 +723,7 @@ export const AuditLogsPanelV2: React.FC = () => {
               className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
             />
           </div>
-          
+
           {isSuperAdmin && (
             <select
               value={filters.tenantId}
@@ -669,9 +732,13 @@ export const AuditLogsPanelV2: React.FC = () => {
               title="Revendeur"
             >
               <option value="all">Tous les revendeurs</option>
-              {tiers.filter(t => t.type === 'RESELLER').map(reseller => (
-                <option key={reseller.id} value={reseller.id}>{reseller.name}</option>
-              ))}
+              {tiers
+                .filter((t) => t.type === 'RESELLER')
+                .map((reseller) => (
+                  <option key={reseller.id} value={reseller.id}>
+                    {reseller.name}
+                  </option>
+                ))}
             </select>
           )}
 
@@ -683,10 +750,12 @@ export const AuditLogsPanelV2: React.FC = () => {
           >
             <option value="all">Toutes les actions</option>
             {Object.entries(ACTION_CONFIG).map(([key, config]) => (
-              <option key={key} value={key}>{config.label}</option>
+              <option key={key} value={key}>
+                {config.label}
+              </option>
             ))}
           </select>
-          
+
           <select
             value={filters.entityType}
             onChange={(e) => setFilters({ ...filters, entityType: e.target.value })}
@@ -695,10 +764,12 @@ export const AuditLogsPanelV2: React.FC = () => {
           >
             <option value="all">Toutes les entités</option>
             {Object.entries(ENTITY_CONFIG).map(([key, config]) => (
-              <option key={key} value={key}>{config.label}</option>
+              <option key={key} value={key}>
+                {config.label}
+              </option>
             ))}
           </select>
-          
+
           <select
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
@@ -710,7 +781,7 @@ export const AuditLogsPanelV2: React.FC = () => {
             <option value="warning">⚠ Avertissement</option>
             <option value="failure">✗ Échec</option>
           </select>
-          
+
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm ${showFilters ? 'bg-purple-50 border-purple-300' : ''}`}
@@ -718,17 +789,18 @@ export const AuditLogsPanelV2: React.FC = () => {
             <Filter className="w-4 h-4" />
             Plus de filtres
           </button>
-          
-          {(filters.search || filters.action !== 'all' || filters.entityType !== 'all' || filters.status !== 'all' || (isSuperAdmin && filters.tenantId !== 'all')) && (
-            <button
-              onClick={resetFilters}
-              className="text-sm text-red-600 hover:underline"
-            >
+
+          {(filters.search ||
+            filters.action !== 'all' ||
+            filters.entityType !== 'all' ||
+            filters.status !== 'all' ||
+            (isSuperAdmin && filters.tenantId !== 'all')) && (
+            <button onClick={resetFilters} className="text-sm text-red-600 hover:underline">
               Réinitialiser
             </button>
           )}
         </div>
-        
+
         {showFilters && (
           <div className="flex gap-4 mt-4 pt-4 border-t dark:border-slate-700">
             <div>
@@ -759,7 +831,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           <div className="relative pl-8">
             {/* Timeline line */}
             <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
-            
+
             {filteredLogs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-slate-500">
                 <Activity className="w-12 h-12 text-slate-300 mb-4" />
@@ -773,25 +845,32 @@ export const AuditLogsPanelV2: React.FC = () => {
                   const entityConfig = getEntityConfig(log.entityType);
                   const ActionIcon = actionConfig.icon;
                   const EntityIcon = entityConfig.icon;
-                  
+
                   return (
                     <div key={log.id} className="relative">
                       {/* Timeline dot */}
-                      <div className={`absolute -left-5 w-6 h-6 rounded-full ${actionConfig.bgColor} flex items-center justify-center ring-4 ring-white dark:ring-slate-900`}>
+                      <div
+                        className={`absolute -left-5 w-6 h-6 rounded-full ${actionConfig.bgColor} flex items-center justify-center ring-4 ring-white dark:ring-slate-900`}
+                      >
                         <ActionIcon className={`w-3 h-3 ${actionConfig.color}`} />
                       </div>
-                      
-                      <Card 
+
+                      <Card
                         className={`p-4 cursor-pointer hover:shadow-md transition-shadow ${
-                          log.status === 'failure' ? 'border-l-4 border-l-red-500' :
-                          log.status === 'warning' ? 'border-l-4 border-l-amber-500' : ''
+                          log.status === 'failure'
+                            ? 'border-l-4 border-l-red-500'
+                            : log.status === 'warning'
+                              ? 'border-l-4 border-l-amber-500'
+                              : ''
                         }`}
                         onClick={() => handleViewDetails(log)}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className={`px-2 py-0.5 rounded text-xs font-medium ${actionConfig.bgColor} ${actionConfig.color}`}>
+                              <span
+                                className={`px-2 py-0.5 rounded text-xs font-medium ${actionConfig.bgColor} ${actionConfig.color}`}
+                              >
                                 {actionConfig.label}
                               </span>
                               <span className="flex items-center gap-1 text-xs text-slate-500">
@@ -799,26 +878,34 @@ export const AuditLogsPanelV2: React.FC = () => {
                                 {entityConfig.label}
                               </span>
                               {log.status !== 'success' && (
-                                <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                  log.status === 'failure' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
-                                }`}>
+                                <span
+                                  className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                    log.status === 'failure' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                                  }`}
+                                >
                                   {log.status === 'failure' ? 'Échec' : 'Attention'}
                                 </span>
                               )}
                             </div>
-                            
+
                             <p className="text-sm text-slate-800 dark:text-white">
                               <strong>{log.userName}</strong>
                               {' a '}
                               {actionConfig.label.toLowerCase()}
                               {log.entityName && (
-                                <> : <span className="font-medium">{log.entityName}</span></>
+                                <>
+                                  {' '}
+                                  : <span className="font-medium">{log.entityName}</span>
+                                </>
                               )}
                               {log.entityId && !log.entityName && (
-                                <> ID: <code className="text-xs bg-slate-100 px-1 rounded">{log.entityId}</code></>
+                                <>
+                                  {' '}
+                                  ID: <code className="text-xs bg-slate-100 px-1 rounded">{log.entityId}</code>
+                                </>
                               )}
                             </p>
-                            
+
                             <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
@@ -829,12 +916,10 @@ export const AuditLogsPanelV2: React.FC = () => {
                                 {log.userRole}
                               </span>
                               <span>{log.ipAddress}</span>
-                              {log.duration && (
-                                <span>{log.duration}ms</span>
-                              )}
+                              {log.duration && <span>{log.duration}ms</span>}
                             </div>
                           </div>
-                          
+
                           <button className="p-2 hover:bg-slate-100 rounded-lg">
                             <ChevronRight className="w-4 h-4 text-slate-400" />
                           </button>
@@ -854,17 +939,59 @@ export const AuditLogsPanelV2: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-slate-50 dark:bg-slate-800">
                   <tr>
-                    <SortableHeader label="Date" sortKey="date" currentSortKey={auditSortConfig.key} currentDirection={auditSortConfig.direction} onSort={handleAuditSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="Utilisateur" sortKey="user" currentSortKey={auditSortConfig.key} currentDirection={auditSortConfig.direction} onSort={handleAuditSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="Action" sortKey="action" currentSortKey={auditSortConfig.key} currentDirection={auditSortConfig.direction} onSort={handleAuditSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="Entité" sortKey="entity" currentSortKey={auditSortConfig.key} currentDirection={auditSortConfig.direction} onSort={handleAuditSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="Statut" sortKey="status" currentSortKey={auditSortConfig.key} currentDirection={auditSortConfig.direction} onSort={handleAuditSort} className="text-xs font-bold text-slate-500 uppercase" />
-                    <SortableHeader label="IP" sortKey="ip" currentSortKey={auditSortConfig.key} currentDirection={auditSortConfig.direction} onSort={handleAuditSort} className="text-xs font-bold text-slate-500 uppercase" />
+                    <SortableHeader
+                      label="Date"
+                      sortKey="date"
+                      currentSortKey={auditSortConfig.key}
+                      currentDirection={auditSortConfig.direction}
+                      onSort={handleAuditSort}
+                      className="text-xs font-bold text-slate-500 uppercase"
+                    />
+                    <SortableHeader
+                      label="Utilisateur"
+                      sortKey="user"
+                      currentSortKey={auditSortConfig.key}
+                      currentDirection={auditSortConfig.direction}
+                      onSort={handleAuditSort}
+                      className="text-xs font-bold text-slate-500 uppercase"
+                    />
+                    <SortableHeader
+                      label="Action"
+                      sortKey="action"
+                      currentSortKey={auditSortConfig.key}
+                      currentDirection={auditSortConfig.direction}
+                      onSort={handleAuditSort}
+                      className="text-xs font-bold text-slate-500 uppercase"
+                    />
+                    <SortableHeader
+                      label="Entité"
+                      sortKey="entity"
+                      currentSortKey={auditSortConfig.key}
+                      currentDirection={auditSortConfig.direction}
+                      onSort={handleAuditSort}
+                      className="text-xs font-bold text-slate-500 uppercase"
+                    />
+                    <SortableHeader
+                      label="Statut"
+                      sortKey="status"
+                      currentSortKey={auditSortConfig.key}
+                      currentDirection={auditSortConfig.direction}
+                      onSort={handleAuditSort}
+                      className="text-xs font-bold text-slate-500 uppercase"
+                    />
+                    <SortableHeader
+                      label="IP"
+                      sortKey="ip"
+                      currentSortKey={auditSortConfig.key}
+                      currentDirection={auditSortConfig.direction}
+                      onSort={handleAuditSort}
+                      className="text-xs font-bold text-slate-500 uppercase"
+                    />
                     <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Détails</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                  {sortedLogs.map(log => {
+                  {sortedLogs.map((log) => {
                     const actionConfig = getActionConfig(log.action);
                     return (
                       <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
@@ -878,7 +1005,9 @@ export const AuditLogsPanelV2: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${actionConfig.bgColor} ${actionConfig.color}`}>
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-medium ${actionConfig.bgColor} ${actionConfig.color}`}
+                          >
                             {actionConfig.label}
                           </span>
                         </td>
@@ -893,10 +1022,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-500 font-mono">{log.ipAddress}</td>
                         <td className="px-4 py-3 text-right">
-                          <button
-                            onClick={() => handleViewDetails(log)}
-                            className="p-1.5 hover:bg-slate-100 rounded"
-                          >
+                          <button onClick={() => handleViewDetails(log)} className="p-1.5 hover:bg-slate-100 rounded">
                             <Eye className="w-4 h-4 text-slate-500" />
                           </button>
                         </td>
@@ -915,51 +1041,57 @@ export const AuditLogsPanelV2: React.FC = () => {
             <Card className="p-4">
               <h3 className="font-bold text-slate-800 dark:text-white mb-4">Par Action</h3>
               <div className="space-y-3">
-                {stats.byAction.filter(a => a.count > 0).sort((a, b) => b.count - a.count).map(item => (
-                  <div key={item.action} className="flex items-center gap-3">
-                    <div className={`p-2 rounded ${item.bgColor}`}>
-                      <item.icon className={`w-4 h-4 ${item.color}`} />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">{item.label}</span>
-                        <span className="text-sm text-slate-500">{item.count}</span>
+                {stats.byAction
+                  .filter((a) => a.count > 0)
+                  .sort((a, b) => b.count - a.count)
+                  .map((item) => (
+                    <div key={item.action} className="flex items-center gap-3">
+                      <div className={`p-2 rounded ${item.bgColor}`}>
+                        <item.icon className={`w-4 h-4 ${item.color}`} />
                       </div>
-                      <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${item.barColor}`}
-                          style={{ width: `${(item.count / stats.total) * 100}%` }}
-                        />
+                      <div className="flex-1">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium">{item.label}</span>
+                          <span className="text-sm text-slate-500">{item.count}</span>
+                        </div>
+                        <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${item.barColor}`}
+                            style={{ width: `${(item.count / stats.total) * 100}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </Card>
-            
+
             {/* Par entité */}
             <Card className="p-4">
               <h3 className="font-bold text-slate-800 dark:text-white mb-4">Par Entité</h3>
               <div className="space-y-3">
-                {stats.byEntity.filter(e => e.count > 0).sort((a, b) => b.count - a.count).map(item => (
-                  <div key={item.entity} className="flex items-center gap-3">
-                    <div className="p-2 rounded bg-slate-100 dark:bg-slate-700">
-                      <item.icon className="w-4 h-4 text-slate-600" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">{item.label}</span>
-                        <span className="text-sm text-slate-500">{item.count}</span>
+                {stats.byEntity
+                  .filter((e) => e.count > 0)
+                  .sort((a, b) => b.count - a.count)
+                  .map((item) => (
+                    <div key={item.entity} className="flex items-center gap-3">
+                      <div className="p-2 rounded bg-slate-100 dark:bg-slate-700">
+                        <item.icon className="w-4 h-4 text-slate-600" />
                       </div>
-                      <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-purple-500"
-                          style={{ width: `${(item.count / stats.total) * 100}%` }}
-                        />
+                      <div className="flex-1">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium">{item.label}</span>
+                          <span className="text-sm text-slate-500">{item.count}</span>
+                        </div>
+                        <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-purple-500"
+                            style={{ width: `${(item.count / stats.total) * 100}%` }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </Card>
           </div>
@@ -979,26 +1111,32 @@ export const AuditLogsPanelV2: React.FC = () => {
             <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
               <div className={`p-3 rounded-lg ${getActionConfig(selectedLog.action).bgColor}`}>
                 {React.createElement(getActionConfig(selectedLog.action).icon, {
-                  className: `w-6 h-6 ${getActionConfig(selectedLog.action).color}`
+                  className: `w-6 h-6 ${getActionConfig(selectedLog.action).color}`,
                 })}
               </div>
               <div>
                 <h3 className="font-bold text-lg text-slate-800 dark:text-white">
                   {getActionConfig(selectedLog.action).label} - {getEntityConfig(selectedLog.entityType).label}
                 </h3>
-                <p className="text-sm text-slate-500">
-                  {new Date(selectedLog.timestamp).toLocaleString('fr-FR')}
-                </p>
+                <p className="text-sm text-slate-500">{new Date(selectedLog.timestamp).toLocaleString('fr-FR')}</p>
               </div>
-              <span className={`ml-auto px-3 py-1 rounded-full text-sm font-medium ${
-                selectedLog.status === 'success' ? 'bg-green-100 text-green-700' :
-                selectedLog.status === 'warning' ? 'bg-amber-100 text-amber-700' :
-                'bg-red-100 text-red-700'
-              }`}>
-                {selectedLog.status === 'success' ? 'Succès' : selectedLog.status === 'warning' ? 'Avertissement' : 'Échec'}
+              <span
+                className={`ml-auto px-3 py-1 rounded-full text-sm font-medium ${
+                  selectedLog.status === 'success'
+                    ? 'bg-green-100 text-green-700'
+                    : selectedLog.status === 'warning'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-red-100 text-red-700'
+                }`}
+              >
+                {selectedLog.status === 'success'
+                  ? 'Succès'
+                  : selectedLog.status === 'warning'
+                    ? 'Avertissement'
+                    : 'Échec'}
               </span>
             </div>
-            
+
             {/* User info */}
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -1013,7 +1151,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <p className="text-xs text-slate-500 truncate">{selectedLog.userAgent}</p>
               </div>
             </div>
-            
+
             {/* Entity */}
             {selectedLog.entityName && (
               <div>
@@ -1022,7 +1160,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 {selectedLog.entityId && <p className="text-xs text-slate-500 font-mono">ID: {selectedLog.entityId}</p>}
               </div>
             )}
-            
+
             {/* Changes */}
             {(selectedLog.oldValues || selectedLog.newValues) && (
               <div>
@@ -1047,7 +1185,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 </div>
               </div>
             )}
-            
+
             {/* Details */}
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Détails bruts</label>
@@ -1055,7 +1193,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 {JSON.stringify(selectedLog.details, null, 2)}
               </pre>
             </div>
-            
+
             {selectedLog.duration && (
               <p className="text-xs text-slate-500">Durée de l'opération: {selectedLog.duration}ms</p>
             )}
