@@ -13,7 +13,7 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({ children, className = "", title, action, icon: Icon, onClick }) => {
   return (
     <div
-      className={`rounded-xl border overflow-hidden transition-all duration-200 bg-[var(--bg-surface)] border-[var(--border)] ${onClick ? 'cursor-pointer hover:border-[var(--border-strong)] hover:shadow-lg hover:shadow-black/20 active:scale-[0.99]' : ''} ${className}`}
+      className={`rounded-[14px] border overflow-hidden transition-all duration-200 bg-[var(--bg-surface)] border-[var(--border)] ${onClick ? 'cursor-pointer hover:border-[var(--border-strong)] hover:shadow-md active:scale-[0.99]' : ''} ${className}`}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
