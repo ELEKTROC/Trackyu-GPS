@@ -3,7 +3,7 @@ import { Search, ChevronDown, Settings, LayoutTemplate, Box, Cpu, ArrowUpDown, F
 import { Card } from '../../../../components/Card';
 import { Pagination } from '../../../../components/Pagination';
 import { EmptyState } from '../../../../components/EmptyState';
-import { DeviceStock, Vehicle, Tier } from '../../../../types';
+import type { DeviceStock, Vehicle, Tier } from '../../../../types';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { MobileCard, MobileCardList, MobileCardAction } from '../../../../components/MobileCard';
 import { MobileFilterSheet, FilterRadioRow, FilterCheckRow } from '../../../../components/MobileFilterSheet';
@@ -215,7 +215,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                             placeholder="Rechercher (IMEI, ICCID...)"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-9 pr-4 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                            className="pl-9 pr-4 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full sm:w-64 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200"
                         />
                     </div>}
 
@@ -224,7 +224,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 dark:text-slate-100 text-slate-700 appearance-none cursor-pointer min-w-[120px]"
+                            className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-white dark:bg-slate-700 dark:text-slate-100 text-slate-700 appearance-none cursor-pointer min-w-[120px]"
                         >
                             <option value="ALL">Tous statuts</option>
                             <option value="IN_STOCK">En Stock</option>
@@ -240,7 +240,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                     {/* Client Filter — desktop only */}
                     {!isMobile && uniqueClients.length > 0 && (
                         <div className="relative">
-                            <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 dark:text-white appearance-none cursor-pointer min-w-[130px]">
+                            <select value={selectedClient} onChange={(e) => setSelectedClient(e.target.value)} className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-white dark:bg-slate-900 dark:text-white appearance-none cursor-pointer min-w-[130px]">
                                 <option value="all">Tous les clients</option>
                                 {uniqueClients.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
@@ -251,7 +251,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                     {/* Operator Filter — desktop + SIM only */}
                     {!isMobile && activeTab === 'sims' && uniqueOperators.length > 0 && (
                         <div className="relative">
-                            <select value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)} className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 dark:text-white appearance-none cursor-pointer min-w-[130px]">
+                            <select value={selectedOperator} onChange={(e) => setSelectedOperator(e.target.value)} className="pl-3 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-white dark:bg-slate-900 dark:text-white appearance-none cursor-pointer min-w-[130px]">
                                 <option value="all">Tous opérateurs</option>
                                 {uniqueOperators.map(op => <option key={op} value={op}>{op}</option>)}
                             </select>
@@ -263,7 +263,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                     {!isMobile && (
                         <>
                         <div className="relative" ref={columnMenuRef}>
-                            <button onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)} className={`p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-blue-500/20' : ''}`}>
+                            <button onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)} className={`p-1.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary)]/20' : ''}`}>
                                 <LayoutTemplate className="w-4 h-4" />
                             </button>
                             {isColumnMenuOpen && (
@@ -272,7 +272,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                     <div className="max-h-48 overflow-y-auto custom-scrollbar p-1">
                                         {currentColumns.map(col => (
                                             <label key={col.id} className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm hover:bg-slate-50 dark:hover:bg-slate-700">
-                                                <input type="checkbox" checked={visibleColumns.includes(col.id)} onChange={() => toggleColumn(col.id)} disabled={col.locked} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                                <input type="checkbox" checked={visibleColumns.includes(col.id)} onChange={() => toggleColumn(col.id)} disabled={col.locked} className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                                                 <span className="text-slate-700 dark:text-slate-200">{col.label}</span>
                                             </label>
                                         ))}
@@ -281,7 +281,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                             )}
                         </div>
                         <div className="flex items-center gap-1">
-                            <button onClick={onExportCSV} className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold rounded-lg border border-blue-200 text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-400 hover:bg-blue-100 transition-colors" title="Exporter CSV">
+                            <button onClick={onExportCSV} className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold rounded-lg border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors" title="Exporter CSV">
                                 <FileSpreadsheet className="w-4 h-4" /> <span className="hidden lg:inline">CSV</span>
                             </button>
                             <button onClick={onExportPDF} className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold rounded-lg border border-red-200 text-red-600 bg-red-50 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors" title="Exporter PDF">
@@ -296,13 +296,13 @@ export const StockTable: React.FC<StockTableProps> = ({
             <div className="bg-white dark:bg-slate-900 flex flex-col relative">
                 {/* Bulk Actions */}
                 {selectedIds.size > 0 && (
-                    <div className="absolute top-0 left-0 right-0 h-12 bg-blue-50 dark:bg-blue-900/50 flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-blue-100 dark:border-blue-800">
-                        <span className="text-sm font-bold text-blue-800 dark:text-blue-200">{selectedIds.size} sélectionné(s)</span>
+                    <div className="absolute top-0 left-0 right-0 h-12 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--primary)] dark:border-[var(--primary)]">
+                        <span className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)]">{selectedIds.size} sélectionné(s)</span>
                         <div className="flex gap-2">
-                            <button onClick={() => onBulkTransfer('TECH')} className="text-xs bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded shadow-sm hover:bg-blue-50">Transférer au Tech</button>
-                            <button onClick={() => onBulkTransfer('SIEGE')} className="text-xs bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded shadow-sm hover:bg-blue-50">Vers Siège</button>
-                            <button onClick={() => onBulkTransfer('CENTRAL')} className="text-xs bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded shadow-sm hover:bg-blue-50">Retour Dépôt</button>
-                            <button onClick={onClearSelection} className="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded text-blue-600 dark:text-blue-300"><X className="w-4 h-4" /></button>
+                            <button onClick={() => onBulkTransfer('TECH')} className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)]">Transférer au Tech</button>
+                            <button onClick={() => onBulkTransfer('SIEGE')} className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)]">Vers Siège</button>
+                            <button onClick={() => onBulkTransfer('CENTRAL')} className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)]">Retour Dépôt</button>
+                            <button onClick={onClearSelection} className="p-1 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded text-[var(--primary)] dark:text-[var(--primary)]"><X className="w-4 h-4" /></button>
                         </div>
                     </div>
                 )}
@@ -327,20 +327,20 @@ export const StockTable: React.FC<StockTableProps> = ({
                                     placeholder="Rechercher..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-9 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                                    className="w-full pl-9 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)]"
                                 />
                             </div>
                             <button
                                 onClick={() => setShowMobileFilter(true)}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium transition-colors shrink-0 ${
                                     statusFilter !== 'ALL' || selectedClient !== 'all'
-                                        ? 'bg-blue-50 border-blue-300 text-blue-700 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-300'
+                                        ? 'bg-[var(--primary-dim)] border-[var(--primary)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]'
                                         : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
                                 }`}
                             >
                                 <SlidersHorizontal className="w-4 h-4" />
                                 {(statusFilter !== 'ALL' || selectedClient !== 'all') && (
-                                    <span className="bg-blue-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                                    <span className="bg-[var(--primary-dim)]0 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
                                         {(statusFilter !== 'ALL' ? 1 : 0) + (selectedClient !== 'all' ? 1 : 0)}
                                     </span>
                                 )}
@@ -364,7 +364,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                     item.status === 'REMOVED' ? 'Retiré' : item.status;
                                 const statusColors =
                                     item.status === 'INSTALLED' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' :
-                                    item.status === 'IN_STOCK' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400' :
+                                    item.status === 'IN_STOCK' ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' :
                                     item.status === 'RMA_PENDING' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' :
                                     item.status === 'SENT_TO_SUPPLIER' ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400' :
                                     'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400';
@@ -387,7 +387,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                             <span className="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{locationLabel}</span>
                                             {clientName !== '-' && <span className="text-[10px] font-medium text-slate-600 dark:text-slate-300">{clientName}</span>}
                                             {item.status === 'INSTALLED' && vehicleLabel !== '-' && (
-                                                <span className="text-[10px] font-mono text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0 rounded">{vehicleLabel}</span>
+                                                <span className="text-[10px] font-mono text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] px-1.5 py-0 rounded">{vehicleLabel}</span>
                                             )}
                                         </div>
                                         <div className="mt-2 flex items-center gap-2">
@@ -402,7 +402,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                 <div className="p-3">
                                     <button
                                         onClick={() => setMobileDisplayCount(c => c + 20)}
-                                        className="w-full py-3 text-sm font-medium text-blue-600 dark:text-blue-400 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-700 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                                        className="w-full py-3 text-sm font-medium text-[var(--primary)] dark:text-[var(--primary)] bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] rounded-xl hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
                                     >
                                         Afficher plus ({mobileFilteredData.length - mobileDisplayCount} restants)
                                     </button>
@@ -495,7 +495,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                             <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 sticky top-0 z-10">
                                 <tr>
                                     <th className="px-6 py-3 w-10 border-b border-slate-200 dark:border-slate-700">
-                                        <input type="checkbox" checked={isAllSelected} onChange={() => handleSelectAll(paginatedData)} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                        <input type="checkbox" checked={isAllSelected} onChange={() => handleSelectAll(paginatedData)} className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                                     </th>
                                     {currentColumns.map(col => visibleColumns.includes(col.id) && (
                                         <th
@@ -506,10 +506,10 @@ export const StockTable: React.FC<StockTableProps> = ({
                                             <div className="flex items-center gap-1">
                                                 {col.label}
                                                 {col.id !== 'actions' && col.id !== 'id' && (
-                                                    <ArrowUpDown className={`w-3 h-3 ${sortColumn === col.id ? 'text-blue-600' : 'text-slate-400'}`} />
+                                                    <ArrowUpDown className={`w-3 h-3 ${sortColumn === col.id ? 'text-[var(--primary)]' : 'text-slate-400'}`} />
                                                 )}
                                                 {sortColumn === col.id && (
-                                                    <span className="text-blue-600 text-[10px]">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+                                                    <span className="text-[var(--primary)] text-[10px]">{sortDirection === 'asc' ? '▲' : '▼'}</span>
                                                 )}
                                             </div>
                                         </th>
@@ -518,9 +518,9 @@ export const StockTable: React.FC<StockTableProps> = ({
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-900">
                                 {paginatedData.map((item: DeviceStock) => (
-                                    <tr key={item.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group ${selectedIds.has(item.id) ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                                    <tr key={item.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group ${selectedIds.has(item.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}>
                                         <td className="px-6 py-4">
-                                            <input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleSelection(item.id)} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                            <input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleSelection(item.id)} className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                                         </td>
 
                                         {visibleColumns.includes('id') && (
@@ -546,7 +546,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                         )}
 
                                         {visibleColumns.includes('phoneNumber') && (
-                                            <td className="px-6 py-4 text-sm font-semibold text-blue-600 dark:text-blue-400">{item.phoneNumber || '-'}</td>
+                                            <td className="px-6 py-4 text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)]">{item.phoneNumber || '-'}</td>
                                         )}
 
                                         {visibleColumns.includes('operator') && (
@@ -564,7 +564,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                         {visibleColumns.includes('status') && (
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-semibold border uppercase ${item.status === 'INSTALLED' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800' :
-                                                    item.status === 'IN_STOCK' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800' :
+                                                    item.status === 'IN_STOCK' ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] border-[var(--border)] dark:border-[var(--primary)]' :
                                                         item.status === 'RMA_PENDING' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800' :
                                                             item.status === 'SENT_TO_SUPPLIER' ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800' :
                                                                 item.status === 'REMOVED' ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700' :
@@ -595,7 +595,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                         {visibleColumns.includes('assignment') && (
                                             <td className="px-6 py-4">
                                                 {item.status === 'IN_STOCK' ? (
-                                                    <button onClick={() => onAssignClick(item)} className="text-xs text-blue-600 hover:underline font-medium">Assigner</button>
+                                                    <button onClick={() => onAssignClick(item)} className="text-xs text-[var(--primary)] hover:underline font-medium">Assigner</button>
                                                 ) : (
                                                     <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{item.vehiclePlate || resolveVehicleLabel(item.assignedVehicleId)}</span>
                                                 )}
@@ -634,7 +634,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                                     {activeTab === 'rma' && onRmaAction && (
                                                         <>
                                                             {item.status === 'RMA_PENDING' && (
-                                                                <button onClick={() => onRmaAction(item, 'SEND')} className="px-2 py-1 bg-blue-600 text-white text-[10px] font-bold rounded hover:bg-blue-700 transition-colors">Envoyer</button>
+                                                                <button onClick={() => onRmaAction(item, 'SEND')} className="px-2 py-1 bg-[var(--primary)] text-white text-[10px] font-bold rounded hover:bg-[var(--primary-light)] transition-colors">Envoyer</button>
                                                             )}
                                                             {item.status === 'SENT_TO_SUPPLIER' && (
                                                                 <div className="flex gap-1">
@@ -653,7 +653,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                                                     {onEditClick && (
                                                         <button
                                                             onClick={() => onEditClick(item)}
-                                                            className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                                            className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors"
                                                             title="Modifier"
                                                         >
                                                             <Pencil className="w-4 h-4" />

@@ -38,7 +38,7 @@ export const MyNotificationsView: React.FC = () => {
             case 'CRITICAL': return 'text-red-600 bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30';
             case 'HIGH': return 'text-orange-600 bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-900/30';
             case 'MEDIUM': return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900/30';
-            default: return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/30';
+            default: return 'text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]/30';
         }
     };
 
@@ -77,7 +77,7 @@ export const MyNotificationsView: React.FC = () => {
                 <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-lg">
                     <button 
                         onClick={() => setActiveTab('notifications')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'notifications' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'notifications' ? 'bg-white dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         <Bell className="w-4 h-4" />
                         Notifications
@@ -87,15 +87,15 @@ export const MyNotificationsView: React.FC = () => {
                     </button>
                     <button 
                         onClick={() => setActiveTab('messages')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'messages' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'messages' ? 'bg-white dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         <MessageSquare className="w-4 h-4" />
                         Messages
-                        <span className="bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">1</span>
+                        <span className="bg-[var(--primary-dim)]0 text-white text-xs px-1.5 py-0.5 rounded-full">1</span>
                     </button>
                     <button 
                         onClick={() => setActiveTab('settings')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'settings' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'settings' ? 'bg-white dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         <Settings className="w-4 h-4" />
                         Paramètres
@@ -128,7 +128,7 @@ export const MyNotificationsView: React.FC = () => {
                                 <button className="text-xs text-slate-500 hover:text-red-600 transition-colors flex items-center gap-1">
                                     <Trash2 className="w-3 h-3" /> Tout effacer
                                 </button>
-                                <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                                <button className="text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1">
                                     <Check className="w-3 h-3" /> Tout marquer comme lu
                                 </button>
                             </div>
@@ -148,7 +148,7 @@ export const MyNotificationsView: React.FC = () => {
                                     return (
                                         <div 
                                             key={alert.id} 
-                                            className={`bg-white dark:bg-slate-800 p-4 rounded-xl border shadow-sm transition-all hover:shadow-md flex gap-4 ${alert.isRead ? 'border-slate-200 dark:border-slate-700 opacity-75' : 'border-blue-200 dark:border-blue-800 ring-1 ring-blue-500/10'}`}
+                                            className={`bg-white dark:bg-slate-800 p-4 rounded-xl border shadow-sm transition-all hover:shadow-md flex gap-4 ${alert.isRead ? 'border-slate-200 dark:border-slate-700 opacity-75' : 'border-[var(--border)] dark:border-[var(--primary)] ring-1 ring-[var(--primary)]/10'}`}
                                         >
                                             <div className={`p-3 rounded-full h-fit ${colorClass}`}>
                                                 <Icon className="w-5 h-5" />
@@ -169,7 +169,7 @@ export const MyNotificationsView: React.FC = () => {
                                                         </span>
                                                     )}
                                                     {alert.vehiclePlate && (
-                                                        <span className="text-xs font-mono bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-900/40">
+                                                        <span className="text-xs font-mono bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] px-2 py-0.5 rounded text-[var(--primary)] dark:text-[var(--primary)] border border-[var(--primary)] dark:border-[var(--primary)]/40">
                                                             {alert.vehiclePlate}
                                                         </span>
                                                     )}
@@ -191,7 +191,7 @@ export const MyNotificationsView: React.FC = () => {
                                                             value={commentText}
                                                             onChange={(e) => setCommentText(e.target.value)}
                                                             placeholder="Ajouter un commentaire..."
-                                                            className="flex-1 px-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                                            className="flex-1 px-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                                             autoFocus
                                                         />
                                                         <button 
@@ -202,7 +202,7 @@ export const MyNotificationsView: React.FC = () => {
                                                                     setCommentText('');
                                                                 }
                                                             }}
-                                                            className="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                                            className="p-1.5 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors"
                                                         >
                                                             <Send className="w-4 h-4" />
                                                         </button>
@@ -219,7 +219,7 @@ export const MyNotificationsView: React.FC = () => {
                                                 ) : (
                                                     <button 
                                                         onClick={() => setCommentingAlertId(alert.id)}
-                                                        className="mt-2 text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                                                        className="mt-2 text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1"
                                                     >
                                                         <MessageCircle className="w-3 h-3" /> Commenter
                                                     </button>
@@ -228,10 +228,10 @@ export const MyNotificationsView: React.FC = () => {
                                             {!alert.isRead && (
                                                 <button 
                                                     onClick={() => markAlertAsRead(alert.id)}
-                                                    className="self-center p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors"
+                                                    className="self-center p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors"
                                                     title="Marquer comme lu"
                                                 >
-                                                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                                                    <div className="w-2 h-2 bg-[var(--primary)] rounded-full"></div>
                                                 </button>
                                             )}
                                         </div>
@@ -250,7 +250,7 @@ export const MyNotificationsView: React.FC = () => {
                             <div className="p-4 border-b border-slate-100 dark:border-slate-700 space-y-3">
                                 <div className="flex justify-between items-center">
                                     <h3 className="font-bold text-slate-800 dark:text-white">Messages</h3>
-                                    <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors" title="Nouveau message">
+                                    <button className="p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg transition-colors" title="Nouveau message">
                                         <MessageSquare className="w-4 h-4" />
                                     </button>
                                 </div>
@@ -259,7 +259,7 @@ export const MyNotificationsView: React.FC = () => {
                                     <input 
                                         type="text" 
                                         placeholder="Rechercher un message..." 
-                                        className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
                                     />
                                 </div>
                             </div>
@@ -268,11 +268,11 @@ export const MyNotificationsView: React.FC = () => {
                                     <div 
                                         key={msg.id} 
                                         onClick={() => setSelectedMessageId(msg.id)}
-                                        className={`p-4 border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group ${selectedMessageId === msg.id ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-600' : ''}`}
+                                        className={`p-4 border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors group ${selectedMessageId === msg.id ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-4 border-l-blue-600' : ''}`}
                                     >
                                         <div className="flex gap-3">
                                             <div className="relative">
-                                                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600">
+                                                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--primary-dim)] text-[var(--primary)]">
                                                     <msg.avatar className="w-5 h-5" />
                                                 </div>
                                             </div>
@@ -287,7 +287,7 @@ export const MyNotificationsView: React.FC = () => {
                                             </div>
                                             {msg.unread > 0 && (
                                                 <div className="flex flex-col justify-center">
-                                                    <span className="bg-blue-600 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center">
+                                                    <span className="bg-[var(--primary)] text-white text-xs font-semibold px-1.5 py-0.5 rounded-full min-w-[1.25rem] text-center">
                                                         {msg.unread}
                                                     </span>
                                                 </div>
@@ -303,9 +303,8 @@ export const MyNotificationsView: React.FC = () => {
                             {selectedMessageId && tickets.find(t => t.id === selectedMessageId) ? (
                                 <TicketChatPanel 
                                     ticketId={selectedMessageId} 
-                                    onPlanIntervention={(data) => {
-                                        // This view typically doesn't plan interventions, but we can redirect or show a snackbar
-                                        console.log('Plan intervention from notifications:', data);
+                                    onPlanIntervention={(_data) => {
+                                        // This view typically doesn't plan interventions
                                     }}
                                 />
                             ) : selectedMessageId === 'ai-chat' ? (
@@ -383,8 +382,8 @@ export const MyNotificationsView: React.FC = () => {
                                     {/* Push Toggle */}
                                     <div className="p-4 flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                                                <Smartphone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                            <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                                                <Smartphone className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)]" />
                                             </div>
                                             <div>
                                                 <h4 className="font-medium text-slate-800 dark:text-white">Notifications Push</h4>
@@ -393,7 +392,7 @@ export const MyNotificationsView: React.FC = () => {
                                         </div>
                                         <button 
                                             onClick={() => notifContext.updatePreferences({ pushEnabled: !notifContext.preferences.pushEnabled })}
-                                            className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.pushEnabled ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`}
+                                            className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.pushEnabled ? 'bg-[var(--primary)]' : 'bg-slate-300 dark:bg-slate-600'}`}
                                         >
                                             <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.pushEnabled ? 'translate-x-7' : 'translate-x-1'}`} />
                                         </button>
@@ -488,8 +487,8 @@ export const MyNotificationsView: React.FC = () => {
                                     {/* Geofence */}
                                     <div className="p-4 flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                                                <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                            <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
+                                                <MapPin className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)]" />
                                             </div>
                                             <div>
                                                 <h4 className="font-medium text-slate-800 dark:text-white">Zones géographiques</h4>
@@ -498,7 +497,7 @@ export const MyNotificationsView: React.FC = () => {
                                         </div>
                                         <button 
                                             onClick={() => notifContext.toggleAlertType('GEOFENCE')}
-                                            className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.GEOFENCE ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-600'}`}
+                                            className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.GEOFENCE ? 'bg-[var(--primary)]' : 'bg-slate-300 dark:bg-slate-600'}`}
                                         >
                                             <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.GEOFENCE ? 'translate-x-7' : 'translate-x-1'}`} />
                                         </button>
@@ -598,7 +597,7 @@ export const MyNotificationsView: React.FC = () => {
                                                 severity: 'MEDIUM',
                                             });
                                         }}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm flex items-center gap-2"
+                                        className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors font-medium text-sm flex items-center gap-2"
                                     >
                                         <Bell className="w-4 h-4" />
                                         Tester

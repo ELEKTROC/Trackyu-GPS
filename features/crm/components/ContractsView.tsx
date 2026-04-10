@@ -4,7 +4,7 @@ import { MobileCard, MobileCardList, MobileCardAction } from '../../../component
 import { Card } from '../../../components/Card';
 import { Pagination } from '../../../components/Pagination';
 import { Modal } from '../../../components/Modal';
-import { Contract } from '../../../types';
+import type { Contract } from '../../../types';
 import type { Invoice } from '../../../types';
 import { useDataContext } from '../../../contexts/DataContext';
 import { api } from '../../../services/api';
@@ -151,7 +151,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       let items: any[] = [];
       let totalHT = 0;
       let effectiveTaxRate = tenantTaxRate;
-      let plates: string[] = [];
+      const plates: string[] = [];
 
       if (subs.length > 0) {
         // Grouper par (catalog_item_id + unit_price) — même logique que recurringInvoiceService
@@ -431,7 +431,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE': return 'bg-green-100 text-green-800 border-green-200';
-      case 'DRAFT': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'DRAFT': return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
       case 'SUSPENDED': return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'EXPIRED': return 'bg-red-100 text-red-800 border-red-200';
       case 'TERMINATED': return 'bg-slate-100 text-slate-800 border-slate-200';
@@ -561,7 +561,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             />
             <button 
             onClick={handleCreate}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors shadow-sm"
             >
             <Plus className="w-4 h-4" />
             Nouveau Contrat
@@ -579,7 +579,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               <p className="text-xs font-bold text-slate-500 uppercase">Contrats Actifs</p>
               <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{kpis.activeCount}</p>
             </div>
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+            <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
               <FileText className="w-6 h-6" />
             </div>
           </div>
@@ -627,7 +627,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <input
               type="text"
               placeholder="Rechercher (client, réf., statut, montant)..."
-              className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -642,7 +642,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                 <Filter className="w-4 h-4" />
                 Filtres
                 {(statusFilter !== 'ALL' || resellerFilter !== 'ALL') && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
+                  <span className="absolute -top-1.5 -right-1.5 bg-[var(--primary-dim)]0 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
                     {(statusFilter !== 'ALL' ? 1 : 0) + (resellerFilter !== 'ALL' ? 1 : 0)}
                   </span>
                 )}
@@ -656,7 +656,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                   onClick={() => setStatusFilter(st)}
                   className={`px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${
                     statusFilter === st
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-[var(--primary)] text-white'
                       : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -691,7 +691,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             {externalDateRange && (
               <button 
                 onClick={handleCreate}
-                className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 bg-[var(--primary)] text-white text-xs font-bold rounded-lg hover:bg-[var(--primary-light)] transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Nouveau
@@ -707,7 +707,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             {searchTerm || statusFilter !== 'ALL' || resellerFilter !== 'ALL' ? (
               <>
                 <p className="text-slate-500 font-medium">Aucun contrat ne correspond aux filtres</p>
-                <button onClick={() => { setSearchTerm(''); setStatusFilter('ALL'); setResellerFilter('ALL'); }} className="mt-2 text-sm text-blue-600 hover:underline flex items-center gap-1">
+                <button onClick={() => { setSearchTerm(''); setStatusFilter('ALL'); setResellerFilter('ALL'); }} className="mt-2 text-sm text-[var(--primary)] hover:underline flex items-center gap-1">
                   <X className="w-3 h-3" /> Réinitialiser les filtres
                 </button>
               </>
@@ -715,7 +715,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               <>
                 <p className="text-slate-500 font-medium">Aucun contrat trouvé</p>
                 <p className="text-xs text-slate-400 mt-1">Créez votre premier contrat pour commencer</p>
-                <button onClick={handleCreate} className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 flex items-center gap-2">
+                <button onClick={handleCreate} className="mt-3 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm hover:bg-[var(--primary-light)] flex items-center gap-2">
                   <Plus className="w-4 h-4" /> Nouveau Contrat
                 </button>
               </>
@@ -725,8 +725,8 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
 
         {/* Bulk actions bar */}
         {selectedIds.size > 0 && (
-          <div className="flex items-center gap-3 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+          <div className="flex items-center gap-3 px-4 py-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg">
+            <span className="text-sm font-medium text-[var(--primary)] dark:text-[var(--primary)]">
               {selectedIds.size} sélectionné{selectedIds.size > 1 ? 's' : ''}
             </span>
             <div className="flex gap-2 ml-auto flex-wrap">
@@ -739,7 +739,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               <button onClick={() => handleBulkStatus('TERMINATED')} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
                 <XCircle className="w-3.5 h-3.5" /> Résilier
               </button>
-              <button onClick={() => { setBulkEndDate(''); setBulkNeverExpires(false); setShowBulkEndDateModal(true); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800 text-blue-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20">
+              <button onClick={() => { setBulkEndDate(''); setBulkNeverExpires(false); setShowBulkEndDateModal(true); }} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]">
                 <Calendar className="w-3.5 h-3.5" /> Date de fin
               </button>
               <button onClick={handleBulkGenerateInvoices} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
@@ -748,8 +748,8 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               <button onClick={handleBulkDelete} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20">
                 <Trash2 className="w-3.5 h-3.5" /> Supprimer
               </button>
-              <button onClick={() => setSelectedIds(new Set())} className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-800 rounded">
-                <X className="w-3.5 h-3.5 text-blue-500" />
+              <button onClick={() => setSelectedIds(new Set())} className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded">
+                <X className="w-3.5 h-3.5 text-[var(--primary)]" />
               </button>
             </div>
           </div>
@@ -771,7 +771,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-sm text-slate-800 dark:text-white truncate">{getClientName(contract)}</p>
-                      <span className="font-mono text-xs text-blue-600 dark:text-blue-400">{contract.contractNumber || contract.id.slice(0, 8).toUpperCase()}</span>
+                      <span className="font-mono text-xs text-[var(--primary)] dark:text-[var(--primary)]">{contract.contractNumber || contract.id.slice(0, 8).toUpperCase()}</span>
                     </div>
                     <p className="font-bold text-sm text-slate-800 dark:text-white shrink-0">{formatPrice(totalMensuel)}<span className="text-xs font-normal text-slate-400">/mois</span></p>
                   </div>
@@ -799,9 +799,9 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 uppercase font-bold text-xs sticky top-0 z-10 shadow-sm">
               <tr>
                 <th className="px-3 py-3 w-10">
-                  <button onClick={toggleSelectAll} className="text-slate-400 hover:text-blue-600">
+                  <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[var(--primary)]">
                     {selectedIds.size === paginatedContracts.length && paginatedContracts.length > 0
-                      ? <CheckSquare className="w-4 h-4 text-blue-500" />
+                      ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                       : <Square className="w-4 h-4" />}
                   </button>
                 </th>
@@ -834,15 +834,15 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-900">
               {paginatedContracts.map(contract => (
-                  <tr key={contract.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group ${selectedIds.has(contract.id) ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}>
+                  <tr key={contract.id} className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group ${selectedIds.has(contract.id) ? 'bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]' : ''}`}>
                     <td className="px-3 py-4">
-                      <button onClick={() => toggleSelect(contract.id)} className="text-slate-400 hover:text-blue-600">
+                      <button onClick={() => toggleSelect(contract.id)} className="text-slate-400 hover:text-[var(--primary)]">
                         {selectedIds.has(contract.id)
-                          ? <CheckSquare className="w-4 h-4 text-blue-500" />
+                          ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                           : <Square className="w-4 h-4" />}
                       </button>
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs font-bold text-blue-600">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-[var(--primary)]">
                       {contract.contractNumber || contract.id.slice(0, 8).toUpperCase()}
                     </td>
                     <td className="px-6 py-4">
@@ -892,7 +892,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                       <div className="relative inline-block">
                         <button
                           onClick={(e) => { e.stopPropagation(); setStatusMenuId(statusMenuId === contract.id ? null : contract.id); }}
-                          className={`px-2 py-1 rounded text-[10px] font-bold border uppercase cursor-pointer hover:ring-2 hover:ring-blue-300 transition-all ${getStatusColor(contract.status)}`}
+                          className={`px-2 py-1 rounded text-[10px] font-bold border uppercase cursor-pointer hover:ring-2 hover:ring-[var(--primary-dim)] transition-all ${getStatusColor(contract.status)}`}
                           title="Cliquer pour changer le statut"
                         >
                           {STATUS_LABELS[contract.status] || contract.status}
@@ -939,7 +939,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                         </button>
                         <button 
                           onClick={() => handleEdit(contract)}
-                          className="p-1.5 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded text-slate-400 hover:text-blue-600 transition-colors"
+                          className="p-1.5 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded text-slate-400 hover:text-[var(--primary)] transition-colors"
                           title="Modifier"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -1083,7 +1083,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                   type="date"
                   value={bulkEndDate}
                   onChange={e => setBulkEndDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[var(--primary)] outline-none"
                 />
               </div>
             )}
@@ -1095,7 +1095,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               <button
                 onClick={handleBulkEndDate}
                 disabled={!bulkNeverExpires && !bulkEndDate}
-                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50 flex items-center gap-2"
               >
                 <Calendar className="w-4 h-4" /> Appliquer
               </button>
@@ -1116,7 +1116,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                 type="date"
                 value={renewEndDate}
                 onChange={e => setRenewEndDate(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 focus:ring-2 focus:ring-[var(--primary)] outline-none"
               />
             </div>
             <div className="flex justify-end gap-3 pt-2">

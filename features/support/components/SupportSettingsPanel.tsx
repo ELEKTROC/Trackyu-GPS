@@ -400,7 +400,7 @@ export const SupportSettingsPanel: React.FC = () => {
                     <button
                         onClick={saveSlaConfig}
                         disabled={saving}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                        className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
                     >
                         <Save className="w-4 h-4" />
                         {saving ? 'Enregistrement...' : 'Enregistrer'}
@@ -514,7 +514,7 @@ export const SupportSettingsPanel: React.FC = () => {
                 </div>
                 <button
                     onClick={() => setNewCategory({ name: '', icon: 'Tag', is_active: true })}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                 >
                     <Plus className="w-4 h-4" />
                     Nouvelle catégorie
@@ -523,7 +523,7 @@ export const SupportSettingsPanel: React.FC = () => {
 
             {/* New Category Form */}
             {newCategory && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg">
                     <h4 className="font-medium mb-3">Nouvelle catégorie</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input
@@ -547,7 +547,7 @@ export const SupportSettingsPanel: React.FC = () => {
                             <button
                                 onClick={() => saveCategory(newCategory)}
                                 disabled={!newCategory.name || saving}
-                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
                             >
                                 <Check className="w-4 h-4" />
                                 Créer
@@ -603,7 +603,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                         <button
                                             onClick={() => saveCategory(editingCategory)}
                                             disabled={saving}
-                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                                         >
                                             <Check className="w-4 h-4" />
                                             Enregistrer
@@ -625,7 +625,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                             {category.name}
                                         </span>
                                         {category.is_system && (
-                                            <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center gap-1">
+                                            <span className="text-xs px-2 py-1 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center gap-1">
                                                 <Globe className="w-3 h-3" />
                                                 Système
                                             </span>
@@ -665,7 +665,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                                 className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
                                                 title="Modifier"
                                             >
-                                                <Edit2 className="w-4 h-4 text-blue-500" />
+                                                <Edit2 className="w-4 h-4 text-[var(--primary)]" />
                                             </button>
                                         ) : (
                                             <span className="p-2" title="Catégorie système non modifiable">
@@ -712,7 +712,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         is_active: true 
                     })}
                     disabled={categories.length === 0}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
                 >
                     <Plus className="w-4 h-4" />
                     Nouvelle sous-catégorie
@@ -721,7 +721,7 @@ export const SupportSettingsPanel: React.FC = () => {
 
             {/* New Subcategory Form */}
             {newSubcategory && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg">
                     <h4 className="font-medium mb-3">Nouvelle sous-catégorie</h4>
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <select
@@ -769,7 +769,7 @@ export const SupportSettingsPanel: React.FC = () => {
                             <button
                                 onClick={() => saveSubcategory(newSubcategory)}
                                 disabled={!newSubcategory.name || !newSubcategory.category_id || saving}
-                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] disabled:opacity-50"
                                 title="Créer la sous-catégorie"
                             >
                                 <Check className="w-4 h-4" />
@@ -892,7 +892,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                                         <div className="flex gap-1">
                                                             <button
                                                                 onClick={() => saveSubcategory(editingSubcategory)}
-                                                                className="flex-1 px-2 py-1 bg-blue-600 text-white rounded text-sm"
+                                                                className="flex-1 px-2 py-1 bg-[var(--primary)] text-white rounded text-sm"
                                                                 title="Enregistrer"
                                                             >
                                                                 <Check className="w-4 h-4 mx-auto" />
@@ -913,7 +913,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                                                 {subcat.name}
                                                             </span>
                                                             {subcat.is_system && (
-                                                                <span className="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center gap-1">
+                                                                <span className="text-xs px-1.5 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center gap-1">
                                                                     <Globe className="w-2.5 h-2.5" />
                                                                 </span>
                                                             )}
@@ -953,7 +953,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                                                     className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
                                                                     title="Modifier"
                                                                 >
-                                                                    <Edit2 className="w-4 h-4 text-blue-500" />
+                                                                    <Edit2 className="w-4 h-4 text-[var(--primary)]" />
                                                                 </button>
                                                             ) : (
                                                                 <span className="p-1.5" title="Élément système">
@@ -998,7 +998,7 @@ export const SupportSettingsPanel: React.FC = () => {
                 </div>
                 <button
                     onClick={() => setNewIntType({ code: '', label: '', isActive: true, isSystem: false })}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"
                 >
                     <Plus className="w-4 h-4" />
                     Nouveau type
@@ -1007,7 +1007,7 @@ export const SupportSettingsPanel: React.FC = () => {
 
             {/* New Type Form */}
             {newIntType && (
-                <Card className="p-4 border-dashed border-2 border-blue-200 bg-blue-50/30">
+                <Card className="p-4 border-dashed border-2 border-[var(--border)] bg-[var(--primary-dim)]/30">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <input
                             type="text"
@@ -1026,7 +1026,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         <div className="flex gap-2">
                             <button
                                 onClick={() => saveIntType(newIntType)}
-                                className="flex-1 bg-blue-600 text-white rounded-lg py-2 font-medium hover:bg-blue-700"
+                                className="flex-1 bg-[var(--primary)] text-white rounded-lg py-2 font-medium hover:bg-[var(--primary-light)]"
                             >
                                 Créer
                             </button>
@@ -1085,7 +1085,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => setNewIntNature({ typeId: type.id, code: '', label: '', isActive: true, isSystem: false })}
-                                        className="text-xs flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 rounded-lg transition-colors"
+                                        className="text-xs flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg transition-colors"
                                     >
                                         <Plus className="w-3.5 h-3.5" />
                                         Ajouter une nature
@@ -1101,7 +1101,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                 <div className="p-4 bg-white dark:bg-slate-900 border-t dark:border-slate-700 space-y-3">
                                     {/* New Nature Form */}
                                     {newIntNature && newIntNature.typeId === type.id && (
-                                        <div className="flex items-center gap-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 rounded-lg border border-blue-100 dark:border-blue-900/30">
+                                        <div className="flex items-center gap-3 p-3 bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)] rounded-lg border border-[var(--primary)] dark:border-[var(--primary)]/30">
                                             <input
                                                 type="text"
                                                 placeholder="Code nature"
@@ -1116,7 +1116,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                                 onChange={(e) => setNewIntNature({ ...newIntNature, label: e.target.value })}
                                                 className="flex-1 px-3 py-1.5 border rounded-lg text-sm dark:bg-slate-800"
                                             />
-                                            <button onClick={() => saveIntNature(newIntNature)} className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"><Check className="w-4 h-4" /></button>
+                                            <button onClick={() => saveIntNature(newIntNature)} className="p-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)]"><Check className="w-4 h-4" /></button>
                                             <button onClick={() => setNewIntNature(null)} className="p-2 bg-slate-200 dark:bg-slate-700 rounded-lg"><X className="w-4 h-4" /></button>
                                         </div>
                                     )}
@@ -1167,7 +1167,7 @@ export const SupportSettingsPanel: React.FC = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
             </div>
         );
     }
@@ -1190,7 +1190,7 @@ export const SupportSettingsPanel: React.FC = () => {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <Settings className="w-6 h-6 text-blue-600" />
+                    <Settings className="w-6 h-6 text-[var(--primary)]" />
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                         Configuration du support
                     </h2>
@@ -1220,7 +1220,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         onClick={() => setActiveTab('sla')}
                         className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
                             activeTab === 'sla'
-                                ? 'border-blue-600 text-blue-600'
+                                ? 'border-[var(--primary)] text-[var(--primary)]'
                                 : 'border-transparent text-slate-500 hover:text-slate-700'
                         }`}
                     >
@@ -1233,7 +1233,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         onClick={() => setActiveTab('categories')}
                         className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
                             activeTab === 'categories'
-                                ? 'border-blue-600 text-blue-600'
+                                ? 'border-[var(--primary)] text-[var(--primary)]'
                                 : 'border-transparent text-slate-500 hover:text-slate-700'
                         }`}
                     >
@@ -1246,7 +1246,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         onClick={() => setActiveTab('subcategories')}
                         className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
                             activeTab === 'subcategories'
-                                ? 'border-blue-600 text-blue-600'
+                                ? 'border-[var(--primary)] text-[var(--primary)]'
                                 : 'border-transparent text-slate-500 hover:text-slate-700'
                         }`}
                     >
@@ -1259,7 +1259,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         onClick={() => setActiveTab('interventions')}
                         className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
                             activeTab === 'interventions'
-                                ? 'border-blue-600 text-blue-600'
+                                ? 'border-[var(--primary)] text-[var(--primary)]'
                                 : 'border-transparent text-slate-500 hover:text-slate-700'
                         }`}
                     >

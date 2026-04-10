@@ -301,7 +301,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 {connectionStatus.status && (
                     <span className={`px-3 py-1 rounded-full text-xs font-bold ${
                         connectionStatus.status === 'MOVING' ? 'bg-green-100 text-green-700' :
-                        connectionStatus.status === 'STOPPED' ? 'bg-blue-100 text-blue-700' :
+                        connectionStatus.status === 'STOPPED' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' :
                         connectionStatus.status === 'IDLE' ? 'bg-yellow-100 text-yellow-700' :
                         connectionStatus.status === 'ALERT' ? 'bg-red-100 text-red-700' :
                         'bg-slate-100 text-slate-700'
@@ -329,9 +329,9 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                         disabled={!connectionStatus.connected}
                         className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
                             commandMode === 'TCP' 
-                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' 
+                                ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' 
                                 : connectionStatus.connected
-                                    ? 'border-slate-200 dark:border-slate-600 hover:border-blue-300 text-slate-600'
+                                    ? 'border-slate-200 dark:border-slate-600 hover:border-[var(--primary)] text-slate-600'
                                     : 'border-slate-200 dark:border-slate-700 text-slate-400 cursor-not-allowed opacity-50'
                         }`}
                     >
@@ -447,7 +447,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                 className={`text-sm font-medium px-3 py-1 rounded ${
                                     commandMode === 'SMS' 
                                         ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' 
-                                        : 'text-blue-600 hover:underline'
+                                        : 'text-[var(--primary)] hover:underline'
                                 }`}
                             >
                                 {isTestLoading === 'LOC' || isSendingSms ? 'Envoi...' : commandMode === 'SMS' ? 'Envoyer SMS' : 'Ping Position'}
@@ -510,19 +510,19 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                             <div className="space-y-2 text-xs font-mono">
                                 <div className="flex items-center justify-between">
                                     <span className="text-slate-600">Position:</span>
-                                    <button onClick={() => copyToClipboard('smslink123456', 'LOC')} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                    <button onClick={() => copyToClipboard('smslink123456', 'LOC')} className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]">
                                         smslink123456 {copiedCommand === 'LOC' ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                                     </button>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-slate-600">APN Orange:</span>
-                                    <button onClick={() => copyToClipboard('APN,orange.ci,,#', 'APN')} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                    <button onClick={() => copyToClipboard('APN,orange.ci,,#', 'APN')} className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]">
                                         APN,orange.ci,,# {copiedCommand === 'APN' ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                                     </button>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <span className="text-slate-600">Serveur:</span>
-                                    <button onClick={() => copyToClipboard('SERVER,0,148.230.126.62,5000,0#', 'IP')} className="flex items-center gap-1 text-blue-600 hover:text-blue-800">
+                                    <button onClick={() => copyToClipboard('SERVER,0,148.230.126.62,5000,0#', 'IP')} className="flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)]">
                                         SERVER,0,148.230.126.62,5000,0# {copiedCommand === 'IP' ? <Check className="w-3 h-3 text-green-500" /> : <Copy className="w-3 h-3" />}
                                     </button>
                                 </div>
@@ -535,18 +535,18 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
 
             {/* Fuel Gauge Configuration (conditional - show for sonde material OR Recalibrage sonde nature) */}
             {(hasMaterial('sonde') || (formData.nature as string) === 'Recalibrage sonde') && (
-                <div className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-xl border border-blue-200 dark:border-blue-800 shadow-sm animate-in fade-in">
-                    <h4 className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase mb-4 flex items-center gap-2">
+                <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-6 rounded-xl border border-[var(--border)] dark:border-[var(--primary)] shadow-sm animate-in fade-in">
+                    <h4 className="text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] uppercase mb-4 flex items-center gap-2">
                         <Ruler className="w-4 h-4" /> Configuration Jauge Carburant
                     </h4>
                     
                     {/* Row 1: Sensor Type, Tank Capacity, Tank Shape */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-blue-600/70 uppercase">Type de Capteur *</label>
+                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Type de Capteur *</label>
                             <select
                                 title="Type de Capteur"
-                                className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
                                 value={formData.fuelSensorType || 'CAPACITIVE'}
                                 onChange={e => setFormData({ ...formData, fuelSensorType: e.target.value as 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' })}
                             >
@@ -556,12 +556,12 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                             </select>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-blue-600/70 uppercase">Capacité Réservoir (L) *</label>
+                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Capacité Réservoir (L) *</label>
                             <input
                                 type="number"
                                 title="Capacité Réservoir"
                                 placeholder="Ex: 120"
-                                className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                                className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
                                 value={formData.tankCapacity || ''}
                                 onChange={e => setFormData({ ...formData, tankCapacity: parseFloat(e.target.value) })}
                                 min={1}
@@ -569,10 +569,10 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                             />
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-blue-600/70 uppercase">Forme du Réservoir</label>
+                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Forme du Réservoir</label>
                             <select
                                 title="Forme du Réservoir"
-                                className={`w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg text-sm ${
+                                className={`w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg text-sm ${
                                     formData.fuelSensorType === 'CANBUS' 
                                         ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed' 
                                         : 'bg-white dark:bg-slate-900'
@@ -594,34 +594,34 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                     {formData.fuelSensorType !== 'CANBUS' && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 animate-in fade-in">
                             <div className="space-y-1">
-                                <label className="text-xs font-bold text-blue-600/70 uppercase">Marque Sonde</label>
+                                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Marque Sonde</label>
                                 <input
                                     type="text"
                                     title="Marque Sonde"
                                     placeholder="Ex: Escort, Technoton"
-                                    className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
                                     value={formData.gaugeBrand || ''}
                                     onChange={e => setFormData({ ...formData, gaugeBrand: e.target.value })}
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs font-bold text-blue-600/70 uppercase">Modèle Sonde</label>
+                                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Modèle Sonde</label>
                                 <input
                                     type="text"
                                     title="Modèle Sonde"
                                     placeholder="Ex: TD-BLE, DUT-E"
-                                    className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm"
                                     value={formData.gaugeModel || ''}
                                     onChange={e => setFormData({ ...formData, gaugeModel: e.target.value })}
                                 />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs font-bold text-blue-600/70 uppercase">N° Série Sonde</label>
+                                <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">N° Série Sonde</label>
                                 <input
                                     type="text"
                                     title="Numéro Série Sonde"
                                     placeholder="Ex: SN123456789"
-                                    className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm font-mono"
+                                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm font-mono"
                                     value={formData.gaugeSerial || ''}
                                     onChange={e => setFormData({ ...formData, gaugeSerial: e.target.value })}
                                 />
@@ -632,7 +632,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                     {/* Row 3: Alert Thresholds */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-blue-600/70 uppercase">Seuil Alerte Remplissage (%)</label>
+                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Seuil Alerte Remplissage (%)</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="range"
@@ -640,18 +640,18 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                     min={5}
                                     max={50}
                                     step={5}
-                                    className="flex-1 h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                    className="flex-1 h-2 bg-[var(--primary-dim)] rounded-lg appearance-none cursor-pointer accent-blue-600"
                                     value={formData.refillThreshold || 20}
                                     onChange={e => setFormData({ ...formData, refillThreshold: parseInt(e.target.value) })}
                                 />
-                                <span className="w-12 text-center text-sm font-bold text-blue-700 bg-blue-100 rounded px-2 py-1">
+                                <span className="w-12 text-center text-sm font-bold text-[var(--primary)] bg-[var(--primary-dim)] rounded px-2 py-1">
                                     {formData.refillThreshold || 20}%
                                 </span>
                             </div>
-                            <p className="text-[10px] text-blue-500">Alerte quand le niveau descend sous ce seuil</p>
+                            <p className="text-[10px] text-[var(--primary)]">Alerte quand le niveau descend sous ce seuil</p>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-xs font-bold text-blue-600/70 uppercase">Seuil Détection Vol (%)</label>
+                            <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Seuil Détection Vol (%)</label>
                             <div className="flex items-center gap-2">
                                 <input
                                     type="range"
@@ -673,18 +673,18 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
 
                     {/* Tank Dimensions & Calibration (only if not CANBUS) */}
                     {formData.fuelSensorType !== 'CANBUS' && (
-                        <div className="space-y-4 animate-in fade-in border-t border-blue-200 dark:border-blue-800 pt-4 mt-4">
-                            <h5 className="text-xs font-bold text-blue-600 uppercase">Dimensions & Calibration</h5>
+                        <div className="space-y-4 animate-in fade-in border-t border-[var(--border)] dark:border-[var(--primary)] pt-4 mt-4">
+                            <h5 className="text-xs font-bold text-[var(--primary)] uppercase">Dimensions & Calibration</h5>
                             
                             {/* Dimensions */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">Hauteur (mm) *</label>
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Hauteur (mm) *</label>
                                     <input 
                                         type="number" 
                                         title="Hauteur" 
                                         placeholder="Ex: 400" 
-                                        className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm" 
+                                        className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" 
                                         value={formData.tankHeight || ''} 
                                         onChange={e => setFormData({ ...formData, tankHeight: parseFloat(e.target.value) })} 
                                         min={50}
@@ -692,14 +692,14 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
                                         {formData.tankShape?.includes('CYLINDRICAL') ? 'Diamètre (mm)' : 'Longueur (mm)'}
                                     </label>
                                     <input 
                                         type="number" 
                                         title="Longueur/Diamètre" 
                                         placeholder={formData.tankShape?.includes('CYLINDRICAL') ? 'Ex: 500' : 'Ex: 800'} 
-                                        className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm" 
+                                        className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" 
                                         value={formData.tankLength || ''} 
                                         onChange={e => setFormData({ ...formData, tankLength: parseFloat(e.target.value) })} 
                                         min={50}
@@ -707,14 +707,14 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
                                         {formData.tankShape?.includes('CYLINDRICAL') ? 'Longueur (mm)' : 'Largeur (mm)'}
                                     </label>
                                     <input 
                                         type="number" 
                                         title="Largeur" 
                                         placeholder="Ex: 600" 
-                                        className="w-full p-2.5 border border-blue-200 dark:border-blue-800 rounded-lg bg-white dark:bg-slate-900 text-sm" 
+                                        className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-white dark:bg-slate-900 text-sm" 
                                         value={formData.tankWidth || ''} 
                                         onChange={e => setFormData({ ...formData, tankWidth: parseFloat(e.target.value) })} 
                                         min={50}
@@ -725,10 +725,10 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
 
                             {/* Calculated Volume Info */}
                             {formData.tankHeight && formData.tankLength && formData.tankWidth && (
-                                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-sm animate-in fade-in">
+                                <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-sm animate-in fade-in">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-blue-700 dark:text-blue-300">Volume calculé (théorique):</span>
-                                        <span className="font-bold text-blue-800 dark:text-blue-200">
+                                        <span className="text-[var(--primary)] dark:text-[var(--primary)]">Volume calculé (théorique):</span>
+                                        <span className="font-bold text-[var(--primary)] dark:text-[var(--primary)]">
                                             {(() => {
                                                 const h = formData.tankHeight;
                                                 const l = formData.tankLength;
@@ -775,7 +775,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                             {/* Calibration Table */}
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-xs font-bold text-blue-600/70 uppercase">Table de Calibration</label>
+                                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Table de Calibration</label>
                                     <div className="flex gap-2">
                                         <button
                                             type="button"
@@ -823,7 +823,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                                 setFormData({ ...formData, calibrationTable: table.trim() });
                                                 showToast(TOAST.TECH.CALIBRATION_TABLE_GENERATED(shape === 'RECTANGULAR' ? 'Linéaire' : 'Courbe ' + shape), 'success');
                                             }}
-                                            className="text-[10px] bg-blue-600 text-white px-3 py-1.5 rounded hover:bg-blue-700 font-medium"
+                                            className="text-[10px] bg-[var(--primary)] text-white px-3 py-1.5 rounded hover:bg-[var(--primary-light)] font-medium"
                                         >
                                             Générer Auto
                                         </button>
@@ -837,8 +837,8 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                     </div>
                                 </div>
                                 
-                                <div className="border border-blue-200 dark:border-blue-800 rounded-lg overflow-hidden">
-                                    <div className="grid grid-cols-2 bg-blue-100 dark:bg-blue-900/30 text-[10px] font-bold text-blue-700 dark:text-blue-300 p-2 border-b border-blue-200 dark:border-blue-800">
+                                <div className="border border-[var(--border)] dark:border-[var(--primary)] rounded-lg overflow-hidden">
+                                    <div className="grid grid-cols-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[10px] font-bold text-[var(--primary)] dark:text-[var(--primary)] p-2 border-b border-[var(--border)] dark:border-[var(--primary)]">
                                         <div>Hauteur (mm)</div>
                                         <div>Volume (L)</div>
                                     </div>
@@ -846,11 +846,11 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                         {(formData.calibrationTable || '').split('\n').filter(l => l.trim()).map((line, idx) => {
                                             const [h, v] = line.split(',');
                                             return (
-                                                <div key={idx} className="grid grid-cols-2 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-blue-50 dark:hover:bg-blue-900/10">
+                                                <div key={idx} className="grid grid-cols-2 border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]">
                                                     <input
                                                         type="number"
                                                         title={`Hauteur ligne ${idx + 1}`}
-                                                        className="w-full p-2 text-sm border-r border-slate-100 dark:border-slate-800 bg-transparent outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20"
+                                                        className="w-full p-2 text-sm border-r border-slate-100 dark:border-slate-800 bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
                                                         value={h || ''}
                                                         placeholder="mm"
                                                         onChange={(e) => {
@@ -862,7 +862,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                                     <input
                                                         type="number"
                                                         title={`Volume ligne ${idx + 1}`}
-                                                        className="w-full p-2 text-sm bg-transparent outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20"
+                                                        className="w-full p-2 text-sm bg-transparent outline-none focus:bg-[var(--primary-dim)] dark:focus:bg-[var(--primary-dim)]"
                                                         value={v || ''}
                                                         placeholder="L"
                                                         onChange={(e) => {
@@ -883,7 +883,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                     <button
                                         type="button"
                                         onClick={() => setFormData({ ...formData, calibrationTable: (formData.calibrationTable || '') + '\n,' })}
-                                        className="w-full p-2 text-xs text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center justify-center gap-1 border-t border-blue-200 dark:border-blue-800 font-medium"
+                                        className="w-full p-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] flex items-center justify-center gap-1 border-t border-[var(--border)] dark:border-[var(--primary)] font-medium"
                                     >
                                         <Plus className="w-3 h-3" /> Ajouter une ligne
                                     </button>
@@ -891,7 +891,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                                 
                                 {/* Calibration count info */}
                                 {formData.calibrationTable && (
-                                    <p className="text-[10px] text-blue-500">
+                                    <p className="text-[10px] text-[var(--primary)]">
                                         {(formData.calibrationTable || '').split('\n').filter(l => l.trim() && l.includes(',')).length} points de calibration
                                     </p>
                                 )}

@@ -519,7 +519,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                   <input 
                       type="text" 
                       placeholder="Rechercher client, n° facture..." 
-                      className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
                   />
@@ -527,7 +527,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
               <div className="flex items-center gap-2">
                   <Filter className="w-4 h-4 text-slate-500" />
                   <select 
-                      className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                       value={filterLevel}
                       onChange={e => setFilterLevel(e.target.value)}
                       title="Filtrer par niveau de relance"
@@ -542,7 +542,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
               <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-slate-500" />
                   <select 
-                      className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                       value={clientFilter}
                       onChange={e => setClientFilter(e.target.value)}
                       title="Filtrer par client"
@@ -566,7 +566,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                   </button>
                   <button 
                       onClick={() => setIsAutomationModalOpen(true)}
-                      className="flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg text-sm font-medium transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 bg-[var(--primary-dim)] text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg text-sm font-medium transition-colors"
                   >
                       <Settings className="w-4 h-4" /> Automatisation
                   </button>
@@ -590,7 +590,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       type="checkbox" 
                                       checked={visibleColumns.includes(col)}
                                       onChange={() => toggleColumn(col)}
-                                      className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                      className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
                                   />
                                   <span className="text-sm capitalize">{col}</span>
                               </label>
@@ -689,7 +689,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                     </td>
                                     {visibleColumns.includes('client') && <td className="p-4">
                                         <div 
-                                            className="font-medium text-slate-800 dark:text-white cursor-pointer hover:text-blue-600 hover:underline"
+                                            className="font-medium text-slate-800 dark:text-white cursor-pointer hover:text-[var(--primary)] hover:underline"
                                             onClick={() => { setSelectedInvoice(inv); setIsModalOpen(true); }}
                                         >
                                             {client?.name || 'Client Inconnu'}
@@ -699,7 +699,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                     {visibleColumns.includes('reseller') && (
                                         <td className="p-4">
                                             <div className="flex items-center gap-2">
-                                                <div className="w-5 h-5 rounded bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[10px] font-bold text-blue-600">
+                                                <div className="w-5 h-5 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                                                     {(resellers?.find(r => r.tenantId === inv.tenantId)?.slug || '??').substring(0, 2)}
                                                 </div>
                                                 <span className="text-xs text-slate-600 dark:text-slate-300">
@@ -712,7 +712,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); setSelectedInvoice(inv); setIsInvoicePreviewOpen(true); }}
-                                                className="text-blue-600 hover:underline font-medium flex items-center gap-1"
+                                                className="text-[var(--primary)] hover:underline font-medium flex items-center gap-1"
                                                 title="Aperçu de la facture"
                                             >
                                                 <Eye className="w-3 h-3" />
@@ -720,7 +720,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                             </button>
                                             {inv.promiseToPayDate && (
                                                 <span 
-                                                    className={`p-1 rounded-full ${new Date(inv.promiseToPayDate) < new Date() ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-blue-100 text-blue-600'}`}
+                                                    className={`p-1 rounded-full ${new Date(inv.promiseToPayDate) < new Date() ? 'bg-red-100 text-red-600 animate-pulse' : 'bg-[var(--primary-dim)] text-[var(--primary)]'}`}
                                                     title={`Promesse de paiement au ${new Date(inv.promiseToPayDate).toLocaleDateString('fr-FR')}`}
                                                 >
                                                     <Clock className="w-3 h-3" />
@@ -811,17 +811,17 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                                         <Eye className="w-4 h-4 text-slate-400" /> Détail recouvrement
                                                     </button>
                                                     <button onClick={() => { setSelectedInvoice(inv); setIsInvoicePreviewOpen(true); setOpenMenuId(null); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                                                        <Eye className="w-4 h-4 text-blue-400" /> Aperçu facture
+                                                        <Eye className="w-4 h-4 text-[var(--primary)]" /> Aperçu facture
                                                     </button>
                                                     <div className="border-t border-slate-100 dark:border-slate-700 my-1" />
                                                     <button onClick={() => { handleCreateRecoveryTask(inv, 'EMAIL'); setOpenMenuId(null); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                                                        <Mail className="w-4 h-4 text-blue-500" /> Relance email
+                                                        <Mail className="w-4 h-4 text-[var(--primary)]" /> Relance email
                                                     </button>
                                                     <button onClick={() => { setSelectedInvoice(inv); setCallNote(''); setIsCallModalOpen(true); setOpenMenuId(null); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2">
                                                         <Phone className="w-4 h-4 text-green-500" /> Compte-rendu d'appel
                                                     </button>
                                                     <button onClick={() => { setSelectedInvoice(inv); setPtpDate(''); setIsPTPModalOpen(true); setOpenMenuId(null); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2">
-                                                        <Clock className="w-4 h-4 text-blue-500" /> Promesse de paiement
+                                                        <Clock className="w-4 h-4 text-[var(--primary)]" /> Promesse de paiement
                                                     </button>
                                                     <button onClick={() => { setSelectedInvoice(inv); setIsExtendModalOpen(true); setOpenMenuId(null); }} className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2">
                                                         <Calendar className="w-4 h-4 text-purple-500" /> Proroger échéance
@@ -875,7 +875,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                               return (tier || client) ? (
                                   <button
                                       onClick={() => { const t = tiers.find(tt => tt.id === selectedInvoice.clientId); if (t) { setSelectedTierForModal(t); setIsTierModalOpen(true); } }}
-                                      className="font-bold text-blue-600 hover:underline text-left"
+                                      className="font-bold text-[var(--primary)] hover:underline text-left"
                                       title="Voir la fiche client"
                                   >
                                       {client?.name || tier?.name || 'Inconnu'}
@@ -947,7 +947,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                       <div className="flex flex-wrap gap-2">
                           <button
                               onClick={() => handleCreateRecoveryTask(selectedInvoice, 'EMAIL')}
-                              className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 rounded-lg text-sm font-bold flex items-center gap-2"
+                              className="px-3 py-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg text-sm font-bold flex items-center gap-2"
                           >
                               <Mail className="w-4 h-4" /> Relance email
                           </button>
@@ -959,7 +959,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                           </button>
                           <button
                               onClick={() => { setPtpDate(''); setIsPTPModalOpen(true); }}
-                              className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 hover:bg-blue-100 rounded-lg text-sm font-bold flex items-center gap-2"
+                              className="px-3 py-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg text-sm font-bold flex items-center gap-2"
                           >
                               <Clock className="w-4 h-4" /> Promesse paiement
                           </button>
@@ -1008,7 +1008,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
       {isAutomationModalOpen && (
           <Modal isOpen={isAutomationModalOpen} onClose={() => setIsAutomationModalOpen(false)} title="⚙️ Automatisation du Recouvrement">
               <div className="space-y-4">
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 rounded-lg text-sm">
+                  <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-lg text-sm">
                       <p className="font-bold mb-1">🤖 Relance Automatique</p>
                       <p>Définissez les règles d'envoi automatique de relances selon le niveau de retard des factures.</p>
                   </div>
@@ -1122,7 +1122,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                       </button>
                       <button 
                           onClick={runAutomaticReminders}
-                          className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold text-sm flex items-center gap-2"
+                          className="px-4 py-2 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] rounded-lg font-bold text-sm flex items-center gap-2"
                       >
                           <Mail className="w-4 h-4" /> Lancer les Relances Automatiques
                       </button>
@@ -1135,7 +1135,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
       {isExtendModalOpen && selectedInvoice && (
           <Modal isOpen={isExtendModalOpen} onClose={() => setIsExtendModalOpen(false)} title={`Proroger Échéance - ${selectedInvoice.number}`}>
               <div className="space-y-4">
-                  <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 p-4 rounded-lg text-sm flex items-start gap-2">
+                  <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] p-4 rounded-lg text-sm flex items-start gap-2">
                       <Clock className="w-5 h-5 shrink-0 mt-0.5" />
                       <div>
                           <p className="font-bold">Attention</p>
@@ -1184,7 +1184,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                               setExtendReason('');
                               showToast('Échéance mise à jour avec succès', 'success');
                           }}
-                          className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold text-sm"
+                          className="px-4 py-2 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] rounded-lg font-bold text-sm"
                       >
                           Confirmer
                       </button>
@@ -1205,9 +1205,9 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                   <div className="grid grid-cols-2 gap-3">
                       <button
                           onClick={() => setBulkSendMode('EMAIL')}
-                          className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'EMAIL' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300'}`}
+                          className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'EMAIL' ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : 'border-slate-200 dark:border-slate-700 hover:border-[var(--primary)]'}`}
                       >
-                          <Mail className={`w-6 h-6 mb-2 ${bulkSendMode === 'EMAIL' ? 'text-blue-600' : 'text-slate-400'}`} />
+                          <Mail className={`w-6 h-6 mb-2 ${bulkSendMode === 'EMAIL' ? 'text-[var(--primary)]' : 'text-slate-400'}`} />
                           <p className="font-bold text-slate-800 dark:text-white">Email</p>
                           <p className="text-xs text-slate-500">Envoi par email classique</p>
                       </button>
@@ -1265,7 +1265,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
       {isPTPModalOpen && selectedInvoice && (
           <Modal isOpen={isPTPModalOpen} onClose={() => setIsPTPModalOpen(false)} title="🤝 Promesse de Paiement">
               <div className="space-y-4">
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 rounded-lg text-sm">
+                  <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-lg text-sm">
                       <p className="font-bold mb-1">Facture {selectedInvoice.number}</p>
                       <p>Saisissez la date à laquelle le client s'est engagé à payer.</p>
                   </div>
@@ -1275,7 +1275,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date de promesse</label>
                           <input 
                               type="date" 
-                              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                               value={ptpDate}
                               onChange={e => setPtpDate(e.target.value)}
                               min={new Date().toISOString().split('T')[0]}
@@ -1286,7 +1286,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                           <div className="relative">
                               <input 
                                   type="number" 
-                                  className="w-full pl-3 pr-12 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  className="w-full pl-3 pr-12 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                                   value={ptpAmount || ''}
                                   onChange={e => setPtpAmount(parseFloat(e.target.value) || 0)}
                                   placeholder={selectedInvoice.amount.toString()}
@@ -1308,7 +1308,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                               if (!ptpDate) return showToast('Veuillez saisir une date', 'warning');
                               handleAddPTP(selectedInvoice, ptpDate);
                           }}
-                          className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg font-bold text-sm"
+                          className="px-4 py-2 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] rounded-lg font-bold text-sm"
                       >
                           Enregistrer
                       </button>

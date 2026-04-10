@@ -563,7 +563,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
     const getStatusBadge = (status: string, isQuote: boolean = mode === 'QUOTES') => {
         const styles: Record<string, string> = {
             'PAID': 'bg-green-100 text-green-700', 'PARTIALLY_PAID': 'bg-yellow-100 text-yellow-800', 'PARTIAL': 'bg-yellow-100 text-yellow-800',
-            'SENT': 'bg-blue-100 text-blue-700', 'OVERDUE': 'bg-red-100 text-red-700',
+            'SENT': 'bg-[var(--primary-dim)] text-[var(--primary)]', 'OVERDUE': 'bg-red-100 text-red-700',
             'DRAFT': 'bg-slate-100 text-slate-600', 'ACCEPTED': 'bg-green-100 text-green-700',
             'REJECTED': 'bg-red-100 text-red-700', 'CANCELLED': 'bg-red-100 text-red-700',
             'ACTIVE': 'bg-green-100 text-green-700', 'EXPIRED': 'bg-orange-100 text-orange-700', 'TERMINATED': 'bg-red-100 text-red-700'
@@ -1199,7 +1199,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                 {/* Row 1: Title + New button */}
                 <div className="flex justify-between items-center">
                     <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" /> {mode === 'INVOICES' ? 'Facturation' : 'Devis'}
+                        <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--primary)]" /> {mode === 'INVOICES' ? 'Facturation' : 'Devis'}
                     </h2>
                     <div className="flex items-center gap-2">
                         {/* Desktop-only secondary actions */}
@@ -1229,7 +1229,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                 </button>
                             )}
                         </div>
-                        <button onClick={handleCreate} className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold flex items-center gap-2">
+                        <button onClick={handleCreate} className="px-3 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold flex items-center gap-2">
                             <Plus className="w-4 h-4" />
                             <span className="hidden sm:inline">{mode === 'INVOICES' ? 'Nouvelle Facture' : 'Nouveau Devis'}</span>
                             <span className="sm:hidden">{mode === 'INVOICES' ? 'Facture' : 'Devis'}</span>
@@ -1241,11 +1241,11 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                 <div className="flex flex-wrap gap-2 items-center">
                     <div className="relative flex-1 min-w-0">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                        <input type="text" placeholder="Rechercher..." aria-label="Rechercher" className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        <input type="text" placeholder="Rechercher..." aria-label="Rechercher" className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                     </div>
                     <div className="relative">
                         <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                        <select value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filtrer par statut" className="pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filtrer par statut" className="pl-9 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             <option value="ALL">Tous</option>
                             {mode === 'INVOICES' ? (
                                 <>
@@ -1272,7 +1272,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                     {/* Reseller Filter — desktop only */}
                     {availableResellers.length > 0 && (
                         <div className="hidden sm:block relative">
-                            <select value={resellerFilter} onChange={(e) => setResellerFilter(e.target.value)} aria-label="Filtrer par revendeur" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select value={resellerFilter} onChange={(e) => setResellerFilter(e.target.value)} aria-label="Filtrer par revendeur" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                 <option value="ALL">Tous les revendeurs</option>
                                 {availableResellers.map(r => <option key={r} value={r}>{r}</option>)}
                             </select>
@@ -1283,7 +1283,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                     {/* Client Filter */}
                     {availableClients.length > 0 && (
                         <div className="hidden sm:block relative">
-                            <select value={clientFilter} onChange={(e) => setClientFilter(e.target.value)} aria-label="Filtrer par client" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-[180px]">
+                            <select value={clientFilter} onChange={(e) => setClientFilter(e.target.value)} aria-label="Filtrer par client" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)] max-w-[180px]">
                                 <option value="ALL">Tous les clients</option>
                                 {availableClients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
@@ -1294,7 +1294,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                     {/* Category Filter (Type Op.) — invoices only */}
                     {mode === 'INVOICES' && availableCategories.length > 0 && (
                         <div className="hidden sm:block relative">
-                            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filtrer par type d'opération" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} aria-label="Filtrer par type d'opération" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                 <option value="ALL">Type Op.</option>
                                 <option value="INSTALLATION">Installation</option>
                                 <option value="ABONNEMENT">Abonnement</option>
@@ -1308,7 +1308,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                     {/* Plate Filter — invoices only */}
                     {mode === 'INVOICES' && availablePlates.length > 0 && (
                         <div className="hidden sm:block relative">
-                            <select value={plateFilter} onChange={(e) => setPlateFilter(e.target.value)} aria-label="Filtrer par plaque" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono max-w-[160px]">
+                            <select value={plateFilter} onChange={(e) => setPlateFilter(e.target.value)} aria-label="Filtrer par plaque" className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono max-w-[160px]">
                                 <option value="ALL">Toutes les plaques</option>
                                 {availablePlates.map(p => <option key={p} value={p}>{p}</option>)}
                             </select>
@@ -1341,7 +1341,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                 <div className="max-h-60 overflow-y-auto space-y-1">
                                     {(mode === 'INVOICES' ? INVOICE_COLUMNS : QUOTE_COLUMNS).map(col => (
                                         <label key={col.id} className="flex items-center gap-2 p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 rounded cursor-pointer">
-                                            <input type="checkbox" checked={visibleColumns.includes(col.id)} onChange={() => toggleColumn(col.id)} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                            <input type="checkbox" checked={visibleColumns.includes(col.id)} onChange={() => toggleColumn(col.id)} className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]" />
                                             <span className="text-sm text-slate-700 dark:text-slate-300">{col.label}</span>
                                         </label>
                                     ))}
@@ -1363,7 +1363,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                     <p className="text-xs font-bold text-slate-500 uppercase">Factures Émises</p>
                                     <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{(Array.isArray(invoices) ? invoices : []).length}</p>
                                 </div>
-                                <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+                                <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                                     <FileText className="w-6 h-6" />
                                 </div>
                             </div>
@@ -1410,7 +1410,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                     <p className="text-xs font-bold text-slate-500 uppercase">Total Devis</p>
                                     <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">{(Array.isArray(quotes) ? quotes : []).length}</p>
                                 </div>
-                                <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-full text-blue-600">
+                                <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                                     <FileText className="w-6 h-6" />
                                 </div>
                             </div>
@@ -1467,7 +1467,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                       <div className="flex items-start justify-between gap-2 mb-1">
                         <div className="min-w-0 flex-1">
                           <p className="font-bold text-sm text-slate-800 dark:text-white truncate">{clientName}</p>
-                          <span className="font-mono text-xs text-blue-600 dark:text-blue-400">{number}</span>
+                          <span className="font-mono text-xs text-[var(--primary)] dark:text-[var(--primary)]">{number}</span>
                         </div>
                         <p className="font-bold text-sm text-slate-800 dark:text-white shrink-0">{formatPrice(total)}</p>
                       </div>
@@ -1476,7 +1476,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                         {getStatusBadge(item.status)}
                       </div>
                       <div className="flex items-center gap-2">
-                        <button onClick={(e) => { e.stopPropagation(); handleEdit(item); }} className="px-3 py-1.5 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg">Modifier</button>
+                        <button onClick={(e) => { e.stopPropagation(); handleEdit(item); }} className="px-3 py-1.5 text-xs bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-lg">Modifier</button>
                         {mode === 'INVOICES' && item.status !== 'PAID' && (
                           <button onClick={(e) => { e.stopPropagation(); handleAction('pay', item); }} className="px-3 py-1.5 text-xs bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg">Payer</button>
                         )}
@@ -1489,15 +1489,15 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
 
             {!isMobile && <Card className="flex-1 overflow-hidden p-0 relative">
                  {selectedIds.size > 0 && (
-                    <div className="absolute top-0 left-0 right-0 h-14 bg-blue-50 dark:bg-blue-900/50 flex items-center justify-between px-6 z-20 animate-in fade-in slide-in-from-top-1 border-b border-blue-100 dark:border-blue-800">
-                        <span className="text-sm font-bold text-blue-800 dark:text-blue-200">{selectedIds.size} sélectionné(s)</span>
+                    <div className="absolute top-0 left-0 right-0 h-14 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-between px-6 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--primary)] dark:border-[var(--primary)]">
+                        <span className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)]">{selectedIds.size} sélectionné(s)</span>
                         <div className="flex gap-3">
-                            <button onClick={() => { const selected = filteredData.filter(i => selectedIds.has(i.id)); selected.forEach(i => openEmailModal(i)); }} className="text-xs text-blue-600 flex items-center gap-1.5 px-2 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800"><Mail className="w-3 h-3"/> Envoyer par mail</button>
+                            <button onClick={() => { const selected = filteredData.filter(i => selectedIds.has(i.id)); selected.forEach(i => openEmailModal(i)); }} className="text-xs text-[var(--primary)] flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"><Mail className="w-3 h-3"/> Envoyer par mail</button>
                             {mode === 'INVOICES' && (
-                                <button onClick={() => { filteredData.filter(i => selectedIds.has(i.id) && (i.status === 'DRAFT' || i.status === 'SENT')).forEach(i => updateInvoice({ ...i as Invoice, status: 'SENT' })); showToast(`${selectedIds.size} facture(s) marquée(s) comme envoyée(s)`, 'success'); setSelectedIds(new Set()); }} className="text-xs text-blue-600 flex items-center gap-1.5 px-2 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800"><CheckCircle className="w-3 h-3"/> Marquer envoyées</button>
+                                <button onClick={() => { filteredData.filter(i => selectedIds.has(i.id) && (i.status === 'DRAFT' || i.status === 'SENT')).forEach(i => updateInvoice({ ...i as Invoice, status: 'SENT' })); showToast(`${selectedIds.size} facture(s) marquée(s) comme envoyée(s)`, 'success'); setSelectedIds(new Set()); }} className="text-xs text-[var(--primary)] flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"><CheckCircle className="w-3 h-3"/> Marquer envoyées</button>
                             )}
                             {mode === 'QUOTES' && (
-                                <button onClick={() => { filteredData.filter(i => selectedIds.has(i.id) && i.status === 'DRAFT').forEach(i => updateQuote({ ...i as Quote, status: 'SENT' })); showToast(`${selectedIds.size} devis marqué(s) comme envoyé(s)`, 'success'); setSelectedIds(new Set()); }} className="text-xs text-blue-600 flex items-center gap-1.5 px-2 py-1 rounded hover:bg-blue-100 dark:hover:bg-blue-800"><CheckCircle className="w-3 h-3"/> Marquer envoyés</button>
+                                <button onClick={() => { filteredData.filter(i => selectedIds.has(i.id) && i.status === 'DRAFT').forEach(i => updateQuote({ ...i as Quote, status: 'SENT' })); showToast(`${selectedIds.size} devis marqué(s) comme envoyé(s)`, 'success'); setSelectedIds(new Set()); }} className="text-xs text-[var(--primary)] flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"><CheckCircle className="w-3 h-3"/> Marquer envoyés</button>
                             )}
                             <button onClick={() => handleExport('csv')} className="text-xs text-slate-600 flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700"><Download className="w-3 h-3"/> Exporter CSV</button>
                             <button onClick={() => handleExport('pdf')} className="text-xs text-slate-600 flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-100 dark:hover:bg-slate-700"><Download className="w-3 h-3"/> Exporter PDF</button>
@@ -1509,7 +1509,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                 <div className="overflow-auto h-full">
                     <table className="w-full text-left min-w-[800px]">
                         <thead className={`bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 ${selectedIds.size > 0 ? 'opacity-0' : ''}`}><tr className="text-xs font-bold text-slate-500 dark:text-slate-300 uppercase">
-                            <th className="px-4 py-3 w-12"><input type="checkbox" checked={isAllSelected} onChange={handleSelectAll} aria-label="Tout sélectionner" className="rounded border-slate-300 text-blue-600" /></th>
+                            <th className="px-4 py-3 w-12"><input type="checkbox" checked={isAllSelected} onChange={handleSelectAll} aria-label="Tout sélectionner" className="rounded border-slate-300 text-[var(--primary)]" /></th>
                             {(mode === 'QUOTES' ? QUOTE_COLUMNS : INVOICE_COLUMNS)
                                 .filter(c => visibleColumns.includes(c.id))
                                 .map(c => <SortableHeader key={c.id} label={c.label} sortKey={c.id} currentSortKey={financeSortConfig.key} currentDirection={financeSortConfig.direction} onSort={handleFinanceSort} />)}
@@ -1522,10 +1522,10 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                 const total = (item as Invoice | any).amountHT || (item as Invoice).amount || (itemsTotal * (1 + ((item as Invoice | Quote).vatRate ?? 0) / 100));
                                 return (
                                 <tr key={item.id} className="density-row hover:bg-slate-50 dark:hover:bg-slate-800/50 group" >
-                                    <td className="px-4 py-4"><input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleSelection(item.id)} aria-label="Sélectionner l'élément" className="rounded border-slate-300 text-blue-600" /></td>
+                                    <td className="px-4 py-4"><input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => toggleSelection(item.id)} aria-label="Sélectionner l'élément" className="rounded border-slate-300 text-[var(--primary)]" /></td>
                                     
                                     {(mode === 'QUOTES' ? QUOTE_COLUMNS : INVOICE_COLUMNS).filter(c => visibleColumns.includes(c.id)).map(col => {
-                                        if (col.id === 'number') return <td key={col.id} className="px-6 py-4 font-mono text-blue-600 dark:text-blue-400 cursor-pointer" onClick={() => setSelectedItem(item)}>{mode === 'INVOICES' ? ((item as Invoice).number || (item as FinanceDoc).invoice_number || item.id) : ((item as FinanceDoc).number || (item as Quote).id)}</td>;
+                                        if (col.id === 'number') return <td key={col.id} className="px-6 py-4 font-mono text-[var(--primary)] dark:text-[var(--primary)] cursor-pointer" onClick={() => setSelectedItem(item)}>{mode === 'INVOICES' ? ((item as Invoice).number || (item as FinanceDoc).invoice_number || item.id) : ((item as FinanceDoc).number || (item as Quote).id)}</td>;
                                         if (col.id === 'resellerName') return <td key={col.id} className="px-6 py-4 text-slate-600 dark:text-slate-300">{(item as FinanceDoc).resellerName || '-'}</td>;
                                         if (col.id === 'client') {
                                             const clientName = (item as FinanceDoc).clientName || 
@@ -1570,7 +1570,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
 
                                     <td className="px-6 py-4 text-right sticky right-0 bg-white dark:bg-slate-900 shadow-[-4px_0_6px_-4px_rgba(0,0,0,0.08)] group-hover:bg-slate-50 dark:group-hover:bg-slate-800/50">
                                         <div className="flex items-center justify-end gap-1 relative whitespace-nowrap">
-                                            <button onClick={() => handleEdit(item)} className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-full" title="Éditer"><Edit2 className="w-4 h-4" /></button>
+                                            <button onClick={() => handleEdit(item)} className="p-2 text-slate-500 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full" title="Éditer"><Edit2 className="w-4 h-4" /></button>
                                             {mode === 'INVOICES' && item.status !== 'PAID' && <button onClick={() => handleAction('pay', item)} className="p-2 text-slate-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-full" title="Payer"><DollarSign className="w-4 h-4" /></button>}
                                             <button 
                                                 onClick={(e) => { e.stopPropagation(); setActionMenuId(actionMenuId === item.id ? null : item.id); }} 
@@ -1615,12 +1615,12 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                                             </button>
                                                         )}
                                                         {mode === 'INVOICES' && (item.status === 'DRAFT' || item.status === 'SENT') && (
-                                                            <button onClick={() => { handleAction('mark_sent', item); setActionMenuId(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30">
+                                                            <button onClick={() => { handleAction('mark_sent', item); setActionMenuId(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]">
                                                                 <CheckCircle className="w-4 h-4" /> Marquer comme envoyée
                                                             </button>
                                                         )}
                                                         {mode === 'QUOTES' && item.status === 'DRAFT' && (
-                                                            <button onClick={() => { handleAction('mark_sent', item); setActionMenuId(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30">
+                                                            <button onClick={() => { handleAction('mark_sent', item); setActionMenuId(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]">
                                                                 <CheckCircle className="w-4 h-4" /> Marquer comme envoyé
                                                             </button>
                                                         )}
@@ -1635,7 +1635,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                                             </>
                                                         )}
                                                         {mode === 'QUOTES' && (item.status === 'DRAFT' || item.status === 'SENT') && (
-                                                            <button onClick={() => { handleAction('convert_to_invoice', item); setActionMenuId(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30">
+                                                            <button onClick={() => { handleAction('convert_to_invoice', item); setActionMenuId(null); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]">
                                                                 <FileCheck className="w-4 h-4" /> Convertir en facture
                                                             </button>
                                                         )}
@@ -1745,10 +1745,10 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                             </div>
 
                             {/* Solde & Montants */}
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
                                 <div className="text-center">
-                                    <span className="block text-[10px] font-bold text-blue-600 uppercase">Montant Total</span>
-                                    <span className="font-bold text-blue-700 dark:text-blue-300">{formatPrice(selectedItem.amount || 0)}</span>
+                                    <span className="block text-[10px] font-bold text-[var(--primary)] uppercase">Montant Total</span>
+                                    <span className="font-bold text-[var(--primary)] dark:text-[var(--primary)]">{formatPrice(selectedItem.amount || 0)}</span>
                                 </div>
                                 <div className="text-center">
                                     <span className="block text-[10px] font-bold text-green-600 uppercase">Déjà Payé</span>
@@ -1890,12 +1890,12 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                 <Modal isOpen={isEmailModalOpen} onClose={() => setIsEmailModalOpen(false)} title="Envoyer par Email" maxWidth="max-w-lg">
                     <div className="p-6 space-y-4">
                         {/* Document Info */}
-                        <div className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-                            <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">
+                        <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-3 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
+                            <p className="text-sm font-semibold text-[var(--primary)] dark:text-[var(--primary)]">
                                 <Mail className="inline w-4 h-4 mr-2" />
                                 Document: {(selectedItem as Invoice).number || selectedItem.id}
                             </p>
-                            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                            <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] mt-1">
                                 Montant: {formatPrice(selectedItem.amount)}
                             </p>
                         </div>
@@ -1952,7 +1952,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                 type="button"
                                 onClick={handleSendEmail}
                                 disabled={emailSending || !emailForm.recipientEmail}
-                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold shadow-lg shadow-blue-500/30 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg font-bold shadow-lg shadow-blue-500/30 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {emailSending ? (
                                     <>
@@ -2000,7 +2000,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                         {/* Payment History List */}
                         {paymentHistory.loading ? (
                             <div className="flex items-center justify-center py-12">
-                                <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
+                                <RefreshCw className="w-6 h-6 animate-spin text-[var(--primary)]" />
                                 <span className="ml-2 text-slate-500">Chargement...</span>
                             </div>
                         ) : (paymentHistory.payments || []).length === 0 ? (
@@ -2106,9 +2106,9 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                         <div className="flex flex-col gap-3">
                             <button 
                                 onClick={() => handleContractChoice('NEW')}
-                                className="w-full p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center gap-3 transition-colors"
+                                className="w-full p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] flex items-center gap-3 transition-colors"
                             >
-                                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full text-blue-600 dark:text-blue-400">
+                                <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)] dark:text-[var(--primary)]">
                                     <Plus className="w-5 h-5" />
                                 </div>
                                 <div className="text-left">
@@ -2144,15 +2144,15 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                 >
                     <div className="p-6 space-y-4">
                         {/* Info Facture */}
-                        <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-4 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="text-sm font-bold text-blue-800 dark:text-blue-300">Facture: {contractLinkData.invoice.number}</p>
-                                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                    <p className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)]">Facture: {contractLinkData.invoice.number}</p>
+                                    <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] mt-1">
                                         Véhicule: <span className="font-mono font-bold">{contractLinkData.invoice.licensePlate || 'Non spécifié'}</span>
                                     </p>
                                 </div>
-                                <span className="text-lg font-bold text-blue-700 dark:text-blue-300">{formatPrice(contractLinkData.invoice.amount)}</span>
+                                <span className="text-lg font-bold text-[var(--primary)] dark:text-[var(--primary)]">{formatPrice(contractLinkData.invoice.amount)}</span>
                             </div>
                         </div>
 
@@ -2167,7 +2167,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                     key={contract.id}
                                     className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-all ${
                                         contractLinkData.selectedContractId === contract.id 
-                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500' 
+                                            ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] ring-2 ring-[var(--primary)]' 
                                             : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                                     }`}
                                 >
@@ -2177,7 +2177,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                                         value={contract.id}
                                         checked={contractLinkData.selectedContractId === contract.id}
                                         onChange={() => setContractLinkData({...contractLinkData, selectedContractId: contract.id})}
-                                        className="w-4 h-4 text-blue-600"
+                                        className="w-4 h-4 text-[var(--primary)]"
                                     />
                                     <div className="flex-1">
                                         <div className="flex justify-between items-start">
@@ -2252,7 +2252,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({ mode = 'INVOICES', ini
                             <button 
                                 onClick={handleAddVehicleToContract}
                                 disabled={!contractLinkData.selectedContractId}
-                                className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 disabled:bg-slate-300 rounded-lg font-bold text-sm flex items-center gap-2"
+                                className="px-4 py-2 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] disabled:bg-slate-300 rounded-lg font-bold text-sm flex items-center gap-2"
                             >
                                 <CheckCircle className="w-4 h-4" /> Ajouter au contrat
                             </button>

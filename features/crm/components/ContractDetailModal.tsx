@@ -58,10 +58,11 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
             .finally(() => setSubsLoading(false));
     }, [contract?.id, isOpen]);
 
-    if (!contract) return null;
-
-    const contractInvoices = useMemo(() => invoices.filter(i => i.contractId === contract.id), [invoices, contract.id]);
-    const subsTotal = contractSubs.reduce((sum, s) => sum + parseFloat(s.monthly_fee ?? s.monthlyFee ?? 0), 0);
+    // Hooks before early return
+    const contractInvoices = useMemo(() => {
+        if (!contract) return [];
+        return invoices.filter(i => i.contractId === contract.id);
+    }, [invoices, contract]);
 
     const INVOICE_STATUS_LABELS: Record<string, string> = {
         DRAFT: 'Brouillon', SENT: 'Envoyée', PAID: 'Payée', PARTIALLY_PAID: 'Partiel',
@@ -86,6 +87,30 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
     const itemsPerPage = 10;
 
     React.useEffect(() => { setCurrentPage(1); }, [activeTab]);
+
+    const historyItems = useMemo(() => {
+        if (!contract) return [];
+        if (contract.history && contract.history.length > 0) {
+            return contract.history.map(h => ({
+                date: new Date(h.date).toLocaleDateString('fr-FR'),
+                text: h.description,
+                type: h.type
+            })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
+        const items = [{ date: new Date(contract.startDate).toLocaleDateString('fr-FR'), text: 'Création du contrat', type: 'CREATION' }];
+        if (contract.notes) {
+            contract.notes.split('\n').filter(n => n.startsWith('[')).forEach(note => {
+                const dateStr = note.substring(1, note.indexOf(']'));
+                const text = note.substring(note.indexOf(']') + 1).trim();
+                items.push({ date: dateStr, text, type: 'NOTE' });
+            });
+        }
+        return items;
+    }, [contract]);
+
+    if (!contract) return null;
+
+    const subsTotal = contractSubs.reduce((sum, s) => sum + parseFloat(s.monthly_fee ?? s.monthlyFee ?? 0), 0);
 
     const paginate = <T,>(items: T[]): T[] => {
         const startIndex = (currentPage - 1) * itemsPerPage;
@@ -139,25 +164,6 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
         { name: 'Payé', amount: totalPaid },
         { name: 'Reste', amount: Math.max(0, totalInvoiced - totalPaid) }
     ];
-
-    const historyItems = useMemo(() => {
-        if (contract.history && contract.history.length > 0) {
-            return contract.history.map(h => ({
-                date: new Date(h.date).toLocaleDateString('fr-FR'),
-                text: h.description,
-                type: h.type
-            })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        }
-        const items = [{ date: new Date(contract.startDate).toLocaleDateString('fr-FR'), text: 'Création du contrat', type: 'CREATION' }];
-        if (contract.notes) {
-            contract.notes.split('\n').filter(n => n.startsWith('[')).forEach(note => {
-                const dateStr = note.substring(1, note.indexOf(']'));
-                const text = note.substring(note.indexOf(']') + 1).trim();
-                items.push({ date: dateStr, text, type: 'NOTE' });
-            });
-        }
-        return items;
-    }, [contract]);
 
     // ─── PDF: full contract document ────────────────────────────────────────────
     const handleDownloadContract = () => {
@@ -472,10 +478,10 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                 <div className="w-full md:w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-5 flex flex-col gap-5 overflow-y-auto shrink-0">
 
                     <div className="text-center relative">
-                        <button onClick={onEdit} className="absolute top-0 right-0 p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-full transition-colors" title="Modifier">
+                        <button onClick={onEdit} className="absolute top-0 right-0 p-2 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors" title="Modifier">
                             <Edit2 className="w-4 h-4" />
                         </button>
-                        <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-600 dark:text-blue-400">
+                        <div className="w-16 h-16 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full flex items-center justify-center mx-auto mb-3 text-[var(--primary)] dark:text-[var(--primary)]">
                             <FileCheck className="w-8 h-8" />
                         </div>
                         <h3 className="font-bold text-base text-slate-800 dark:text-white mb-1 line-clamp-2">{contract.subject || 'Contrat'}</h3>
@@ -563,7 +569,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                 <StopCircle className="w-3.5 h-3.5" /> Résilier
                             </button>
                         )}
-                        <button onClick={handleDownloadContract} className="w-full py-2 px-3 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
+                        <button onClick={handleDownloadContract} className="w-full py-2 px-3 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
                             <Download className="w-3.5 h-3.5" /> Télécharger PDF Contrat
                         </button>
                     </div>
@@ -577,7 +583,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`px-4 py-3.5 text-xs font-bold border-b-2 whitespace-nowrap transition-colors ${activeTab === tab.id ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+                                className={`px-4 py-3.5 text-xs font-bold border-b-2 whitespace-nowrap transition-colors ${activeTab === tab.id ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
                             >
                                 {tab.label}
                             </button>
@@ -594,7 +600,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                 {/* Subscriptions summary */}
                                 <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
                                     <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
-                                        <Truck className="w-4 h-4 text-blue-500" /> Récapitulatif Abonnements
+                                        <Truck className="w-4 h-4 text-[var(--primary)]" /> Récapitulatif Abonnements
                                     </h4>
                                     {subsLoading ? (
                                         <div className="flex items-center gap-2 text-slate-400 text-sm py-4 justify-center">
@@ -643,9 +649,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                                     )}
                                                 </tbody>
                                                 <tfoot>
-                                                    <tr className="bg-blue-50 dark:bg-blue-900/20 font-bold">
-                                                        <td colSpan={3} className="px-3 py-2 text-xs text-right text-blue-700">Total</td>
-                                                        <td className="px-3 py-2 text-right text-xs text-blue-700">{formatPrice(subsTotal)}</td>
+                                                    <tr className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] font-bold">
+                                                        <td colSpan={3} className="px-3 py-2 text-xs text-right text-[var(--primary)]">Total</td>
+                                                        <td className="px-3 py-2 text-right text-xs text-[var(--primary)]">{formatPrice(subsTotal)}</td>
                                                         <td />
                                                     </tr>
                                                 </tfoot>
@@ -683,7 +689,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                         </h4>
                                         <div className="space-y-2">
                                             {alerts.map((alert, i) => (
-                                                <div key={i} className={`flex items-start gap-2 p-2.5 border rounded text-sm ${alert.type === 'CRITICAL' ? 'bg-red-50 border-red-100 text-red-800' : alert.type === 'WARNING' ? 'bg-orange-50 border-orange-100 text-orange-800' : 'bg-blue-50 border-blue-100 text-blue-800'}`}>
+                                                <div key={i} className={`flex items-start gap-2 p-2.5 border rounded text-sm ${alert.type === 'CRITICAL' ? 'bg-red-50 border-red-100 text-red-800' : alert.type === 'WARNING' ? 'bg-orange-50 border-orange-100 text-orange-800' : 'bg-[var(--primary-dim)] border-[var(--primary)] text-[var(--primary)]'}`}>
                                                     <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                                                     <p className="font-bold text-xs">{alert.message}</p>
                                                 </div>
@@ -740,7 +746,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                                                 <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400">{[brand, model].filter(Boolean).join(' ') || '—'}</td>
                                                                 <td className="px-4 py-3 text-xs">{BILLING_CYCLE_LABELS[(s.billing_cycle || s.billingCycle || '').toUpperCase()] || '—'}</td>
                                                                 <td className="px-4 py-3 text-right font-bold">{formatPrice(parseFloat(s.monthly_fee ?? s.monthlyFee ?? 0))}</td>
-                                                                <td className="px-4 py-3 text-xs text-blue-600">{nextBilling ? new Date(nextBilling).toLocaleDateString('fr-FR') : '—'}</td>
+                                                                <td className="px-4 py-3 text-xs text-[var(--primary)]">{nextBilling ? new Date(nextBilling).toLocaleDateString('fr-FR') : '—'}</td>
                                                                 <td className="px-4 py-3 text-center">
                                                                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : (status === 'CANCELLED' || status === 'CANCELED') ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'}`}>
                                                                         {status === 'ACTIVE' ? 'Actif' : status === 'SUSPENDED' ? 'Suspendu' : (status === 'CANCELLED' || status === 'CANCELED') ? 'Résilié' : status}
@@ -754,9 +760,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                                 </tbody>
                                                 {contractSubs.length > 0 && (
                                                     <tfoot>
-                                                        <tr className="bg-blue-50 dark:bg-blue-900/20 font-bold text-xs">
-                                                            <td colSpan={3} className="px-4 py-2 text-right text-blue-700 dark:text-blue-300">Total</td>
-                                                            <td className="px-4 py-2 text-right text-blue-700 dark:text-blue-300">{formatPrice(subsTotal)}</td>
+                                                        <tr className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] font-bold text-xs">
+                                                            <td colSpan={3} className="px-4 py-2 text-right text-[var(--primary)] dark:text-[var(--primary)]">Total</td>
+                                                            <td className="px-4 py-2 text-right text-[var(--primary)] dark:text-[var(--primary)]">{formatPrice(subsTotal)}</td>
                                                             <td colSpan={2} className="px-4 py-2 text-center text-slate-500">{contractSubs.filter(s => (s.status || '').toUpperCase() === 'ACTIVE').length} actif(s) / {contractSubs.length}</td>
                                                         </tr>
                                                     </tfoot>
@@ -789,7 +795,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                                             {contractInvoices.length > 0 ? paginate(contractInvoices).map(inv => (
                                                 <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                                    <td className="px-5 py-3 font-mono text-blue-600 text-xs">{inv.number}</td>
+                                                    <td className="px-5 py-3 font-mono text-[var(--primary)] text-xs">{inv.number}</td>
                                                     <td className="px-5 py-3 text-xs">{new Date(inv.date).toLocaleDateString('fr-FR')}</td>
                                                     <td className="px-5 py-3 text-xs">{new Date(inv.dueDate).toLocaleDateString('fr-FR')}</td>
                                                     <td className="px-5 py-3 text-right font-bold">{formatPrice(inv.amount ?? 0)}</td>
@@ -799,7 +805,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                                         </span>
                                                     </td>
                                                     <td className="px-5 py-3 text-right">
-                                                        <button onClick={() => handleDownloadInvoice(inv)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors" title="Télécharger">
+                                                        <button onClick={() => handleDownloadInvoice(inv)} className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors" title="Télécharger">
                                                             <Download className="w-3.5 h-3.5" />
                                                         </button>
                                                     </td>
@@ -820,7 +826,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                         {activeTab === 'CONTRAT' && (
                             <div className="space-y-4">
                                 <div className="flex justify-end">
-                                    <button onClick={handleDownloadContract} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors">
+                                    <button onClick={handleDownloadContract} className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-bold hover:bg-[var(--primary-light)] transition-colors">
                                         <Download className="w-4 h-4" /> Télécharger PDF
                                     </button>
                                 </div>
@@ -828,7 +834,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                 {/* Document preview */}
                                 <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
                                     {/* Document header */}
-                                    <div className="bg-blue-700 px-8 py-5 text-white">
+                                    <div className="bg-[var(--primary-dim)] px-8 py-5 text-white">
                                         <p className="text-xs font-semibold uppercase tracking-widest opacity-70 mb-1">{branding?.name || 'TrackYu'}</p>
                                         <h2 className="text-xl font-bold tracking-tight">CONTRAT DE PRESTATION DE SERVICES</h2>
                                         <p className="text-xs opacity-70 mt-1">Géolocalisation et Suivi GPS de Véhicules</p>
@@ -845,8 +851,8 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                         <div>
                                             <p className="text-xs font-bold uppercase text-slate-500 mb-3">Entre les soussignés</p>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                                                    <p className="text-[10px] font-bold text-blue-600 uppercase mb-2">Le Prestataire</p>
+                                                <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-xl">
+                                                    <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-2">Le Prestataire</p>
                                                     <p className="font-bold text-slate-800 dark:text-white">{branding?.name || 'TrackYu'}</p>
                                                     {branding?.address && <p className="text-xs text-slate-500 mt-1">{branding.address}</p>}
                                                     {branding?.phone && <p className="text-xs text-slate-500">{branding.phone}</p>}
@@ -906,9 +912,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                                         </tbody>
                                                         {contractSubs.length > 0 && (
                                                             <tfoot>
-                                                                <tr className="bg-blue-50 dark:bg-blue-900/20 font-bold">
-                                                                    <td colSpan={3} className="px-3 py-2 text-right text-blue-700 dark:text-blue-300">TOTAL</td>
-                                                                    <td className="px-3 py-2 text-right text-blue-700 dark:text-blue-300">{formatPrice(subsTotal)}</td>
+                                                                <tr className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] font-bold">
+                                                                    <td colSpan={3} className="px-3 py-2 text-right text-[var(--primary)] dark:text-[var(--primary)]">TOTAL</td>
+                                                                    <td className="px-3 py-2 text-right text-[var(--primary)] dark:text-[var(--primary)]">{formatPrice(subsTotal)}</td>
                                                                     <td />
                                                                 </tr>
                                                             </tfoot>
@@ -931,7 +937,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                                 { title: 'Article 7 – Loi applicable et litiges', body: 'Le présent contrat est régi par le droit applicable localement. En cas de litige, les parties s\'efforceront de trouver une solution amiable. À défaut, les tribunaux compétents du siège social du Prestataire seront seuls compétents.' },
                                             ].map((art, i) => (
                                                 <div key={i}>
-                                                    <p className="font-bold text-blue-700 dark:text-blue-400 text-xs mb-1">{art.title}</p>
+                                                    <p className="font-bold text-[var(--primary)] dark:text-[var(--primary)] text-xs mb-1">{art.title}</p>
                                                     <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{art.body}</p>
                                                 </div>
                                             ))}
@@ -954,8 +960,8 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                                     <p className="text-[10px] text-slate-400 mt-1 text-center italic">Signature précédée de la mention « Lu et approuvé »</p>
                                                 </div>
                                                 {/* Company signature */}
-                                                <div className="p-5 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-xl bg-blue-50/40 dark:bg-blue-900/10">
-                                                    <p className="text-[10px] font-bold text-blue-600 uppercase mb-1">Le Prestataire</p>
+                                                <div className="p-5 border-2 border-dashed border-[var(--border)] dark:border-[var(--primary)] rounded-xl bg-[var(--primary-dim)]/40 dark:bg-[var(--primary-dim)]">
+                                                    <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-1">Le Prestataire</p>
                                                     <p className="font-bold text-sm text-slate-800 dark:text-white mb-3">{branding?.name || 'TrackYu'}</p>
                                                     <p className="text-xs text-slate-500 mb-1">Cachet et signature autorisée :</p>
                                                     <div className="border-b border-slate-300 dark:border-slate-600 mb-4 py-3" />
@@ -978,7 +984,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                     {paginate(historyItems).map((item, i) => (
                                         <div key={i} className="flex gap-4">
                                             <div className="flex flex-col items-center">
-                                                <div className={`w-2 h-2 rounded-full mt-2 ${item.type === 'CREATION' ? 'bg-blue-600' : 'bg-slate-400'}`} />
+                                                <div className={`w-2 h-2 rounded-full mt-2 ${item.type === 'CREATION' ? 'bg-[var(--primary)]' : 'bg-slate-400'}`} />
                                                 <div className="w-0.5 flex-1 bg-slate-200 dark:bg-slate-700 my-1" />
                                             </div>
                                             <div className="pb-5">
