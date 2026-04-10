@@ -279,17 +279,48 @@ async function fetchWithRefresh(url: string, options: RequestInit): Promise<Resp
   return response;
 }
 
+// UUID v4 pattern — valide le format avant injection dans les headers
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+// Accepte aussi les IDs tenant au format "tenant_<alphanumeric>"
+const TENANT_ID_PATTERN = /^(tenant_)?[a-zA-Z0-9_-]{1,64}$/;
+
 export const getHeaders = () => {
   const token = localStorage.getItem('fleet_token');
   const impersonateTenantId = localStorage.getItem('impersonate_tenant_id');
+  const impersonateExpiry = localStorage.getItem('impersonate_expiry');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'Authorization': token ? `Bearer ${token}` : ''
   };
-  if (impersonateTenantId) {
-    headers['X-Impersonate-Tenant'] = impersonateTenantId;
+
+  // Vérifier que l'impersonation est valide : format + non expirée
+  const isImpersonationValid =
+    impersonateTenantId &&
+    (UUID_PATTERN.test(impersonateTenantId) || TENANT_ID_PATTERN.test(impersonateTenantId)) &&
+    impersonateExpiry &&
+    Date.now() < parseInt(impersonateExpiry, 10);
+
+  if (isImpersonationValid) {
+    headers['X-Impersonate-Tenant'] = impersonateTenantId!;
+  } else if (impersonateTenantId) {
+    // Nettoyer une impersonation expirée ou invalide
+    localStorage.removeItem('impersonate_tenant_id');
+    localStorage.removeItem('impersonate_reseller_id');
+    localStorage.removeItem('impersonate_expiry');
   }
+
   return headers;
+};
+
+// --- URL SAFETY ---
+// Toutes les URLs doivent être relatives (commencer par /) sauf les URLs explicitement
+// construites en interne. Protège contre les SSRF et les appels vers des domaines tiers.
+const buildUrl = (url: string, queryString = ''): string => {
+  if (!url.startsWith('/') && !url.startsWith(API_URL)) {
+    logger.error(`[API] URL externe rejetée : ${url}`);
+    throw new Error('Appel API vers une URL externe non autorisée');
+  }
+  return url.startsWith('http') ? `${url}${queryString}` : `${API_URL}${url}${queryString}`;
 };
 
 // --- GENERIC HTTP METHODS ---
@@ -298,7 +329,7 @@ export const httpGet = async <T = any>(url: string, config?: { params?: Record<s
   const queryString = config?.params
     ? '?' + new URLSearchParams(config.params as Record<string, string>).toString()
     : '';
-  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}${queryString}`;
+  const fullUrl = buildUrl(url, queryString);
   const response = await fetchWithRefresh(fullUrl, { headers: getHeaders() });
   if (!response.ok) {
     if (handleAuthError(response)) return { data: null as T };
@@ -309,7 +340,7 @@ export const httpGet = async <T = any>(url: string, config?: { params?: Record<s
 };
 
 export const httpPost = async <T = any>(url: string, body?: any): Promise<{ data: T }> => {
-  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
+  const fullUrl = buildUrl(url);
   const response = await fetchWithRefresh(fullUrl, {
     method: 'POST',
     headers: getHeaders(),
@@ -324,7 +355,7 @@ export const httpPost = async <T = any>(url: string, body?: any): Promise<{ data
 };
 
 export const httpPut = async <T = any>(url: string, body?: any): Promise<{ data: T }> => {
-  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
+  const fullUrl = buildUrl(url);
   const response = await fetchWithRefresh(fullUrl, {
     method: 'PUT',
     headers: getHeaders(),
@@ -339,7 +370,7 @@ export const httpPut = async <T = any>(url: string, body?: any): Promise<{ data:
 };
 
 export const httpPatch = async <T = any>(url: string, body?: any): Promise<{ data: T }> => {
-  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
+  const fullUrl = buildUrl(url);
   const response = await fetchWithRefresh(fullUrl, {
     method: 'PATCH',
     headers: getHeaders(),
@@ -351,7 +382,7 @@ export const httpPatch = async <T = any>(url: string, body?: any): Promise<{ dat
 };
 
 export const httpDelete = async <T = any>(url: string): Promise<{ data: T }> => {
-  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
+  const fullUrl = buildUrl(url);
   const response = await fetchWithRefresh(fullUrl, {
     method: 'DELETE',
     headers: getHeaders()

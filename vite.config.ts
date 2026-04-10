@@ -28,10 +28,7 @@ export default defineConfig(({ mode }) => {
         }
       },
       plugins: [react()],
-      define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
-      },
+      define: {},
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
@@ -45,8 +42,9 @@ export default defineConfig(({ mode }) => {
       build: {
         // Target modern browsers for smaller bundle
         target: 'es2020',
-        // Enable sourcemaps for debugging in staging
-        sourcemap: true,
+        // Sourcemaps désactivés en production (évite l'exposition du code source)
+        // Activer manuellement en local si besoin : VITE_SOURCEMAP=true
+        sourcemap: env.VITE_SOURCEMAP === 'true',
         // Increase chunk size warning limit
         chunkSizeWarningLimit: 500,
         rollupOptions: {

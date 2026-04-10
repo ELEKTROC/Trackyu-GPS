@@ -1,8 +1,11 @@
-import React, { createContext, useContext, useCallback, useEffect, ReactNode } from 'react';
-import { useNotifications, NotificationPayload } from '../hooks/useNotifications';
-import { useToastNotifications, ToastNotification, NotificationToast } from '../components/NotificationToast';
+import type { ReactNode } from 'react';
+import React, { createContext, useContext, useCallback, useEffect } from 'react';
+import type { NotificationPayload } from '../hooks/useNotifications';
+import { useNotifications } from '../hooks/useNotifications';
+import type { ToastNotification} from '../components/NotificationToast';
+import { useToastNotifications, NotificationToast } from '../components/NotificationToast';
 import { getSocket } from '../services/socket';
-import { Alert } from '../types';
+import type { Alert } from '../types';
 import { logger } from '../utils/logger';
 
 // ============================================================
@@ -145,8 +148,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   // Gérer le clic sur un toast
   const handleToastClick = useCallback((toast: ToastNotification) => {
     if (toast.link) {
-      // Naviguer vers le lien (utiliser le router si disponible)
-      window.location.href = toast.link;
+      // Whitelist: uniquement les liens internes (commençant par /)
+      const safeLink = toast.link.startsWith('/') ? toast.link : null;
+      if (safeLink) window.location.href = safeLink;
     }
     notifications.markAsRead(1);
   }, [notifications]);
