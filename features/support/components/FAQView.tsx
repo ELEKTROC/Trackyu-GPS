@@ -8,7 +8,7 @@ import { Modal } from '../../../components/Modal';
 import { useToast } from '../../../contexts/ToastContext';
 import { api } from '../../../services/api';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
-import { sanitizeHtml } from '../../../utils/sanitizeHtml';
+import DOMPurify from 'dompurify';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 
@@ -432,7 +432,7 @@ export const FAQView: React.FC = () => {
                       {isExpanded && (
                         <>
                           <div className="prose dark:prose-invert max-w-none mt-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                            <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(article.content.replace(/\n/g, '<br/>')) }} />
+                            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content.replace(/\n/g, '<br/>')) }} />
                           </div>
                           
                           {/* Tags */}

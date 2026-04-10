@@ -13,6 +13,30 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+
+    <!-- Content Security Policy
+         Note : frame-ancestors et upgrade-insecure-requests ne sont effectifs
+         qu'en HTTP header (Caddy/nginx) — ajouter côté serveur pour protection complète.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com data:;
+      img-src 'self' data: blob: https:;
+      connect-src 'self'
+        https://trackyugps.com
+        https://staging.trackyugps.com
+        https://live.trackyugps.com
+        wss://trackyugps.com
+        wss://staging.trackyugps.com
+        wss://live.trackyugps.com;
+      media-src 'self' blob:;
+      worker-src blob:;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+    " />
     
     <!-- Color scheme - supports both light and dark, will be updated by ThemeContext -->
     <meta name="color-scheme" content="light dark" />

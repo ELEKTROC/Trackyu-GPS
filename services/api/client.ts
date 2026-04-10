@@ -290,7 +290,10 @@ export const getHeaders = () => {
   const impersonateExpiry = localStorage.getItem('impersonate_expiry');
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    'Authorization': token ? `Bearer ${token}` : ''
+    'Authorization': token ? `Bearer ${token}` : '',
+    // Protection CSRF : ce header rend la requête "non-simple" → déclenche un preflight CORS
+    // Le backend peut aussi vérifier sa présence pour rejeter les requêtes cross-origin
+    'X-Requested-With': 'XMLHttpRequest',
   };
 
   // Vérifier que l'impersonation est valide : format + non expirée
