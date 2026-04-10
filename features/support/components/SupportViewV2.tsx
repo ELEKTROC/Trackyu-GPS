@@ -914,7 +914,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 <div className="flex items-center gap-2">
                     {/* Export + Import — desktop only */}
                     <div className="hidden sm:flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2">
-                        <button onClick={handleExportCSV} className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:border-blue-800 dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors" title="Export CSV">
+                        <button onClick={handleExportCSV} className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] transition-colors" title="Export CSV">
                             <FileSpreadsheet className="w-3.5 h-3.5" /> CSV
                         </button>
                         <button onClick={handleExportExcel} className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-green-200 text-green-600 bg-green-50 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors" title="Export Excel">
@@ -1432,7 +1432,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                 <span className="text-slate-300">|</span>
                                                 {selectedTicket.source && (
                                                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                                                        selectedTicket.source === 'TrackYu' ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-blue-900/40 dark:text-[var(--primary)]' :
+                                                        selectedTicket.source === 'TrackYu' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' :
                                                         selectedTicket.source === 'Appel' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' :
                                                         selectedTicket.source === 'WhatsApp' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' :
                                                         selectedTicket.source === 'Visite' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300' :
@@ -1452,7 +1452,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                                     <button onClick={() => setIsEscalateModalOpen(true)} className="p-2 bg-orange-600 hover:bg-orange-700 border border-orange-500 text-white rounded-lg transition-colors" title="Escalader">
                                                         <ArrowUpRight className="w-4 h-4" />
                                                     </button>
-                                                    <button onClick={openEditModal} className="p-2 bg-white dark:bg-slate-700 border border-slate-200 rounded-lg hover:border-blue-300" title="Modifier">
+                                                    <button onClick={openEditModal} className="p-2 bg-white dark:bg-slate-700 border border-slate-200 rounded-lg hover:border-[var(--primary)]" title="Modifier">
                                                         <Edit2 className="w-4 h-4 text-slate-600" />
                                                     </button>
                                                     {hasPermission('DELETE_TICKETS') && (

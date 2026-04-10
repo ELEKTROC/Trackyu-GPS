@@ -223,7 +223,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
     const getInvoiceStatusStyle = (status: string): string => {
         switch (status?.toUpperCase()) {
             case 'PAID': case 'PAYÉ': return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800';
-            case 'SENT': return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-blue-800';
+            case 'SENT': return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
             case 'DRAFT': return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700';
             case 'PARTIALLY_PAID': case 'PARTIAL': return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800';
             case 'OVERDUE': case 'RETARD': return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800';
@@ -1130,7 +1130,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({
                                                 onClick={() => setCommentType('note')}
                                                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors border ${
                                                     commentType === 'note' 
-                                                        ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-blue-300 dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-blue-700' 
+                                                        ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]'
                                                         : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700'
                                                 }`}
                                             >

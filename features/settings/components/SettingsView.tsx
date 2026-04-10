@@ -752,11 +752,11 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
               
               {/* Bulk Actions Bar */}
               {selectedIds.size > 0 && (
-                  <div className="absolute top-0 left-0 right-0 h-12 bg-[var(--primary-dim)] dark:bg-blue-900/50 flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--border)]">
+                  <div className="absolute top-0 left-0 right-0 h-12 bg-[var(--primary-dim)] flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--border)]">
                       <span className="text-sm font-bold text-[var(--text-primary)]">{selectedIds.size} sélectionné(s)</span>
                       <div className="flex gap-2">
-                          <button className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-blue-800 transition-colors">Exporter</button>
-                          <button onClick={() => setSelectedIds(new Set())} className="p-1 hover:bg-blue-200 dark:hover:bg-blue-800 rounded text-[var(--primary)] dark:text-[var(--primary)]"><X className="w-4 h-4" /></button>
+                          <button className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] transition-colors">Exporter</button>
+                          <button onClick={() => setSelectedIds(new Set())} className="p-1 hover:bg-[var(--primary-dim)] rounded text-[var(--primary)]"><X className="w-4 h-4" /></button>
                       </div>
                   </div>
               )}
@@ -1347,11 +1347,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     profile: 'bg-[var(--primary-dim)]0', operations: 'bg-indigo-500', my_notifications: 'bg-purple-500', support: 'bg-green-500',
     users: 'bg-[var(--primary)]', subaccounts: 'bg-cyan-600', branches: 'bg-teal-500', groups: 'bg-violet-500',
     objects: 'bg-orange-500', drivers: 'bg-amber-500', commands: 'bg-slate-600',
-    geofencing: 'bg-orange-600', poi: 'bg-blue-400', maintenance: 'bg-green-600',
+    geofencing: 'bg-orange-600', poi: 'bg-cyan-500', maintenance: 'bg-green-600',
     alerts: 'bg-red-500', schedule: 'bg-yellow-500', ecodriving: 'bg-emerald-500',
     clients: 'bg-pink-500', techs: 'bg-teal-600', reseller: 'bg-indigo-600',
     sync: 'bg-slate-500', support_settings: 'bg-gray-500',
-    about: 'bg-blue-400', privacy: 'bg-slate-400',
+    about: 'bg-cyan-500', privacy: 'bg-slate-400',
   };
 
   // --- STATE MANAGEMENT FOR 2-LEVEL TABS ---

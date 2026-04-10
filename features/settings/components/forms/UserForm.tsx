@@ -206,7 +206,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${
                             activeTab === tab.id
-                                ? 'border-blue-600 text-[var(--primary)]'
+                                ? 'border-[var(--primary)] text-[var(--primary)]'
                                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
                         }`}
                     >
@@ -377,7 +377,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                             <button
                                                 type="button"
                                                 onClick={() => showToast('Email de réinitialisation envoyé !', 'success')}
-                                                className="px-3 py-2 text-xs font-medium bg-[var(--primary-dim)] text-[var(--primary)] hover:bg-blue-200 rounded-xl transition-colors"
+                                                className="px-3 py-2 text-xs font-medium bg-[var(--primary-dim)] text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-xl transition-colors"
                                             >
                                                 Réinitialiser MDP
                                             </button>
@@ -487,9 +487,9 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(({ init
                                             key={value}
                                             className={`flex items-start gap-3 p-3 border rounded-xl transition-colors cursor-pointer ${
                                                 locked
-                                                    ? 'border-[var(--border)] bg-[var(--primary-dim)]/50 dark:bg-blue-900/10 cursor-not-allowed'
+                                                    ? 'border-[var(--border)] bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]/10 cursor-not-allowed'
                                                     : checked
-                                                        ? 'border-blue-300 dark:border-blue-700 bg-[var(--primary-dim)]'
+                                                        ? 'border-[var(--primary)] dark:border-[var(--primary)] bg-[var(--primary-dim)]'
                                                         : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                                             }`}
                                         >
