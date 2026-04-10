@@ -116,7 +116,7 @@ interface CostMonth {
 interface DashboardViewProps {
   vehicles: Vehicle[];
   metrics: FleetMetrics;
-  onNavigate?: (view: string, params?: Record<string, unknown>) => void;
+  onNavigate?: (view: View, params?: Record<string, string>) => void;
 }
 
 // --- Reusable components ---

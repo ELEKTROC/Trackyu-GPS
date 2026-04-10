@@ -263,8 +263,12 @@ export function startGpsServer(): net.Server {
   const server = net.createServer((socket) => {
     logger.info?.(`[GPS] Boîtier connecté: ${socket.remoteAddress}:${socket.remotePort}`);
 
-    // Timeout anti-Slowloris (60s sans données → déconnexion)
-    socket.setTimeout(60_000);
+    // Optimisations TCP pour les petits paquets GPS (20-100 octets)
+    socket.setNoDelay(true);               // Désactiver Nagle — pas de buffering
+    socket.setKeepAlive(true, 30_000);     // Détecter connexions mortes après 30s
+
+    // Timeout anti-Slowloris (90s sans données → déconnexion)
+    socket.setTimeout(90_000);
     socket.on('timeout', () => {
       logger.warn?.(`[GPS] Timeout socket ${socket.remoteAddress}, fermeture`);
       socket.destroy();
@@ -337,9 +341,12 @@ export function startGpsServer(): net.Server {
     });
   });
 
-  server.listen(PORT, '0.0.0.0', () => {
-    logger.info?.(`[GPS] Serveur TCP démarré sur le port ${PORT}`);
+  // Backlog 4096 : file d'attente connexions TCP (défaut OS = 511)
+  // Nécessaire lors des pics de reconnexion simultanée (firmware reboot, coupure réseau)
+  server.listen(PORT, '0.0.0.0', 4096, () => {
+    logger.info?.(`[GPS] Serveur TCP démarré sur le port ${PORT} (backlog=4096)`);
     logger.info?.(`[GPS] Protocoles actifs: ${parsers.map(p => p.protocolName).join(', ')}`);
+    logger.info?.(`[GPS] Buffer: BATCH=${process.env.GPS_BUFFER_BATCH || 500}, MAX=${process.env.GPS_BUFFER_MAX || 10000}, FLUSH=${process.env.GPS_BUFFER_INTERVAL || 500}ms`);
   });
 
   server.on('error', (err) => {

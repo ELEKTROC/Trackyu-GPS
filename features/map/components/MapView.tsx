@@ -333,7 +333,7 @@ interface MapViewProps {
   zones?: Zone[];
   focusedVehicle?: Vehicle | null;
   replayVehicle?: Vehicle | null; // New prop for Replay Mode
-  onNavigate?: (view: View, params?: Record<string, unknown>) => void;
+  onNavigate?: (view: View, params?: Record<string, string>) => void;
   onReplay?: (vehicle: Vehicle) => void; // Callback passed down to DetailPanel
 }
 

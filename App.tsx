@@ -254,10 +254,10 @@ const AppContent: React.FC = () => {
     markAlertAsRead(id);
   };
   const markAllRead = () => {
-    alerts.filter((a) => !a.isRead).forEach((a) => markAlertAsRead(a.id));
+    alerts.filter((a) => !a.isRead).forEach((a) => markAlertAsRead(String(a.id)));
   };
   const clearNotifications = () => {
-    alerts.forEach((a) => markAlertAsRead(a.id));
+    alerts.forEach((a) => markAlertAsRead(String(a.id)));
   };
 
   const handleGlobalAction = (actionId: string) => {

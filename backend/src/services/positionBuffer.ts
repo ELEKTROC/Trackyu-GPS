@@ -1,8 +1,17 @@
 // backend/src/services/positionBuffer.ts
-// Buffer de positions GPS avec insertion batch PostgreSQL + WAL disque
+// Buffer de positions GPS — Architecture 10k devices
 //
-// P1 FIX : Si la DB est down, les positions sont sauvegardées dans un fichier
-// JSONL (write-ahead log) et rejouées automatiquement à la reconnexion.
+// Capacité cible :
+//   10 000 devices × 1 paquet/30s = 333 pkt/s soutenu
+//   Pic (reconnexion simultanée) : ~2 000 pkt/s
+//   DB throughput : 4 batches parallèles × 500 = 2 000 inserts/s
+//
+// Paramètres env :
+//   GPS_BUFFER_BATCH    — taille d'un batch (défaut 500)
+//   GPS_BUFFER_INTERVAL — fréquence flush ms (défaut 500)
+//   GPS_BUFFER_MAX      — taille max buffer avant overflow (défaut 10000)
+//   GPS_PARALLEL_FLUSH  — batches parallèles max (défaut 4)
+//   GPS_WAL_PATH        — chemin WAL disque
 
 import fs from 'fs';
 import path from 'path';
@@ -19,29 +28,51 @@ interface PositionEntry {
   rawData?: string;
 }
 
-const BATCH_SIZE      = parseInt(process.env.GPS_BUFFER_BATCH || '100');
-const FLUSH_INTERVAL  = parseInt(process.env.GPS_BUFFER_INTERVAL || '1000'); // ms
-const MAX_BUFFER_SIZE = 500;
+const BATCH_SIZE      = parseInt(process.env.GPS_BUFFER_BATCH    || '500');
+const FLUSH_INTERVAL  = parseInt(process.env.GPS_BUFFER_INTERVAL || '500');   // ms
+const MAX_BUFFER_SIZE = parseInt(process.env.GPS_BUFFER_MAX      || '10000');
+const MAX_PARALLEL    = parseInt(process.env.GPS_PARALLEL_FLUSH  || '4');
 const WAL_PATH        = process.env.GPS_WAL_PATH || path.join(process.cwd(), 'backend/logs/positions.wal');
 
-// S'assurer que le répertoire WAL existe
+// Assurer répertoire WAL
 try {
-  const walDir = path.dirname(WAL_PATH);
-  if (!fs.existsSync(walDir)) fs.mkdirSync(walDir, { recursive: true });
+  const dir = path.dirname(WAL_PATH);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 } catch {}
+
+// ─── Métriques internes ───────────────────────────────────────────────────────
+interface BufferMetrics {
+  totalInserted: number;
+  totalDropped: number;
+  totalWalSaved: number;
+  flushCount: number;
+  lastFlushDuration: number; // ms
+  parallelFlushPeak: number;
+}
+
+const metrics: BufferMetrics = {
+  totalInserted: 0,
+  totalDropped: 0,
+  totalWalSaved: 0,
+  flushCount: 0,
+  lastFlushDuration: 0,
+  parallelFlushPeak: 0,
+};
 
 class PositionBuffer {
   private buffer: PositionEntry[] = [];
   private flushTimer: ReturnType<typeof setInterval> | null = null;
   private isFlushingWal = false;
-
+  private activeFlushes = 0;
   private db: any = null;
 
   constructor() {
     this.loadDb();
-    this.flushTimer = setInterval(() => this.flush(), FLUSH_INTERVAL);
-    // Rejouer le WAL toutes les 30s si des entrées y sont en attente
-    setInterval(() => this.replayWal(), 30_000);
+    this.flushTimer = setInterval(() => void this.flush(), FLUSH_INTERVAL);
+    // Replay WAL toutes les 30s
+    setInterval(() => void this.replayWal(), 30_000);
+    // Log métriques toutes les 60s
+    setInterval(() => this.logMetrics(), 60_000);
   }
 
   private async loadDb() {
@@ -49,32 +80,63 @@ class PositionBuffer {
       const mod = await import('../config/database.js');
       this.db = mod.default;
     } catch {
-      console.warn('[PositionBuffer] Impossible de charger le module database');
+      console.warn('[PositionBuffer] Module database non disponible');
     }
   }
 
   add(position: PositionEntry): void {
-    this.buffer.push(position);
+    // Backpressure : jeter les plus anciens si buffer saturé
     if (this.buffer.length >= MAX_BUFFER_SIZE) {
+      this.buffer.shift(); // Supprimer le plus ancien
+      metrics.totalDropped++;
+      if (metrics.totalDropped % 100 === 1) {
+        console.error(`[PositionBuffer] SURCHARGE — ${metrics.totalDropped} positions perdues. Augmenter MAX_BUFFER ou la capacité DB.`);
+      }
+    }
+    this.buffer.push(position);
+
+    // Flush urgent si buffer > 80% capacité
+    if (this.buffer.length >= MAX_BUFFER_SIZE * 0.8 && this.activeFlushes < MAX_PARALLEL) {
       void this.flush();
     }
   }
 
   async flush(): Promise<void> {
-    if (this.buffer.length === 0) return;
-    if (!this.db) return;
+    if (this.buffer.length === 0 || !this.db) return;
 
-    const batch = this.buffer.splice(0, BATCH_SIZE);
+    // Calculer combien de batches on peut lancer en parallèle
+    const available = MAX_PARALLEL - this.activeFlushes;
+    if (available <= 0) return;
 
-    try {
-      await this.insertBatch(batch);
-    } catch (err) {
-      console.error('[PositionBuffer] Échec insertion batch, écriture WAL:', (err as Error).message);
-      this.writeToWal(batch);
-      // Remettre ce qui n'a pas été inséré dans le buffer (sans créer de boucle infinie)
-      if (this.buffer.length < MAX_BUFFER_SIZE) {
-        this.buffer.unshift(...batch.slice(BATCH_SIZE)); // Garder le surplus
-      }
+    const batchCount = Math.min(available, Math.ceil(this.buffer.length / BATCH_SIZE));
+    const start = Date.now();
+
+    const promises: Promise<void>[] = [];
+    for (let i = 0; i < batchCount; i++) {
+      if (this.buffer.length === 0) break;
+      const batch = this.buffer.splice(0, BATCH_SIZE);
+      this.activeFlushes++;
+      metrics.parallelFlushPeak = Math.max(metrics.parallelFlushPeak, this.activeFlushes);
+
+      promises.push(
+        this.insertBatch(batch)
+          .then(() => {
+            metrics.totalInserted += batch.length;
+            metrics.flushCount++;
+          })
+          .catch((err) => {
+            console.error('[PositionBuffer] Échec batch, WAL:', (err as Error).message);
+            this.writeToWal(batch);
+          })
+          .finally(() => {
+            this.activeFlushes--;
+          })
+      );
+    }
+
+    if (promises.length > 0) {
+      await Promise.allSettled(promises);
+      metrics.lastFlushDuration = Date.now() - start;
     }
   }
 
@@ -107,23 +169,24 @@ class PositionBuffer {
     `, [vehicleIds, latitudes, longitudes, speeds, headings, timestamps, fuels, ignitions, rawDataArr]);
   }
 
-  // ─── Write-Ahead Log (WAL) disque ─────────────────────────────────────────
+  // ─── WAL disque (si DB down) ─────────────────────────────────────────────────
 
   private writeToWal(batch: PositionEntry[]): void {
     try {
       const lines = batch.map(p => JSON.stringify({
         ...p,
-        timestamp: p.timestamp.toISOString(),
+        timestamp: p.timestamp instanceof Date ? p.timestamp.toISOString() : p.timestamp,
       })).join('\n') + '\n';
       fs.appendFileSync(WAL_PATH, lines, 'utf8');
-      console.info(`[PositionBuffer] ${batch.length} positions sauvegardées dans WAL (${WAL_PATH})`);
+      metrics.totalWalSaved += batch.length;
+      console.info(`[PositionBuffer] ${batch.length} positions → WAL (total: ${metrics.totalWalSaved})`);
     } catch (walErr) {
-      console.error('[PositionBuffer] CRITIQUE — Impossible d\'écrire dans le WAL:', walErr);
+      console.error('[PositionBuffer] CRITIQUE — WAL inaccessible:', walErr);
     }
   }
 
   async replayWal(): Promise<void> {
-    if (this.isFlushingWal) return;
+    if (this.isFlushingWal || !this.db) return;
     if (!fs.existsSync(WAL_PATH)) return;
 
     const stat = fs.statSync(WAL_PATH);
@@ -138,21 +201,28 @@ class PositionBuffer {
         return;
       }
 
-      console.info(`[PositionBuffer] Replay WAL: ${lines.length} positions en attente`);
+      console.info(`[PositionBuffer] Replay WAL: ${lines.length} positions`);
 
-      // Traiter par batches de 100
+      // Replay en batches parallèles
+      const batches: PositionEntry[][] = [];
       for (let i = 0; i < lines.length; i += BATCH_SIZE) {
-        const batchLines = lines.slice(i, i + BATCH_SIZE);
-        const batch: PositionEntry[] = batchLines.map(l => {
-          const p = JSON.parse(l);
-          return { ...p, timestamp: new Date(p.timestamp) };
-        });
-        await this.insertBatch(batch);
+        batches.push(
+          lines.slice(i, i + BATCH_SIZE).map(l => {
+            const p = JSON.parse(l);
+            return { ...p, timestamp: new Date(p.timestamp) };
+          })
+        );
       }
 
-      // Vider le WAL après replay réussi
+      // Insérer par groupes de MAX_PARALLEL
+      for (let i = 0; i < batches.length; i += MAX_PARALLEL) {
+        const group = batches.slice(i, i + MAX_PARALLEL);
+        await Promise.allSettled(group.map(b => this.insertBatch(b)));
+      }
+
       fs.writeFileSync(WAL_PATH, '', 'utf8');
-      console.info(`[PositionBuffer] WAL rejoué et vidé (${lines.length} positions)`);
+      metrics.totalInserted += lines.length;
+      console.info(`[PositionBuffer] WAL rejoué — ${lines.length} positions restaurées`);
 
     } catch (err) {
       console.error('[PositionBuffer] Erreur replay WAL:', (err as Error).message);
@@ -161,26 +231,45 @@ class PositionBuffer {
     }
   }
 
-  // Pour les tests / shutdown gracieux
+  private logMetrics(): void {
+    const queueDepth = this.buffer.length;
+    const pressure = Math.round(queueDepth / MAX_BUFFER_SIZE * 100);
+    console.info(
+      `[PositionBuffer] Queue=${queueDepth}/${MAX_BUFFER_SIZE} (${pressure}%) | ` +
+      `Inserted=${metrics.totalInserted} | Dropped=${metrics.totalDropped} | ` +
+      `WAL=${metrics.totalWalSaved} | ParallelPeak=${metrics.parallelFlushPeak} | ` +
+      `LastFlush=${metrics.lastFlushDuration}ms`
+    );
+  }
+
   async shutdown(): Promise<void> {
     if (this.flushTimer) clearInterval(this.flushTimer);
     if (this.buffer.length > 0) {
       console.info(`[PositionBuffer] Shutdown — flush final de ${this.buffer.length} positions`);
-      await this.flush();
+      // Forcer flush synchrone en mode shutdown
+      const batch = this.buffer.splice(0);
+      try {
+        // Découper en batches et insérer
+        for (let i = 0; i < batch.length; i += BATCH_SIZE) {
+          await this.insertBatch(batch.slice(i, i + BATCH_SIZE));
+        }
+      } catch {
+        this.writeToWal(batch);
+      }
     }
   }
 
-  get bufferSize(): number {
-    return this.buffer.length;
-  }
-
+  get bufferSize(): number { return this.buffer.length; }
   get walExists(): boolean {
     return fs.existsSync(WAL_PATH) && fs.statSync(WAL_PATH).size > 0;
+  }
+  get bufferMetrics(): BufferMetrics { return { ...metrics }; }
+  get queuePressure(): number {
+    return Math.round(this.buffer.length / MAX_BUFFER_SIZE * 100);
   }
 }
 
 export const positionBuffer = new PositionBuffer();
 
-// Shutdown gracieux
 process.on('SIGTERM', () => { void positionBuffer.shutdown(); });
 process.on('SIGINT',  () => { void positionBuffer.shutdown(); });

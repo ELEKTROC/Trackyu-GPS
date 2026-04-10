@@ -8,6 +8,25 @@ services:
       - POSTGRES_PASSWORD=${DB_PASS:-fleet_password}
       - POSTGRES_USER=${DB_USER:-fleet_user}
       - POSTGRES_DB=${DB_NAME:-fleet_db}
+      # Tuning TimescaleDB pour 10k devices (à ajuster selon RAM disponible)
+      - POSTGRES_SHARED_BUFFERS=${PG_SHARED_BUFFERS:-512MB}
+      - POSTGRES_EFFECTIVE_CACHE_SIZE=${PG_CACHE_SIZE:-1536MB}
+      - POSTGRES_WORK_MEM=${PG_WORK_MEM:-16MB}
+      - POSTGRES_MAX_CONNECTIONS=${PG_MAX_CONN:-100}
+      - POSTGRES_MAX_WAL_SIZE=${PG_WAL_SIZE:-2GB}
+    command: >
+      postgres
+        -c shared_buffers=${PG_SHARED_BUFFERS:-512MB}
+        -c effective_cache_size=${PG_CACHE_SIZE:-1536MB}
+        -c work_mem=${PG_WORK_MEM:-16MB}
+        -c max_connections=${PG_MAX_CONN:-100}
+        -c max_wal_size=${PG_WAL_SIZE:-2GB}
+        -c checkpoint_completion_target=0.9
+        -c wal_buffers=32MB
+        -c synchronous_commit=off
+        -c random_page_cost=1.1
+        -c effective_io_concurrency=200
+        -c timescaledb.max_background_workers=8
     ports:
       - "5435:5432"
     volumes:
@@ -21,16 +40,32 @@ services:
       retries: 5
       start_period: 30s
 
-  # 2. Backend API (Node.js)
+  # 2. Backend API (Node.js) — PM2 cluster mode via ecosystem.config.cjs
   backend:
     build: ./backend
     container_name: fleet_backend
     restart: unless-stopped
     ports:
       - "3001:3000"
+      - "5000:5000"  # GPS TCP server
     environment:
       - DATABASE_URL=postgres://${DB_USER:-fleet_user}:${DB_PASS:-fleet_password}@timescaledb:5432/${DB_NAME:-fleet_db}
+      - DB_POOL_MAX=${DB_POOL_MAX:-20}
+      - DB_POOL_IDLE_TIMEOUT=${DB_POOL_IDLE:-10000}
       - PORT=3000
+      - GPS_PORT=5000
+      - GPS_BUFFER_BATCH=${GPS_BUFFER_BATCH:-500}
+      - GPS_BUFFER_MAX=${GPS_BUFFER_MAX:-10000}
+      - GPS_BUFFER_INTERVAL=${GPS_BUFFER_INTERVAL:-500}
+      - GPS_PARALLEL_FLUSH=${GPS_PARALLEL_FLUSH:-4}
+      - GPS_RATE_LIMIT=${GPS_RATE_LIMIT:-10}
+      - SOCKET_THROTTLE_MS=${SOCKET_THROTTLE_MS:-1500}
+      - THROTTLE_REALTIME=500
+      - THROTTLE_MOVING=1500
+      - THROTTLE_IDLE=4000
+      - THROTTLE_PARKED=10000
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=${NODE_ENV:-production}
       - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
       - ORANGE_SMS_CLIENT_ID=${ORANGE_SMS_CLIENT_ID}
       - ORANGE_SMS_CLIENT_SECRET=${ORANGE_SMS_CLIENT_SECRET}
@@ -45,6 +80,14 @@ services:
     volumes:
       - ./backend:/app
       # - /app/node_modules
+    ulimits:
+      nofile:
+        soft: 65536   # Permettre 10k+ connexions TCP simultanées
+        hard: 65536
+    deploy:
+      resources:
+        limits:
+          memory: ${BACKEND_MEM_LIMIT:-2G}
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', r => r.statusCode === 200 ? process.exit(0) : process.exit(1))"]
       interval: 15s
@@ -72,18 +115,32 @@ services:
       timeout: 5s
       retries: 3
 
-  # 4. Redis (Cache Temps Réel)
+  # 4. Redis (Cache + Socket.IO adapter)
   redis:
     image: redis:alpine
     container_name: fleet_redis
     restart: unless-stopped
-    command: redis-server --save 60 1 --loglevel warning --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: >
+      redis-server
+        --save 60 1
+        --loglevel warning
+        --maxmemory ${REDIS_MAX_MEM:-512mb}
+        --maxmemory-policy allkeys-lru
+        --tcp-backlog 511
+        --tcp-keepalive 300
+        --hz 20
+        --dynamic-hz yes
+        --lazyfree-lazy-eviction yes
     ports:
       - "6381:6379"
     networks:
       - fleet_network
     volumes:
       - redis_data:/data
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s

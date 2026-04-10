@@ -15,7 +15,7 @@ type Tab = 'DASHBOARD' | 'TIERS' | 'INVOICES' | 'CONTRACTS';
 
 interface SalesViewProps {
   initialTab?: string;
-  onNavigate?: (view: View, params?: Record<string, unknown>) => void;
+  onNavigate?: (view: View, params?: Record<string, string>) => void;
 }
 
 export const SalesView: React.FC<SalesViewProps> = ({ initialTab, onNavigate }) => {
