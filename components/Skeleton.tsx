@@ -17,21 +17,21 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   variant = 'text',
   width,
   height,
-  animation = 'pulse'
+  animation = 'pulse',
 }) => {
   const baseClasses = 'bg-[var(--bg-elevated)]';
-  
+
   const variantClasses = {
     text: 'rounded h-4',
     circular: 'rounded-full',
     rectangular: '',
-    rounded: 'rounded-lg'
+    rounded: 'rounded-lg',
   };
 
   const animationClasses = {
     pulse: 'animate-pulse',
     wave: 'skeleton-wave',
-    none: ''
+    none: '',
   };
 
   const style: React.CSSProperties = {};
@@ -39,7 +39,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   if (height) style.height = typeof height === 'number' ? `${height}px` : height;
 
   return (
-    <div 
+    <div
       className={`${baseClasses} ${variantClasses[variant]} ${animationClasses[animation]} ${className}`}
       style={style}
       aria-hidden="true"
@@ -77,12 +77,7 @@ export const TableRowSkeleton: React.FC<{ columns?: number }> = ({ columns = 6 }
   <div className="flex items-center gap-4 px-4 py-3 border-b border-[var(--border)]">
     <Skeleton variant="circular" width={20} height={20} />
     {Array.from({ length: columns }).map((_, i) => (
-      <Skeleton 
-        key={i} 
-        variant="text" 
-        width={i === 0 ? '15%' : `${Math.random() * 10 + 8}%`} 
-        height={14} 
-      />
+      <Skeleton key={i} variant="text" width={i === 0 ? '15%' : `${Math.random() * 10 + 8}%`} height={14} />
     ))}
   </div>
 );
@@ -91,7 +86,7 @@ export const TableRowSkeleton: React.FC<{ columns?: number }> = ({ columns = 6 }
  * Stats card skeleton for dashboard
  */
 export const StatsCardSkeleton: React.FC = () => (
-  <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+  <div className="bg-[var(--bg-elevated)] p-4 rounded-xl border border-[var(--border)]">
     <div className="flex justify-between items-start mb-3">
       <Skeleton variant="rounded" width={40} height={40} />
       <Skeleton variant="text" width={80} height={10} />
@@ -113,12 +108,7 @@ export const ChartSkeleton: React.FC<{ height?: number }> = ({ height = 200 }) =
     <div className="relative" style={{ height }}>
       <div className="absolute inset-0 flex items-end justify-around gap-2 px-4">
         {Array.from({ length: 7 }).map((_, i) => (
-          <Skeleton 
-            key={i} 
-            variant="rounded" 
-            width="10%" 
-            height={`${30 + Math.random() * 60}%`} 
-          />
+          <Skeleton key={i} variant="rounded" width="10%" height={`${30 + Math.random() * 60}%`} />
         ))}
       </div>
     </div>
@@ -162,16 +152,16 @@ export const DashboardSkeleton: React.FC = () => (
         <StatsCardSkeleton key={i} />
       ))}
     </div>
-    
+
     {/* Charts row */}
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <ChartSkeleton height={250} />
       <ChartSkeleton height={250} />
     </div>
-    
+
     {/* List */}
     <div className="rounded-xl border bg-[var(--bg-surface)] border-[var(--border)]">
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+      <div className="p-4 border-b border-[var(--border)]">
         <Skeleton variant="text" width={150} height={20} />
       </div>
       {Array.from({ length: 5 }).map((_, i) => (

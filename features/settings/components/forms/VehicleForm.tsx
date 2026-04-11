@@ -192,39 +192,39 @@ export const VehicleForm = React.forwardRef<
         </div>
       )}
       {/* Tabs Header */}
-      <div className="flex border-b border-slate-200 dark:border-slate-700 mb-4 overflow-x-auto">
+      <div className="flex border-b border-[var(--border)] mb-4 overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('info')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'info' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'info' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
         >
           <Car className="w-4 h-4" /> Infos Véhicule
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('device')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'device' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'device' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
         >
           <Cpu className="w-4 h-4" /> Boîtier & Connectivité
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('fuel')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'fuel' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'fuel' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
         >
           <Fuel className="w-4 h-4" /> Jauge
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('maintenance')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'maintenance' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'maintenance' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
         >
           <Wrench className="w-4 h-4" /> Maintenance
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('history')}
-          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'history' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
+          className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'history' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
         >
           <History className="w-4 h-4" /> Historique
         </button>
@@ -374,7 +374,7 @@ export const VehicleForm = React.forwardRef<
                 <FormField label="Modèle Boîtier" hint="Modèles depuis Admin > Paramètres Boîtiers">
                   <div className="relative">
                     {loadingModels && (
-                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 animate-spin" />
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] animate-spin" />
                     )}
                     <Select {...register('deviceType')}>
                       <option value="">-- Sélectionner --</option>
@@ -441,21 +441,21 @@ export const VehicleForm = React.forwardRef<
             </FormSection>
 
             <FormField label="Capteurs & Accessoires">
-              <div className="grid grid-cols-2 gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+              <div className="grid grid-cols-2 gap-3 p-3 border border-[var(--border)] rounded-xl bg-[var(--bg-elevated)]">
+                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">
                   <input type="checkbox" {...register('sensors')} value="FUEL" className="rounded-lg" /> Jauge Carburant
                 </label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">
                   <input type="checkbox" {...register('sensors')} value="TEMP" className="rounded-lg" /> Sonde
                   Température
                 </label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">
                   <input type="checkbox" {...register('sensors')} value="DOOR" className="rounded-lg" /> Capteur Porte
                 </label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">
                   <input type="checkbox" {...register('sensors')} value="ID" className="rounded-lg" /> Lecteur Badge
                 </label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <label className="flex items-center gap-2 text-sm cursor-pointer p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">
                   <input type="checkbox" {...register('sensors')} value="RELAY" className="rounded-lg" /> Relais Coupure
                 </label>
               </div>
@@ -552,8 +552,8 @@ export const VehicleForm = React.forwardRef<
               </FormField>
             </FormSection>
 
-            <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
-              <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">
+            <div className="border-t border-[var(--border)] pt-4">
+              <h4 className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-3">
                 Seuils d'alerte
               </h4>
               <FormGrid columns={2}>
@@ -571,7 +571,7 @@ export const VehicleForm = React.forwardRef<
         {activeTab === 'history' && (
           <div className="space-y-4 animate-in fade-in duration-200">
             <FormSection icon={History} title="Historique des événements">
-              <div className="text-sm text-slate-500">Historique non disponible pour le moment.</div>
+              <div className="text-sm text-[var(--text-secondary)]">Historique non disponible pour le moment.</div>
             </FormSection>
           </div>
         )}

@@ -293,7 +293,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
       case 'SENT':
         return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
       case 'DRAFT':
-        return 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700';
+        return 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] border-[var(--border)]';
       case 'PARTIALLY_PAID':
       case 'PARTIAL':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800';
@@ -301,7 +301,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
       case 'RETARD':
         return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800';
       case 'CANCELLED':
-        return 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700 line-through';
+        return 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-secondary)] border-[var(--border)] line-through';
       default:
         return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800';
     }
@@ -347,28 +347,28 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <thead>
                 <tr>
                   <th colSpan={7} className="p-0">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-b border-slate-200 dark:border-slate-700">
-                      <div className="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Total HT</p>
-                        <p className="text-lg font-bold text-slate-800 dark:text-white">{formatPrice(totalHT)}</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-b border-[var(--border)]">
+                      <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] border-[var(--border)] shadow-sm">
+                        <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Total HT</p>
+                        <p className="text-lg font-bold text-[var(--text-primary)]">{formatPrice(totalHT)}</p>
                       </div>
-                      <div className="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700 shadow-sm">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Total TTC</p>
-                        <p className="text-lg font-bold text-slate-800 dark:text-white">{formatPrice(totalTTC)}</p>
+                      <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] border-[var(--border)] shadow-sm">
+                        <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Total TTC</p>
+                        <p className="text-lg font-bold text-[var(--text-primary)]">{formatPrice(totalTTC)}</p>
                       </div>
-                      <div className="bg-white dark:bg-slate-800 p-3 rounded-lg border border-emerald-100 dark:border-emerald-800 shadow-sm">
+                      <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-emerald-100 dark:border-emerald-800 shadow-sm">
                         <p className="text-[10px] font-bold text-emerald-500 uppercase mb-1">Payé</p>
                         <p className="text-lg font-bold text-emerald-600">{formatPrice(totalPaid)}</p>
                       </div>
                       <div
-                        className={`bg-white dark:bg-slate-800 p-3 rounded-lg border shadow-sm ${totalBalance > 0 ? 'border-red-100 dark:border-red-800' : 'border-slate-100 dark:border-slate-700'}`}
+                        className={`bg-[var(--bg-elevated)] p-3 rounded-lg border shadow-sm ${totalBalance > 0 ? 'border-red-100 dark:border-red-800' : 'border-[var(--border)] border-[var(--border)]'}`}
                       >
-                        <p className="text-[10px] font-bold text-slate-400 uppercase mb-1 flex items-center gap-1">
+                        <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1 flex items-center gap-1">
                           Solde restant{' '}
                           {overdueCount > 0 && <span className="text-red-500">({overdueCount} en retard)</span>}
                         </p>
                         <p
-                          className={`text-lg font-bold ${totalBalance > 0 ? 'text-red-600' : 'text-slate-800 dark:text-white'}`}
+                          className={`text-lg font-bold ${totalBalance > 0 ? 'text-red-600' : 'text-[var(--text-primary)]'}`}
                         >
                           {formatPrice(totalBalance)}
                         </p>
@@ -376,7 +376,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     </div>
                   </th>
                 </tr>
-                <tr className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+                <tr className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                   <th className="py-3 px-4">N° Facture</th>
                   <th className="py-3 px-4">Objet</th>
                   <th className="py-3 px-4">Date</th>
@@ -394,27 +394,29 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   return (
                     <tr
                       key={inv.id}
-                      className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${isOverdue ? 'bg-red-50/30 dark:bg-red-900/10' : ''}`}
+                      className={`tr-hover/50 transition-colors ${isOverdue ? 'bg-red-50/30 dark:bg-red-900/10' : ''}`}
                     >
                       <td className="py-3 px-4 font-mono text-[var(--primary)] font-medium text-xs">
                         {inv.number || inv.id?.substring(0, 10)}
                       </td>
                       <td
-                        className="py-3 px-4 max-w-[180px] truncate text-slate-600 dark:text-slate-300"
+                        className="py-3 px-4 max-w-[180px] truncate text-[var(--text-secondary)]"
                         title={inv.subject || ''}
                       >
                         {inv.subject || '-'}
                       </td>
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(inv.date)}</td>
+                      <td className="py-3 px-4 text-[var(--text-secondary)] whitespace-nowrap">
+                        {formatDate(inv.date)}
+                      </td>
                       <td
-                        className={`py-3 px-4 whitespace-nowrap ${isOverdue ? 'text-red-600 font-bold' : 'text-slate-500'}`}
+                        className={`py-3 px-4 whitespace-nowrap ${isOverdue ? 'text-red-600 font-bold' : 'text-[var(--text-secondary)]'}`}
                       >
                         {formatDate(inv.dueDate)}
                       </td>
-                      <td className="py-3 px-4 text-right text-slate-600 dark:text-slate-300 whitespace-nowrap">
+                      <td className="py-3 px-4 text-right text-[var(--text-secondary)] whitespace-nowrap">
                         {formatPrice(Number(inv.amountHT || 0))}
                       </td>
-                      <td className="py-3 px-4 text-right font-bold text-slate-800 dark:text-white whitespace-nowrap">
+                      <td className="py-3 px-4 text-right font-bold text-[var(--text-primary)] whitespace-nowrap">
                         {formatPrice(Number(inv.amount || 0))}
                       </td>
                       <td className="py-3 px-4 text-center">
@@ -438,7 +440,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         case 'PAYMENTS':
           return (
             <>
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                 <tr>
                   <th>Réf</th>
                   <th>Date</th>
@@ -448,9 +450,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               </thead>
               <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
                 {paginatedData.map((p: Payment) => (
-                  <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                    <td className="py-3 px-4 font-mono text-slate-600">{p.ref}</td>
-                    <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(p.date)}</td>
+                  <tr key={p.id} className="tr-hover/50">
+                    <td className="py-3 px-4 font-mono text-[var(--text-secondary)]">{p.ref}</td>
+                    <td className="py-3 px-4 text-[var(--text-secondary)] whitespace-nowrap">{formatDate(p.date)}</td>
                     <td className="py-3 px-4">{p.method}</td>
                     <td className="py-3 px-4 text-right font-bold text-green-600">+{formatPrice(Number(p.amount))}</td>
                   </tr>
@@ -461,7 +463,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         case 'QUOTES':
           return (
             <>
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                 <tr>
                   <th className="py-3 px-4">Numéro</th>
                   <th className="py-3 px-4">Date</th>
@@ -481,9 +483,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     CANCELLED: 'Annulé',
                   };
                   return (
-                    <tr key={q.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <tr key={q.id} className="tr-hover/50">
                       <td className="py-3 px-4 font-mono text-[var(--primary)]">{q.number || q.id}</td>
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(q.date)}</td>
+                      <td className="py-3 px-4 text-[var(--text-secondary)] whitespace-nowrap">{formatDate(q.date)}</td>
                       <td className="py-3 px-4">{q.clientName || '-'}</td>
                       <td className="py-3 px-4 text-right font-bold">{formatPrice(Number(q.amount || 0))}</td>
                       <td className="py-3 px-4 text-right">
@@ -502,7 +504,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         case 'CONTRACTS':
           return (
             <>
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                 <tr>
                   <th className="py-3 px-4">N° Contrat</th>
                   <th className="py-3 px-4">Début</th>
@@ -528,10 +530,14 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     BIANNUAL: 'Semestriel',
                   };
                   return (
-                    <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <tr key={c.id} className="tr-hover/50">
                       <td className="py-3 px-4 font-mono text-[var(--primary)]">{c.id?.substring(0, 8) || '-'}</td>
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(c.startDate)}</td>
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{formatDate(c.endDate)}</td>
+                      <td className="py-3 px-4 text-[var(--text-secondary)] whitespace-nowrap">
+                        {formatDate(c.startDate)}
+                      </td>
+                      <td className="py-3 px-4 text-[var(--text-secondary)] whitespace-nowrap">
+                        {formatDate(c.endDate)}
+                      </td>
                       <td className="py-3 px-4">
                         {billingMap[c.billingCycle?.toUpperCase()] || c.billingCycle || '-'}
                       </td>
@@ -552,7 +558,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         case 'INTERVENTIONS':
           return (
             <>
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                 <tr>
                   <th className="py-3 px-4">ID</th>
                   <th className="py-3 px-4">Type</th>
@@ -577,7 +583,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     REMOVAL: 'Retrait',
                   };
                   return (
-                    <tr key={itv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <tr key={itv.id} className="tr-hover/50">
                       <td className="py-3 px-4 font-mono text-[var(--primary)]">{itv.id?.substring(0, 10) || '-'}</td>
                       <td className="py-3 px-4">
                         {itvTypeMap[(itv.type || itv.interventionType || '').toUpperCase()] ||
@@ -585,7 +591,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                           itv.interventionType ||
                           '-'}
                       </td>
-                      <td className="py-3 px-4 text-slate-500 whitespace-nowrap">
+                      <td className="py-3 px-4 text-[var(--text-secondary)] whitespace-nowrap">
                         {formatDate(itv.date || itv.scheduledDate)}
                       </td>
                       <td className="py-3 px-4">{itv.technicianName || itv.assignedTo || '-'}</td>
@@ -605,7 +611,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         case 'TICKETS':
           return (
             <>
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                 <tr>
                   <th className="py-3 px-4">ID</th>
                   <th className="py-3 px-4">Sujet</th>
@@ -629,12 +635,12 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     LOW: 'Basse',
                   };
                   return (
-                    <tr key={t.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                    <tr key={t.id} className="tr-hover/50">
                       <td className="py-3 px-4 font-mono text-[var(--primary)]">{t.id}</td>
                       <td className="py-3 px-4 max-w-[250px] truncate">{t.subject}</td>
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${t.priority === 'CRITICAL' ? 'bg-red-100 text-red-700' : t.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' : t.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-slate-600'}`}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${t.priority === 'CRITICAL' ? 'bg-red-100 text-red-700' : t.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' : t.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
                         >
                           {tPriorityMap[t.priority?.toUpperCase()] || t.priority}
                         </span>
@@ -655,7 +661,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         case 'JOURNALS':
           return (
             <>
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                 <tr>
                   <th className="py-3 px-4" colSpan={5}>
                     Journaux comptables
@@ -664,7 +670,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               </thead>
               <tbody>
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-sm text-slate-400">
+                  <td colSpan={5} className="py-8 text-center text-sm text-[var(--text-muted)]">
                     Module en cours de développement
                   </td>
                 </tr>
@@ -675,7 +681,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         default:
           return (
             <>
-              <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+              <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                 <tr>
                   {Object.keys(paginatedData[0] || {})
                     .slice(0, 5)
@@ -688,11 +694,11 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               </thead>
               <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
                 {paginatedData.map((item: any, i: number) => (
-                  <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <tr key={i} className="tr-hover/50">
                     {Object.values(item)
                       .slice(0, 5)
                       .map((val: any, idx) => (
-                        <td key={idx} className="py-3 px-4 text-slate-600 dark:text-slate-300">
+                        <td key={idx} className="py-3 px-4 text-[var(--text-secondary)]">
                           {String(val ?? '')}
                         </td>
                       ))}
@@ -708,12 +714,12 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
       <div className="h-full flex flex-col animate-in fade-in duration-300">
         {/* Toolbar */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg overflow-x-auto max-w-full custom-scrollbar">
+          <div className="flex bg-[var(--bg-elevated)] p-1 rounded-lg overflow-x-auto max-w-full custom-scrollbar">
             {TRANSACTION_SUBTABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTrxSubTab(tab.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-white dark:bg-slate-700 text-[var(--primary)] shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-[var(--bg-elevated)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300'}`}
               >
                 <tab.icon className="w-3 h-3" /> {tab.label}
               </button>
@@ -722,11 +728,11 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         </div>
 
         {/* Table */}
-        <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
+        <div className="flex-1 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden flex flex-col">
           <div className="flex-1 overflow-auto custom-scrollbar">
             <table className="w-full text-left">{renderTableContent()}</table>
             {paginatedData.length === 0 && (
-              <div className="flex flex-col items-center justify-center h-40 text-slate-400">
+              <div className="flex flex-col items-center justify-center h-40 text-[var(--text-muted)]">
                 <Search className="w-8 h-8 mb-2 opacity-50" />
                 <p className="text-sm">Aucun résultat trouvé</p>
               </div>
@@ -735,22 +741,22 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="p-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+            <div className="p-3 border-t border-[var(--border)] border-[var(--border)] flex justify-between items-center bg-[var(--bg-elevated)]">
               <button
                 onClick={() => setTrxPage((p) => Math.max(1, p - 1))}
                 disabled={trxPage === 1}
-                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded disabled:opacity-30"
                 title="Page précédente"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <span className="text-xs font-bold text-slate-500">
+              <span className="text-xs font-bold text-[var(--text-secondary)]">
                 Page {trxPage} / {totalPages}
               </span>
               <button
                 onClick={() => setTrxPage((p) => Math.min(totalPages, p + 1))}
                 disabled={trxPage === totalPages}
-                className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded disabled:opacity-30"
                 title="Page suivante"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -789,10 +795,10 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
-      <div className="relative w-full max-w-6xl h-[90vh] bg-slate-50 dark:bg-slate-900 rounded-2xl shadow-2xl flex overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-700">
+      <div className="relative w-full max-w-6xl h-[90vh] bg-[var(--bg-elevated)] rounded-2xl shadow-2xl flex overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-[var(--border)]">
         {/* SIDEBAR NAVIGATION */}
-        <div className="w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col z-10">
-          <div className="p-6 border-b border-slate-100 dark:border-slate-700">
+        <div className="w-64 bg-[var(--bg-elevated)] border-r border-[var(--border)] flex flex-col z-10">
+          <div className="p-6 border-b border-[var(--border)] border-[var(--border)]">
             <div
               className={`w-16 h-16 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg mb-4 ${
                 tier.type === 'CLIENT'
@@ -804,10 +810,10 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
             >
               {tier.name.charAt(0)}
             </div>
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white leading-tight mb-1">{tier.name}</h2>
+            <h2 className="text-lg font-bold text-[var(--text-primary)] leading-tight mb-1">{tier.name}</h2>
             <div className="flex items-center gap-2 mb-1">
-              <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">{tier.type}</p>
-              <span className="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded font-mono">
+              <p className="text-xs text-[var(--text-secondary)] font-medium uppercase tracking-wider">{tier.type}</p>
+              <span className="text-[10px] px-1.5 py-0.5 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded font-mono">
                 {tier.id}
               </span>
               {tier.accountingCode && (
@@ -827,7 +833,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   setNewStatus(tier.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE');
                   setShowStatusModal(true);
                 }}
-                className={`px-2 py-1 rounded text-[10px] font-bold uppercase border flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ${tier.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-200' : tier.status === 'SUSPENDED' ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}
+                className={`px-2 py-1 rounded text-[10px] font-bold uppercase border flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ${tier.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-200' : tier.status === 'SUSPENDED' ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}
                 title="Cliquer pour changer le statut"
               >
                 <RefreshCw className="w-3 h-3" />
@@ -882,17 +888,17 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <button
                 key={item.id}
                 onClick={() => setActiveDetailTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-[var(--text-secondary)] tr-hover hover:text-[var(--text-primary)] dark:hover:text-slate-300'}`}
               >
                 <item.icon
-                  className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-[var(--primary)]' : 'text-slate-400'}`}
+                  className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
                 />
                 {item.label}
               </button>
             ))}
           </nav>
 
-          <div className="p-4 border-t border-slate-100 dark:border-slate-700">
+          <div className="p-4 border-t border-[var(--border)] border-[var(--border)]">
             <button
               onClick={async () => {
                 if (
@@ -920,15 +926,15 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         </div>
 
         {/* MAIN CONTENT AREA */}
-        <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 bg-[var(--bg-surface)]/50">
           {/* Header */}
-          <div className="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 shrink-0">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="h-16 bg-[var(--bg-elevated)] border-b border-[var(--border)] flex items-center justify-between px-6 shrink-0">
+            <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
               <Users className="w-4 h-4" />
               <ChevronRight className="w-4 h-4" />
               <span>Détails {tier.type}</span>
               <ChevronRight className="w-4 h-4" />
-              <span className="font-bold text-slate-800 dark:text-white">
+              <span className="font-bold text-[var(--text-primary)]">
                 {getTabs().find((t) => t.id === activeDetailTab)?.label}
               </span>
             </div>
@@ -937,7 +943,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               {onEdit && (
                 <button
                   onClick={() => onEdit(tier)}
-                  className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-slate-400 hover:text-[var(--primary)] transition-colors"
+                  className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
                   title="Modifier"
                 >
                   <Edit2 className="w-4 h-4" />
@@ -945,50 +951,50 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               )}
               <button
                 onClick={() => handleQuickAction('ticket')}
-                className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg text-slate-400 hover:text-purple-600 transition-colors"
+                className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg text-[var(--text-muted)] hover:text-purple-600 transition-colors"
                 title="Créer un ticket"
               >
                 <LifeBuoy className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleQuickAction('devis')}
-                className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-slate-400 hover:text-[var(--primary)] transition-colors"
+                className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
                 title="Créer un devis"
               >
                 <FileText className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleQuickAction('facture')}
-                className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg text-slate-400 hover:text-emerald-600 transition-colors"
+                className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg text-[var(--text-muted)] hover:text-emerald-600 transition-colors"
                 title="Créer une facture"
               >
                 <Receipt className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleQuickAction('intervention')}
-                className="p-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg text-slate-400 hover:text-orange-600 transition-colors"
+                className="p-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg text-[var(--text-muted)] hover:text-orange-600 transition-colors"
                 title="Créer une intervention"
               >
                 <Wrench className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleQuickAction('paiement')}
-                className="p-2 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg text-slate-400 hover:text-green-600 transition-colors"
+                className="p-2 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg text-[var(--text-muted)] hover:text-green-600 transition-colors"
                 title="Enregistrer un paiement"
               >
                 <CreditCard className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleQuickAction('mail')}
-                className="p-2 hover:bg-sky-50 dark:hover:bg-sky-900/20 rounded-lg text-slate-400 hover:text-sky-600 transition-colors"
+                className="p-2 hover:bg-sky-50 dark:hover:bg-sky-900/20 rounded-lg text-[var(--text-muted)] hover:text-sky-600 transition-colors"
                 title="Envoyer un e-mail"
               >
                 <Mail className="w-4 h-4" />
               </button>
-              <div className="w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1" />
+              <div className="w-px h-6 bg-slate-200 bg-[var(--bg-elevated)] mx-1" />
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-slate-400 hover:text-red-500 transition-colors"
+                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-muted)] hover:text-red-500 transition-colors"
                 title="Fermer"
               >
                 <X className="w-5 h-5" />
@@ -1004,23 +1010,21 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                 {/* COLONNE GAUCHE : INFOS PRINCIPALES */}
                 <div className="col-span-12 lg:col-span-8 space-y-6">
                   {/* Carte Identité */}
-                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
+                  <div className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--border)] shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
-                      <Building2 className="w-32 h-32 text-slate-900 dark:text-white" />
+                      <Building2 className="w-32 h-32 text-[var(--text-primary)]" />
                     </div>
                     <div className="relative z-10">
                       <div className="flex items-start justify-between mb-6">
                         <div>
-                          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1">
-                            Informations Générales
-                          </h3>
-                          <p className="text-sm text-slate-500">Données administratives et légales</p>
+                          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">Informations Générales</h3>
+                          <p className="text-sm text-[var(--text-secondary)]">Données administratives et légales</p>
                         </div>
                         <button
                           onClick={() =>
                             onEdit ? onEdit(tier) : showToast(TOAST.CRM.FEATURE_COMING_SOON('Modification'), 'info')
                           }
-                          className="p-2 bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
+                          className="p-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg text-[var(--text-secondary)] transition-colors"
                           title="Modifier les informations"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -1034,18 +1038,18 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                             Contact Principal
                           </p>
                           <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-800 flex items-center justify-center font-bold text-xs text-[var(--primary)] shadow-sm">
+                            <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center font-bold text-xs text-[var(--primary)] shadow-sm">
                               {(tier.contactName || tier.name).charAt(0)}
                             </div>
                             <div>
-                              <p className="font-bold text-slate-800 dark:text-white text-sm">
+                              <p className="font-bold text-[var(--text-primary)] text-sm">
                                 {tier.contactName || tier.name}
                               </p>
                               <div className="flex gap-2 mt-1">
                                 <a
                                   href={`mailto:${tier.email}`}
                                   title="Envoyer un email"
-                                  className="p-1 bg-white dark:bg-slate-800 rounded hover:text-[var(--primary)] transition-colors"
+                                  className="p-1 bg-[var(--bg-elevated)] rounded hover:text-[var(--primary)] transition-colors"
                                 >
                                   <Mail className="w-3 h-3" />
                                 </a>
@@ -1053,7 +1057,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                   <a
                                     href={`tel:${tier.phone}`}
                                     title="Appeler"
-                                    className="p-1 bg-white dark:bg-slate-800 rounded hover:text-green-600 transition-colors"
+                                    className="p-1 bg-[var(--bg-elevated)] rounded hover:text-green-600 transition-colors"
                                   >
                                     <Phone className="w-3 h-3" />
                                   </a>
@@ -1067,28 +1071,29 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                       {/* Bloc Détails Société */}
                       <div className="grid grid-cols-2 gap-4 text-sm mt-6">
                         <div className="col-span-2">
-                          <label className="block text-xs text-slate-500 mb-1">Adresse Siège</label>
-                          <div className="font-medium text-slate-800 dark:text-slate-200 flex items-start gap-2">
-                            <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                          <label className="block text-xs text-[var(--text-secondary)] mb-1">Adresse Siège</label>
+                          <div className="font-medium text-[var(--text-primary)] flex items-start gap-2">
+                            <MapPin className="w-4 h-4 text-[var(--text-muted)] mt-0.5 shrink-0" />
                             <span>
                               {tier.address || 'Non renseignée'}
                               <br />
-                              {tier.city && <span className="text-slate-600 dark:text-slate-400">{tier.city}, </span>}
+                              {tier.city && <span className="text-[var(--text-secondary)]">{tier.city}, </span>}
                               {tier.country && <span className="font-bold">{tier.country}</span>}
                             </span>
                           </div>
                         </div>
                         <div>
-                          <label className="block text-xs text-slate-500 mb-1">Date Création</label>
-                          <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                            <Calendar className="w-3 h-3 text-slate-400" />{' '}
+                          <label className="block text-xs text-[var(--text-secondary)] mb-1">Date Création</label>
+                          <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                            <Calendar className="w-3 h-3 text-[var(--text-muted)]" />{' '}
                             {new Date(tier.createdAt).toLocaleDateString('fr-FR')}
                           </div>
                         </div>
                         <div>
-                          <label className="block text-xs text-slate-500 mb-1">Code Comptable</label>
-                          <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2 font-mono">
-                            <FileSpreadsheet className="w-3 h-3 text-slate-400" /> {tier.accountingCode || '-'}
+                          <label className="block text-xs text-[var(--text-secondary)] mb-1">Code Comptable</label>
+                          <div className="font-medium text-[var(--text-primary)] flex items-center gap-2 font-mono">
+                            <FileSpreadsheet className="w-3 h-3 text-[var(--text-muted)]" />{' '}
+                            {tier.accountingCode || '-'}
                           </div>
                         </div>
 
@@ -1096,62 +1101,69 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         {tier.type === 'CLIENT' && (
                           <>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Plan</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <Bookmark className="w-3 h-3 text-slate-400" />{' '}
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Plan</label>
+                              <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                <Bookmark className="w-3 h-3 text-[var(--text-muted)]" />{' '}
                                 {tier.clientData?.subscriptionPlan || 'Standard'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Flotte</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <Truck className="w-3 h-3 text-slate-400" /> {tier.clientData?.fleetSize || 0} véhicules
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Flotte</label>
+                              <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                <Truck className="w-3 h-3 text-[var(--text-muted)]" /> {tier.clientData?.fleetSize || 0}{' '}
+                                véhicules
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Segment</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <Tag className="w-3 h-3 text-slate-400" /> {tier.clientData?.segment || 'Standard'}
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Segment</label>
+                              <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                <Tag className="w-3 h-3 text-[var(--text-muted)]" />{' '}
+                                {tier.clientData?.segment || 'Standard'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Secteur</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <Briefcase className="w-3 h-3 text-slate-400" /> {tier.clientData?.sector || '-'}
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Secteur</label>
+                              <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                <Briefcase className="w-3 h-3 text-[var(--text-muted)]" />{' '}
+                                {tier.clientData?.sector || '-'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Langue</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <Languages className="w-3 h-3 text-slate-400" />{' '}
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Langue</label>
+                              <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                <Languages className="w-3 h-3 text-[var(--text-muted)]" />{' '}
                                 {tier.clientData?.language || 'Français'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Type</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <Building2 className="w-3 h-3 text-slate-400" /> {tier.clientData?.type || 'B2B'}
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Type</label>
+                              <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                <Building2 className="w-3 h-3 text-[var(--text-muted)]" />{' '}
+                                {tier.clientData?.type || 'B2B'}
                               </div>
                             </div>
                             {tier.clientData?.resellerId && (
-                              <div className="col-span-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-700">
-                                <label className="block text-xs text-slate-500 mb-1">Géré par (Revendeur)</label>
+                              <div className="col-span-2 mt-2 pt-2 border-t border-[var(--border)] border-[var(--border)]">
+                                <label className="block text-xs text-[var(--text-secondary)] mb-1">
+                                  Géré par (Revendeur)
+                                </label>
                                 <div className="font-medium text-[var(--primary)] flex items-center gap-2">
                                   <BriefcaseIcon className="w-3 h-3" /> {tier.clientData.resellerId}
                                 </div>
                               </div>
                             )}
-                            <div className="col-span-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-700 grid grid-cols-2 gap-4">
+                            <div className="col-span-2 mt-2 pt-2 border-t border-[var(--border)] border-[var(--border)] grid grid-cols-2 gap-4">
                               <div>
-                                <label className="block text-xs text-slate-500 mb-1">Devise</label>
-                                <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                  <DollarSign className="w-3 h-3 text-slate-400" /> {tier.clientData?.currency || 'XOF'}
+                                <label className="block text-xs text-[var(--text-secondary)] mb-1">Devise</label>
+                                <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                  <DollarSign className="w-3 h-3 text-[var(--text-muted)]" />{' '}
+                                  {tier.clientData?.currency || 'XOF'}
                                 </div>
                               </div>
                               <div>
-                                <label className="block text-xs text-slate-500 mb-1">Paiement</label>
-                                <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                  <Clock className="w-3 h-3 text-slate-400" />{' '}
+                                <label className="block text-xs text-[var(--text-secondary)] mb-1">Paiement</label>
+                                <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                  <Clock className="w-3 h-3 text-[var(--text-muted)]" />{' '}
                                   {tier.clientData?.paymentTerms || '30 jours'}
                                 </div>
                               </div>
@@ -1162,38 +1174,39 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         {tier.type === 'RESELLER' && (
                           <>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Domaine</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                <Globe2 className="w-3 h-3 text-slate-400" /> {tier.resellerData?.domain || '-'}
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Domaine</label>
+                              <div className="font-medium text-[var(--text-primary)] flex items-center gap-2">
+                                <Globe2 className="w-3 h-3 text-[var(--text-muted)]" />{' '}
+                                {tier.resellerData?.domain || '-'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Activité</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200">
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Activité</label>
+                              <div className="font-medium text-[var(--text-primary)]">
                                 {tier.resellerData?.activity || '-'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Responsable</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200">
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Responsable</label>
+                              <div className="font-medium text-[var(--text-primary)]">
                                 {tier.resellerData?.managerName || '-'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">RCCM</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200">
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">RCCM</label>
+                              <div className="font-medium text-[var(--text-primary)]">
                                 {tier.resellerData?.rccm || '-'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">N° CC</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200">
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">N° CC</label>
+                              <div className="font-medium text-[var(--text-primary)]">
                                 {tier.resellerData?.ccNumber || '-'}
                               </div>
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">Exercice</label>
-                              <div className="font-medium text-slate-800 dark:text-slate-200">
+                              <label className="block text-xs text-[var(--text-secondary)] mb-1">Exercice</label>
+                              <div className="font-medium text-[var(--text-primary)]">
                                 {tier.resellerData?.fiscalYear || '-'}
                               </div>
                             </div>
@@ -1204,13 +1217,13 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   </div>
 
                   {/* HISTOGRAMME CHIFFRE D'AFFAIRES */}
-                  <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <div className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--border)] shadow-sm">
                     <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
+                      <h4 className="section-title flex items-center gap-2">
                         <BarChart3 className="w-4 h-4" /> Chiffre d'Affaires
                       </h4>
                       <select
-                        className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900 px-2 py-1 outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                        className="text-xs border border-[var(--border)] rounded bg-[var(--bg-elevated)] px-2 py-1 outline-none focus:ring-1 focus:ring-[var(--primary)]"
                         value={chartPeriod}
                         onChange={(e) => setChartPeriod(e.target.value)}
                         title="Période du CA"
@@ -1288,9 +1301,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                 {/* COLONNE DROITE : CONTACTS & ACTIONS */}
                 <div className="col-span-12 lg:col-span-4 space-y-6">
                   {/* BLOC CONTACTS */}
-                  <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <div className="bg-[var(--bg-elevated)] p-4 rounded-xl border border-[var(--border)] shadow-sm">
                     <div className="flex justify-between items-center mb-3">
-                      <h4 className="text-xs font-bold text-slate-400 uppercase">Personnes à contacter</h4>
+                      <h4 className="section-title">Personnes à contacter</h4>
                       <button
                         onClick={handleAddContact}
                         className="p-1 bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] rounded text-[var(--primary)] transition-colors"
@@ -1300,27 +1313,25 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                       </button>
                     </div>
                     <div className="space-y-3">
-                      <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-700 flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
+                      <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)] border-[var(--border)] flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">
                           {(tier.contactName || tier.name).charAt(0)}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                          <p className="text-sm font-bold text-[var(--text-primary)]">
                             {tier.contactName || tier.name}
                           </p>
-                          <p className="text-xs text-slate-400">Principal</p>
+                          <p className="text-xs text-[var(--text-muted)]">Principal</p>
                         </div>
                       </div>
                       {tier.secondContactName && (
-                        <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-700 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
+                        <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)] border-[var(--border)] flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">
                             {tier.secondContactName.charAt(0)}
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                              {tier.secondContactName}
-                            </p>
-                            <p className="text-xs text-slate-400">Secondaire</p>
+                            <p className="text-sm font-bold text-[var(--text-primary)]">{tier.secondContactName}</p>
+                            <p className="text-xs text-[var(--text-muted)]">Secondaire</p>
                           </div>
                         </div>
                       )}
@@ -1332,19 +1343,19 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                             placeholder="Nom du contact *"
                             value={newContactName}
                             onChange={(e) => setNewContactName(e.target.value)}
-                            className="w-full text-sm px-2 py-1 rounded border border-slate-300 dark:border-slate-600 dark:bg-slate-800"
+                            className="w-full text-sm px-2 py-1 rounded border border-[var(--border)] bg-[var(--bg-elevated)]"
                           />
                           <input
                             type="text"
                             placeholder="Rôle / Fonction"
                             value={newContactRole}
                             onChange={(e) => setNewContactRole(e.target.value)}
-                            className="w-full text-sm px-2 py-1 rounded border border-slate-300 dark:border-slate-600 dark:bg-slate-800"
+                            className="w-full text-sm px-2 py-1 rounded border border-[var(--border)] bg-[var(--bg-elevated)]"
                           />
                           <div className="flex gap-2 justify-end">
                             <button
                               onClick={() => setShowAddContactForm(false)}
-                              className="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                              className="text-xs px-2 py-1 rounded border border-[var(--border)] hover:bg-[var(--bg-elevated)]"
                             >
                               Annuler
                             </button>
@@ -1384,18 +1395,20 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
 
                 return (
                   <div className="animate-in fade-in slide-in-from-right-4 duration-300">
-                    <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                      <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex justify-between items-center">
+                    <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+                      <div className="p-4 border-b border-[var(--border)] border-[var(--border)] bg-[var(--bg-elevated)] flex justify-between items-center">
                         <div>
-                          <h3 className="font-bold text-slate-800 dark:text-white">Véhicules du client</h3>
-                          <p className="text-xs text-slate-500">{tierVehicles.length} véhicule(s) associé(s)</p>
+                          <h3 className="font-bold text-[var(--text-primary)]">Véhicules du client</h3>
+                          <p className="text-xs text-[var(--text-secondary)]">
+                            {tierVehicles.length} véhicule(s) associé(s)
+                          </p>
                         </div>
                         <div className="flex items-center gap-3 text-xs">
                           <span className="flex items-center gap-1 text-green-600">
                             <CircleDot className="w-3 h-3" />{' '}
                             {tierVehicles.filter((v) => v.status === VehicleStatus.MOVING).length} en mouvement
                           </span>
-                          <span className="flex items-center gap-1 text-slate-400">
+                          <span className="flex items-center gap-1 text-[var(--text-muted)]">
                             <WifiOff className="w-3 h-3" />{' '}
                             {tierVehicles.filter((v) => v.status === VehicleStatus.OFFLINE).length} hors ligne
                           </span>
@@ -1403,13 +1416,13 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                       </div>
                       <div className="overflow-auto custom-scrollbar">
                         {tierVehicles.length === 0 ? (
-                          <div className="p-8 text-center text-slate-400">
+                          <div className="p-8 text-center text-[var(--text-muted)]">
                             <Car className="w-12 h-12 mx-auto mb-3 opacity-30" />
                             <p>Aucun véhicule associé à ce client</p>
                           </div>
                         ) : (
                           <table className="w-full text-left">
-                            <thead className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 uppercase">
+                            <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] text-xs text-[var(--text-secondary)] uppercase">
                               <tr>
                                 <th className="py-3 px-4">Véhicule</th>
                                 <th className="py-3 px-4">Plaque</th>
@@ -1424,10 +1437,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                 const contract = getVehicleContract(vehicle);
                                 const payStatus = getVehicleInvoiceStatus(vehicle);
                                 return (
-                                  <tr
-                                    key={vehicle.id}
-                                    className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                                  >
+                                  <tr key={vehicle.id} className="tr-hover/50 transition-colors">
                                     <td className="py-3 px-4">
                                       <div className="flex items-center gap-2">
                                         <div
@@ -1441,9 +1451,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                                   : 'bg-slate-300'
                                           }`}
                                         />
-                                        <span className="font-bold text-slate-800 dark:text-white">{vehicle.name}</span>
+                                        <span className="font-bold text-[var(--text-primary)]">{vehicle.name}</span>
                                       </div>
-                                      <div className="text-[11px] text-slate-400 mt-0.5">
+                                      <div className="text-[11px] text-[var(--text-muted)] mt-0.5">
                                         {vehicle.brand && (
                                           <span>
                                             {vehicle.brand} {vehicle.model}
@@ -1458,7 +1468,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                     <td className="py-3 px-4 text-xs">
                                       {vehicle.installDate ? (
                                         <span className="flex items-center gap-1">
-                                          <Calendar className="w-3 h-3 text-slate-400" />{' '}
+                                          <Calendar className="w-3 h-3 text-[var(--text-muted)]" />{' '}
                                           {new Date(vehicle.installDate).toLocaleDateString('fr-FR')}
                                         </span>
                                       ) : (
@@ -1496,7 +1506,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                               ? 'bg-yellow-100 text-yellow-700'
                                               : vehicle.status === VehicleStatus.STOPPED
                                                 ? 'bg-orange-100 text-orange-700'
-                                                : 'bg-slate-100 text-slate-600'
+                                                : 'bg-slate-100 text-[var(--text-secondary)]'
                                         }`}
                                       >
                                         {vehicle.status === VehicleStatus.MOVING
@@ -1547,9 +1557,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
             {activeDetailTab === 'HISTORY' && (
               <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300 space-y-4">
                 {/* Saisie commentaire / note d'appel */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                  <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 mb-3">
+                <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+                  <div className="p-4 border-b border-[var(--border)] border-[var(--border)] bg-[var(--bg-elevated)]">
+                    <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2 mb-3">
                       <Plus className="w-4 h-4 text-[var(--primary)]" /> Ajouter une entrée
                     </h4>
                     <div className="flex gap-2 mb-3">
@@ -1558,7 +1568,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors border ${
                           commentType === 'note'
                             ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]'
-                            : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700'
+                            : 'bg-white text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] border-[var(--border)]'
                         }`}
                       >
                         <StickyNote className="w-3.5 h-3.5" /> Note / Commentaire
@@ -1568,14 +1578,14 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors border ${
                           commentType === 'appel'
                             ? 'bg-green-50 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700'
-                            : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700'
+                            : 'bg-white text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] border-[var(--border)]'
                         }`}
                       >
                         <PhoneIncoming className="w-3.5 h-3.5" /> Note d&apos;appel
                       </button>
                     </div>
                     <textarea
-                      className="w-full p-3 text-sm border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none bg-white dark:bg-slate-800 resize-none"
+                      className="w-full p-3 text-sm border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none bg-[var(--bg-elevated)] resize-none"
                       rows={3}
                       placeholder={
                         commentType === 'appel'
@@ -1598,9 +1608,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                 </div>
 
                 {/* Audit Logs (actions système) */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-                  <div className="p-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
-                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
+                  <div className="p-4 border-b border-[var(--border)] border-[var(--border)] flex items-center justify-between">
+                    <h4 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
                       <Activity className="w-4 h-4 text-[var(--primary)]" /> Journal d&apos;activité
                     </h4>
                     <div className="flex items-center gap-2">
@@ -1611,17 +1621,19 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                       >
                         <RefreshCw className={`w-3 h-3 ${auditLoading ? 'animate-spin' : ''}`} /> Actualiser
                       </button>
-                      <span className="text-xs text-slate-400">{auditLogs.length + comments.length} entrée(s)</span>
+                      <span className="text-xs text-[var(--text-muted)]">
+                        {auditLogs.length + comments.length} entrée(s)
+                      </span>
                     </div>
                   </div>
 
                   {auditLoading ? (
-                    <div className="p-8 text-center text-slate-400">
+                    <div className="p-8 text-center text-[var(--text-muted)]">
                       <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin opacity-40" />
                       <p className="text-sm">Chargement de l&apos;historique...</p>
                     </div>
                   ) : auditLogs.length === 0 && comments.length === 0 ? (
-                    <div className="p-8 text-center text-slate-400">
+                    <div className="p-8 text-center text-[var(--text-muted)]">
                       <History className="w-10 h-10 mx-auto mb-3 opacity-20" />
                       <p className="text-sm">Aucun historique pour ce compte</p>
                       <p className="text-xs mt-1">
@@ -1629,7 +1641,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                       </p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-slate-100 dark:divide-slate-700 max-h-[500px] overflow-y-auto custom-scrollbar">
+                    <div className="divide-y divide-[var(--border)] max-h-[500px] overflow-y-auto custom-scrollbar">
                       {/* Merge audit logs + comments, sort by date desc */}
                       {(() => {
                         const auditActionConfig: Record<
@@ -1654,7 +1666,8 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                           },
                           LOGIN: {
                             icon: Eye,
-                            color: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
+                            color:
+                              'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
                             label: 'Connexion',
                           },
                           STATUS_CHANGE: {
@@ -1700,7 +1713,8 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                           },
                           système: {
                             icon: Activity,
-                            color: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
+                            color:
+                              'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
                             label: 'Système',
                           },
                         };
@@ -1801,20 +1815,18 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                             entry.source === 'audit'
                               ? auditActionConfig[entry.type] || {
                                   icon: Activity,
-                                  color: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400',
+                                  color:
+                                    'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
                                   label: entry.type,
                                 }
                               : commentTypeConfig[entry.type] || {
                                   icon: StickyNote,
-                                  color: 'bg-slate-100 text-slate-500',
+                                  color: 'bg-slate-100 text-[var(--text-secondary)]',
                                   label: 'Note',
                                 };
                           const EntryIcon = config.icon;
                           return (
-                            <div
-                              key={entry.id}
-                              className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors flex gap-3"
-                            >
+                            <div key={entry.id} className="p-4 tr-hover/50 transition-colors flex gap-3">
                               <div
                                 className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${config.color}`}
                               >
@@ -1823,25 +1835,23 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                               <div className="flex-1 min-w-0">
                                 <div className="flex justify-between items-start mb-1">
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="font-bold text-sm text-slate-800 dark:text-white">
-                                      {entry.author}
-                                    </span>
+                                    <span className="font-bold text-sm text-[var(--text-primary)]">{entry.author}</span>
                                     <span
                                       className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${config.color}`}
                                     >
                                       {config.label}
                                     </span>
                                     {entry.source === 'audit' && (
-                                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-500 font-mono">
+                                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] text-[var(--text-secondary)] font-mono">
                                         auto
                                       </span>
                                     )}
                                   </div>
-                                  <span className="text-xs text-slate-400 flex items-center gap-1 flex-shrink-0 ml-2">
+                                  <span className="text-xs text-[var(--text-muted)] flex items-center gap-1 flex-shrink-0 ml-2">
                                     <Clock className="w-3 h-3" /> {entry.date}
                                   </span>
                                 </div>
-                                <p className="text-sm text-slate-600 dark:text-slate-300">{entry.text}</p>
+                                <p className="text-sm text-[var(--text-secondary)]">{entry.text}</p>
                               </div>
                             </div>
                           );
@@ -1863,19 +1873,21 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
             onClick={() => setShowStatusModal(false)}
           />
-          <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md border border-slate-200 dark:border-slate-700 animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-700">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <div className="relative bg-[var(--bg-surface)] rounded-2xl shadow-2xl w-full max-w-md border border-[var(--border)] animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-[var(--border)] border-[var(--border)]">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <RefreshCw className="w-5 h-5 text-[var(--primary)]" />
                 Changer le statut
               </h3>
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-[var(--text-secondary)] mt-1">
                 Modifier le statut de <span className="font-bold">{tier.name}</span>
               </p>
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Nouveau statut</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Nouveau statut
+                </label>
                 <div className="flex gap-2">
                   {[
                     {
@@ -1886,7 +1898,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     {
                       value: 'INACTIVE',
                       label: 'Inactif',
-                      color: 'bg-slate-50 text-slate-700 border-slate-300 ring-slate-500',
+                      color: 'bg-slate-50 text-[var(--text-primary)] border-[var(--border)] ring-slate-500',
                     },
                     {
                       value: 'SUSPENDED',
@@ -1902,7 +1914,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         className={`flex-1 px-3 py-2.5 rounded-lg text-sm font-bold border-2 transition-all ${
                           newStatus === s.value
                             ? `${s.color} ring-2`
-                            : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                            : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--border)]'
                         }`}
                       >
                         {s.label}
@@ -1911,26 +1923,26 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
                   Motif du changement <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   value={statusMotif}
                   onChange={(e) => setStatusMotif(e.target.value)}
                   placeholder="Indiquez la raison du changement de statut..."
-                  className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm resize-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                  className="w-full p-3 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm resize-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                   rows={3}
                 />
               </div>
             </div>
-            <div className="p-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-2">
+            <div className="p-4 border-t border-[var(--border)] border-[var(--border)] flex justify-end gap-2">
               <button
                 onClick={() => {
                   setShowStatusModal(false);
                   setStatusMotif('');
                   setNewStatus('');
                 }}
-                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
               >
                 Annuler
               </button>

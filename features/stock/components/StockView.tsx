@@ -898,9 +898,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
     <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 sm:h-[calc(100vh-140px)] sm:flex sm:flex-col">
       {/* ACTION BUTTONS - Outside tabs */}
       <div className="flex items-center justify-between shrink-0">
-        <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">
-          Gestion du Stock
-        </h1>
+        <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Gestion du Stock</h1>
         <div className="hidden sm:flex items-center gap-2">
           <button
             onClick={() => setIsBulkImportModalOpen(true)}
@@ -929,69 +927,69 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
 
       {/* KPI CARDS - Hidden on mobile */}
       <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 shrink-0">
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] rounded-lg">
               <Box className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Boîtiers Stock</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-white">{stats.inStockDevices}</p>
+              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-bold">Boîtiers Stock</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{stats.inStockDevices}</p>
             </div>
           </div>
         </Card>
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-lg">
               <Activity className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Installés</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-white">{stats.installedDevices}</p>
+              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-bold">Installés</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{stats.installedDevices}</p>
             </div>
           </div>
         </Card>
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-red-100 dark:bg-red-900/20 text-red-600 rounded-lg">
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-500 uppercase font-bold">RMA</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-white">{stats.rmaDevices}</p>
+              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-bold">RMA</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{stats.rmaDevices}</p>
             </div>
           </div>
         </Card>
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-purple-100 dark:bg-purple-900/20 text-purple-600 rounded-lg">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-500 uppercase font-bold">SIMs Dispo</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-white">{stats.inStockSims}</p>
+              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-bold">SIMs Dispo</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{stats.inStockSims}</p>
             </div>
           </div>
         </Card>
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-cyan-100 dark:bg-cyan-900/20 text-cyan-600 rounded-lg">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-500 uppercase font-bold">SIMs Actives</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-white">{stats.activeSims}</p>
+              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-bold">SIMs Actives</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{stats.activeSims}</p>
             </div>
           </div>
         </Card>
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 p-3">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-orange-100 dark:bg-orange-900/20 text-orange-600 rounded-lg">
               <PackageOpen className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-[10px] text-slate-500 uppercase font-bold">Accessoires</p>
-              <p className="text-lg font-bold text-slate-800 dark:text-white">{stats.inStockAccessories}</p>
+              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-bold">Accessoires</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{stats.inStockAccessories}</p>
             </div>
           </div>
         </Card>

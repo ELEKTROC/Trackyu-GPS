@@ -935,7 +935,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               label: 'Maintenance 7j',
               value: fleet.maintenanceDue,
               icon: Calendar,
-              color: fleet.maintenanceDue > 0 ? 'text-rose-600' : 'text-slate-500',
+              color: fleet.maintenanceDue > 0 ? 'text-rose-600' : 'text-[var(--text-secondary)]',
             },
             {
               label: 'Score Sécurité',
@@ -1003,7 +1003,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           </ResponsiveContainer>
           <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
             <span className="text-3xl font-bold text-[var(--text-primary)]">{fleet.total}</span>
-            <p className="text-[10px] text-slate-400">Véhicules</p>
+            <p className="text-[10px] text-[var(--text-muted)]">Véhicules</p>
           </div>
         </div>
       </Card>
@@ -1351,7 +1351,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           <StatusBadge
             count={stockStats.rma}
             label="En SAV (RMA)"
-            color={stockStats.rma > 0 ? 'text-amber-600' : 'text-slate-500'}
+            color={stockStats.rma > 0 ? 'text-amber-600' : 'text-[var(--text-secondary)]'}
             dotColor={stockStats.rma > 0 ? 'bg-amber-500' : 'bg-slate-400'}
           />
           <StatusBadge

@@ -349,16 +349,16 @@ export const RegistrationRequestsPanel: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="page-title flex items-center gap-2">
             <UserPlus className="text-[var(--primary)]" />
             Demandes d'inscription
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Gérer les nouvelles demandes d'inscription</p>
+          <p className="text-[var(--text-secondary)] text-sm mt-1">Gérer les nouvelles demandes d'inscription</p>
         </div>
 
         <button
           onClick={fetchData}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
         >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
           Actualiser
@@ -425,13 +425,13 @@ export const RegistrationRequestsPanel: React.FC = () => {
         <div className="p-4 flex flex-col sm:flex-row gap-4">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
             <input
               type="text"
               placeholder="Rechercher par nom, email, téléphone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full pl-10 pr-4 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)]"
             />
           </div>
 
@@ -449,7 +449,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                   filter === item.value
                     ? 'bg-[var(--primary)] text-white'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600'
+                    : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600'
                 }`}
               >
                 {item.label} ({item.count || 0})
@@ -464,12 +464,12 @@ export const RegistrationRequestsPanel: React.FC = () => {
         {loading ? (
           <div className="p-8 text-center">
             <RefreshCw className="animate-spin mx-auto text-[var(--primary)] mb-2" size={32} />
-            <p className="text-slate-500">Chargement...</p>
+            <p className="text-[var(--text-secondary)]">Chargement...</p>
           </div>
         ) : filteredRequests.length === 0 ? (
           <div className="p-8 text-center">
-            <UserPlus className="mx-auto text-slate-300 dark:text-slate-600 mb-2" size={48} />
-            <p className="text-slate-500 dark:text-slate-400">Aucune demande trouvée</p>
+            <UserPlus className="mx-auto text-slate-300 dark:text-[var(--text-secondary)] mb-2" size={48} />
+            <p className="text-[var(--text-secondary)]">Aucune demande trouvée</p>
           </div>
         ) : isMobile ? (
           <MobileCardList bordered={false}>
@@ -485,15 +485,15 @@ export const RegistrationRequestsPanel: React.FC = () => {
                   {/* Primary: nom + statut */}
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="min-w-0 flex-1">
-                      <p className="font-bold text-sm text-slate-800 dark:text-white truncate">{request.name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{request.email}</p>
+                      <p className="font-bold text-sm text-[var(--text-primary)] truncate">{request.name}</p>
+                      <p className="text-xs text-[var(--text-secondary)] truncate">{request.email}</p>
                     </div>
                     <div className="shrink-0">
                       <StatusBadge status={request.status} />
                     </div>
                   </div>
                   {/* Secondary: entreprise + téléphone + date */}
-                  <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400 mb-2 flex-wrap">
+                  <div className="flex items-center gap-2 text-[10px] text-[var(--text-secondary)] mb-2 flex-wrap">
                     {request.company_name && (
                       <span className="flex items-center gap-1">
                         <Building size={10} />
@@ -557,7 +557,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-50 dark:bg-slate-800/50">
+              <thead className="bg-[var(--bg-elevated)]">
                 <tr>
                   <SortableHeader
                     label="Utilisateur"
@@ -565,7 +565,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     currentSortKey={regSortConfig.key}
                     currentDirection={regSortConfig.direction}
                     onSort={handleRegSort}
-                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                    className="text-xs font-semibold text-[var(--text-secondary)] uppercase"
                   />
                   <SortableHeader
                     label="Contact"
@@ -573,7 +573,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     currentSortKey={regSortConfig.key}
                     currentDirection={regSortConfig.direction}
                     onSort={handleRegSort}
-                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                    className="text-xs font-semibold text-[var(--text-secondary)] uppercase"
                   />
                   <SortableHeader
                     label="Entreprise"
@@ -581,7 +581,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     currentSortKey={regSortConfig.key}
                     currentDirection={regSortConfig.direction}
                     onSort={handleRegSort}
-                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                    className="text-xs font-semibold text-[var(--text-secondary)] uppercase"
                   />
                   <SortableHeader
                     label="Status"
@@ -589,7 +589,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     currentSortKey={regSortConfig.key}
                     currentDirection={regSortConfig.direction}
                     onSort={handleRegSort}
-                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                    className="text-xs font-semibold text-[var(--text-secondary)] uppercase"
                   />
                   <SortableHeader
                     label="Date"
@@ -597,20 +597,20 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     currentSortKey={regSortConfig.key}
                     currentDirection={regSortConfig.direction}
                     onSort={handleRegSort}
-                    className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase"
+                    className="text-xs font-semibold text-[var(--text-secondary)] uppercase"
                   />
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase">
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-[var(--text-secondary)] uppercase">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+              <tbody className="divide-y divide-[var(--border)]">
                 {sortedRequests.map((request) => (
-                  <tr key={request.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <tr key={request.id} className="tr-hover/50">
                     <td className="px-4 py-3">
                       <div>
-                        <p className="font-medium text-slate-900 dark:text-white">{request.name}</p>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                        <p className="font-medium text-[var(--text-primary)]">{request.name}</p>
+                        <p className="text-sm text-[var(--text-secondary)] flex items-center gap-1">
                           <Mail size={12} />
                           {request.email}
                         </p>
@@ -618,22 +618,22 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       {request.phone ? (
-                        <span className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-300">
+                        <span className="flex items-center gap-1 text-sm text-[var(--text-secondary)]">
                           <Phone size={12} />
                           {request.phone}
                         </span>
                       ) : (
-                        <span className="text-sm text-slate-400">-</span>
+                        <span className="text-sm text-[var(--text-muted)]">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       {request.company_name ? (
-                        <span className="flex items-center gap-1 text-sm text-slate-600 dark:text-slate-300">
+                        <span className="flex items-center gap-1 text-sm text-[var(--text-secondary)]">
                           <Building size={12} />
                           {request.company_name}
                         </span>
                       ) : (
-                        <span className="text-sm text-slate-400">-</span>
+                        <span className="text-sm text-[var(--text-muted)]">-</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -646,15 +646,15 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">
                       <div>
-                        <p className="text-sm text-slate-600 dark:text-slate-300">{formatDate(request.created_at)}</p>
-                        <p className="text-xs text-slate-400">{getTimeAgo(request.created_at)}</p>
+                        <p className="text-sm text-[var(--text-secondary)]">{formatDate(request.created_at)}</p>
+                        <p className="text-xs text-[var(--text-muted)]">{getTimeAgo(request.created_at)}</p>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => openDetailModal(request)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 transition-colors"
+                          className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 transition-colors"
                           title="Voir détails"
                         >
                           <Eye size={16} />
@@ -698,13 +698,13 @@ export const RegistrationRequestsPanel: React.FC = () => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
               Assigner un espace (tenant) *
             </label>
             <select
               value={selectedTenantId}
               onChange={(e) => setSelectedTenantId(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)]"
               required
             >
               <option value="">-- Sélectionner un espace --</option>
@@ -714,13 +714,15 @@ export const RegistrationRequestsPanel: React.FC = () => {
                 </option>
               ))}
             </select>
-            <p className="text-xs text-slate-500 mt-1">L'utilisateur sera créé avec le rôle "USER" dans cet espace.</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
+              L'utilisateur sera créé avec le rôle "USER" dans cet espace.
+            </p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={() => setApproveModalOpen(false)}
-              className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
             >
               Annuler
             </button>
@@ -748,7 +750,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
               Motif du rejet (optionnel)
             </label>
             <textarea
@@ -756,15 +758,17 @@ export const RegistrationRequestsPanel: React.FC = () => {
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Ex: Informations incomplètes, compte doublon..."
               rows={3}
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)]"
             />
-            <p className="text-xs text-slate-500 mt-1">Ce motif sera communiqué à l'utilisateur par email.</p>
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
+              Ce motif sera communiqué à l'utilisateur par email.
+            </p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={() => setRejectModalOpen(false)}
-              className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
             >
               Annuler
             </button>
@@ -792,52 +796,52 @@ export const RegistrationRequestsPanel: React.FC = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Nom</label>
-                <p className="text-slate-900 dark:text-white font-medium">{selectedRequest.name}</p>
+                <label className="text-xs font-medium text-[var(--text-secondary)] uppercase">Nom</label>
+                <p className="text-[var(--text-primary)] font-medium">{selectedRequest.name}</p>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Email</label>
-                <p className="text-slate-900 dark:text-white">{selectedRequest.email}</p>
+                <label className="text-xs font-medium text-[var(--text-secondary)] uppercase">Email</label>
+                <p className="text-[var(--text-primary)]">{selectedRequest.email}</p>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Téléphone</label>
-                <p className="text-slate-900 dark:text-white">{selectedRequest.phone || '-'}</p>
+                <label className="text-xs font-medium text-[var(--text-secondary)] uppercase">Téléphone</label>
+                <p className="text-[var(--text-primary)]">{selectedRequest.phone || '-'}</p>
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Entreprise</label>
-                <p className="text-slate-900 dark:text-white">{selectedRequest.company_name || '-'}</p>
+                <label className="text-xs font-medium text-[var(--text-secondary)] uppercase">Entreprise</label>
+                <p className="text-[var(--text-primary)]">{selectedRequest.company_name || '-'}</p>
               </div>
             </div>
 
             {selectedRequest.message && (
               <div>
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Message</label>
-                <p className="text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg mt-1">
+                <label className="text-xs font-medium text-[var(--text-secondary)] uppercase">Message</label>
+                <p className="text-[var(--text-primary)] bg-[var(--bg-elevated)] p-3 rounded-lg mt-1">
                   {selectedRequest.message}
                 </p>
               </div>
             )}
 
-            <div className="border-t border-slate-200 dark:border-slate-700 pt-4">
+            <div className="border-t border-[var(--border)] pt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Status</label>
+                  <label className="text-xs font-medium text-[var(--text-secondary)] uppercase">Status</label>
                   <div className="mt-1">
                     <StatusBadge status={selectedRequest.status} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">Date</label>
-                  <p className="text-slate-900 dark:text-white">{formatDate(selectedRequest.created_at)}</p>
+                  <label className="text-xs font-medium text-[var(--text-secondary)] uppercase">Date</label>
+                  <p className="text-[var(--text-primary)]">{formatDate(selectedRequest.created_at)}</p>
                 </div>
               </div>
 
               {selectedRequest.reviewed_at && (
-                <div className="mt-4 bg-slate-50 dark:bg-slate-800 p-3 rounded-lg">
-                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                <div className="mt-4 bg-[var(--bg-elevated)] p-3 rounded-lg">
+                  <p className="text-sm text-[var(--text-secondary)]">
                     <span className="font-medium">Traité par:</span> {selectedRequest.reviewer_name || 'Inconnu'}
                   </p>
-                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                  <p className="text-sm text-[var(--text-secondary)]">
                     <span className="font-medium">Le:</span> {formatDate(selectedRequest.reviewed_at)}
                   </p>
                   {selectedRequest.rejection_reason && (
@@ -849,7 +853,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               )}
             </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
               {selectedRequest.status === 'pending' && (
                 <>
                   <button
@@ -894,7 +898,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               )}
               <button
                 onClick={() => setDetailModalOpen(false)}
-                className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
               >
                 Fermer
               </button>
@@ -913,42 +917,38 @@ export const RegistrationRequestsPanel: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] p-3 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]">
             <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] font-medium mb-1">📧 Destinataire</p>
-            <p className="text-slate-900 dark:text-white font-medium">{selectedRequest?.email}</p>
+            <p className="text-[var(--text-primary)] font-medium">{selectedRequest?.email}</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Sujet de l'email
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Sujet de l'email</label>
             <input
               type="text"
               value={emailSubject}
               onChange={(e) => setEmailSubject(e.target.value)}
               placeholder="Ex: Bienvenue chez TrackYu GPS"
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)]"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Contenu de l'email
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Contenu de l'email</label>
             <textarea
               value={emailContent}
               onChange={(e) => setEmailContent(e.target.value)}
               rows={14}
               placeholder="Rédigez votre message..."
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-[var(--primary)] leading-relaxed"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] font-mono text-sm focus:ring-2 focus:ring-[var(--primary)] leading-relaxed"
             />
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
               💡 Les variables ont déjà été remplacées. Vous pouvez personnaliser le message avant envoi.
             </p>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setEmailPreviewModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
             >
               Annuler
             </button>
@@ -974,15 +974,15 @@ export const RegistrationRequestsPanel: React.FC = () => {
         <div className="space-y-4">
           <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
             <p className="text-xs text-green-600 dark:text-green-400 font-medium mb-1">📱 Destinataire</p>
-            <p className="text-slate-900 dark:text-white font-medium">{selectedRequest?.phone}</p>
+            <p className="text-[var(--text-primary)] font-medium">{selectedRequest?.phone}</p>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Message SMS</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)]">Message SMS</label>
               <span
                 className={`text-xs font-medium ${
-                  smsMessage.length > 140 ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'
+                  smsMessage.length > 140 ? 'text-red-500' : 'text-[var(--text-secondary)]'
                 }`}
               >
                 {smsMessage.length}/160 caractères
@@ -994,10 +994,10 @@ export const RegistrationRequestsPanel: React.FC = () => {
               rows={6}
               maxLength={160}
               placeholder="Rédigez votre SMS..."
-              className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-green-500"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-green-500"
             />
             <div className="flex items-center gap-2 mt-2">
-              <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+              <div className="flex-1 bg-slate-200 bg-[var(--bg-elevated)] rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all ${
                     smsMessage.length > 140 ? 'bg-red-500' : 'bg-green-500'
@@ -1005,19 +1005,19 @@ export const RegistrationRequestsPanel: React.FC = () => {
                   style={{ width: `${(smsMessage.length / 160) * 100}%` }}
                 />
               </div>
-              <span className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+              <span className="text-xs text-[var(--text-secondary)] whitespace-nowrap">
                 {160 - smsMessage.length} restants
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
               💡 Les variables ont déjà été remplacées. Personnalisez si nécessaire.
             </p>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setSmsPreviewModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
             >
               Annuler
             </button>

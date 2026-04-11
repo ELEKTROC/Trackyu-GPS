@@ -115,8 +115,8 @@ const HELP_COLOR_CLASSES: Record<string, { bg100: string; text600: string; text7
   },
   slate: {
     bg100: 'bg-slate-100',
-    text600: 'text-slate-600',
-    text700: 'text-slate-700',
+    text600: 'text-[var(--text-secondary)]',
+    text700: 'text-[var(--text-primary)]',
     darkBg: 'dark:bg-slate-900/30',
   },
 };
@@ -532,11 +532,11 @@ export const HelpArticlesPanelV2: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between shrink-0">
         <div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-[var(--primary)]" />
             Centre d'Aide
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--text-secondary)]">
             {stats.total} articles • {stats.totalViews.toLocaleString()} vues totales
           </p>
         </div>
@@ -550,7 +550,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
+      <div className="flex gap-4 border-b border-[var(--border)] shrink-0">
         {[
           { id: 'articles', label: 'Articles', icon: FileText },
           { id: 'categories', label: 'Par Catégorie', icon: LayoutGrid },
@@ -562,7 +562,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === tab.id
                 ? 'border-[var(--primary)] text-[var(--primary)]'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -577,20 +577,20 @@ export const HelpArticlesPanelV2: React.FC = () => {
           <Card className="p-4 shrink-0">
             <div className="flex flex-wrap gap-4 items-center">
               <div className="relative flex-1 min-w-[250px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                 <input
                   type="text"
                   placeholder="Rechercher un article..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                 />
               </div>
 
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                 title="Catégorie"
               >
                 <option value="all">Toutes les catégories</option>
@@ -604,7 +604,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
               <select
                 value={selectedType}
                 onChange={(e) => setSelectedType(e.target.value)}
-                className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                 title="Type de contenu"
               >
                 <option value="all">Tous les types</option>
@@ -618,14 +618,14 @@ export const HelpArticlesPanelV2: React.FC = () => {
               <div className="flex border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-slate-500'}`}
+                  className={`p-2 ${viewMode === 'grid' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-[var(--text-secondary)]'}`}
                   title="Vue grille"
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-slate-500'}`}
+                  className={`p-2 ${viewMode === 'list' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-[var(--text-secondary)]'}`}
                   title="Vue liste"
                 >
                   <List className="w-4 h-4" />
@@ -637,7 +637,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
           {/* Articles Grid/List */}
           <div className="flex-1 overflow-y-auto">
             {filteredArticles.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+              <div className="flex flex-col items-center justify-center h-64 text-[var(--text-secondary)]">
                 <BookOpen className="w-12 h-12 text-slate-300 mb-4" />
                 <p className="font-medium">Aucun article trouvé</p>
                 <p className="text-sm">Modifiez vos filtres ou créez un nouvel article</p>
@@ -662,7 +662,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                           >
                             <category.icon className={`w-4 h-4 ${getHelpColor(category.color).text600}`} />
                           </div>
-                          <span className="text-xs font-medium text-slate-500">{category.label}</span>
+                          <span className="text-xs font-medium text-[var(--text-secondary)]">{category.label}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           {article.isFeatured && <Star className="w-4 h-4 text-amber-500 fill-amber-500" />}
@@ -682,13 +682,13 @@ export const HelpArticlesPanelV2: React.FC = () => {
                         </div>
                       </div>
 
-                      <h3 className="font-bold text-slate-800 dark:text-white mb-2 line-clamp-2">{article.title}</h3>
+                      <h3 className="font-bold text-[var(--text-primary)] mb-2 line-clamp-2">{article.title}</h3>
 
-                      <p className="text-sm text-slate-500 line-clamp-2 mb-4">
+                      <p className="text-sm text-[var(--text-secondary)] line-clamp-2 mb-4">
                         {article.content.replace(/[#*`]/g, '').substring(0, 100)}...
                       </p>
 
-                      <div className="flex items-center justify-between text-xs text-slate-400">
+                      <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                         <div className="flex items-center gap-3">
                           <span className="flex items-center gap-1">
                             <Eye className="w-3 h-3" />
@@ -704,14 +704,14 @@ export const HelpArticlesPanelV2: React.FC = () => {
                         <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => toggleFeatured(article.id)}
-                            className={`p-1 rounded hover:bg-slate-100 ${article.isFeatured ? 'text-amber-500' : ''}`}
+                            className={`p-1 rounded hover:bg-[var(--bg-elevated)] ${article.isFeatured ? 'text-amber-500' : ''}`}
                             title="Mettre en avant"
                           >
                             <Star className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleEdit(article)}
-                            className="p-1 rounded hover:bg-slate-100 text-slate-500"
+                            className="p-1 rounded hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
                             title="Modifier"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -732,7 +732,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
             ) : (
               <Card>
                 <table className="w-full">
-                  <thead className="bg-slate-50 dark:bg-slate-800">
+                  <thead className="bg-[var(--bg-elevated)]">
                     <tr>
                       <SortableHeader
                         label="Article"
@@ -740,7 +740,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                         currentSortKey={articleSortConfig.key}
                         currentDirection={articleSortConfig.direction}
                         onSort={handleArticleSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       <SortableHeader
                         label="Catégorie"
@@ -748,7 +748,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                         currentSortKey={articleSortConfig.key}
                         currentDirection={articleSortConfig.direction}
                         onSort={handleArticleSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       <SortableHeader
                         label="Type"
@@ -756,7 +756,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                         currentSortKey={articleSortConfig.key}
                         currentDirection={articleSortConfig.direction}
                         onSort={handleArticleSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       <SortableHeader
                         label="Vues"
@@ -764,7 +764,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                         currentSortKey={articleSortConfig.key}
                         currentDirection={articleSortConfig.direction}
                         onSort={handleArticleSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       <SortableHeader
                         label="Statut"
@@ -772,20 +772,22 @@ export const HelpArticlesPanelV2: React.FC = () => {
                         currentSortKey={articleSortConfig.key}
                         currentDirection={articleSortConfig.direction}
                         onSort={handleArticleSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
-                      <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Actions</th>
+                      <th className="px-4 py-3 text-right text-xs font-bold text-[var(--text-secondary)] uppercase">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                  <tbody className="divide-y divide-[var(--border)]">
                     {sortedArticles.map((article) => {
                       const category = getCategoryConfig(article.category);
                       return (
-                        <tr key={article.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <tr key={article.id} className="tr-hover">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
                               {article.isFeatured && <Star className="w-4 h-4 text-amber-500 fill-amber-500" />}
-                              <span className="font-medium text-slate-800 dark:text-white">{article.title}</span>
+                              <span className="font-medium text-[var(--text-primary)]">{article.title}</span>
                             </div>
                           </td>
                           <td className="px-4 py-3">
@@ -796,13 +798,17 @@ export const HelpArticlesPanelV2: React.FC = () => {
                               {category.label}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-sm text-slate-500">{getTypeConfig(article.type).label}</td>
-                          <td className="px-4 py-3 text-sm text-slate-500">{article.views}</td>
+                          <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">
+                            {getTypeConfig(article.type).label}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">{article.views}</td>
                           <td className="px-4 py-3">
                             <button
                               onClick={() => togglePublished(article.id)}
                               className={`px-2 py-1 rounded text-xs font-medium ${
-                                article.isPublished ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+                                article.isPublished
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-slate-100 text-[var(--text-secondary)]'
                               }`}
                             >
                               {article.isPublished ? 'Publié' : 'Brouillon'}
@@ -812,17 +818,17 @@ export const HelpArticlesPanelV2: React.FC = () => {
                             <div className="flex justify-end gap-1">
                               <button
                                 onClick={() => handlePreview(article)}
-                                className="p-1.5 hover:bg-slate-100 rounded"
+                                className="p-1.5 hover:bg-[var(--bg-elevated)] rounded"
                                 title="Voir"
                               >
-                                <Eye className="w-4 h-4 text-slate-500" />
+                                <Eye className="w-4 h-4 text-[var(--text-secondary)]" />
                               </button>
                               <button
                                 onClick={() => handleEdit(article)}
-                                className="p-1.5 hover:bg-slate-100 rounded"
+                                className="p-1.5 hover:bg-[var(--bg-elevated)] rounded"
                                 title="Modifier"
                               >
-                                <Edit2 className="w-4 h-4 text-slate-500" />
+                                <Edit2 className="w-4 h-4 text-[var(--text-secondary)]" />
                               </button>
                               <button
                                 onClick={() => handleDelete(article.id)}
@@ -862,10 +868,10 @@ export const HelpArticlesPanelV2: React.FC = () => {
               >
                 <cat.icon className={`w-6 h-6 ${getHelpColor(cat.color).text600}`} />
               </div>
-              <h3 className="font-bold text-slate-800 dark:text-white">{cat.label}</h3>
-              <p className="text-sm text-slate-500 mb-2">{cat.description}</p>
-              <p className="text-2xl font-bold text-slate-800 dark:text-white">{cat.count}</p>
-              <p className="text-xs text-slate-500">articles</p>
+              <h3 className="font-bold text-[var(--text-primary)]">{cat.label}</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-2">{cat.description}</p>
+              <p className="text-2xl font-bold text-[var(--text-primary)]">{cat.count}</p>
+              <p className="text-xs text-[var(--text-secondary)]">articles</p>
             </Card>
           ))}
         </div>
@@ -876,26 +882,26 @@ export const HelpArticlesPanelV2: React.FC = () => {
           {/* KPIs */}
           <div className="hidden sm:grid grid-cols-2 sm:grid-cols-4 gap-4">
             <Card className="p-4">
-              <p className="text-xs text-slate-500 uppercase font-bold">Total Articles</p>
-              <p className="text-3xl font-bold text-slate-800 dark:text-white">{stats.total}</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Total Articles</p>
+              <p className="text-3xl font-bold text-[var(--text-primary)]">{stats.total}</p>
             </Card>
             <Card className="p-4">
-              <p className="text-xs text-slate-500 uppercase font-bold">Publiés</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Publiés</p>
               <p className="text-3xl font-bold text-green-600">{stats.published}</p>
             </Card>
             <Card className="p-4">
-              <p className="text-xs text-slate-500 uppercase font-bold">Mis en Avant</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Mis en Avant</p>
               <p className="text-3xl font-bold text-amber-600">{stats.featured}</p>
             </Card>
             <Card className="p-4">
-              <p className="text-xs text-slate-500 uppercase font-bold">Vues Totales</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Vues Totales</p>
               <p className="text-3xl font-bold text-purple-600">{stats.totalViews.toLocaleString()}</p>
             </Card>
           </div>
 
           {/* Top articles */}
           <Card className="p-4">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+            <h3 className="font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-green-600" />
               Articles les plus consultés
             </h3>
@@ -905,14 +911,16 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 .slice(0, 5)
                 .map((article, i) => (
                   <div key={article.id} className="flex items-center gap-4">
-                    <span className="w-6 h-6 flex items-center justify-center bg-slate-100 rounded-full text-sm font-bold text-slate-600">
+                    <span className="w-6 h-6 flex items-center justify-center bg-slate-100 rounded-full text-sm font-bold text-[var(--text-secondary)]">
                       {i + 1}
                     </span>
                     <div className="flex-1">
-                      <p className="font-medium text-slate-800 dark:text-white">{article.title}</p>
-                      <p className="text-xs text-slate-500">{getCategoryConfig(article.category).label}</p>
+                      <p className="font-medium text-[var(--text-primary)]">{article.title}</p>
+                      <p className="text-xs text-[var(--text-secondary)]">
+                        {getCategoryConfig(article.category).label}
+                      </p>
                     </div>
-                    <span className="text-sm font-bold text-slate-600">{article.views} vues</span>
+                    <span className="text-sm font-bold text-[var(--text-secondary)]">{article.views} vues</span>
                   </div>
                 ))}
             </div>
@@ -943,23 +951,23 @@ export const HelpArticlesPanelV2: React.FC = () => {
       >
         <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Titre *</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Titre *</label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+              className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
               placeholder="Titre de l'article"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Catégorie</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Catégorie</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 title="Catégorie"
               >
                 {CATEGORIES.map((cat) => (
@@ -970,11 +978,11 @@ export const HelpArticlesPanelV2: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Type</label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value as HelpArticle['type'] })}
-                className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 title="Type de contenu"
               >
                 {CONTENT_TYPES.map((type) => (
@@ -989,22 +997,22 @@ export const HelpArticlesPanelV2: React.FC = () => {
           {formData.type === 'video' && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">URL Vidéo</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">URL Vidéo</label>
                 <input
                   type="url"
                   value={formData.videoUrl || ''}
                   onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="https://youtube.com/..."
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Durée</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Durée</label>
                 <input
                   type="text"
                   value={formData.duration || ''}
                   onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="5:32"
                 />
               </div>
@@ -1012,22 +1020,24 @@ export const HelpArticlesPanelV2: React.FC = () => {
           )}
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Contenu (Markdown)</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+              Contenu (Markdown)
+            </label>
             <textarea
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700 h-48 font-mono text-sm"
+              className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] h-48 font-mono text-sm"
               placeholder="# Titre&#10;&#10;Contenu de l'article..."
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tags</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Tags</label>
             <div className="flex flex-wrap gap-2 mb-2">
               {formData.tags?.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-sm"
+                  className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--bg-elevated)] rounded text-sm"
                 >
                   {tag}
                   <button onClick={() => handleRemoveTag(tag)} className="hover:text-red-500">
@@ -1042,7 +1052,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-                className="flex-1 p-2 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                className="flex-1 p-2 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 placeholder="Ajouter un tag"
               />
               <button onClick={handleAddTag} className="px-3 py-2 bg-slate-100 rounded-lg">
@@ -1089,11 +1099,11 @@ export const HelpArticlesPanelV2: React.FC = () => {
               >
                 {getCategoryConfig(previewArticle.category).label}
               </span>
-              <span className="text-sm text-slate-500">{previewArticle.views} vues</span>
+              <span className="text-sm text-[var(--text-secondary)]">{previewArticle.views} vues</span>
             </div>
 
             {previewArticle.type === 'video' && previewArticle.videoUrl && (
-              <div className="mb-4 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center gap-3">
+              <div className="mb-4 p-4 bg-[var(--bg-elevated)] rounded-lg flex items-center gap-3">
                 <Play className="w-8 h-8 text-[var(--primary)]" />
                 <div>
                   <p className="font-medium">Vidéo: {previewArticle.duration}</p>
@@ -1145,10 +1155,10 @@ export const HelpArticlesPanelV2: React.FC = () => {
             </div>
 
             {previewArticle.tags.length > 0 && (
-              <div className="mt-6 pt-4 border-t dark:border-slate-700">
+              <div className="mt-6 pt-4 border-t border-[var(--border)]">
                 <div className="flex flex-wrap gap-2">
                   {previewArticle.tags.map((tag) => (
-                    <span key={tag} className="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-xs">
+                    <span key={tag} className="px-2 py-1 bg-[var(--bg-elevated)] rounded text-xs">
                       #{tag}
                     </span>
                   ))}

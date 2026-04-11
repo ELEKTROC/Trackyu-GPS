@@ -211,11 +211,11 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
       {/* ── Informations clés (read-only) ────────────────────────── */}
       <div className="grid grid-cols-2 gap-3">
         {/* Véhicule */}
-        <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Véhicule</p>
-          <p className="font-bold text-slate-900 dark:text-white text-sm font-mono">{vehicleId}</p>
+        <div className="bg-[var(--bg-elevated)]/60 rounded-lg p-3 border border-[var(--border)]">
+          <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide mb-1">Véhicule</p>
+          <p className="font-bold text-[var(--text-primary)] text-sm font-mono">{vehicleId}</p>
           {vehiclePlate && (
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5">
               {vehiclePlate}
               {vehicleName ? ` — ${vehicleName}` : ''}
             </p>
@@ -224,19 +224,21 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 
         {/* Contrat — lecture seule si pré-chargé, sinon auto-assigné */}
         {selectedContract ? (
-          <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">Contrat / Client</p>
-            <p className="font-bold text-slate-900 dark:text-white text-sm font-mono">
+          <div className="bg-[var(--bg-elevated)]/60 rounded-lg p-3 border border-[var(--border)]">
+            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wide mb-1">
+              Contrat / Client
+            </p>
+            <p className="font-bold text-[var(--text-primary)] text-sm font-mono">
               {selectedContract.contractNumber || propContractId}
             </p>
             {selectedContract.clientName && (
-              <p className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+              <p className="text-xs text-[var(--text-secondary)] flex items-center gap-1 mt-0.5">
                 <User className="w-3 h-3" />
                 {selectedContract.clientName}
               </p>
             )}
             {selectedContract.resellerName && (
-              <p className="text-xs text-slate-500 flex items-center gap-1">
+              <p className="text-xs text-[var(--text-secondary)] flex items-center gap-1">
                 <Building2 className="w-3 h-3" />
                 {selectedContract.resellerName}
               </p>
@@ -267,7 +269,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 
       {isEdit && (
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1 flex items-center gap-1">
             <Receipt className="w-3.5 h-3.5 text-[var(--primary)]" />
             Prochaine facturation
           </label>
@@ -275,9 +277,9 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             type="date"
             value={nextBillingDateManual}
             onChange={(e) => setNextBillingDateManual(e.target.value)}
-            className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-sm"
+            className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-sm"
           />
-          <p className="text-[11px] text-slate-400 mt-1">
+          <p className="text-[11px] text-[var(--text-muted)] mt-1">
             Modifiez cette date pour corriger la prochaine échéance de facturation.
           </p>
         </div>
@@ -285,13 +287,13 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 
       {/* ── Article catalogue ───────────────────────────────────── */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
           Article catalogue <span className="text-red-500">*</span>
         </label>
         <select
           value={catalogItemId}
           onChange={(e) => handleCatalogChange(e.target.value)}
-          className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-sm"
+          className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-sm"
           required
         >
           <option value="">Sélectionner un article…</option>
@@ -306,7 +308,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
       {/* ── Tarif + Cycle ───────────────────────────────────────── */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Tarif <span className="text-red-500">*</span>
           </label>
           <input
@@ -315,18 +317,18 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             step={1}
             value={monthlyFee}
             onChange={(e) => setMonthlyFee(Number(e.target.value))}
-            className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-sm"
+            className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-sm"
             required
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Cycle de facturation <span className="text-red-500">*</span>
           </label>
           <select
             value={billingCycle}
             onChange={(e) => handleCycleChange(e.target.value as SubscriptionFormData['billingCycle'])}
-            className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-sm"
+            className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-sm"
           >
             {BILLING_CYCLES.map((c) => (
               <option key={c.value} value={c.value}>
@@ -339,18 +341,18 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 
       {/* ── Date d'effet ────────────────────────────────────────── */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
           Date d'effet (installation) <span className="text-red-500">*</span>
         </label>
         <input
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-sm"
+          className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-sm"
           required
         />
         {installationDate && (
-          <p className="text-[11px] text-slate-500 mt-1">
+          <p className="text-[11px] text-[var(--text-secondary)] mt-1">
             Date d'installation réelle : <span className="font-medium">{formatDate(installationDate)}</span>
           </p>
         )}
@@ -371,9 +373,9 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             onChange={(e) => setNeverExpires(e.target.checked)}
             className="w-4 h-4 rounded"
           />
-          <label htmlFor="neverExpires" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <label htmlFor="neverExpires" className="text-sm font-medium text-[var(--text-primary)]">
             N'expire jamais
-            <span className="ml-1 text-xs font-normal text-slate-400">(renouvellement automatique)</span>
+            <span className="ml-1 text-xs font-normal text-[var(--text-muted)]">(renouvellement automatique)</span>
           </label>
         </div>
         {!neverExpires && (
@@ -382,19 +384,19 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             min={startDate}
-            className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-sm"
+            className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-sm"
           />
         )}
       </div>
 
       {/* ── Notes ───────────────────────────────────────────────── */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Notes</label>
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Notes</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-sm resize-none"
+          className="w-full border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-sm resize-none"
           placeholder="Informations complémentaires…"
         />
       </div>
@@ -405,7 +407,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
+          className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
         >
           Annuler
         </button>

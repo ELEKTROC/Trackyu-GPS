@@ -927,7 +927,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   activeTab === tab.id
                     ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
-                    : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800'
+                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] dark:hover:bg-slate-800'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -944,7 +944,7 @@ export const OrganizationPanelV2: React.FC = () => {
           className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${
             hasChanges
               ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-light)]'
-              : 'bg-slate-200 text-slate-400 dark:bg-slate-700 dark:text-slate-500 cursor-not-allowed'
+              : 'bg-slate-200 text-[var(--text-muted)] bg-[var(--bg-elevated)] dark:text-[var(--text-secondary)] cursor-not-allowed'
           } disabled:opacity-50`}
         >
           {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -958,117 +958,123 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'profile' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Profil de l'organisation</h3>
-              <p className="text-sm text-slate-500">Informations générales de votre entreprise</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Profil de l'organisation</h3>
+              <p className="text-sm text-[var(--text-secondary)]">Informations générales de votre entreprise</p>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                   Nom Commercial <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={settings.name}
                   onChange={(e) => handleChange('name', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="TrackYu GPS"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Raison Sociale</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Raison Sociale
+                </label>
                 <input
                   type="text"
                   value={settings.legalName || ''}
                   onChange={(e) => handleChange('legalName', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="TrackYu Technologies SARL"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">N° RCCM</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">N° RCCM</label>
                 <input
                   type="text"
                   value={settings.registrationNumber || ''}
                   onChange={(e) => handleChange('registrationNumber', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">NINEA / N° Fiscal</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  NINEA / N° Fiscal
+                </label>
                 <input
                   type="text"
                   value={settings.taxId || ''}
                   onChange={(e) => handleChange('taxId', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                   Email <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="email"
                     value={settings.email}
                     onChange={(e) => handleChange('email', e.target.value)}
-                    className="w-full pl-10 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                   Téléphone <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="tel"
                     value={settings.phone}
                     onChange={(e) => handleChange('phone', e.target.value)}
-                    className="w-full pl-10 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   />
                 </div>
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Site Web</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Site Web</label>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="url"
                     value={settings.website || ''}
                     onChange={(e) => handleChange('website', e.target.value)}
-                    className="w-full pl-10 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="https://www.example.com"
                   />
                 </div>
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Adresse</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Adresse</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
+                  <MapPin className="absolute left-3 top-3 w-4 h-4 text-[var(--text-muted)]" />
                   <textarea
                     value={settings.address}
                     onChange={(e) => handleChange('address', e.target.value)}
-                    className="w-full pl-10 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700 h-24"
+                    className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] h-24"
                   />
                 </div>
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Description
+                </label>
                 <textarea
                   value={settings.description || ''}
                   onChange={(e) => handleChange('description', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700 h-24"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] h-24"
                   placeholder="Description de votre activité..."
                 />
               </div>
@@ -1080,13 +1086,13 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'location' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Localisation</h3>
-              <p className="text-sm text-slate-500">Paramètres régionaux et format d'affichage</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Localisation</h3>
+              <p className="text-sm text-[var(--text-secondary)]">Paramètres régionaux et format d'affichage</p>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pays</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Pays</label>
                 <select
                   value={settings.country}
                   onChange={(e) => {
@@ -1094,7 +1100,7 @@ export const OrganizationPanelV2: React.FC = () => {
                     handleChange('country', e.target.value);
                     if (country) handleChange('timezone', country.timezone);
                   }}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   title="Pays"
                 >
                   {COUNTRIES.map((c) => (
@@ -1106,23 +1112,25 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Ville</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Ville</label>
                 <input
                   type="text"
                   value={settings.city}
                   onChange={(e) => handleChange('city', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Fuseau Horaire</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Fuseau Horaire
+                </label>
                 <div className="relative">
-                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <select
                     value={settings.timezone}
                     onChange={(e) => handleChange('timezone', e.target.value)}
-                    className="w-full pl-10 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Fuseau horaire"
                   >
                     <option value="Africa/Dakar">Africa/Dakar (GMT+0)</option>
@@ -1136,13 +1144,13 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Langue</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Langue</label>
                 <div className="relative">
-                  <Languages className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Languages className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <select
                     value={settings.language}
                     onChange={(e) => handleChange('language', e.target.value)}
-                    className="w-full pl-10 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Langue"
                   >
                     <option value="fr">Français</option>
@@ -1153,15 +1161,17 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {/* Formats */}
-            <div className="pt-4 border-t dark:border-slate-700">
-              <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-4">Formats d'affichage</h4>
+            <div className="pt-4 border-t border-[var(--border)]">
+              <h4 className="font-bold text-sm text-[var(--text-primary)] mb-4">Formats d'affichage</h4>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Format Date</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Format Date
+                  </label>
                   <select
                     value={settings.dateFormat}
                     onChange={(e) => handleChange('dateFormat', e.target.value)}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Format date"
                   >
                     {DATE_FORMATS.map((f) => (
@@ -1172,11 +1182,13 @@ export const OrganizationPanelV2: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Format Heure</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Format Heure
+                  </label>
                   <select
                     value={settings.timeFormat}
                     onChange={(e) => handleChange('timeFormat', e.target.value)}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Format heure"
                   >
                     {TIME_FORMATS.map((f) => (
@@ -1187,11 +1199,13 @@ export const OrganizationPanelV2: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Format Nombre</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Format Nombre
+                  </label>
                   <select
                     value={settings.numberFormat}
                     onChange={(e) => handleChange('numberFormat', e.target.value)}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Format nombre"
                   >
                     {NUMBER_FORMATS.map((f) => (
@@ -1205,23 +1219,23 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {/* Aperçu */}
-            <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-              <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">Aperçu</h4>
+            <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
+              <h4 className="font-bold text-sm text-[var(--text-primary)] mb-3">Aperçu</h4>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
-                  <p className="text-slate-500">Date</p>
+                  <p className="text-[var(--text-secondary)]">Date</p>
                   <p className="font-medium font-mono">
                     {DATE_FORMATS.find((f) => f.value === settings.dateFormat)?.example}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Heure</p>
+                  <p className="text-[var(--text-secondary)]">Heure</p>
                   <p className="font-medium font-mono">
                     {TIME_FORMATS.find((f) => f.value === settings.timeFormat)?.example}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Nombre</p>
+                  <p className="text-[var(--text-secondary)]">Nombre</p>
                   <p className="font-medium font-mono">{(1234567.89).toLocaleString(settings.numberFormat)}</p>
                 </div>
               </div>
@@ -1233,18 +1247,18 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'accounting' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Comptabilité</h3>
-              <p className="text-sm text-slate-500">Exercice fiscal, taxes et comptes bancaires</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Comptabilité</h3>
+              <p className="text-sm text-[var(--text-secondary)]">Exercice fiscal, taxes et comptes bancaires</p>
             </div>
 
             {/* Exercice & Devise */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Devise</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Devise</label>
                 <select
                   value={settings.currency}
                   onChange={(e) => handleChange('currency', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   title="Devise"
                 >
                   {CURRENCIES.map((c) => (
@@ -1255,24 +1269,26 @@ export const OrganizationPanelV2: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                   Exercice Fiscal en Cours
                 </label>
                 <input
                   type="number"
                   value={settings.currentFiscalYear}
                   onChange={(e) => handleChange('currentFiscalYear', parseInt(e.target.value))}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   min="2020"
                   max="2030"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Début d'Exercice</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Début d'Exercice
+                </label>
                 <select
                   value={settings.fiscalYearStart}
                   onChange={(e) => handleChange('fiscalYearStart', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   title="Début exercice"
                 >
                   <option value="01-01">1er Janvier</option>
@@ -1282,14 +1298,14 @@ export const OrganizationPanelV2: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                   Délai de Paiement (jours)
                 </label>
                 <input
                   type="number"
                   value={settings.paymentTerms}
                   onChange={(e) => handleChange('paymentTerms', parseInt(e.target.value))}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   min="0"
                   max="90"
                 />
@@ -1297,38 +1313,44 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {/* TVA */}
-            <div className="pt-4 border-t dark:border-slate-700">
-              <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-4">Taxes</h4>
+            <div className="pt-4 border-t border-[var(--border)]">
+              <h4 className="font-bold text-sm text-[var(--text-primary)] mb-4">Taxes</h4>
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nom de la Taxe</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Nom de la Taxe
+                  </label>
                   <input
                     type="text"
                     value={settings.taxName}
                     onChange={(e) => handleChange('taxName', e.target.value)}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="TVA, TPS..."
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Taux (%)</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Taux (%)
+                  </label>
                   <input
                     type="number"
                     value={settings.taxRate}
                     onChange={(e) => handleChange('taxRate', parseFloat(e.target.value))}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     min="0"
                     max="100"
                     step="0.5"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">N° TVA / Fiscal</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    N° TVA / Fiscal
+                  </label>
                   <input
                     type="text"
                     value={settings.taxNumber || ''}
                     onChange={(e) => handleChange('taxNumber', e.target.value)}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="FR123456789"
                   />
                 </div>
@@ -1336,16 +1358,16 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {/* Comptes Bancaires */}
-            <div className="pt-4 border-t dark:border-slate-700">
+            <div className="pt-4 border-t border-[var(--border)]">
               <div className="flex justify-between items-center mb-4">
-                <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">Comptes Bancaires</h4>
+                <h4 className="font-bold text-sm text-[var(--text-primary)]">Comptes Bancaires</h4>
                 <button className="flex items-center gap-1 text-sm text-[var(--primary)] hover:text-[var(--primary-light)]">
                   <Plus className="w-4 h-4" />
                   Ajouter
                 </button>
               </div>
               {settings.bankAccounts.length === 0 ? (
-                <div className="p-6 text-center text-slate-400 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                <div className="p-6 text-center text-[var(--text-muted)] bg-[var(--bg-elevated)] rounded-lg">
                   <Banknote className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>Aucun compte bancaire configuré</p>
                 </div>
@@ -1354,11 +1376,11 @@ export const OrganizationPanelV2: React.FC = () => {
                   {settings.bankAccounts.map((account) => (
                     <div
                       key={account.id}
-                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                      className="flex items-center justify-between p-3 bg-[var(--bg-elevated)] rounded-lg"
                     >
                       <div>
                         <p className="font-medium">{account.name}</p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-[var(--text-secondary)]">
                           {account.bank} - {account.iban}
                         </p>
                       </div>
@@ -1382,8 +1404,8 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'subscriptions' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Facturation des Abonnements</h3>
-              <p className="text-sm text-slate-500">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Facturation des Abonnements</h3>
+              <p className="text-sm text-[var(--text-secondary)]">
                 Configuration de la génération automatique des factures récurrentes
               </p>
             </div>
@@ -1396,8 +1418,8 @@ export const OrganizationPanelV2: React.FC = () => {
                     <Repeat className="w-5 h-5 text-[var(--primary)]" />
                   </div>
                   <div>
-                    <p className="font-medium text-slate-800 dark:text-white">Génération Automatique des Factures</p>
-                    <p className="text-sm text-slate-500">
+                    <p className="font-medium text-[var(--text-primary)]">Génération Automatique des Factures</p>
+                    <p className="text-sm text-[var(--text-secondary)]">
                       Les factures seront créées automatiquement selon les règles ci-dessous
                     </p>
                   </div>
@@ -1419,7 +1441,7 @@ export const OrganizationPanelV2: React.FC = () => {
             {/* Paramètres généraux */}
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                   Statut des Factures Générées
                 </label>
                 <select
@@ -1430,7 +1452,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       defaultStatus: e.target.value as 'PENDING' | 'DRAFT',
                     })
                   }
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   title="Statut des factures"
                 >
                   <option value="DRAFT">Brouillon (vérification avant envoi)</option>
@@ -1438,7 +1460,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="flex items-center gap-3 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700 cursor-pointer">
+                <label className="flex items-center gap-3 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={settings.subscriptionBilling?.notifyOnGeneration ?? true}
@@ -1452,21 +1474,25 @@ export const OrganizationPanelV2: React.FC = () => {
                   />
                   <div>
                     <p className="font-medium text-sm">Notification Admin</p>
-                    <p className="text-xs text-slate-500">Recevoir un email quand une facture est générée</p>
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      Recevoir un email quand une facture est générée
+                    </p>
                   </div>
                 </label>
               </div>
             </div>
 
             {/* MENSUEL */}
-            <div className="pt-4 border-t dark:border-slate-700">
+            <div className="pt-4 border-t border-[var(--border)]">
               <div className="flex items-center gap-2 mb-4">
                 <Calendar className="w-5 h-5 text-green-600" />
-                <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">Abonnements Mensuels</h4>
+                <h4 className="font-bold text-sm text-[var(--text-primary)]">Abonnements Mensuels</h4>
               </div>
               <div className="grid grid-cols-2 gap-6 p-4 bg-green-50 dark:bg-green-900/10 rounded-lg">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jour de Génération</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Jour de Génération
+                  </label>
                   <select
                     value={settings.subscriptionBilling?.monthly?.generationDay ?? 1}
                     onChange={(e) =>
@@ -1475,7 +1501,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         monthly: { ...settings.subscriptionBilling?.monthly, generationDay: parseInt(e.target.value) },
                       })
                     }
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Jour de génération"
                   >
                     {[...Array(28)].map((_, i) => (
@@ -1484,10 +1510,12 @@ export const OrganizationPanelV2: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-slate-500 mt-1">Jour du mois où la facture est générée</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">Jour du mois où la facture est générée</p>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jour d'Échéance</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Jour d'Échéance
+                  </label>
                   <select
                     value={settings.subscriptionBilling?.monthly?.dueDayOffset ?? 5}
                     onChange={(e) =>
@@ -1496,7 +1524,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         monthly: { ...settings.subscriptionBilling?.monthly, dueDayOffset: parseInt(e.target.value) },
                       })
                     }
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Jour d'échéance"
                   >
                     {[...Array(28)].map((_, i) => (
@@ -1505,23 +1533,23 @@ export const OrganizationPanelV2: React.FC = () => {
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-slate-500 mt-1">Jour du mois pour l'échéance de paiement</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-1">Jour du mois pour l'échéance de paiement</p>
                 </div>
               </div>
-              <p className="text-sm text-slate-600 mt-2 italic">
+              <p className="text-sm text-[var(--text-secondary)] mt-2 italic">
                 📅 Exemple: Généré le <strong>1er</strong> du mois, échéance le <strong>5</strong> du mois
               </p>
             </div>
 
             {/* TRIMESTRIEL */}
-            <div className="pt-4 border-t dark:border-slate-700">
+            <div className="pt-4 border-t border-[var(--border)]">
               <div className="flex items-center gap-2 mb-4">
                 <CalendarCheck className="w-5 h-5 text-orange-600" />
-                <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">Abonnements Trimestriels</h4>
+                <h4 className="font-bold text-sm text-[var(--text-primary)]">Abonnements Trimestriels</h4>
               </div>
               <div className="grid grid-cols-2 gap-6 p-4 bg-orange-50 dark:bg-orange-900/10 rounded-lg">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Mois de Génération dans le Trimestre
                   </label>
                   <select
@@ -1535,7 +1563,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         },
                       })
                     }
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Mois dans le trimestre"
                   >
                     <option value={0}>1er mois (Jan, Avr, Juil, Oct)</option>
@@ -1544,7 +1572,9 @@ export const OrganizationPanelV2: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Jour de Génération</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Jour de Génération
+                  </label>
                   <select
                     value={settings.subscriptionBilling?.quarterly?.generationDay ?? 1}
                     onChange={(e) =>
@@ -1556,7 +1586,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         },
                       })
                     }
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Jour de génération"
                   >
                     {[...Array(28)].map((_, i) => (
@@ -1581,21 +1611,21 @@ export const OrganizationPanelV2: React.FC = () => {
                 />
                 <span className="text-sm">Échéance à la fin du trimestre en cours</span>
               </label>
-              <p className="text-sm text-slate-600 mt-2 italic">
+              <p className="text-sm text-[var(--text-secondary)] mt-2 italic">
                 📅 Exemple: Généré le <strong>1er mars</strong>, échéance <strong>31 mars</strong> (pour couvrir T2)
               </p>
             </div>
 
             {/* ANNUEL */}
-            <div className="pt-4 border-t dark:border-slate-700">
+            <div className="pt-4 border-t border-[var(--border)]">
               <div className="flex items-center gap-2 mb-4">
                 <Calendar className="w-5 h-5 text-purple-600" />
-                <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300">Abonnements Annuels</h4>
+                <h4 className="font-bold text-sm text-[var(--text-primary)]">Abonnements Annuels</h4>
               </div>
               <div className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                       Délai de Génération (mois avant échéance)
                     </label>
                     <select
@@ -1609,7 +1639,7 @@ export const OrganizationPanelV2: React.FC = () => {
                           },
                         })
                       }
-                      className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                      className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                       title="Mois avant échéance"
                     >
                       <option value={1}>1 mois avant</option>
@@ -1635,21 +1665,19 @@ export const OrganizationPanelV2: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-slate-600 mt-2 italic">
+              <p className="text-sm text-[var(--text-secondary)] mt-2 italic">
                 📅 Exemple: Contrat expire le <strong>1er avril</strong> → Facture générée le{' '}
                 <strong>1er février</strong>, échéance <strong>1er avril</strong>
               </p>
             </div>
 
             {/* Résumé */}
-            <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
-              <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">
-                📊 Résumé de la Configuration
-              </h4>
+            <div className="mt-6 p-4 bg-[var(--bg-elevated)] rounded-lg">
+              <h4 className="font-bold text-sm text-[var(--text-primary)] mb-3">📊 Résumé de la Configuration</h4>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
                   <p className="font-bold text-green-700 dark:text-green-400">Mensuel</p>
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className="text-[var(--text-secondary)]">
                     Généré le {settings.subscriptionBilling?.monthly?.generationDay ?? 1}
                     <br />
                     Échéance le {settings.subscriptionBilling?.monthly?.dueDayOffset ?? 5}
@@ -1657,7 +1685,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 </div>
                 <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
                   <p className="font-bold text-orange-700 dark:text-orange-400">Trimestriel</p>
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className="text-[var(--text-secondary)]">
                     Généré le {settings.subscriptionBilling?.quarterly?.generationDay ?? 1} du{' '}
                     {['1er', '2ème', 'dernier'][settings.subscriptionBilling?.quarterly?.generationMonthOffset ?? 2]}{' '}
                     mois
@@ -1667,7 +1695,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 </div>
                 <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                   <p className="font-bold text-purple-700 dark:text-purple-400">Annuel</p>
-                  <p className="text-slate-600 dark:text-slate-300">
+                  <p className="text-[var(--text-secondary)]">
                     Généré {settings.subscriptionBilling?.annual?.generationMonthsBefore ?? 2} mois avant
                     <br />
                     Échéance = Anniversaire
@@ -1683,8 +1711,8 @@ export const OrganizationPanelV2: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Séries de Numérotation</h3>
-                <p className="text-sm text-slate-500">
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Séries de Numérotation</h3>
+                <p className="text-sm text-[var(--text-secondary)]">
                   Configuration des préfixes et formats de numéros pour chaque module
                 </p>
                 <div className="mt-2 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-[var(--border)]">
@@ -1693,7 +1721,7 @@ export const OrganizationPanelV2: React.FC = () => {
                     <code className="px-2 py-0.5 bg-[var(--primary-dim)] rounded font-mono font-bold">
                       {tenantSlug}
                     </code>
-                    <span className="ml-2 text-slate-500">
+                    <span className="ml-2 text-[var(--text-secondary)]">
                       → Exemple: FAC-<strong>{tenantSlug}</strong>-00001
                     </span>
                   </p>
@@ -1701,7 +1729,7 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
               <button
                 onClick={() => refetchCounters()}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg transition-colors"
                 title="Rafraîchir depuis le serveur"
               >
                 <RefreshCw className={`w-4 h-4 ${countersLoading ? 'animate-spin' : ''}`} />
@@ -1712,29 +1740,27 @@ export const OrganizationPanelV2: React.FC = () => {
             {countersLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
-                <span className="ml-3 text-slate-500">Chargement des compteurs...</span>
+                <span className="ml-3 text-[var(--text-secondary)]">Chargement des compteurs...</span>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800">
-                      <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Module</th>
-                      <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Préfixe</th>
-                      <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Sép.</th>
+                    <tr className="bg-[var(--bg-elevated)]">
+                      <th className="px-3 py-2 text-left font-medium text-[var(--text-secondary)]">Module</th>
+                      <th className="px-3 py-2 text-left font-medium text-[var(--text-secondary)]">Préfixe</th>
+                      <th className="px-3 py-2 text-left font-medium text-[var(--text-secondary)]">Sép.</th>
                       <th
-                        className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400"
+                        className="px-3 py-2 text-center font-medium text-[var(--text-secondary)]"
                         title="Inclure le slug du revendeur"
                       >
                         Slug
                       </th>
-                      <th className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400">Année</th>
-                      <th className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400">Mois</th>
-                      <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">
-                        Prochain N°
-                      </th>
-                      <th className="px-3 py-2 text-left font-medium text-slate-600 dark:text-slate-400">Aperçu</th>
-                      <th className="px-3 py-2 text-center font-medium text-slate-600 dark:text-slate-400">Actions</th>
+                      <th className="px-3 py-2 text-center font-medium text-[var(--text-secondary)]">Année</th>
+                      <th className="px-3 py-2 text-center font-medium text-[var(--text-secondary)]">Mois</th>
+                      <th className="px-3 py-2 text-left font-medium text-[var(--text-secondary)]">Prochain N°</th>
+                      <th className="px-3 py-2 text-left font-medium text-[var(--text-secondary)]">Aperçu</th>
+                      <th className="px-3 py-2 text-center font-medium text-[var(--text-secondary)]">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y dark:divide-slate-700">
@@ -1752,7 +1778,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       const label = MODULE_LABELS[counter.module as keyof typeof MODULE_LABELS] || counter.module;
 
                       return (
-                        <tr key={counter.id || counter.module} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <tr key={counter.id || counter.module} className="tr-hover/50">
                           <td className="px-3 py-2 font-medium">{label}</td>
                           <td className="px-3 py-2">
                             <input
@@ -1770,7 +1796,7 @@ export const OrganizationPanelV2: React.FC = () => {
                                   }
                                 );
                               }}
-                              className="w-16 px-2 py-1 border rounded text-center font-mono dark:bg-slate-900 dark:border-slate-700"
+                              className="w-16 px-2 py-1 border rounded text-center font-mono bg-[var(--bg-surface)] border-[var(--border)]"
                               maxLength={5}
                               title="Modifier le préfixe"
                             />
@@ -1784,7 +1810,7 @@ export const OrganizationPanelV2: React.FC = () => {
                                   updates: { separator: e.target.value },
                                 });
                               }}
-                              className="w-14 px-2 py-1 border rounded dark:bg-slate-900 dark:border-slate-700"
+                              className="w-14 px-2 py-1 border rounded bg-[var(--bg-surface)] border-[var(--border)]"
                               title="Choisir le séparateur"
                             >
                               <option value="-">-</option>
@@ -1844,13 +1870,11 @@ export const OrganizationPanelV2: React.FC = () => {
                             />
                           </td>
                           <td className="px-3 py-2">
-                            <span className="font-mono text-slate-700 dark:text-slate-300">
-                              {counter.currentNumber}
-                            </span>
+                            <span className="font-mono text-[var(--text-primary)]">{counter.currentNumber}</span>
                           </td>
                           <td className="px-3 py-2">
                             <span
-                              className={`font-mono ${counter.includeSlug ? 'text-[var(--primary)] font-bold' : 'text-slate-600 dark:text-slate-400'}`}
+                              className={`font-mono ${counter.includeSlug ? 'text-[var(--primary)] font-bold' : 'text-[var(--text-secondary)]'}`}
                             >
                               {preview}
                             </span>
@@ -1914,8 +1938,8 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'legal' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Documents Juridiques</h3>
-              <p className="text-sm text-slate-500">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Documents Juridiques</h3>
+              <p className="text-sm text-[var(--text-secondary)]">
                 Gérez les documents contractuels accessibles à vos clients via le Centre d'Aide.
               </p>
             </div>
@@ -1937,15 +1961,15 @@ export const OrganizationPanelV2: React.FC = () => {
                 return (
                   <div
                     key={docKey}
-                    className="p-4 border dark:border-slate-700 rounded-lg flex items-center justify-between bg-slate-50 dark:bg-slate-800/50"
+                    className="p-4 border border-[var(--border)] rounded-lg flex items-center justify-between bg-[var(--bg-elevated)]"
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 rounded-lg bg-[var(--primary-dim)] text-[var(--primary)] flex items-center justify-center shrink-0">
                         <FileText className="w-6 h-6" />
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-800 dark:text-white uppercase text-sm">{doc.label}</h4>
-                        <p className="text-xs text-slate-500 mb-1">{doc.desc}</p>
+                        <h4 className="font-bold text-[var(--text-primary)] uppercase text-sm">{doc.label}</h4>
+                        <p className="text-xs text-[var(--text-secondary)] mb-1">{doc.desc}</p>
                         {docUrl ? (
                           <a
                             href={docUrl}
@@ -1979,7 +2003,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         type="button"
                         onClick={() => document.getElementById(`doc-upload-${docKey}`)?.click()}
                         disabled={docUploading !== null}
-                        className="px-4 py-2 border dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                        className="px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                       >
                         {docUploading === docKey ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -2009,17 +2033,17 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'appearance' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Apparence</h3>
-              <p className="text-sm text-slate-500">Logo, couleurs, police et style de l'application</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Apparence</h3>
+              <p className="text-sm text-[var(--text-secondary)]">Logo, couleurs, police et style de l'application</p>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               {/* Logo */}
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Logo</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Logo</label>
                 <div className="flex items-center gap-4">
                   <div
-                    className="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center bg-slate-50 dark:bg-slate-800 relative cursor-pointer hover:border-[var(--border)] transition-colors"
+                    className="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center bg-[var(--bg-elevated)] relative cursor-pointer hover:border-[var(--border)] transition-colors"
                     onClick={() => document.getElementById('logo-file-input')?.click()}
                     onDragOver={(e) => {
                       e.preventDefault();
@@ -2040,11 +2064,11 @@ export const OrganizationPanelV2: React.FC = () => {
                     ) : (
                       <div className="text-center">
                         <Upload className="w-6 h-6 text-slate-300 mx-auto" />
-                        <span className="text-[10px] text-slate-400 mt-1">Cliquer ou glisser</span>
+                        <span className="text-[10px] text-[var(--text-muted)] mt-1">Cliquer ou glisser</span>
                       </div>
                     )}
                     {logoUploading && (
-                      <div className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 flex items-center justify-center rounded-lg">
+                      <div className="absolute inset-0 bg-white/80 bg-[var(--bg-surface)]/80 flex items-center justify-center rounded-lg">
                         <Loader2 className="w-6 h-6 animate-spin text-[var(--primary)]" />
                       </div>
                     )}
@@ -2065,17 +2089,21 @@ export const OrganizationPanelV2: React.FC = () => {
                       type="url"
                       value={settings.logoUrl || ''}
                       onChange={(e) => handleChange('logoUrl', e.target.value)}
-                      className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                      className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                       placeholder="URL du logo ou uploader un fichier"
                     />
-                    <p className="text-xs text-slate-500">PNG, JPG, WebP ou SVG — max 2 Mo, 200×200px minimum</p>
+                    <p className="text-xs text-[var(--text-secondary)]">
+                      PNG, JPG, WebP ou SVG — max 2 Mo, 200×200px minimum
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Couleurs */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Couleur Primaire</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Couleur Primaire
+                </label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -2087,13 +2115,15 @@ export const OrganizationPanelV2: React.FC = () => {
                     type="text"
                     value={settings.primaryColor}
                     onChange={(e) => handleChange('primaryColor', e.target.value)}
-                    className="flex-1 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700 font-mono"
+                    className="flex-1 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Couleur Secondaire</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Couleur Secondaire
+                </label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -2105,18 +2135,18 @@ export const OrganizationPanelV2: React.FC = () => {
                     type="text"
                     value={settings.secondaryColor}
                     onChange={(e) => handleChange('secondaryColor', e.target.value)}
-                    className="flex-1 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700 font-mono"
+                    className="flex-1 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] font-mono"
                   />
                 </div>
               </div>
 
               {/* Police */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Police</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Police</label>
                 <select
                   value={settings.fontFamily}
                   onChange={(e) => handleChange('fontFamily', e.target.value)}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 >
                   <option value="Inter">Inter (par défaut)</option>
                   <option value="Roboto">Roboto</option>
@@ -2130,7 +2160,9 @@ export const OrganizationPanelV2: React.FC = () => {
 
               {/* Taille de texte */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Taille de texte</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Taille de texte
+                </label>
                 <div className="flex gap-2">
                   {(
                     [
@@ -2146,11 +2178,11 @@ export const OrganizationPanelV2: React.FC = () => {
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.fontSize === opt.value
                           ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
-                          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                          : 'border-[var(--border)] hover:border-[var(--border)]'
                       }`}
                     >
                       <span className="block text-sm font-semibold">{opt.label}</span>
-                      <span className="block text-xs text-slate-400 mt-0.5">{opt.desc}</span>
+                      <span className="block text-xs text-[var(--text-muted)] mt-0.5">{opt.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -2158,7 +2190,9 @@ export const OrganizationPanelV2: React.FC = () => {
 
               {/* Arrondi des bords */}
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Arrondi des bords</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Arrondi des bords
+                </label>
                 <div className="flex gap-2">
                   {(
                     [
@@ -2175,12 +2209,10 @@ export const OrganizationPanelV2: React.FC = () => {
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.borderRadius === opt.value
                           ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
-                          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                          : 'border-[var(--border)] hover:border-[var(--border)]'
                       }`}
                     >
-                      <div
-                        className={`w-10 h-10 mx-auto mb-2 border-2 border-slate-300 dark:border-slate-500 ${opt.preview}`}
-                      />
+                      <div className={`w-10 h-10 mx-auto mb-2 border-2 border-[var(--border)] ${opt.preview}`} />
                       <span className="block text-sm font-medium">{opt.label}</span>
                     </button>
                   ))}
@@ -2189,8 +2221,10 @@ export const OrganizationPanelV2: React.FC = () => {
 
               {/* Couleur d'accentuation */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Couleur d'accentuation</label>
-                <p className="text-xs text-slate-400 mb-2">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Couleur d'accentuation
+                </label>
+                <p className="text-xs text-[var(--text-muted)] mb-2">
                   Utilisée pour les indicateurs temps réel (Flotte, Alertes GPS)
                 </p>
                 <div className="flex items-center gap-3">
@@ -2204,7 +2238,7 @@ export const OrganizationPanelV2: React.FC = () => {
                     type="text"
                     value={settings.accentColor}
                     onChange={(e) => handleChange('accentColor', e.target.value)}
-                    className="flex-1 p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700 font-mono"
+                    className="flex-1 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] font-mono"
                     placeholder="#10b981"
                   />
                   <div
@@ -2219,10 +2253,10 @@ export const OrganizationPanelV2: React.FC = () => {
 
               {/* Style de la barre latérale */}
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
                   Style de la barre latérale
                 </label>
-                <p className="text-xs text-slate-400 mb-2">Apparence du menu de navigation principal</p>
+                <p className="text-xs text-[var(--text-muted)] mb-2">Apparence du menu de navigation principal</p>
                 <div className="flex gap-2">
                   {[
                     { value: 'dark' as const, label: 'Sombre', bg: '#0f172a', text: '#e2e8f0', desc: 'Classique' },
@@ -2242,11 +2276,11 @@ export const OrganizationPanelV2: React.FC = () => {
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.sidebarStyle === opt.value
                           ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
-                          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                          : 'border-[var(--border)] hover:border-[var(--border)]'
                       }`}
                     >
                       <div
-                        className="w-10 h-14 mx-auto mb-2 rounded flex flex-col overflow-hidden border border-slate-200"
+                        className="w-10 h-14 mx-auto mb-2 rounded flex flex-col overflow-hidden border border-[var(--border)]"
                         style={{ backgroundColor: opt.bg }}
                       >
                         <div className="flex-1 flex flex-col gap-1 p-1 pt-2">
@@ -2260,7 +2294,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         </div>
                       </div>
                       <span className="block text-sm font-semibold">{opt.label}</span>
-                      <span className="block text-xs text-slate-400">{opt.desc}</span>
+                      <span className="block text-xs text-[var(--text-muted)]">{opt.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -2268,8 +2302,10 @@ export const OrganizationPanelV2: React.FC = () => {
 
               {/* Densité des tableaux */}
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Densité des tableaux</label>
-                <p className="text-xs text-slate-400 mb-2">
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Densité des tableaux
+                </label>
+                <p className="text-xs text-[var(--text-muted)] mb-2">
                   Contrôle l'espacement des lignes dans tous les tableaux (Flotte, Finance, Support…)
                 </p>
                 <div className="flex gap-3">
@@ -2303,19 +2339,19 @@ export const OrganizationPanelV2: React.FC = () => {
                       className={`flex-1 p-3 rounded-lg border text-center transition-all ${
                         settings.tableDensity === opt.value
                           ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] ring-1 ring-[var(--border)]'
-                          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                          : 'border-[var(--border)] hover:border-[var(--border)]'
                       }`}
                     >
                       <div className={`flex flex-col ${opt.gap} mb-2 px-2`}>
                         {opt.rows.map((_, i) => (
                           <div key={i} className="flex gap-1">
-                            <div className="h-1.5 w-8 rounded-full bg-slate-200 dark:bg-slate-700" />
-                            <div className="h-1.5 flex-1 rounded-full bg-slate-100 dark:bg-slate-800" />
+                            <div className="h-1.5 w-8 rounded-full bg-slate-200 bg-[var(--bg-elevated)]" />
+                            <div className="h-1.5 flex-1 rounded-full bg-[var(--bg-elevated)]" />
                           </div>
                         ))}
                       </div>
                       <span className="block text-sm font-semibold">{opt.label}</span>
-                      <span className="block text-xs text-slate-400">{opt.desc}</span>
+                      <span className="block text-xs text-[var(--text-muted)]">{opt.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -2323,8 +2359,8 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {/* Aperçu live */}
-            <div className="p-5 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-              <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-4">Aperçu en direct</h4>
+            <div className="p-5 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)]">
+              <h4 className="font-bold text-sm text-[var(--text-primary)] mb-4">Aperçu en direct</h4>
               {(() => {
                 const r =
                   { none: '0px', small: '0.25rem', default: '0.5rem', large: '0.75rem' }[settings.borderRadius] ||
@@ -2348,7 +2384,7 @@ export const OrganizationPanelV2: React.FC = () => {
                   '#1e293b';
                 return (
                   <div
-                    className="overflow-hidden border border-slate-200 dark:border-slate-700 flex"
+                    className="overflow-hidden border border-[var(--border)] flex"
                     style={{
                       borderRadius: r,
                       fontFamily: fontFamilyMap[settings.fontFamily] || "'Inter', sans-serif",
@@ -2391,7 +2427,7 @@ export const OrganizationPanelV2: React.FC = () => {
                     </div>
 
                     {/* Main content preview */}
-                    <div className="flex-1 p-3 bg-white dark:bg-slate-900">
+                    <div className="flex-1 p-3 bg-[var(--bg-surface)]">
                       {/* Buttons */}
                       <div className="flex flex-wrap gap-2 mb-3">
                         <button
@@ -2430,13 +2466,13 @@ export const OrganizationPanelV2: React.FC = () => {
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-orange-100 text-orange-700">
                           ALERTE
                         </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]">
                           ARRÊTÉ
                         </span>
                       </div>
                       {/* Fake table row */}
                       <div className="border rounded overflow-hidden" style={{ borderRadius: r }}>
-                        <div className="grid grid-cols-3 text-[9px] font-bold uppercase text-slate-400 bg-slate-50 dark:bg-slate-800 px-2 py-1 border-b">
+                        <div className="grid grid-cols-3 text-[9px] font-bold uppercase text-[var(--text-muted)] bg-[var(--bg-elevated)] px-2 py-1 border-b">
                           <span>Véhicule</span>
                           <span>Statut</span>
                           <span>KM</span>
@@ -2454,7 +2490,7 @@ export const OrganizationPanelV2: React.FC = () => {
                             <span className="font-bold" style={{ color: row.live ? settings.accentColor : '#94a3b8' }}>
                               {row.live ? '● LIVE' : '○ STOP'}
                             </span>
-                            <span className="text-slate-500">{row.km}</span>
+                            <span className="text-[var(--text-secondary)]">{row.km}</span>
                           </div>
                         ))}
                       </div>
@@ -2470,19 +2506,19 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'notifications' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Notifications</h3>
-              <p className="text-sm text-slate-500">Configuration des notifications système</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Notifications</h3>
+              <p className="text-sm text-[var(--text-secondary)]">Configuration des notifications système</p>
             </div>
 
             <div className="space-y-4">
-              <label className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer">
+              <label className="flex items-center justify-between p-4 bg-[var(--bg-elevated)] rounded-lg cursor-pointer">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
                     <Mail className="w-5 h-5 text-[var(--primary)]" />
                   </div>
                   <div>
-                    <p className="font-medium text-slate-800 dark:text-white">Notifications Email</p>
-                    <p className="text-sm text-slate-500">Envoyer des notifications par email</p>
+                    <p className="font-medium text-[var(--text-primary)]">Notifications Email</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Envoyer des notifications par email</p>
                   </div>
                 </div>
                 <input
@@ -2493,14 +2529,14 @@ export const OrganizationPanelV2: React.FC = () => {
                 />
               </label>
 
-              <label className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer">
+              <label className="flex items-center justify-between p-4 bg-[var(--bg-elevated)] rounded-lg cursor-pointer">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                     <Smartphone className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-slate-800 dark:text-white">Notifications SMS</p>
-                    <p className="text-sm text-slate-500">Envoyer des SMS pour les alertes critiques</p>
+                    <p className="font-medium text-[var(--text-primary)]">Notifications SMS</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Envoyer des SMS pour les alertes critiques</p>
                   </div>
                 </div>
                 <input
@@ -2513,23 +2549,27 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {settings.emailNotifications && (
-              <div className="grid grid-cols-2 gap-6 pt-4 border-t dark:border-slate-700">
+              <div className="grid grid-cols-2 gap-6 pt-4 border-t border-[var(--border)]">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email Expéditeur</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Email Expéditeur
+                  </label>
                   <input
                     type="email"
                     value={settings.emailFrom}
                     onChange={(e) => handleChange('emailFrom', e.target.value)}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email Réponse</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Email Réponse
+                  </label>
                   <input
                     type="email"
                     value={settings.emailReplyTo || ''}
                     onChange={(e) => handleChange('emailReplyTo', e.target.value)}
-                    className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="support@trackyu.com"
                   />
                 </div>
@@ -2542,19 +2582,19 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'security' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Sécurité</h3>
-              <p className="text-sm text-slate-500">Paramètres de sécurité de l'organisation</p>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Sécurité</h3>
+              <p className="text-sm text-[var(--text-secondary)]">Paramètres de sécurité de l'organisation</p>
             </div>
 
             <div className="space-y-4">
-              <label className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-lg cursor-pointer">
+              <label className="flex items-center justify-between p-4 bg-[var(--bg-elevated)] rounded-lg cursor-pointer">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                     <Smartphone className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-slate-800 dark:text-white">Authentification 2FA Obligatoire</p>
-                    <p className="text-sm text-slate-500">Exiger la 2FA pour tous les utilisateurs</p>
+                    <p className="font-medium text-[var(--text-primary)]">Authentification 2FA Obligatoire</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Exiger la 2FA pour tous les utilisateurs</p>
                   </div>
                 </div>
                 <input
@@ -2565,18 +2605,18 @@ export const OrganizationPanelV2: React.FC = () => {
                 />
               </label>
 
-              <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
-                  <Clock className="w-5 h-5 text-slate-500" />
+                  <Clock className="w-5 h-5 text-[var(--text-secondary)]" />
                   <div>
-                    <p className="font-medium text-slate-800 dark:text-white">Expiration de Session</p>
-                    <p className="text-sm text-slate-500">Déconnexion automatique après inactivité</p>
+                    <p className="font-medium text-[var(--text-primary)]">Expiration de Session</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Déconnexion automatique après inactivité</p>
                   </div>
                 </div>
                 <select
                   value={settings.sessionTimeout}
                   onChange={(e) => handleChange('sessionTimeout', parseInt(e.target.value))}
-                  className="w-full p-3 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   title="Expiration de session"
                 >
                   <option value={15}>15 minutes</option>
@@ -2589,11 +2629,11 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
 
             {/* Clé API */}
-            <div className="pt-4 border-t dark:border-slate-700">
+            <div className="pt-4 border-t border-[var(--border)]">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Key className="w-5 h-5 text-amber-500" />
-                  <h4 className="font-bold text-slate-800 dark:text-white">Clé API</h4>
+                  <h4 className="font-bold text-[var(--text-primary)]">Clé API</h4>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
                   <input
@@ -2615,17 +2655,21 @@ export const OrganizationPanelV2: React.FC = () => {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 p-3 bg-white dark:bg-slate-900 rounded-lg font-mono text-sm border">
+                    <div className="flex-1 p-3 bg-[var(--bg-surface)] rounded-lg font-mono text-sm border">
                       {showApiKey ? apiKey : '••••••••••••••••••••••••'}
                     </div>
                     <button
                       onClick={() => setShowApiKey(!showApiKey)}
-                      className="p-3 border rounded-lg hover:bg-slate-50"
+                      className="p-3 border rounded-lg hover:bg-[var(--bg-elevated)]"
                       title={showApiKey ? 'Masquer' : 'Afficher'}
                     >
                       {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
-                    <button onClick={copyApiKey} className="p-3 border rounded-lg hover:bg-slate-50" title="Copier">
+                    <button
+                      onClick={copyApiKey}
+                      className="p-3 border rounded-lg hover:bg-[var(--bg-elevated)]"
+                      title="Copier"
+                    >
                       <Copy className="w-4 h-4" />
                     </button>
                     <button
@@ -2645,8 +2689,8 @@ export const OrganizationPanelV2: React.FC = () => {
         {activeTab === 'mobile' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">Interface Mobile</h3>
-              <p className="text-sm text-slate-500">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1">Interface Mobile</h3>
+              <p className="text-sm text-[var(--text-secondary)]">
                 Configurez quels onglets sont visibles dans chaque section sur mobile. Décochez pour masquer un onglet
                 aux utilisateurs mobiles.
               </p>
@@ -2661,17 +2705,17 @@ export const OrganizationPanelV2: React.FC = () => {
               ];
               const current: string[] = mobileViewTabsConfig.techView || techTabs.map((t) => t.id);
               return (
-                <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-[var(--bg-elevated)] rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-[var(--primary)]" />
-                    <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Tech / SAV</h4>
+                    <h4 className="font-semibold text-[var(--text-primary)] text-sm">Section Tech / SAV</h4>
                   </div>
                   {techTabs.map((tab) => (
                     <label
                       key={tab.id}
-                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                      className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0 cursor-pointer"
                     >
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
+                      <span className="text-sm text-[var(--text-primary)]">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}
@@ -2700,17 +2744,17 @@ export const OrganizationPanelV2: React.FC = () => {
               ];
               const current: string[] = mobileViewTabsConfig.adminView || adminTabs.map((t) => t.id);
               return (
-                <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-[var(--bg-elevated)] rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-purple-500" />
-                    <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Administration</h4>
+                    <h4 className="font-semibold text-[var(--text-primary)] text-sm">Section Administration</h4>
                   </div>
                   {adminTabs.map((tab) => (
                     <label
                       key={tab.id}
-                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                      className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0 cursor-pointer"
                     >
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
+                      <span className="text-sm text-[var(--text-primary)]">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}
@@ -2736,17 +2780,17 @@ export const OrganizationPanelV2: React.FC = () => {
               ];
               const current: string[] = mobileViewTabsConfig.supportView || supportTabs.map((t) => t.id);
               return (
-                <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-[var(--bg-elevated)] rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-[var(--primary)]" />
-                    <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Support</h4>
+                    <h4 className="font-semibold text-[var(--text-primary)] text-sm">Section Support</h4>
                   </div>
                   {supportTabs.map((tab) => (
                     <label
                       key={tab.id}
-                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                      className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0 cursor-pointer"
                     >
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
+                      <span className="text-sm text-[var(--text-primary)]">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}
@@ -2773,17 +2817,17 @@ export const OrganizationPanelV2: React.FC = () => {
               ];
               const current: string[] = mobileViewTabsConfig.monitoringView || monitoringTabs.map((t) => t.id);
               return (
-                <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 space-y-3">
+                <div className="bg-[var(--bg-elevated)] rounded-xl p-4 space-y-3">
                   <div className="flex items-center gap-2 mb-1">
                     <Smartphone className="w-4 h-4 text-orange-500" />
-                    <h4 className="font-semibold text-slate-800 dark:text-white text-sm">Section Monitoring</h4>
+                    <h4 className="font-semibold text-[var(--text-primary)] text-sm">Section Monitoring</h4>
                   </div>
                   {monitoringTabs.map((tab) => (
                     <label
                       key={tab.id}
-                      className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0 cursor-pointer"
+                      className="flex items-center justify-between py-2 border-b border-[var(--border)] last:border-0 cursor-pointer"
                     >
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{tab.label}</span>
+                      <span className="text-sm text-[var(--text-primary)]">{tab.label}</span>
                       <input
                         type="checkbox"
                         checked={current.includes(tab.id)}

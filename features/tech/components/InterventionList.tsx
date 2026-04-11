@@ -670,7 +670,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
     IN_PROGRESS:
       'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]',
     COMPLETED: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-    CANCELLED: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700',
+    CANCELLED: 'bg-[var(--bg-elevated)] border-[var(--border)]',
     POSTPONED: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
   };
 
@@ -695,23 +695,23 @@ export const InterventionList: React.FC<InterventionListProps> = ({
       (filterResellerMobile !== 'ALL' ? 1 : 0);
 
     return (
-      <div className="flex-1 flex flex-col min-h-0 bg-slate-50 dark:bg-slate-900/50">
+      <div className="flex-1 flex flex-col min-h-0 bg-[var(--bg-elevated)]/50">
         {/* Mobile toolbar */}
-        <div className="flex flex-col gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex flex-col gap-1.5 px-3 py-2 bg-[var(--bg-elevated)] border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <input
                 type="text"
                 placeholder="Rechercher..."
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                className="w-full pl-9 pr-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
               />
             </div>
             <button
               onClick={() => setShowMobileFilter(true)}
-              className={`relative p-2 rounded-lg border transition-colors ${mobileFilterCount > 0 ? 'bg-[var(--primary-dim)] border-[var(--primary)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'}`}
+              className={`relative p-2 rounded-lg border transition-colors ${mobileFilterCount > 0 ? 'bg-[var(--primary-dim)] border-[var(--primary)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)]'}`}
             >
               <Filter className="w-4 h-4" />
               {mobileFilterCount > 0 && (
@@ -720,11 +720,13 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                 </span>
               )}
             </button>
-            <span className="text-xs text-slate-500 whitespace-nowrap">{mobileFilteredInterventions.length} rés.</span>
+            <span className="text-xs text-[var(--text-secondary)] whitespace-nowrap">
+              {mobileFilteredInterventions.length} rés.
+            </span>
           </div>
           {/* Export buttons row */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wide">Exporter :</span>
+            <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wide">Exporter :</span>
             <button
               onClick={handleExport}
               className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold rounded border border-red-200 text-red-600 bg-red-50 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors"
@@ -765,21 +767,19 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     {getStatusBadge(int.status)}
-                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] font-mono text-[var(--text-muted)]">
                       #{int.id.slice(-8).toUpperCase()}
                     </span>
                   </div>
-                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                    {formatDate(int.scheduledDate)}
-                  </span>
+                  <span className="text-[11px] text-[var(--text-secondary)]">{formatDate(int.scheduledDate)}</span>
                 </div>
                 {/* Client */}
-                <p className="font-bold text-sm text-slate-900 dark:text-white truncate mb-1">
+                <p className="font-bold text-sm text-[var(--text-primary)] truncate mb-1">
                   {clientName !== '-' ? clientName : 'Client non défini'}
                 </p>
                 {/* Type + Nature */}
                 <div className="flex flex-wrap gap-1 mb-2">
-                  <span className="bg-white/70 dark:bg-slate-700/70 border border-slate-200 dark:border-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-600 dark:text-slate-300 uppercase">
+                  <span className="bg-white/70 bg-[var(--bg-elevated)]/70 border border-[var(--border)] px-1.5 py-0.5 rounded text-[10px] font-bold text-[var(--text-secondary)] uppercase">
                     {int.type}
                   </span>
                   {int.nature && (
@@ -789,7 +789,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   )}
                 </div>
                 {/* Location + Tech */}
-                <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-3 text-[11px] text-[var(--text-secondary)]">
                   {int.location && (
                     <span className="flex items-center gap-0.5 truncate">
                       <MapPin className="w-3 h-3 shrink-0" />
@@ -839,7 +839,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
           {mobileDisplayCount < mobileFilteredInterventions.length && (
             <button
               onClick={() => setMobileDisplayCount((c) => c + 20)}
-              className="w-full py-3 text-sm font-medium text-[var(--primary)] dark:text-[var(--primary)] bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] rounded-xl hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
+              className="w-full py-3 text-sm font-medium text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--bg-elevated)] border border-[var(--border)] dark:border-[var(--primary)] rounded-xl hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
             >
               Afficher plus ({mobileFilteredInterventions.length - mobileDisplayCount} restants)
             </button>
@@ -989,15 +989,15 @@ export const InterventionList: React.FC<InterventionListProps> = ({
   }
 
   return (
-    <Card className="flex-1 overflow-hidden p-0 border-slate-200 dark:border-slate-700 flex flex-col relative">
+    <Card className="flex-1 overflow-hidden p-0 border-[var(--border)] flex flex-col relative">
       {/* Toolbar */}
-      <div className="p-2 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
+      <div className="p-2 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg-elevated)]">
         {selectedIds.size > 0 ? (
           <div className="flex items-center gap-2 w-full animate-in fade-in duration-200">
-            <span className="text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">
+            <span className="text-sm font-bold text-[var(--text-primary)] bg-slate-200 bg-[var(--bg-elevated)] px-2 py-1 rounded">
               {selectedIds.size} sélectionné(s)
             </span>
-            <div className="h-4 w-px bg-slate-300 dark:bg-slate-600 mx-2"></div>
+            <div className="h-4 w-px bg-slate-300 bg-[var(--bg-elevated)] mx-2"></div>
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition-colors border border-red-100"
@@ -1013,21 +1013,21 @@ export const InterventionList: React.FC<InterventionListProps> = ({
             <div className="flex-1"></div>
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full"
+              className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full"
               aria-label="Effacer la sélection"
               title="Effacer la sélection"
             >
-              <X className="w-4 h-4 text-slate-500" />
+              <X className="w-4 h-4 text-[var(--text-secondary)]" />
             </button>
           </div>
         ) : (
           <>
             <div className="relative flex-1 md:flex-none">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <input
                 type="text"
                 placeholder="Rechercher (client, tech, plaque, nature, IMEI, ticket...)"
-                className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full md:w-64"
+                className="pl-9 pr-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full md:w-64"
                 value={globalSearch}
                 onChange={(e) => setGlobalSearch(e.target.value)}
               />
@@ -1040,7 +1040,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   className={`p-2 border rounded-lg text-sm font-bold transition-colors flex items-center gap-1 ${
                     hasActiveFilters
                       ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] dark:border-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
-                      : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
+                      : 'border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)]'
                   }`}
                   title="Filtres"
                 >
@@ -1052,13 +1052,13 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   )}
                 </button>
                 {isFilterMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50 p-4 animate-in fade-in slide-in-from-top-2">
-                    <h4 className="text-xs font-bold text-slate-500 uppercase mb-3">Filtres avancés</h4>
+                  <div className="absolute top-full right-0 mt-2 w-72 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 p-4 animate-in fade-in slide-in-from-top-2">
+                    <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-3">Filtres avancés</h4>
                     <div className="space-y-3">
                       <div className="space-y-1">
-                        <label className="text-xs text-slate-600 dark:text-slate-300">Nature</label>
+                        <label className="text-xs text-[var(--text-secondary)]">Nature</label>
                         <select
-                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm"
+                          className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm"
                           value={filterNature}
                           onChange={(e) => setFilterNature(e.target.value)}
                         >
@@ -1077,9 +1077,9 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs text-slate-600 dark:text-slate-300">Client</label>
+                        <label className="text-xs text-[var(--text-secondary)]">Client</label>
                         <select
-                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm"
+                          className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm"
                           value={filterClient}
                           onChange={(e) => setFilterClient(e.target.value)}
                         >
@@ -1092,9 +1092,9 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs text-slate-600 dark:text-slate-300">Revendeur</label>
+                        <label className="text-xs text-[var(--text-secondary)]">Revendeur</label>
                         <select
-                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm"
+                          className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm"
                           value={filterReseller}
                           onChange={(e) => setFilterReseller(e.target.value)}
                         >
@@ -1107,9 +1107,9 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs text-slate-600 dark:text-slate-300">Facturation</label>
+                        <label className="text-xs text-[var(--text-secondary)]">Facturation</label>
                         <select
-                          className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-sm"
+                          className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm"
                           value={filterInvoiced}
                           onChange={(e) => setFilterInvoiced(e.target.value as 'ALL' | 'YES' | 'NO')}
                         >
@@ -1119,7 +1119,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                         </select>
                       </div>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+                    <div className="mt-4 pt-3 border-t border-[var(--border)] border-[var(--border)] flex justify-end">
                       <button
                         onClick={() => {
                           setFilterNature('ALL');
@@ -1137,7 +1137,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               </div>
               <button
                 onClick={() => setIsImportModalOpen(true)}
-                className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"
+                className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)]"
                 title="Importer"
               >
                 <Upload className="w-4 h-4" />
@@ -1145,28 +1145,28 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               <div className="relative" ref={exportMenuRef}>
                 <button
                   onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                  className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"
+                  className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)]"
                   title="Exporter"
                 >
                   <Download className="w-4 h-4" />
                 </button>
                 {isExportMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2">
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2">
                     <button
                       onClick={handleExport}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded text-sm text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded text-sm text-left"
                     >
                       <FileDown className="w-4 h-4 text-red-500" /> Export PDF
                     </button>
                     <button
                       onClick={handleExportCSV}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded text-sm text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded text-sm text-left"
                     >
                       <FileSpreadsheet className="w-4 h-4 text-green-500" /> Export CSV
                     </button>
                     <button
                       onClick={handleExportExcel}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded text-sm text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded text-sm text-left"
                     >
                       <FileSpreadsheet className="w-4 h-4 text-[var(--primary)]" /> Export Excel
                     </button>
@@ -1176,18 +1176,20 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               <div className="relative" ref={columnMenuRef}>
                 <button
                   onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                  className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"
+                  className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)]"
                   title="Colonnes"
                 >
                   <LayoutTemplate className="w-4 h-4" />
                 </button>
                 {isColumnMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2 max-h-80 overflow-y-auto custom-scrollbar">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase px-2 py-1 mb-1">Colonnes visibles</p>
+                  <div className="absolute top-full right-0 mt-2 w-56 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2 max-h-80 overflow-y-auto custom-scrollbar">
+                    <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase px-2 py-1 mb-1">
+                      Colonnes visibles
+                    </p>
                     {INTERVENTION_COLUMNS.map((col) => (
                       <label
                         key={col.id}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer text-xs"
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer text-xs"
                       >
                         <input
                           type="checkbox"
@@ -1198,10 +1200,10 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                             )
                           }
                           disabled={col.locked}
-                          className="rounded border-slate-300 text-[var(--primary)]"
+                          className="rounded border-[var(--border)] text-[var(--primary)]"
                         />
-                        <span className="text-slate-700 dark:text-slate-200">{col.label}</span>
-                        {col.locked && <span className="text-[9px] text-slate-400 ml-auto">(fixé)</span>}
+                        <span className="text-[var(--text-primary)]">{col.label}</span>
+                        {col.locked && <span className="text-[9px] text-[var(--text-muted)] ml-auto">(fixé)</span>}
                       </label>
                     ))}
                   </div>
@@ -1220,7 +1222,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
           <div className="flex gap-2">
             <button
               onClick={handleDelete}
-              className="text-xs text-red-600 flex items-center gap-1.5 bg-white dark:bg-slate-800 px-3 py-1.5 rounded border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20"
+              className="text-xs text-red-600 flex items-center gap-1.5 bg-[var(--bg-elevated)] px-3 py-1.5 rounded border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20"
             >
               <Trash2 className="w-3 h-3" /> Supprimer
             </button>
@@ -1237,14 +1239,14 @@ export const InterventionList: React.FC<InterventionListProps> = ({
       )}
       <div className="flex-1 overflow-auto custom-scrollbar pb-16 lg:pb-0">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+          <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] sticky top-0 z-10">
             <tr>
-              <th className="px-4 py-3 w-10 border-b border-slate-200 dark:border-slate-700">
+              <th className="px-4 py-3 w-10 border-b border-[var(--border)]">
                 <input
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={handleSelectAll}
-                  className="rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)]"
+                  className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                 />
               </th>
               {INTERVENTION_COLUMNS.map(
@@ -1253,7 +1255,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   (col.id === 'actions' ? (
                     <th
                       key={col.id}
-                      className="px-4 py-3 text-xs font-bold text-slate-500 dark:text-slate-300 uppercase whitespace-nowrap border-b border-slate-200 dark:border-slate-700 text-right"
+                      className="px-4 py-3 text-xs font-bold text-[var(--text-secondary)] uppercase whitespace-nowrap border-b border-[var(--border)] text-right"
                       style={{ minWidth: col.minWidth }}
                     >
                       {col.label}
@@ -1272,7 +1274,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm bg-white dark:bg-slate-900">
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm bg-[var(--bg-surface)]">
             {paginatedInterventions.map((int) => (
               <tr
                 key={int.id}
@@ -1284,25 +1286,23 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                     type="checkbox"
                     checked={selectedIds.has(int.id)}
                     onChange={() => toggleSelection(int.id)}
-                    className="rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)]"
+                    className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
                 </td>
-                {visibleColumns.includes('id') && <td className="px-4 py-3 font-mono text-slate-500">{int.id}</td>}
+                {visibleColumns.includes('id') && (
+                  <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">{int.id}</td>
+                )}
                 {visibleColumns.includes('status') && <td className="px-4 py-3">{getStatusBadge(int.status)}</td>}
                 {visibleColumns.includes('scheduledDate') && (
                   <td className="px-4 py-3">
-                    <div className="font-medium text-slate-700 dark:text-slate-300">
-                      {formatDate(int.scheduledDate)}
-                    </div>
-                    <div className="text-slate-500 text-xs">
+                    <div className="font-medium text-[var(--text-primary)]">{formatDate(int.scheduledDate)}</div>
+                    <div className="text-[var(--text-secondary)] text-xs">
                       {formatTime(int.scheduledDate)} ({int.duration}m)
                     </div>
                   </td>
                 )}
                 {visibleColumns.includes('client') && (
-                  <td className="px-4 py-3 font-semibold text-slate-800 dark:text-white">
-                    {getClientName(int.clientId)}
-                  </td>
+                  <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">{getClientName(int.clientId)}</td>
                 )}
                 {visibleColumns.includes('ticket') && (
                   <td className="px-4 py-3 font-mono text-violet-600 dark:text-violet-400">
@@ -1310,15 +1310,15 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   </td>
                 )}
                 {visibleColumns.includes('tech') && (
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">
                     {technicians.find((t) => t.id === int.technicianId)?.name || (
-                      <span className="text-slate-400 italic">Non assigné</span>
+                      <span className="text-[var(--text-muted)] italic">Non assigné</span>
                     )}
                   </td>
                 )}
                 {visibleColumns.includes('type') && (
                   <td className="px-4 py-3">
-                    <span className="bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded text-xs font-bold text-slate-600 dark:text-slate-300 uppercase">
+                    <span className="bg-[var(--bg-elevated)] border border-[var(--border)] px-2 py-0.5 rounded text-xs font-bold text-[var(--text-secondary)] uppercase">
                       {int.type}
                     </span>
                   </td>
@@ -1331,12 +1331,10 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   </td>
                 )}
                 {visibleColumns.includes('location') && (
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400 truncate max-w-[150px]">
-                    {int.location}
-                  </td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)] truncate max-w-[150px]">{int.location}</td>
                 )}
                 {visibleColumns.includes('vehicle') && (
-                  <td className="px-4 py-3 font-mono text-slate-700 dark:text-slate-300">
+                  <td className="px-4 py-3 font-mono text-[var(--text-primary)]">
                     {cleanPlate(int.licensePlate) || '-'}
                   </td>
                 )}
@@ -1350,14 +1348,12 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                         {formatDuration(calculateResolutionTime(int))}
                       </span>
                     ) : (
-                      <span className="text-slate-400">-</span>
+                      <span className="text-[var(--text-muted)]">-</span>
                     )}
                   </td>
                 )}
                 {visibleColumns.includes('cost') && (
-                  <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
-                    {int.cost ? formatPrice(int.cost) : '-'}
-                  </td>
+                  <td className="px-4 py-3 text-[var(--text-primary)]">{int.cost ? formatPrice(int.cost) : '-'}</td>
                 )}
 
                 {visibleColumns.includes('actions') && (
@@ -1380,7 +1376,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                         )}
                       <button
                         onClick={() => onEdit(int)}
-                        className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-500 transition-colors"
+                        className="p-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded text-[var(--text-secondary)] transition-colors"
                         aria-label="Modifier"
                         title="Modifier"
                       >
@@ -1414,11 +1410,11 @@ export const InterventionList: React.FC<InterventionListProps> = ({
         </table>
       </div>
       {/* Pagination */}
-      <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex justify-between items-center text-xs">
+      <div className="p-3 border-t border-[var(--border)] bg-[var(--bg-surface)] flex justify-between items-center text-xs">
         <div className="flex items-center gap-2">
-          <span className="text-slate-500">Lignes par page:</span>
+          <span className="text-[var(--text-secondary)]">Lignes par page:</span>
           <select
-            className="p-1 border border-slate-200 dark:border-slate-600 rounded text-xs bg-white dark:bg-slate-900"
+            className="p-1 border border-[var(--border)] rounded text-xs bg-[var(--bg-surface)]"
             value={itemsPerPage}
             onChange={(e) => {
               setItemsPerPage(Number(e.target.value));
@@ -1430,7 +1426,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
             <option value={25}>25</option>
             <option value={50}>50</option>
           </select>
-          <span className="text-slate-500 ml-2">
+          <span className="text-[var(--text-secondary)] ml-2">
             Affichage {paginatedInterventions.length} sur {filteredInterventions.length}
           </span>
         </div>
@@ -1450,14 +1446,14 @@ export const InterventionList: React.FC<InterventionListProps> = ({
             <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] mb-2">
               Le fichier CSV doit contenir les colonnes suivantes :
             </p>
-            <code className="text-xs bg-white dark:bg-slate-800 p-2 rounded block overflow-x-auto">
+            <code className="text-xs bg-[var(--bg-elevated)] p-2 rounded block overflow-x-auto">
               clientId, technicianId, type, nature, scheduledDate, location, licensePlate, notes, cost
             </code>
           </div>
 
           <button
             onClick={handleDownloadTemplate}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-secondary)] tr-hover transition-colors"
           >
             <Download className="w-4 h-4" />
             Télécharger le template CSV

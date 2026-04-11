@@ -1,11 +1,34 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import type { Vehicle} from '../../../types';
+import type { Vehicle } from '../../../types';
 import { VehicleStatus } from '../../../types';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import {
-  Truck, Car, X, Navigation, Lock, Bike, Bus, HardHat,
-  Clock, Bell, AlertOctagon, TrendingDown, Calendar, DollarSign, Fuel, Activity, Settings,
-  Info, SlidersHorizontal, Wrench, Camera, Cpu, Loader2, MapPin, Copy, ExternalLink
+  Truck,
+  Car,
+  X,
+  Navigation,
+  Lock,
+  Bike,
+  Bus,
+  HardHat,
+  Clock,
+  Bell,
+  AlertOctagon,
+  TrendingDown,
+  Calendar,
+  DollarSign,
+  Fuel,
+  Activity,
+  Settings,
+  Info,
+  SlidersHorizontal,
+  Wrench,
+  Camera,
+  Cpu,
+  Loader2,
+  MapPin,
+  Copy,
+  ExternalLink,
 } from 'lucide-react';
 import { Modal } from '../../../components/Modal';
 import { CollapsibleSection, ConfigurableRow } from './detail-blocks/SharedBlocks';
@@ -34,7 +57,18 @@ interface VehicleDetailPanelProps {
 }
 
 // --- TYPES POUR LA GESTION DES BLOCS ---
-type BlockId = 'photo' | 'activity' | 'alerts' | 'behavior' | 'violations' | 'maintenance' | 'expenses' | 'fuel' | 'sensors' | 'gps' | 'device-history';
+type BlockId =
+  | 'photo'
+  | 'activity'
+  | 'alerts'
+  | 'behavior'
+  | 'violations'
+  | 'maintenance'
+  | 'expenses'
+  | 'fuel'
+  | 'sensors'
+  | 'gps'
+  | 'device-history';
 
 interface BlockConfig {
   id: BlockId;
@@ -43,9 +77,23 @@ interface BlockConfig {
   icon: React.ElementType;
 }
 
-export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle, onClose, variant = 'drawer', onReplay }) => {
+export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
+  vehicle,
+  onClose,
+  variant = 'drawer',
+  onReplay,
+}) => {
   const { user } = useAuth();
-  const { getFuelRecords, getMaintenanceRecords, toggleImmobilization, getVehicleHistory, getVehicleAlerts, updateVehicle, getFuelHistory, getFuelStats } = useDataContext();
+  const {
+    getFuelRecords,
+    getMaintenanceRecords,
+    toggleImmobilization,
+    getVehicleHistory,
+    getVehicleAlerts,
+    updateVehicle,
+    getFuelHistory,
+    getFuelStats,
+  } = useDataContext();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
 
   const isStaff = useMemo(() => {
@@ -59,148 +107,148 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
 
   // --- QUERIES ---
   const { data: fuelRecords = [], isLoading: isLoadingFuel } = useQuery({
-      queryKey: ['fuel', vehicle.id],
-      queryFn: () => getFuelRecords(vehicle.id)
+    queryKey: ['fuel', vehicle.id],
+    queryFn: () => getFuelRecords(vehicle.id),
   });
 
   const { data: fuelHistory = [] } = useQuery({
-      queryKey: ['fuelHistory', vehicle.id, '24h'],
-      queryFn: () => getFuelHistory(vehicle.id, '24h')
+    queryKey: ['fuelHistory', vehicle.id, '24h'],
+    queryFn: () => getFuelHistory(vehicle.id, '24h'),
   });
 
   const { data: fuelStats } = useQuery({
-      queryKey: ['fuelStats', vehicle.id],
-      queryFn: () => getFuelStats(vehicle.id)
+    queryKey: ['fuelStats', vehicle.id],
+    queryFn: () => getFuelStats(vehicle.id),
   });
 
   const { data: longFuelHistory = [] } = useQuery({
-      queryKey: ['fuelHistory', vehicle.id, '30d'],
-      queryFn: () => getFuelHistory(vehicle.id, '30d'),
-      enabled: activeModal === 'fuel'
+    queryKey: ['fuelHistory', vehicle.id, '30d'],
+    queryFn: () => getFuelHistory(vehicle.id, '30d'),
+    enabled: activeModal === 'fuel',
   });
 
   const { data: maintenanceRecords = [], isLoading: isLoadingMaintenance } = useQuery({
-      queryKey: ['maintenance', vehicle.id],
-      queryFn: () => getMaintenanceRecords(vehicle.id)
+    queryKey: ['maintenance', vehicle.id],
+    queryFn: () => getMaintenanceRecords(vehicle.id),
   });
 
   const { data: history = [] } = useQuery({
-      queryKey: ['history', vehicle.id, new Date().toDateString()],
-      queryFn: () => getVehicleHistory(vehicle.id, new Date())
+    queryKey: ['history', vehicle.id, new Date().toDateString()],
+    queryFn: () => getVehicleHistory(vehicle.id, new Date()),
   });
 
   const { data: alerts = [], isLoading: isLoadingAlerts } = useQuery({
-      queryKey: ['alerts', vehicle.id],
-      queryFn: () => getVehicleAlerts(vehicle.id)
+    queryKey: ['alerts', vehicle.id],
+    queryFn: () => getVehicleAlerts(vehicle.id),
   });
 
   // --- STATS CALCULATION ---
   const formattedFuelHistory = useMemo(() => {
     if (fuelHistory.length > 0) {
-        return fuelHistory.map((h) => ({
-            date: new Date(h.date).toLocaleDateString('fr-FR', { weekday: 'short', hour: '2-digit', minute: '2-digit' }),
-            level: h.level,
-            conso: h.consumption,
-            volume: h.volume
-        }));
+      return fuelHistory.map((h) => ({
+        date: new Date(h.date).toLocaleDateString('fr-FR', { weekday: 'short', hour: '2-digit', minute: '2-digit' }),
+        level: h.level,
+        conso: h.consumption,
+        volume: h.volume,
+      }));
     }
     return [];
   }, [fuelHistory]);
 
   const formattedLongFuelHistory = useMemo(() => {
     if (longFuelHistory.length > 0) {
-        return longFuelHistory.map((h) => ({
-            date: new Date(h.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
-            level: h.level,
-            conso: h.consumption,
-            volume: h.volume
-        }));
+      return longFuelHistory.map((h) => ({
+        date: new Date(h.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
+        level: h.level,
+        conso: h.consumption,
+        volume: h.volume,
+      }));
     }
     return [];
   }, [longFuelHistory]);
 
   const stats = useMemo(() => {
-      let movingMs = 0;
-      let idleMs = 0;
-      let stoppedMs = 0;
-      let statusDurationMs = 0;
+    let movingMs = 0;
+    let idleMs = 0;
+    let stoppedMs = 0;
+    let statusDurationMs = 0;
 
-      if (history.length > 0) {
-          // Helper: get timestamp from either field name
-          const getTs = (p: any) => new Date(p.time ?? p.timestamp).getTime();
+    if (history.length > 0) {
+      // Helper: get timestamp from either field name
+      const getTs = (p: any) => new Date(p.time ?? p.timestamp).getTime();
 
-          // Helper: derive status from speed/ignition (no status field in history points)
-          const getPointStatus = (p: any): VehicleStatus => {
-              const speed = typeof p.speed === 'number' ? p.speed : parseFloat(p.speed ?? '0') || 0;
-              if (speed >= 2) return VehicleStatus.MOVING;
-              // ignition may come as boolean, 'true'/'t', or null
-              const ign = p.ignition;
-              const ignitionOn = ign === true || ign === 'true' || ign === 't';
-              if (ignitionOn) return VehicleStatus.IDLE;
-              return VehicleStatus.STOPPED;
-          };
+      // Helper: derive status from speed/ignition (no status field in history points)
+      const getPointStatus = (p: any): VehicleStatus => {
+        const speed = typeof p.speed === 'number' ? p.speed : parseFloat(p.speed ?? '0') || 0;
+        if (speed >= 2) return VehicleStatus.MOVING;
+        // ignition may come as boolean, 'true'/'t', or null
+        const ign = p.ignition;
+        const ignitionOn = ign === true || ign === 'true' || ign === 't';
+        if (ignitionOn) return VehicleStatus.IDLE;
+        return VehicleStatus.STOPPED;
+      };
 
-          // Sort by time
-          const sorted = [...history].sort((a, b) => getTs(a) - getTs(b));
+      // Sort by time
+      const sorted = [...history].sort((a, b) => getTs(a) - getTs(b));
 
-          // 1. Calculate Daily Totals
-          for (let i = 0; i < sorted.length - 1; i++) {
-              const current = sorted[i];
-              const next = sorted[i + 1];
-              const duration = getTs(next) - getTs(current);
-              const status = getPointStatus(current);
+      // 1. Calculate Daily Totals
+      for (let i = 0; i < sorted.length - 1; i++) {
+        const current = sorted[i];
+        const next = sorted[i + 1];
+        const duration = getTs(next) - getTs(current);
+        const status = getPointStatus(current);
 
-              if (status === VehicleStatus.MOVING) movingMs += duration;
-              else if (status === VehicleStatus.IDLE) idleMs += duration;
-              else stoppedMs += duration;
-          }
-
-          // Add time from last point to now (if today)
-          const last = sorted[sorted.length - 1];
-          const now = new Date();
-          if (new Date(getTs(last)).toDateString() === now.toDateString()) {
-              const duration = Math.min(now.getTime() - getTs(last), 30 * 60 * 1000); // cap at 30min
-              const lastStatus = getPointStatus(last);
-              if (lastStatus === VehicleStatus.MOVING) movingMs += duration;
-              else if (lastStatus === VehicleStatus.IDLE) idleMs += duration;
-              else stoppedMs += duration;
-          }
-
-          // 2. Calculate Current Status Duration (how long in current status)
-          let lastChangeTime = getTs(last);
-          for (let i = sorted.length - 1; i >= 0; i--) {
-              if (getPointStatus(sorted[i]) !== vehicle.status) break;
-              lastChangeTime = getTs(sorted[i]);
-          }
-          statusDurationMs = new Date().getTime() - lastChangeTime;
+        if (status === VehicleStatus.MOVING) movingMs += duration;
+        else if (status === VehicleStatus.IDLE) idleMs += duration;
+        else stoppedMs += duration;
       }
 
-      const formatDuration = (ms: number) => {
-          const h = Math.floor(ms / 3600000);
-          const m = Math.floor((ms % 3600000) / 60000);
-          return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-      };
+      // Add time from last point to now (if today)
+      const last = sorted[sorted.length - 1];
+      const now = new Date();
+      if (new Date(getTs(last)).toDateString() === now.toDateString()) {
+        const duration = Math.min(now.getTime() - getTs(last), 30 * 60 * 1000); // cap at 30min
+        const lastStatus = getPointStatus(last);
+        if (lastStatus === VehicleStatus.MOVING) movingMs += duration;
+        else if (lastStatus === VehicleStatus.IDLE) idleMs += duration;
+        else stoppedMs += duration;
+      }
 
-      const engineMs = movingMs + idleMs;
-      const engineH = Math.floor(engineMs / 3600000);
-      const engineMin = Math.floor((engineMs % 3600000) / 60000);
+      // 2. Calculate Current Status Duration (how long in current status)
+      let lastChangeTime = getTs(last);
+      for (let i = sorted.length - 1; i >= 0; i--) {
+        if (getPointStatus(sorted[i]) !== vehicle.status) break;
+        lastChangeTime = getTs(sorted[i]);
+      }
+      statusDurationMs = new Date().getTime() - lastChangeTime;
+    }
 
-      return {
-          drivingTime: formatDuration(movingMs),
-          idleTime: formatDuration(idleMs),
-          stoppedTime: formatDuration(stoppedMs),
-          statusDuration: formatDuration(statusDurationMs),
-          engineHours: engineMs > 0 ? `${engineH}h${engineMin > 0 ? ` ${engineMin}min` : ''}` : 'N/A',
-      };
+    const formatDuration = (ms: number) => {
+      const h = Math.floor(ms / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    };
+
+    const engineMs = movingMs + idleMs;
+    const engineH = Math.floor(engineMs / 3600000);
+    const engineMin = Math.floor((engineMs % 3600000) / 60000);
+
+    return {
+      drivingTime: formatDuration(movingMs),
+      idleTime: formatDuration(idleMs),
+      stoppedTime: formatDuration(stoppedMs),
+      statusDuration: formatDuration(statusDurationMs),
+      engineHours: engineMs > 0 ? `${engineH}h${engineMin > 0 ? ` ${engineMin}min` : ''}` : 'N/A',
+    };
   }, [history, vehicle.status]);
 
   // --- ÉTATS ---
   const [isConfigMode, setIsConfigMode] = useState(false);
   const [activeFuelTab, setActiveFuelTab] = useState('Synthèse');
-  
+
   // Clé localStorage pour la config
   const CONFIG_KEY = 'vehicleDetailPanelConfig';
-  
+
   // Charger la config depuis localStorage
   const loadSavedConfig = () => {
     try {
@@ -210,7 +258,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
         return {
           hiddenFields: new Set<string>(parsed.hiddenFields || []),
           blocksOrder: parsed.blocksOrder || null,
-          blocksVisibility: parsed.blocksVisibility || {}
+          blocksVisibility: parsed.blocksVisibility || {},
         };
       }
     } catch (e) {
@@ -218,9 +266,9 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
     }
     return { hiddenFields: new Set<string>(), blocksOrder: null, blocksVisibility: {} };
   };
-  
+
   const savedConfig = loadSavedConfig();
-  
+
   // État pour masquer des champs spécifiques (Set d'IDs masqués)
   const [hiddenFields, setHiddenFields] = useState<Set<string>>(savedConfig.hiddenFields);
 
@@ -237,29 +285,29 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
     { id: 'gps', label: 'Appareil GPS', visible: true, icon: Settings },
     { id: 'device-history', label: 'Historique Balises', visible: true, icon: Cpu },
   ];
-  
+
   // Appliquer l'ordre et la visibilité sauvegardés
   const getInitialBlocks = (): BlockConfig[] => {
     let result = [...defaultBlocks];
-    
+
     // Appliquer l'ordre sauvegardé
     if (savedConfig.blocksOrder && savedConfig.blocksOrder.length === defaultBlocks.length) {
       const orderedBlocks: BlockConfig[] = [];
       for (const id of savedConfig.blocksOrder) {
-        const block = result.find(b => b.id === id);
+        const block = result.find((b) => b.id === id);
         if (block) orderedBlocks.push(block);
       }
       if (orderedBlocks.length === result.length) result = orderedBlocks;
     }
-    
+
     // Appliquer la visibilité sauvegardée
     if (savedConfig.blocksVisibility) {
-      result = result.map(b => ({
+      result = result.map((b) => ({
         ...b,
-        visible: savedConfig.blocksVisibility[b.id] !== undefined ? savedConfig.blocksVisibility[b.id] : b.visible
+        visible: savedConfig.blocksVisibility[b.id] !== undefined ? savedConfig.blocksVisibility[b.id] : b.visible,
       }));
     }
-    
+
     return result;
   };
 
@@ -267,116 +315,127 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
     const initial = getInitialBlocks();
     // Filter out GPS block for non-staff users
     if (!isStaff) {
-      return initial.filter(b => b.id !== 'gps');
+      return initial.filter((b) => b.id !== 'gps');
     }
     return initial;
   });
-  
+
   // Sauvegarder la config quand elle change
   useEffect(() => {
     const config = {
       hiddenFields: Array.from(hiddenFields),
-      blocksOrder: blocks.map(b => b.id),
-      blocksVisibility: blocks.reduce((acc, b) => ({ ...acc, [b.id]: b.visible }), {} as Record<string, boolean>)
+      blocksOrder: blocks.map((b) => b.id),
+      blocksVisibility: blocks.reduce((acc, b) => ({ ...acc, [b.id]: b.visible }), {} as Record<string, boolean>),
     };
     localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
   }, [hiddenFields, blocks]);
 
   // --- EXPENSES CALCULATION ---
   const expenses = useMemo(() => {
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
-      
-      let monthTotal = 0;
-      let yearTotal = 0;
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
-      // Fuel Expenses
-      fuelRecords.forEach((r) => {
-          const d = new Date(r.date);
-          if (d.getFullYear() === currentYear) {
-              yearTotal += (r.cost || 0);
-              if (d.getMonth() === currentMonth) {
-                  monthTotal += (r.cost || 0);
-              }
-          }
-      });
+    let monthTotal = 0;
+    let yearTotal = 0;
 
-      // Maintenance Expenses
-      maintenanceRecords.forEach((r) => {
-          const d = new Date(r.date); // Assuming maintenance record has a date field
-          if (d.getFullYear() === currentYear) {
-              yearTotal += (r.cost || 0);
-              if (d.getMonth() === currentMonth) {
-                  monthTotal += (r.cost || 0);
-              }
-          }
-      });
+    // Fuel Expenses
+    fuelRecords.forEach((r) => {
+      const d = new Date(r.date);
+      if (d.getFullYear() === currentYear) {
+        yearTotal += r.cost || 0;
+        if (d.getMonth() === currentMonth) {
+          monthTotal += r.cost || 0;
+        }
+      }
+    });
 
-      return { month: monthTotal, year: yearTotal };
+    // Maintenance Expenses
+    maintenanceRecords.forEach((r) => {
+      const d = new Date(r.date); // Assuming maintenance record has a date field
+      if (d.getFullYear() === currentYear) {
+        yearTotal += r.cost || 0;
+        if (d.getMonth() === currentMonth) {
+          monthTotal += r.cost || 0;
+        }
+      }
+    });
+
+    return { month: monthTotal, year: yearTotal };
   }, [fuelRecords, maintenanceRecords]);
 
   // --- DONNÉES MOCKÉES & CALCULS ---
   const statusLabels = {
-    [VehicleStatus.MOVING]: "EN MOUVEMENT",
-    [VehicleStatus.IDLE]: "RALENTI",
-    [VehicleStatus.STOPPED]: "ARRÊTÉ",
-    [VehicleStatus.OFFLINE]: "HORS LIGNE"
+    [VehicleStatus.MOVING]: 'EN MOUVEMENT',
+    [VehicleStatus.IDLE]: 'RALENTI',
+    [VehicleStatus.STOPPED]: 'ARRÊTÉ',
+    [VehicleStatus.OFFLINE]: 'HORS LIGNE',
   };
 
   const statusColors = {
-     [VehicleStatus.MOVING]: "text-green-400 border-green-500/30 bg-green-500/10",
-     [VehicleStatus.IDLE]: "text-orange-400 border-orange-500/30 bg-orange-500/10",
-     [VehicleStatus.STOPPED]: "text-red-400 border-red-500/30 bg-red-500/10",
-     [VehicleStatus.OFFLINE]: "text-slate-400 border-slate-500/30 bg-slate-500/10"
+    [VehicleStatus.MOVING]: 'text-green-400 border-green-500/30 bg-green-500/10',
+    [VehicleStatus.IDLE]: 'text-orange-400 border-orange-500/30 bg-orange-500/10',
+    [VehicleStatus.STOPPED]: 'text-red-400 border-red-500/30 bg-red-500/10',
+    [VehicleStatus.OFFLINE]: 'text-[var(--text-muted)] border-slate-500/30 bg-slate-500/10',
   };
 
   const mockData = {
-    statusDuration: stats.statusDuration !== "00:00" ? stats.statusDuration : "00:00", 
+    statusDuration: stats.statusDuration !== '00:00' ? stats.statusDuration : '00:00',
     engineHoursTotal: stats.engineHours,
-    drivingTime: stats.drivingTime !== "00:00" ? stats.drivingTime : "00:00",
-    idleTime: stats.idleTime !== "00:00" ? stats.idleTime : "00:00",
-    stoppedTime: stats.stoppedTime !== "00:00" ? stats.stoppedTime : "00:00",
-    offlineTime: "00:00",
-    firstStart: { time: vehicle.departureTime || "N/A", loc: vehicle.departureLocation || "N/A" },
-    lastStop: { time: vehicle.arrivalTime || "N/A", loc: vehicle.arrivalLocation || "N/A" },
-    geofence: vehicle.geofence || "N/A",
-    weight: vehicle.weight ? `${vehicle.weight} T` : "N/A",
-    temp: vehicle.temperature ? `${vehicle.temperature}°C` : "N/A",
-    battery: vehicle.batteryLevel ? `${vehicle.batteryLevel} V` : "N/A",
-    signal: vehicle.signalStrength || "N/A",
-    deviceModel: vehicle.deviceModel || "N/A",
-    simCard: vehicle.sim || "N/A",
-    imei: vehicle.imei || "N/A",
-    installDate: vehicle.installDate ? new Date(vehicle.installDate).toLocaleDateString('fr-FR') : "N/A",
+    drivingTime: stats.drivingTime !== '00:00' ? stats.drivingTime : '00:00',
+    idleTime: stats.idleTime !== '00:00' ? stats.idleTime : '00:00',
+    stoppedTime: stats.stoppedTime !== '00:00' ? stats.stoppedTime : '00:00',
+    offlineTime: '00:00',
+    firstStart: { time: vehicle.departureTime || 'N/A', loc: vehicle.departureLocation || 'N/A' },
+    lastStop: { time: vehicle.arrivalTime || 'N/A', loc: vehicle.arrivalLocation || 'N/A' },
+    geofence: vehicle.geofence || 'N/A',
+    weight: vehicle.weight ? `${vehicle.weight} T` : 'N/A',
+    temp: vehicle.temperature ? `${vehicle.temperature}°C` : 'N/A',
+    battery: vehicle.batteryLevel ? `${vehicle.batteryLevel} V` : 'N/A',
+    signal: vehicle.signalStrength || 'N/A',
+    deviceModel: vehicle.deviceModel || 'N/A',
+    simCard: vehicle.sim || 'N/A',
+    imei: vehicle.imei || 'N/A',
+    installDate: vehicle.installDate ? new Date(vehicle.installDate).toLocaleDateString('fr-FR') : 'N/A',
     // Comportement
     safetyScore: vehicle.behaviorStats?.safetyScore || vehicle.driverScore || 0,
     harshBraking: vehicle.behaviorStats?.harshBraking || 0,
     harshAccel: vehicle.behaviorStats?.harshAccel || 0,
     sharpTurn: vehicle.behaviorStats?.sharpTurn || 0,
     // Violations (Règles)
-    violationsList: alerts.length > 0 ? alerts.map((a) => ({
-       type: a.type,
-       time: new Date(a.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-       details: a.message
-    })) : [],
+    violationsList:
+      alerts.length > 0
+        ? alerts.map((a) => ({
+            type: a.type,
+            time: new Date(a.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            details: a.message,
+          }))
+        : [],
     // Maintenance
-    maintenanceList: maintenanceRecords.length > 0 ? maintenanceRecords.map(r => ({
-        task: r.description,
-        due: r.nextDueDate ? new Date(r.nextDueDate).toLocaleDateString('fr-FR') : 'N/A',
-        status: r.status === 'OVERDUE' ? 'warning' : 'ok',
-        cost: r.cost
-    })) : [],
+    maintenanceList:
+      maintenanceRecords.length > 0
+        ? maintenanceRecords.map((r) => ({
+            task: r.description,
+            due: r.nextDueDate ? new Date(r.nextDueDate).toLocaleDateString('fr-FR') : 'N/A',
+            status: r.status === 'OVERDUE' ? 'warning' : 'ok',
+            cost: r.cost,
+          }))
+        : [],
     expenses: expenses,
     // Fuel Data
     fuelHistory: formattedFuelHistory,
     fuelStats: fuelStats || { avgConsumption: 0, totalCost: 0, idlingWaste: 0 },
-    refillsList: fuelRecords.length > 0 ? fuelRecords.filter(r => r.type === 'REFILL').map(r => ({
-        date: new Date(r.date).toLocaleDateString('fr-FR'),
-        place: r.location || 'Station Inconnue',
-        volume: `+${r.volume} L`,
-        cost: r.cost.toString()
-    })) : []
+    refillsList:
+      fuelRecords.length > 0
+        ? fuelRecords
+            .filter((r) => r.type === 'REFILL')
+            .map((r) => ({
+              date: new Date(r.date).toLocaleDateString('fr-FR'),
+              place: r.location || 'Station Inconnue',
+              volume: `+${r.volume} L`,
+              cost: r.cost.toString(),
+            }))
+        : [],
   };
 
   // --- GESTION DES ETATS ---
@@ -402,22 +461,24 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
     setHiddenFields(newHidden);
   };
 
-    // --- RENDU DU CONTENU DES MODALES ---
+  // --- RENDU DU CONTENU DES MODALES ---
   const renderModalContent = () => {
-      if (activeModal === 'maintenance') {
-          return <MaintenanceModalContent />;
-      }
-      if (activeModal === 'violations') {
-          return <ViolationsModalContent />;
-      }
-      if (activeModal === 'fuel') {
-          return <FuelModalContent 
-            history={formattedLongFuelHistory.length > 0 ? formattedLongFuelHistory : formattedFuelHistory} 
-            stats={fuelStats} 
-            refills={fuelRecords} 
-          />;
-      }
-      return null;
+    if (activeModal === 'maintenance') {
+      return <MaintenanceModalContent />;
+    }
+    if (activeModal === 'violations') {
+      return <ViolationsModalContent />;
+    }
+    if (activeModal === 'fuel') {
+      return (
+        <FuelModalContent
+          history={formattedLongFuelHistory.length > 0 ? formattedLongFuelHistory : formattedFuelHistory}
+          stats={fuelStats}
+          refills={fuelRecords}
+        />
+      );
+    }
+    return null;
   };
 
   // --- RENDU DES BLOCS ---
@@ -426,226 +487,389 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({ vehicle,
       case 'photo':
         return <PhotoBlock vehicle={vehicle} configMode={isConfigMode} />;
       case 'activity':
-        return <ActivityBlock vehicle={vehicle} mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} onReplay={onReplay} />;
+        return (
+          <ActivityBlock
+            vehicle={vehicle}
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+            onReplay={onReplay}
+          />
+        );
       case 'alerts':
-        if (isLoadingAlerts) return <div className="p-3 space-y-2">{Array.from({ length: 3 }).map((_, i) => <ListItemSkeleton key={i} />)}</div>;
-        if (alerts.length === 0) return <div className="p-6 text-center text-sm text-slate-400 dark:text-slate-500">Aucune alerte récente pour ce véhicule</div>;
-        return <AlertsBlock alerts={alerts} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} />;
+        if (isLoadingAlerts)
+          return (
+            <div className="p-3 space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <ListItemSkeleton key={i} />
+              ))}
+            </div>
+          );
+        if (alerts.length === 0)
+          return (
+            <div className="p-6 text-center text-sm text-[var(--text-muted)]">
+              Aucune alerte récente pour ce véhicule
+            </div>
+          );
+        return (
+          <AlertsBlock
+            alerts={alerts}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+          />
+        );
       case 'behavior':
-        return <BehaviorBlock mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} />;
+        return (
+          <BehaviorBlock
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+          />
+        );
       case 'violations':
-        return <ViolationsBlock vehicle={vehicle} mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} setActiveModal={setActiveModal} />;
+        return (
+          <ViolationsBlock
+            vehicle={vehicle}
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+            setActiveModal={setActiveModal}
+          />
+        );
       case 'maintenance':
-        if (isLoadingMaintenance) return <div className="p-3 space-y-2">{Array.from({ length: 3 }).map((_, i) => <ListItemSkeleton key={i} />)}</div>;
-        if (maintenanceRecords.length === 0) return <div className="p-6 text-center text-sm text-slate-400 dark:text-slate-500">Aucun entretien enregistré pour ce véhicule</div>;
-        return <MaintenanceBlock mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} setActiveModal={setActiveModal} />;
+        if (isLoadingMaintenance)
+          return (
+            <div className="p-3 space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <ListItemSkeleton key={i} />
+              ))}
+            </div>
+          );
+        if (maintenanceRecords.length === 0)
+          return (
+            <div className="p-6 text-center text-sm text-[var(--text-muted)]">
+              Aucun entretien enregistré pour ce véhicule
+            </div>
+          );
+        return (
+          <MaintenanceBlock
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+            setActiveModal={setActiveModal}
+          />
+        );
       case 'expenses':
-        return <ExpensesBlock mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} />;
+        return (
+          <ExpensesBlock
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+          />
+        );
       case 'fuel':
-        if (isLoadingFuel) return <div className="p-3 space-y-3"><StatsCardSkeleton /><div className="space-y-2">{Array.from({ length: 3 }).map((_, i) => <ListItemSkeleton key={i} />)}</div></div>;
-        if (fuelRecords.length === 0) return <div className="p-6 text-center text-sm text-slate-400 dark:text-slate-500">Aucun enregistrement carburant pour ce véhicule</div>;
-        return <FuelBlock mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} activeFuelTab={activeFuelTab} setActiveFuelTab={setActiveFuelTab} setActiveModal={setActiveModal} />;
-      case 'sensors': 
-        return <SensorsBlock vehicle={vehicle} mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} />;
+        if (isLoadingFuel)
+          return (
+            <div className="p-3 space-y-3">
+              <StatsCardSkeleton />
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <ListItemSkeleton key={i} />
+                ))}
+              </div>
+            </div>
+          );
+        if (fuelRecords.length === 0)
+          return (
+            <div className="p-6 text-center text-sm text-[var(--text-muted)]">
+              Aucun enregistrement carburant pour ce véhicule
+            </div>
+          );
+        return (
+          <FuelBlock
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+            activeFuelTab={activeFuelTab}
+            setActiveFuelTab={setActiveFuelTab}
+            setActiveModal={setActiveModal}
+          />
+        );
+      case 'sensors':
+        return (
+          <SensorsBlock
+            vehicle={vehicle}
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+          />
+        );
       case 'gps':
-        return <GpsBlock mockData={mockData} isConfigMode={isConfigMode} hiddenFields={hiddenFields} toggleFieldVisibility={toggleFieldVisibility} />;
+        return (
+          <GpsBlock
+            mockData={mockData}
+            isConfigMode={isConfigMode}
+            hiddenFields={hiddenFields}
+            toggleFieldVisibility={toggleFieldVisibility}
+          />
+        );
       case 'device-history':
         return <DeviceHistoryBlock vehicleId={vehicle.id} />;
-      default: return null;
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-50 dark:bg-slate-950">
-      
+    <div className="h-full flex flex-col bg-[var(--bg-elevated)]">
       {/* --- HEADER --- */}
       <div className="bg-slate-900 text-white shrink-0 p-4 shadow-md relative">
         <div className="flex justify-between items-start mb-3">
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-lg border border-white/10">
-                    {vehicle.type === 'TRUCK' || vehicle.type === 'VAN' ? <Truck className="w-5 h-5 text-white" /> : 
-                     vehicle.type === 'MOTORCYCLE' ? <Bike className="w-5 h-5 text-white" /> :
-                     vehicle.type === 'BUS' ? <Bus className="w-5 h-5 text-white" /> :
-                     vehicle.type === 'CONSTRUCTION' ? <HardHat className="w-5 h-5 text-white" /> :
-                     <Car className="w-5 h-5 text-white" />}
-                </div>
-                <div>
-                    <h2 className="text-lg font-bold leading-tight">{vehicle.name}</h2>
-                    {vehicle.plate && <p className="text-slate-400 text-xs mt-0.5">{vehicle.plate}</p>}
-                    <div className="flex items-center gap-1 mt-1">
-                      <MapPin className="w-3 h-3 text-[var(--primary)] shrink-0" />
-                      <span className="text-xs text-slate-300 truncate max-w-[160px]" title={vehicle.address || vehicle.geofence || ''}>
-                        {vehicle.address || vehicle.geofence || `${vehicle.location?.lat?.toFixed(5)}, ${vehicle.location?.lng?.toFixed(5)}`}
-                      </span>
-                      <button
-                        onClick={() => navigator.clipboard.writeText(`${vehicle.location?.lat},${vehicle.location?.lng}`)}
-                        title="Copier les coordonnées"
-                        className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-[var(--primary)] transition-colors shrink-0"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </button>
-                      <a
-                        href={`https://www.google.com/maps?q=${vehicle.location?.lat},${vehicle.location?.lng}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        title="Ouvrir dans Google Maps"
-                        className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-[var(--primary)] transition-colors shrink-0"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-lg border border-white/10">
+              {vehicle.type === 'TRUCK' || vehicle.type === 'VAN' ? (
+                <Truck className="w-5 h-5 text-white" />
+              ) : vehicle.type === 'MOTORCYCLE' ? (
+                <Bike className="w-5 h-5 text-white" />
+              ) : vehicle.type === 'BUS' ? (
+                <Bus className="w-5 h-5 text-white" />
+              ) : vehicle.type === 'CONSTRUCTION' ? (
+                <HardHat className="w-5 h-5 text-white" />
+              ) : (
+                <Car className="w-5 h-5 text-white" />
+              )}
             </div>
-            <div className="flex gap-2">
-                 <button 
-                    onClick={() => setIsConfigMode(!isConfigMode)}
-                    className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
-                    title="Configurer l'affichage"
-                 >
-                    <SlidersHorizontal className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={onClose} 
-                  className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-slate-300"
-                  title="Fermer"
+            <div>
+              <h2 className="text-lg font-bold leading-tight">{vehicle.name}</h2>
+              {vehicle.plate && <p className="text-[var(--text-muted)] text-xs mt-0.5">{vehicle.plate}</p>}
+              <div className="flex items-center gap-1 mt-1">
+                <MapPin className="w-3 h-3 text-[var(--primary)] shrink-0" />
+                <span
+                  className="text-xs text-slate-300 truncate max-w-[160px]"
+                  title={vehicle.address || vehicle.geofence || ''}
                 >
-                  <X className="w-4 h-4" />
+                  {vehicle.address ||
+                    vehicle.geofence ||
+                    `${vehicle.location?.lat?.toFixed(5)}, ${vehicle.location?.lng?.toFixed(5)}`}
+                </span>
+                <button
+                  onClick={() => navigator.clipboard.writeText(`${vehicle.location?.lat},${vehicle.location?.lng}`)}
+                  title="Copier les coordonnées"
+                  className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
+                >
+                  <Copy className="w-3 h-3" />
                 </button>
+                <a
+                  href={`https://www.google.com/maps?q=${vehicle.location?.lat},${vehicle.location?.lng}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  title="Ouvrir dans Google Maps"
+                  className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
             </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsConfigMode(!isConfigMode)}
+              className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+              title="Configurer l'affichage"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-slate-300"
+              title="Fermer"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Ligne d'infos : Statut | Durée | Km | Heures Moteur */}
         <div className="flex flex-wrap items-center gap-3 bg-slate-800/50 p-2 rounded-lg border border-white/5 backdrop-blur-sm">
-             {/* Statut + Durée */}
-             <div className={`flex items-center gap-2 px-2 py-1 rounded text-xs font-bold border ${statusColors[vehicle.status]}`}>
-                <span>{statusLabels[vehicle.status]}</span>
-                <span className="w-px h-3 bg-current opacity-30"></span>
-                <span className="font-mono">{mockData.statusDuration}</span>
-             </div>
-             
-             {/* Kilométrage */}
-             <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
-                 <Navigation className="w-3 h-3 text-[var(--primary)]" />
-                 <span>{(vehicle.mileage / 1000).toFixed(1)} km</span>
-             </div>
+          {/* Statut + Durée */}
+          <div
+            className={`flex items-center gap-2 px-2 py-1 rounded text-xs font-bold border ${statusColors[vehicle.status]}`}
+          >
+            <span>{statusLabels[vehicle.status]}</span>
+            <span className="w-px h-3 bg-current opacity-30"></span>
+            <span className="font-mono">{mockData.statusDuration}</span>
+          </div>
 
-             {/* Heures Moteur */}
-             <ConfigurableRow id="headerEngineHours" isConfigMode={isConfigMode} isHidden={hiddenFields.has('headerEngineHours')} onToggle={() => toggleFieldVisibility('headerEngineHours')}>
-                 <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
-                     <Activity className="w-3 h-3 text-orange-400" />
-                     <span>{mockData.engineHoursTotal}</span>
-                 </div>
-             </ConfigurableRow>
+          {/* Kilométrage */}
+          <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
+            <Navigation className="w-3 h-3 text-[var(--primary)]" />
+            <span>{(vehicle.mileage / 1000).toFixed(1)} km</span>
+          </div>
+
+          {/* Heures Moteur */}
+          <ConfigurableRow
+            id="headerEngineHours"
+            isConfigMode={isConfigMode}
+            isHidden={hiddenFields.has('headerEngineHours')}
+            onToggle={() => toggleFieldVisibility('headerEngineHours')}
+          >
+            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
+              <Activity className="w-3 h-3 text-orange-400" />
+              <span>{mockData.engineHoursTotal}</span>
+            </div>
+          </ConfigurableRow>
         </div>
       </div>
 
       {/* --- BARRE INFO CONFIG --- */}
       {isConfigMode && (
-          <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-b border-[var(--primary)] dark:border-[var(--primary)] px-4 py-2 text-xs text-[var(--primary)] dark:text-[var(--primary)] flex justify-between items-center">
-             <span><Info className="w-3 h-3 inline mr-1"/> Mode Config : Cliquez sur l'œil pour masquer les éléments ou les blocs.</span>
-             <button onClick={() => setIsConfigMode(false)} className="font-bold hover:underline">Terminé</button>
-          </div>
+        <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-b border-[var(--primary)] dark:border-[var(--primary)] px-4 py-2 text-xs text-[var(--primary)] dark:text-[var(--primary)] flex justify-between items-center">
+          <span>
+            <Info className="w-3 h-3 inline mr-1" /> Mode Config : Cliquez sur l'œil pour masquer les éléments ou les
+            blocs.
+          </span>
+          <button onClick={() => setIsConfigMode(false)} className="font-bold hover:underline">
+            Terminé
+          </button>
+        </div>
       )}
 
       {/* --- CONTENU DÉFILANT (BLOCS) --- */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/50 dark:bg-slate-900/50">
-         {blocks.map((block, index) => (
-            <CollapsibleSection 
-                key={block.id} 
-                title={block.label} 
-                icon={block.icon}
-                isVisible={block.visible}
-                isConfigMode={isConfigMode}
-                onToggleVisibility={() => toggleBlockVisibility(index)}
-                onMoveUp={() => moveBlock(index, -1)}
-                onMoveDown={() => moveBlock(index, 1)}
-            >
-               {renderBlockContent(block.id)}
-            </CollapsibleSection>
-         ))}
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/50 bg-[var(--bg-surface)]/50">
+        {blocks.map((block, index) => (
+          <CollapsibleSection
+            key={block.id}
+            title={block.label}
+            icon={block.icon}
+            isVisible={block.visible}
+            isConfigMode={isConfigMode}
+            onToggleVisibility={() => toggleBlockVisibility(index)}
+            onMoveUp={() => moveBlock(index, -1)}
+            onMoveDown={() => moveBlock(index, 1)}
+          >
+            {renderBlockContent(block.id)}
+          </CollapsibleSection>
+        ))}
 
-         {isConfigMode && blocks.every(b => !b.visible) && (
-            <div className="text-center p-8 text-slate-400 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg">
-                Tous les blocs sont masqués.
-            </div>
-         )}
+        {isConfigMode && blocks.every((b) => !b.visible) && (
+          <div className="text-center p-8 text-[var(--text-muted)] border-2 border-dashed border-[var(--border)] rounded-lg">
+            Tous les blocs sont masqués.
+          </div>
+        )}
       </div>
 
       {/* --- FOOTER ACTIONS --- */}
       {!isConfigMode && (
-        <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 space-y-3 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <button 
-                onClick={async () => {
-                    if (await confirm({ message: vehicle.isImmobilized 
-                        ? "Voulez-vous vraiment réactiver le démarrage de ce véhicule ?" 
-                        : "ATTENTION : Voulez-vous immobiliser ce véhicule à distance ? Le moteur sera coupé au prochain arrêt.", variant: vehicle.isImmobilized ? 'warning' : 'danger', title: vehicle.isImmobilized ? 'Réactiver le véhicule' : 'Immobiliser le véhicule', confirmLabel: vehicle.isImmobilized ? 'Réactiver' : 'Immobiliser' })) {
-                        try {
-                          setIsImmobilizing(true);
-                          await toggleImmobilization(vehicle.id, !vehicle.isImmobilized);
-                        } catch {
-                          // Error handled by DataContext / TanStack Query
-                        } finally {
-                          setIsImmobilizing(false);
-                        }
-                    }
-                }}
-                disabled={isImmobilizing}
-                className={`w-full py-3 border rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
-                    vehicle.isImmobilized 
-                    ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50' 
-                    : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50'
-                }`}
-            >
-                {isImmobilizing ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                    vehicle.isImmobilized ? <Lock className="w-4 h-4" /> : <Lock className="w-4 h-4" />
-                )}
-                {isImmobilizing ? 'Traitement...' : (vehicle.isImmobilized ? 'Débloquer le véhicule' : 'Immobiliser le véhicule')}
-            </button>
+        <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-surface)] space-y-3 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <button
+            onClick={async () => {
+              if (
+                await confirm({
+                  message: vehicle.isImmobilized
+                    ? 'Voulez-vous vraiment réactiver le démarrage de ce véhicule ?'
+                    : 'ATTENTION : Voulez-vous immobiliser ce véhicule à distance ? Le moteur sera coupé au prochain arrêt.',
+                  variant: vehicle.isImmobilized ? 'warning' : 'danger',
+                  title: vehicle.isImmobilized ? 'Réactiver le véhicule' : 'Immobiliser le véhicule',
+                  confirmLabel: vehicle.isImmobilized ? 'Réactiver' : 'Immobiliser',
+                })
+              ) {
+                try {
+                  setIsImmobilizing(true);
+                  await toggleImmobilization(vehicle.id, !vehicle.isImmobilized);
+                } catch {
+                  // Error handled by DataContext / TanStack Query
+                } finally {
+                  setIsImmobilizing(false);
+                }
+              }
+            }}
+            disabled={isImmobilizing}
+            className={`w-full py-3 border rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
+              vehicle.isImmobilized
+                ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50'
+                : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50'
+            }`}
+          >
+            {isImmobilizing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : vehicle.isImmobilized ? (
+              <Lock className="w-4 h-4" />
+            ) : (
+              <Lock className="w-4 h-4" />
+            )}
+            {isImmobilizing
+              ? 'Traitement...'
+              : vehicle.isImmobilized
+                ? 'Débloquer le véhicule'
+                : 'Immobiliser le véhicule'}
+          </button>
 
-            <button 
-                onClick={async () => {
-                    if (await confirm({ message: vehicle.isBrokenDown 
-                        ? "Voulez-vous marquer ce véhicule comme réparé ?" 
-                        : "Voulez-vous signaler ce véhicule comme en panne ?", variant: 'warning', title: vehicle.isBrokenDown ? 'Marquer comme réparé' : 'Signaler une panne', confirmLabel: vehicle.isBrokenDown ? 'Confirmer' : 'Signaler' })) {
-                        try {
-                          setIsUpdatingStatus(true);
-                          await updateVehicle({ ...vehicle, isBrokenDown: !vehicle.isBrokenDown });
-                        } catch {
-                          // Error handled by DataContext / TanStack Query
-                        } finally {
-                          setIsUpdatingStatus(false);
-                        }
-                    }
-                }}
-                disabled={isUpdatingStatus}
-                className={`w-full py-3 border rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
-                    vehicle.isBrokenDown 
-                    ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50' 
-                    : 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/50'
-                }`}
-            >
-                {isUpdatingStatus ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                    <Wrench className="w-4 h-4" />
-                )}
-                {isUpdatingStatus ? 'Traitement...' : (vehicle.isBrokenDown ? 'Marquer comme Réparé' : 'Signaler une Panne')}
-            </button>
+          <button
+            onClick={async () => {
+              if (
+                await confirm({
+                  message: vehicle.isBrokenDown
+                    ? 'Voulez-vous marquer ce véhicule comme réparé ?'
+                    : 'Voulez-vous signaler ce véhicule comme en panne ?',
+                  variant: 'warning',
+                  title: vehicle.isBrokenDown ? 'Marquer comme réparé' : 'Signaler une panne',
+                  confirmLabel: vehicle.isBrokenDown ? 'Confirmer' : 'Signaler',
+                })
+              ) {
+                try {
+                  setIsUpdatingStatus(true);
+                  await updateVehicle({ ...vehicle, isBrokenDown: !vehicle.isBrokenDown });
+                } catch {
+                  // Error handled by DataContext / TanStack Query
+                } finally {
+                  setIsUpdatingStatus(false);
+                }
+              }
+            }}
+            disabled={isUpdatingStatus}
+            className={`w-full py-3 border rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
+              vehicle.isBrokenDown
+                ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50'
+                : 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/50'
+            }`}
+          >
+            {isUpdatingStatus ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wrench className="w-4 h-4" />}
+            {isUpdatingStatus ? 'Traitement...' : vehicle.isBrokenDown ? 'Marquer comme Réparé' : 'Signaler une Panne'}
+          </button>
         </div>
       )}
 
       {/* --- MODALES DÉTAILLÉES --- */}
-      <Modal 
-        isOpen={!!activeModal} 
+      <Modal
+        isOpen={!!activeModal}
         onClose={() => setActiveModal(null)}
-        title={activeModal === 'fuel' ? "Détails Carburant" : activeModal === 'maintenance' ? "Carnet d'entretien" : "Violations & Sécurité"}
-        footer={<button onClick={() => setActiveModal(null)} className="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-slate-700 dark:text-slate-200 font-medium text-sm">Fermer</button>}
+        title={
+          activeModal === 'fuel'
+            ? 'Détails Carburant'
+            : activeModal === 'maintenance'
+              ? "Carnet d'entretien"
+              : 'Violations & Sécurité'
+        }
+        footer={
+          <button
+            onClick={() => setActiveModal(null)}
+            className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded text-[var(--text-primary)] font-medium text-sm"
+          >
+            Fermer
+          </button>
+        }
       >
-          {renderModalContent()}
+        {renderModalContent()}
       </Modal>
-    <ConfirmDialogComponent />
+      <ConfirmDialogComponent />
     </div>
   );
 };

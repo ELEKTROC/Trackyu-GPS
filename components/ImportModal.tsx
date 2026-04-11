@@ -74,27 +74,27 @@ export const ImportModal = <T,>({
         {/* File Upload Area */}
         {!file ? (
           <div
-            className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 transition-colors cursor-pointer"
+            className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 flex flex-col items-center justify-center text-center hover:border-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 transition-colors cursor-pointer"
             onClick={() => fileInputRef.current?.click()}
           >
             <div className="w-12 h-12 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center mb-4">
               <Upload className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">
+            <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">
               Cliquez pour sélectionner un fichier CSV
             </h4>
-            <p className="text-xs text-slate-500 dark:text-slate-400">ou glissez-déposez votre fichier ici</p>
+            <p className="text-xs text-[var(--text-secondary)]">ou glissez-déposez votre fichier ici</p>
             <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleFileChange} />
           </div>
         ) : (
-          <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-4 flex items-center justify-between">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 rounded-lg flex items-center justify-center">
                 <FileText className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{file.name}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{(file.size / 1024).toFixed(1)} KB</p>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{file.name}</p>
+                <p className="text-xs text-[var(--text-secondary)]">{(file.size / 1024).toFixed(1)} KB</p>
               </div>
             </div>
             <button
@@ -102,7 +102,7 @@ export const ImportModal = <T,>({
                 setFile(null);
                 setResult(null);
               }}
-              className="text-slate-400 hover:text-red-500"
+              className="text-[var(--text-muted)] hover:text-red-500"
             >
               <X className="w-5 h-5" />
             </button>
@@ -113,9 +113,9 @@ export const ImportModal = <T,>({
         {result && (
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700 text-center">
-                <div className="text-2xl font-bold text-slate-700 dark:text-slate-200">{result.meta.total}</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">Lignes trouvées</div>
+              <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] text-center">
+                <div className="text-2xl font-bold text-[var(--text-primary)]">{result.meta.total}</div>
+                <div className="text-xs text-[var(--text-secondary)] uppercase font-bold">Lignes trouvées</div>
               </div>
               <div className="bg-green-50 p-3 rounded-lg border border-green-200 text-center">
                 <div className="text-2xl font-bold text-green-600">{result.meta.success}</div>
@@ -155,10 +155,10 @@ export const ImportModal = <T,>({
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
+      <div className="px-6 py-4 bg-[var(--bg-elevated)] border-t border-[var(--border)] border-[var(--border)] flex justify-end gap-3">
         <button
           onClick={handleClose}
-          className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200 rounded-lg transition-colors"
+          className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
         >
           Annuler
         </button>

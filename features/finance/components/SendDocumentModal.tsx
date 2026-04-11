@@ -189,9 +189,7 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
 
         {/* Channel selector */}
         <div>
-          <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">
-            Canal d'envoi
-          </label>
+          <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Canal d'envoi</label>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -199,7 +197,7 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
               className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all ${
                 channel === 'EMAIL'
                   ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
-                  : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'
+                  : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border)]'
               }`}
             >
               <Mail className="w-4 h-4" /> Email
@@ -210,7 +208,7 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
               className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all ${
                 channel === 'WHATSAPP'
                   ? 'border-green-500 bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300'
-                  : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300'
+                  : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border)]'
               }`}
             >
               <MessageCircle className="w-4 h-4" /> WhatsApp
@@ -220,12 +218,12 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
 
         {/* Recipient */}
         <div>
-          <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
+          <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
             {channel === 'EMAIL' ? 'Email du destinataire' : 'Numéro WhatsApp'} <span className="text-red-500">*</span>
           </label>
           <input
             type={channel === 'EMAIL' ? 'email' : 'tel'}
-            className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+            className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)]"
             value={channel === 'EMAIL' ? emailTo : whatsappTo}
             onChange={(e) => (channel === 'EMAIL' ? setEmailTo(e.target.value) : setWhatsappTo(e.target.value))}
             placeholder={channel === 'EMAIL' ? 'email@exemple.com' : '+225XXXXXXXXXX'}
@@ -234,13 +232,13 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
 
         {/* Template selection */}
         <div>
-          <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">
+          <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
             Modèle de message
           </label>
           <div className="relative">
             <select
               title="Modèle de message"
-              className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white appearance-none pr-8"
+              className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] appearance-none pr-8"
               value={selectedTemplateId}
               onChange={(e) => handleTemplateSelect(e.target.value)}
             >
@@ -258,21 +256,23 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
                 <option disabled>Aucun modèle {channel} disponible</option>
               )}
             </select>
-            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
           </div>
           {filteredTemplates.length === 0 && !loadingTemplates && (
-            <p className="text-[10px] text-slate-400 mt-1">Créez des modèles dans Administration → Messages</p>
+            <p className="text-[10px] text-[var(--text-muted)] mt-1">
+              Créez des modèles dans Administration → Messages
+            </p>
           )}
         </div>
 
         {/* Subject (email only) */}
         {channel === 'EMAIL' && (
           <div>
-            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Objet</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Objet</label>
             <input
               type="text"
               title="Objet de l'email"
-              className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white"
+              className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)]"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
@@ -281,9 +281,9 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
 
         {/* Message */}
         <div>
-          <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Message</label>
+          <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Message</label>
           <textarea
-            className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white h-28 resize-none"
+            className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] h-28 resize-none"
             value={message}
             onChange={(e) => {
               setMessage(e.target.value);
@@ -294,18 +294,18 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
         </div>
 
         {/* Attachment indicator */}
-        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 px-3 py-2 rounded-lg">
+        <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] bg-[var(--bg-elevated)] px-3 py-2 rounded-lg">
           <FileText className="w-3.5 h-3.5" />
           <span>Le {docLabel.toLowerCase()} sera joint au format PDF</span>
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex justify-end gap-3 pt-3 border-t border-[var(--border)] border-[var(--border)]">
           <button
             type="button"
             onClick={onClose}
             disabled={sending}
-            className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-bold disabled:opacity-50"
+            className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold disabled:opacity-50"
           >
             Annuler
           </button>

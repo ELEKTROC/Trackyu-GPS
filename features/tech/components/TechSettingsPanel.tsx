@@ -548,11 +548,11 @@ export const TechSettingsPanel: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Settings className="w-6 h-6 text-[var(--primary)]" />
-            <h2 className="text-xl font-semibold dark:text-white">Configuration Interventions</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)]">Configuration Interventions</h2>
           </div>
           <button
             onClick={fetchAllData}
-            className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+            className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200"
             title="Rafraîchir"
           >
             <RotateCcw className="w-5 h-5" />
@@ -560,7 +560,7 @@ export const TechSettingsPanel: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-slate-200 dark:border-slate-700">
+        <div className="border-b border-[var(--border)]">
           <nav className="flex space-x-4 overflow-x-auto">
             {tabs.map((tab) => (
               <button
@@ -569,13 +569,13 @@ export const TechSettingsPanel: React.FC = () => {
                 className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === tab.id
                     ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
                 {tab.label}
                 {tab.count !== null && (
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-700">{tab.count}</span>
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-[var(--bg-elevated)]">{tab.count}</span>
                 )}
               </button>
             ))}
@@ -583,12 +583,12 @@ export const TechSettingsPanel: React.FC = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
+        <div className="bg-[var(--bg-elevated)] rounded-lg shadow p-6">
           {/* TYPES TAB */}
           {activeTab === 'types' && (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-medium dark:text-white">Types d'interventions</h3>
+                <h3 className="text-lg font-medium text-[var(--text-primary)]">Types d'interventions</h3>
                 <button
                   onClick={() =>
                     setNewType({
@@ -615,28 +615,28 @@ export const TechSettingsPanel: React.FC = () => {
                       placeholder="Code (ex: INSTALLATION)"
                       value={newType.code || ''}
                       onChange={(e) => setNewType({ ...newType, code: e.target.value.toUpperCase() })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                     <input
                       type="text"
                       placeholder="Libellé"
                       value={newType.label || ''}
                       onChange={(e) => setNewType({ ...newType, label: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                     <input
                       type="number"
                       placeholder="Durée (min)"
                       value={newType.default_duration || 60}
                       onChange={(e) => setNewType({ ...newType, default_duration: parseInt(e.target.value) })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                     <select
                       value={newType.icon || 'Wrench'}
                       onChange={(e) => setNewType({ ...newType, icon: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     >
                       {Object.keys(AVAILABLE_ICONS).map((icon) => (
                         <option key={icon} value={icon}>
@@ -645,7 +645,7 @@ export const TechSettingsPanel: React.FC = () => {
                       ))}
                     </select>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-600 dark:text-slate-400">Couleur:</span>
+                      <span className="text-sm text-[var(--text-secondary)]">Couleur:</span>
                       <div className="flex gap-1">
                         {AVAILABLE_COLORS.map((color) => (
                           <button
@@ -662,13 +662,13 @@ export const TechSettingsPanel: React.FC = () => {
                       placeholder={`Coût de base (${currency})`}
                       value={newType.base_cost || 0}
                       onChange={(e) => setNewType({ ...newType, base_cost: parseInt(e.target.value) })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                   </div>
                   <div className="flex justify-end gap-2 mt-4">
                     <button
                       onClick={() => setNewType(null)}
-                      className="px-4 py-2 text-slate-600 hover:text-slate-800 dark:text-slate-400"
+                      className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:text-[var(--text-muted)]"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -694,8 +694,8 @@ export const TechSettingsPanel: React.FC = () => {
                       key={type.id}
                       className={`flex items-center justify-between p-4 rounded-lg border ${
                         type.is_active
-                          ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                          : 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-600 opacity-60'
+                          ? 'bg-[var(--bg-elevated)] border-[var(--border)]'
+                          : 'bg-slate-100 bg-[var(--bg-surface)] border-[var(--border)] opacity-60'
                       }`}
                     >
                       {isEditing ? (
@@ -704,7 +704,7 @@ export const TechSettingsPanel: React.FC = () => {
                             type="text"
                             value={editingType.label}
                             onChange={(e) => setEditingType({ ...editingType, label: e.target.value })}
-                            className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                           />
                           <input
                             type="number"
@@ -712,18 +712,18 @@ export const TechSettingsPanel: React.FC = () => {
                             onChange={(e) =>
                               setEditingType({ ...editingType, default_duration: parseInt(e.target.value) })
                             }
-                            className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                           />
                           <input
                             type="number"
                             value={editingType.base_cost}
                             onChange={(e) => setEditingType({ ...editingType, base_cost: parseInt(e.target.value) })}
-                            className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                            className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                           />
                           <div className="flex gap-2">
                             <button
                               onClick={() => setEditingType(null)}
-                              className="p-2 text-slate-500 hover:text-slate-700"
+                              className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -744,8 +744,8 @@ export const TechSettingsPanel: React.FC = () => {
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="font-medium dark:text-white">{type.label}</span>
-                                <span className="text-xs px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-slate-600 dark:text-slate-400">
+                                <span className="font-medium text-[var(--text-primary)]">{type.label}</span>
+                                <span className="text-xs px-2 py-0.5 bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)]">
                                   {type.code}
                                 </span>
                                 {type.is_system && (
@@ -754,7 +754,7 @@ export const TechSettingsPanel: React.FC = () => {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-sm text-slate-500 dark:text-slate-400">
+                              <div className="text-sm text-[var(--text-secondary)]">
                                 {type.default_duration} min • {formatPrice(type.base_cost)}
                               </div>
                             </div>
@@ -762,7 +762,7 @@ export const TechSettingsPanel: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleToggleType(type)}
-                              className={`p-2 rounded-lg ${type.is_active ? 'text-green-600 hover:bg-green-50' : 'text-slate-400 hover:bg-slate-100'}`}
+                              className={`p-2 rounded-lg ${type.is_active ? 'text-green-600 hover:bg-green-50' : 'text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]'}`}
                               title={type.is_active ? 'Désactiver' : 'Activer'}
                             >
                               {type.is_active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -797,12 +797,12 @@ export const TechSettingsPanel: React.FC = () => {
           {activeTab === 'natures' && (
             <div className="space-y-4">
               <div className="flex justify-between items-center flex-wrap gap-4">
-                <h3 className="text-lg font-medium dark:text-white">Natures d'interventions</h3>
+                <h3 className="text-lg font-medium text-[var(--text-primary)]">Natures d'interventions</h3>
                 <div className="flex items-center gap-4">
                   <select
                     value={selectedTypeFilter}
                     onChange={(e) => setSelectedTypeFilter(e.target.value)}
-                    className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                   >
                     <option value="">Tous les types</option>
                     {types
@@ -829,7 +829,7 @@ export const TechSettingsPanel: React.FC = () => {
                     <select
                       value={newNature.type_id || ''}
                       onChange={(e) => setNewNature({ ...newNature, type_id: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     >
                       <option value="">Sélectionner un type</option>
                       {types
@@ -845,20 +845,20 @@ export const TechSettingsPanel: React.FC = () => {
                       placeholder="Code"
                       value={newNature.code || ''}
                       onChange={(e) => setNewNature({ ...newNature, code: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                     <input
                       type="text"
                       placeholder="Libellé"
                       value={newNature.label || ''}
                       onChange={(e) => setNewNature({ ...newNature, label: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                   </div>
                   <div className="flex justify-end gap-2 mt-4">
                     <button
                       onClick={() => setNewNature(null)}
-                      className="px-4 py-2 text-slate-600 hover:text-slate-800 dark:text-slate-400"
+                      className="px-4 py-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:text-[var(--text-muted)]"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -882,23 +882,21 @@ export const TechSettingsPanel: React.FC = () => {
                       key={nature.id}
                       className={`flex items-center justify-between p-4 rounded-lg border ${
                         nature.is_active
-                          ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                          : 'bg-slate-100 dark:bg-slate-900 opacity-60'
+                          ? 'bg-[var(--bg-elevated)] border-[var(--border)]'
+                          : 'bg-slate-100 bg-[var(--bg-surface)] opacity-60'
                       }`}
                     >
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-medium dark:text-white">{nature.label}</span>
-                          <span className="text-xs px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">
-                            {nature.code}
-                          </span>
+                          <span className="font-medium text-[var(--text-primary)]">{nature.label}</span>
+                          <span className="text-xs px-2 py-0.5 bg-[var(--bg-elevated)] rounded">{nature.code}</span>
                           {nature.is_system && (
                             <span className="text-xs px-2 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded">
                               Système
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-slate-500 dark:text-slate-400">
+                        <div className="text-sm text-[var(--text-secondary)]">
                           Type: {nature.type_label || types.find((t) => t.id === nature.type_id)?.label || '-'}
                         </div>
                       </div>
@@ -931,8 +929,8 @@ export const TechSettingsPanel: React.FC = () => {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-lg font-medium dark:text-white">Configuration SLA</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <h3 className="text-lg font-medium text-[var(--text-primary)]">Configuration SLA</h3>
+                  <p className="text-sm text-[var(--text-secondary)]">
                     Définir les délais de réponse et de clôture par priorité
                   </p>
                 </div>
@@ -946,7 +944,7 @@ export const TechSettingsPanel: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Response Times */}
                 <Card className="p-4">
-                  <h4 className="font-medium mb-4 dark:text-white flex items-center gap-2">
+                  <h4 className="font-medium mb-4 text-[var(--text-primary)] flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[var(--primary)]" />
                     Délai de réponse (heures)
                   </h4>
@@ -958,7 +956,7 @@ export const TechSettingsPanel: React.FC = () => {
                       { key: 'lowResponseTime', label: 'Basse', color: 'green' },
                     ].map((item) => (
                       <div key={item.key} className="flex items-center justify-between">
-                        <span className="text-sm dark:text-slate-300">{item.label}</span>
+                        <span className="text-sm text-[var(--text-secondary)]">{item.label}</span>
                         <input
                           type="number"
                           value={(slaConfig as any)[item.key]}
@@ -966,7 +964,7 @@ export const TechSettingsPanel: React.FC = () => {
                             setSlaConfig({ ...slaConfig, [item.key]: parseInt(e.target.value) });
                             setSlaModified(true);
                           }}
-                          className="w-20 px-3 py-2 border rounded-lg text-center dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                          className="w-20 px-3 py-2 border rounded-lg text-center bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                         />
                       </div>
                     ))}
@@ -975,7 +973,7 @@ export const TechSettingsPanel: React.FC = () => {
 
                 {/* Close Times */}
                 <Card className="p-4">
-                  <h4 className="font-medium mb-4 dark:text-white flex items-center gap-2">
+                  <h4 className="font-medium mb-4 text-[var(--text-primary)] flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
                     Délai de clôture (heures)
                   </h4>
@@ -987,7 +985,7 @@ export const TechSettingsPanel: React.FC = () => {
                       { key: 'lowCloseTime', label: 'Basse', color: 'green' },
                     ].map((item) => (
                       <div key={item.key} className="flex items-center justify-between">
-                        <span className="text-sm dark:text-slate-300">{item.label}</span>
+                        <span className="text-sm text-[var(--text-secondary)]">{item.label}</span>
                         <input
                           type="number"
                           value={(slaConfig as any)[item.key]}
@@ -995,7 +993,7 @@ export const TechSettingsPanel: React.FC = () => {
                             setSlaConfig({ ...slaConfig, [item.key]: parseInt(e.target.value) });
                             setSlaModified(true);
                           }}
-                          className="w-20 px-3 py-2 border rounded-lg text-center dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                          className="w-20 px-3 py-2 border rounded-lg text-center bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                         />
                       </div>
                     ))}
@@ -1005,10 +1003,10 @@ export const TechSettingsPanel: React.FC = () => {
 
               {/* Additional Settings */}
               <Card className="p-4">
-                <h4 className="font-medium mb-4 dark:text-white">Paramètres avancés</h4>
+                <h4 className="font-medium mb-4 text-[var(--text-primary)]">Paramètres avancés</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm dark:text-slate-300">Alerte avant échéance (minutes)</span>
+                    <span className="text-sm text-[var(--text-secondary)]">Alerte avant échéance (minutes)</span>
                     <input
                       type="number"
                       value={slaConfig.alertBeforeDeadline}
@@ -1016,11 +1014,11 @@ export const TechSettingsPanel: React.FC = () => {
                         setSlaConfig({ ...slaConfig, alertBeforeDeadline: parseInt(e.target.value) });
                         setSlaModified(true);
                       }}
-                      className="w-24 px-3 py-2 border rounded-lg text-center dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="w-24 px-3 py-2 border rounded-lg text-center bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm dark:text-slate-300">Escalade automatique</span>
+                    <span className="text-sm text-[var(--text-secondary)]">Escalade automatique</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -1031,7 +1029,7 @@ export const TechSettingsPanel: React.FC = () => {
                         }}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--primary-dim)] dark:peer-focus:ring-[var(--primary-dim)] rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-slate-600 peer-checked:bg-[var(--primary)]"></div>
+                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--primary-dim)] dark:peer-focus:ring-[var(--primary-dim)] rounded-full peer bg-[var(--bg-elevated)] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--border)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-[var(--border)] peer-checked:bg-[var(--primary)]"></div>
                     </label>
                   </div>
                 </div>
@@ -1056,12 +1054,12 @@ export const TechSettingsPanel: React.FC = () => {
           {activeTab === 'devices' && (
             <div className="space-y-4">
               <div className="flex justify-between items-center flex-wrap gap-4">
-                <h3 className="text-lg font-medium dark:text-white">Catalogue de matériel</h3>
+                <h3 className="text-lg font-medium text-[var(--text-primary)]">Catalogue de matériel</h3>
                 <div className="flex items-center gap-4">
                   <select
                     value={deviceTypeFilter}
                     onChange={(e) => setDeviceTypeFilter(e.target.value)}
-                    className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                   >
                     <option value="">Tous les types</option>
                     {DEVICE_TYPES.map((dt) => (
@@ -1086,7 +1084,7 @@ export const TechSettingsPanel: React.FC = () => {
                     <select
                       value={newDevice.type || 'BOX'}
                       onChange={(e) => setNewDevice({ ...newDevice, type: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     >
                       {DEVICE_TYPES.map((dt) => (
                         <option key={dt.value} value={dt.value}>
@@ -1099,19 +1097,19 @@ export const TechSettingsPanel: React.FC = () => {
                       placeholder="Marque"
                       value={newDevice.brand || ''}
                       onChange={(e) => setNewDevice({ ...newDevice, brand: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                     <input
                       type="text"
                       placeholder="Modèle"
                       value={newDevice.model || ''}
                       onChange={(e) => setNewDevice({ ...newDevice, model: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                     <select
                       value={newDevice.protocol || ''}
                       onChange={(e) => setNewDevice({ ...newDevice, protocol: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     >
                       <option value="">-- Protocole --</option>
                       <option value="GT06">GT06</option>
@@ -1128,11 +1126,11 @@ export const TechSettingsPanel: React.FC = () => {
                       placeholder={`Prix (${currency})`}
                       value={newDevice.default_price || 0}
                       onChange={(e) => setNewDevice({ ...newDevice, default_price: parseInt(e.target.value) })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                   </div>
                   <div className="flex justify-end gap-2 mt-4">
-                    <button onClick={() => setNewDevice(null)} className="px-4 py-2 text-slate-600">
+                    <button onClick={() => setNewDevice(null)} className="px-4 py-2 text-[var(--text-secondary)]">
                       <X className="w-4 h-4" />
                     </button>
                     <button
@@ -1156,7 +1154,7 @@ export const TechSettingsPanel: React.FC = () => {
                 const TypeIcon = deviceType.icon;
                 return (
                   <div key={deviceType.value} className="space-y-2">
-                    <h4 className="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <h4 className="font-medium text-[var(--text-primary)] flex items-center gap-2">
                       <TypeIcon className="w-4 h-4" />
                       {deviceType.label} ({filteredDevices.length})
                     </h4>
@@ -1164,13 +1162,11 @@ export const TechSettingsPanel: React.FC = () => {
                       <div
                         key={device.id}
                         className={`flex items-center justify-between p-4 rounded-lg border ${
-                          device.is_active
-                            ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                            : 'opacity-60'
+                          device.is_active ? 'bg-[var(--bg-elevated)] border-[var(--border)]' : 'opacity-60'
                         }`}
                       >
                         <div>
-                          <div className="font-medium dark:text-white">
+                          <div className="font-medium text-[var(--text-primary)]">
                             {device.brand} {device.model}
                             {device.protocol && (
                               <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]">
@@ -1178,7 +1174,7 @@ export const TechSettingsPanel: React.FC = () => {
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-slate-500 dark:text-slate-400">
+                          <div className="text-sm text-[var(--text-secondary)]">
                             {formatPrice(device.default_price)}
                           </div>
                         </div>
@@ -1209,8 +1205,8 @@ export const TechSettingsPanel: React.FC = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-lg font-medium dark:text-white">Règles d'assignation</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <h3 className="text-lg font-medium text-[var(--text-primary)]">Règles d'assignation</h3>
+                  <p className="text-sm text-[var(--text-secondary)]">
                     Automatiser l'assignation des interventions aux techniciens
                   </p>
                 </div>
@@ -1231,18 +1227,18 @@ export const TechSettingsPanel: React.FC = () => {
                       placeholder="Nom de la règle"
                       value={newRule.name || ''}
                       onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                     <input
                       type="text"
                       placeholder="Description"
                       value={newRule.description || ''}
                       onChange={(e) => setNewRule({ ...newRule, description: e.target.value })}
-                      className="px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                      className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     />
                   </div>
                   <div className="flex justify-end gap-2 mt-4">
-                    <button onClick={() => setNewRule(null)} className="px-4 py-2 text-slate-600">
+                    <button onClick={() => setNewRule(null)} className="px-4 py-2 text-[var(--text-secondary)]">
                       <X className="w-4 h-4" />
                     </button>
                     <button
@@ -1258,7 +1254,7 @@ export const TechSettingsPanel: React.FC = () => {
 
               {/* Rules List */}
               {rules.length === 0 ? (
-                <div className="text-center py-12 text-slate-500 dark:text-slate-400">
+                <div className="text-center py-12 text-[var(--text-secondary)]">
                   <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>Aucune règle d'assignation configurée</p>
                   <p className="text-sm">Les interventions seront assignées manuellement</p>
@@ -1269,20 +1265,18 @@ export const TechSettingsPanel: React.FC = () => {
                     <div
                       key={rule.id}
                       className={`flex items-center justify-between p-4 rounded-lg border ${
-                        rule.is_active
-                          ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                          : 'opacity-60'
+                        rule.is_active ? 'bg-[var(--bg-elevated)] border-[var(--border)]' : 'opacity-60'
                       }`}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="text-slate-400">
+                        <div className="text-[var(--text-muted)]">
                           <GripVertical className="w-4 h-4" />
                         </div>
-                        <span className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">#{index + 1}</span>
+                        <span className="text-xs px-2 py-1 bg-[var(--bg-elevated)] rounded">#{index + 1}</span>
                         <div>
-                          <div className="font-medium dark:text-white">{rule.name}</div>
+                          <div className="font-medium text-[var(--text-primary)]">{rule.name}</div>
                           {rule.description && (
-                            <div className="text-sm text-slate-500 dark:text-slate-400">{rule.description}</div>
+                            <div className="text-sm text-[var(--text-secondary)]">{rule.description}</div>
                           )}
                         </div>
                       </div>

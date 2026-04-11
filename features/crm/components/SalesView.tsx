@@ -61,7 +61,7 @@ export const SalesView: React.FC<SalesViewProps> = ({ initialTab, onNavigate }) 
   return (
     <div className="sm:h-full sm:flex sm:flex-col space-y-3 sm:space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Ventes & Facturation</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Ventes & Facturation</h1>
         <DateRangeSelector
           periodPreset={periodPreset}
           setPeriodPreset={setPeriodPreset}

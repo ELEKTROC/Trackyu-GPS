@@ -183,7 +183,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
       currentPage={current}
       totalPages={Math.ceil(total / itemsPerPage)}
       onPageChange={onPageChange}
-      className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700"
+      className="mt-4 pt-4 border-t border-[var(--border)] border-[var(--border)]"
     />
   );
 
@@ -196,9 +196,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
       case 'TERMINATED':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'EXPIRED':
-        return 'bg-slate-100 text-slate-700 border-slate-200';
+        return 'bg-slate-100 text-[var(--text-primary)] border-[var(--border)]';
       default:
-        return 'bg-slate-100 text-slate-700';
+        return 'bg-slate-100 text-[var(--text-primary)]';
     }
   };
 
@@ -610,13 +610,13 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
       title={`Contrat : ${contract.contractNumber || contract.id.slice(0, 8).toUpperCase()}`}
       maxWidth="max-w-6xl"
     >
-      <div className="flex flex-col md:flex-row h-[80vh] overflow-hidden bg-slate-50 dark:bg-slate-900">
+      <div className="flex flex-col md:flex-row h-[80vh] overflow-hidden bg-[var(--bg-elevated)]">
         {/* SIDEBAR */}
-        <div className="w-full md:w-72 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-5 flex flex-col gap-5 overflow-y-auto shrink-0">
+        <div className="w-full md:w-72 bg-[var(--bg-elevated)] border-r border-[var(--border)] p-5 flex flex-col gap-5 overflow-y-auto shrink-0">
           <div className="text-center relative">
             <button
               onClick={onEdit}
-              className="absolute top-0 right-0 p-2 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors"
+              className="absolute top-0 right-0 p-2 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors"
               title="Modifier"
             >
               <Edit2 className="w-4 h-4" />
@@ -624,7 +624,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
             <div className="w-16 h-16 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full flex items-center justify-center mx-auto mb-3 text-[var(--primary)] dark:text-[var(--primary)]">
               <FileCheck className="w-8 h-8" />
             </div>
-            <h3 className="font-bold text-base text-slate-800 dark:text-white mb-1 line-clamp-2">
+            <h3 className="font-bold text-base text-[var(--text-primary)] mb-1 line-clamp-2">
               {contract.subject || 'Contrat'}
             </h3>
             <div
@@ -637,43 +637,41 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
 
           {/* KEY METRICS */}
           <div className="grid grid-cols-2 gap-2">
-            <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
-              <p className="text-[10px] uppercase font-bold text-slate-500 mb-1">Abonnements</p>
-              <p className="font-mono font-bold text-slate-800 dark:text-white">{contractSubs.length}</p>
+            <div className="p-2.5 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] border-[var(--border)] text-center">
+              <p className="text-[10px] uppercase font-bold text-[var(--text-secondary)] mb-1">Abonnements</p>
+              <p className="font-mono font-bold text-[var(--text-primary)]">{contractSubs.length}</p>
             </div>
-            <div className="p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
-              <p className="text-[10px] uppercase font-bold text-slate-500 mb-1">Actifs</p>
+            <div className="p-2.5 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] border-[var(--border)] text-center">
+              <p className="text-[10px] uppercase font-bold text-[var(--text-secondary)] mb-1">Actifs</p>
               <p className="font-mono font-bold text-green-700 dark:text-green-400">
                 {contractSubs.filter((s) => (s.status || '').toUpperCase() === 'ACTIVE').length}
               </p>
             </div>
-            <div className="col-span-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-100 dark:border-slate-700 text-center">
-              <p className="text-[10px] uppercase font-bold text-slate-500 mb-1">Total facturation</p>
+            <div className="col-span-2 p-2.5 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] border-[var(--border)] text-center">
+              <p className="text-[10px] uppercase font-bold text-[var(--text-secondary)] mb-1">Total facturation</p>
               <p className="font-mono font-bold text-green-700 dark:text-green-400">{formatPrice(subsTotal)}</p>
             </div>
           </div>
 
           {/* CLIENT */}
           <div className="space-y-2">
-            <h4 className="text-[10px] font-bold text-slate-500 uppercase border-b pb-1.5">Client</h4>
+            <h4 className="text-[10px] font-bold text-[var(--text-secondary)] uppercase border-b pb-1.5">Client</h4>
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs">
                 {(client?.name || '?').substring(0, 2).toUpperCase()}
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                  {client?.name || contract.clientId}
-                </p>
-                <p className="text-xs text-slate-500">{client?.contactName || ''}</p>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{client?.name || contract.clientId}</p>
+                <p className="text-xs text-[var(--text-secondary)]">{client?.contactName || ''}</p>
               </div>
             </div>
             {client?.phone && (
-              <div className="flex items-center gap-2 text-xs text-slate-500">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                 <User className="w-3 h-3" /> {client.phone}
               </div>
             )}
             {client?.address && (
-              <div className="flex items-center gap-2 text-xs text-slate-500">
+              <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                 <MapPin className="w-3 h-3" /> {client.address}
               </div>
             )}
@@ -682,32 +680,34 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
           {/* RESELLER */}
           {contract.resellerName && (
             <div className="space-y-2">
-              <h4 className="text-[10px] font-bold text-slate-500 uppercase border-b pb-1.5">Revendeur</h4>
+              <h4 className="text-[10px] font-bold text-[var(--text-secondary)] uppercase border-b pb-1.5">
+                Revendeur
+              </h4>
               <div className="flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs">
                   {contract.resellerName.substring(0, 2).toUpperCase()}
                 </div>
-                <p className="text-sm font-bold text-slate-700 dark:text-slate-200">{contract.resellerName}</p>
+                <p className="text-sm font-bold text-[var(--text-primary)]">{contract.resellerName}</p>
               </div>
             </div>
           )}
 
           {/* DATES */}
           <div className="space-y-2">
-            <h4 className="text-[10px] font-bold text-slate-500 uppercase border-b pb-1.5">Période</h4>
+            <h4 className="text-[10px] font-bold text-[var(--text-secondary)] uppercase border-b pb-1.5">Période</h4>
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-500 text-xs">Début</span>
+                <span className="text-[var(--text-secondary)] text-xs">Début</span>
                 <span className="font-medium text-xs">{new Date(contract.startDate).toLocaleDateString('fr-FR')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 text-xs">Fin</span>
+                <span className="text-[var(--text-secondary)] text-xs">Fin</span>
                 <span className="font-medium text-xs">
                   {contract.endDate ? new Date(contract.endDate).toLocaleDateString('fr-FR') : 'Indéterminée'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500 text-xs">Renouv. Auto</span>
+                <span className="text-[var(--text-secondary)] text-xs">Renouv. Auto</span>
                 <span className="font-medium text-xs">{contract.autoRenew ? 'Oui' : 'Non'}</span>
               </div>
             </div>
@@ -722,7 +722,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
           </div>
 
           {/* ACTIONS */}
-          <div className="mt-auto space-y-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+          <div className="mt-auto space-y-2 pt-3 border-t border-[var(--border)]">
             {contract.status === 'ACTIVE' && (
               <button
                 onClick={() => onStatusChange(contract, 'SUSPENDED')}
@@ -759,12 +759,12 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
         {/* MAIN CONTENT */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* TABS */}
-          <div className="flex border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 overflow-x-auto">
+          <div className="flex border-b border-[var(--border)] bg-[var(--bg-elevated)] px-4 overflow-x-auto">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-3.5 text-xs font-bold border-b-2 whitespace-nowrap transition-colors ${activeTab === tab.id ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+                className={`px-4 py-3.5 text-xs font-bold border-b-2 whitespace-nowrap transition-colors ${activeTab === tab.id ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border)]'}`}
               >
                 {tab.label}
               </button>
@@ -777,20 +777,22 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
             {activeTab === 'OVERVIEW' && (
               <div className="space-y-5">
                 {/* Subscriptions summary */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-                  <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                     <Truck className="w-4 h-4 text-[var(--primary)]" /> Récapitulatif Abonnements
                   </h4>
                   {subsLoading ? (
-                    <div className="flex items-center gap-2 text-slate-400 text-sm py-4 justify-center">
+                    <div className="flex items-center gap-2 text-[var(--text-muted)] text-sm py-4 justify-center">
                       <RefreshCw className="w-4 h-4 animate-spin" /> Chargement…
                     </div>
                   ) : contractSubs.length === 0 ? (
-                    <p className="text-sm text-slate-500 italic text-center py-4">Aucun abonnement associé.</p>
+                    <p className="text-sm text-[var(--text-secondary)] italic text-center py-4">
+                      Aucun abonnement associé.
+                    </p>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
-                        <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 uppercase text-xs">
+                        <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase text-xs">
                           <tr>
                             <th className="px-3 py-2 text-left">Plaque</th>
                             <th className="px-3 py-2 text-left">Véhicule</th>
@@ -799,18 +801,18 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                             <th className="px-3 py-2 text-center">Statut</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        <tbody className="divide-y divide-[var(--border)]">
                           {contractSubs.slice(0, 5).map((s: any) => {
                             const plate = s.vehicle_plate || s.vehiclePlate || '—';
                             const brand = s.vehicle_brand || s.vehicleBrand || '';
                             const model = s.vehicle_model || s.vehicleModel || '';
                             const status = (s.status || '').toUpperCase();
                             return (
-                              <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                <td className="px-3 py-2 font-mono font-bold text-slate-800 dark:text-white text-xs">
+                              <tr key={s.id} className="tr-hover/50">
+                                <td className="px-3 py-2 font-mono font-bold text-[var(--text-primary)] text-xs">
                                   {plate}
                                 </td>
-                                <td className="px-3 py-2 text-xs text-slate-600 dark:text-slate-400">
+                                <td className="px-3 py-2 text-xs text-[var(--text-secondary)]">
                                   {[brand, model].filter(Boolean).join(' ') || '—'}
                                 </td>
                                 <td className="px-3 py-2 text-xs">
@@ -821,7 +823,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                 </td>
                                 <td className="px-3 py-2 text-center">
                                   <span
-                                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-600'}`}
+                                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
                                   >
                                     {status === 'ACTIVE' ? 'Actif' : status === 'SUSPENDED' ? 'Suspendu' : status}
                                   </span>
@@ -831,7 +833,10 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                           })}
                           {contractSubs.length > 5 && (
                             <tr>
-                              <td colSpan={5} className="px-3 py-2 text-xs text-slate-500 italic text-center">
+                              <td
+                                colSpan={5}
+                                className="px-3 py-2 text-xs text-[var(--text-secondary)] italic text-center"
+                              >
                                 +{contractSubs.length - 5} autre(s) — voir onglet Abonnements
                               </td>
                             </tr>
@@ -855,8 +860,8 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
 
                 {/* Financial chart + Alerts */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                  <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
+                    <h4 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                       <TrendingUp className="w-4 h-4 text-green-500" /> Performance Financière
                     </h4>
                     <div className="h-44">
@@ -876,8 +881,8 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                     </div>
                   </div>
 
-                  <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                  <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] p-5 shadow-sm">
+                    <h4 className="text-sm font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-orange-500" /> Alertes & Notes
                     </h4>
                     <div className="space-y-2">
@@ -902,7 +907,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                         </div>
                       )}
                       {alerts.length === 0 && !contract.notes && paymentRate >= 50 && (
-                        <p className="text-xs text-slate-500 italic">Aucune alerte.</p>
+                        <p className="text-xs text-[var(--text-secondary)] italic">Aucune alerte.</p>
                       )}
                     </div>
                   </div>
@@ -914,14 +919,14 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
             {activeTab === 'ABONNEMENTS' && (
               <div className="flex flex-col h-full">
                 {subsLoading ? (
-                  <div className="flex items-center justify-center py-12 text-slate-400">
+                  <div className="flex items-center justify-center py-12 text-[var(--text-muted)]">
                     <RefreshCw className="w-5 h-5 animate-spin mr-2" /> Chargement…
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
+                  <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm text-left">
-                        <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 uppercase text-xs">
+                        <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase text-xs">
                           <tr>
                             <th className="px-4 py-3">Plaque</th>
                             <th className="px-4 py-3">Véhicule</th>
@@ -931,7 +936,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                             <th className="px-4 py-3 text-center">Statut</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                        <tbody className="divide-y divide-[var(--border)]">
                           {contractSubs.length > 0 ? (
                             paginate(contractSubs).map((s: any) => {
                               const plate = s.vehicle_plate || s.vehiclePlate || '—';
@@ -940,11 +945,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                               const nextBilling = s.next_billing_date || s.nextBillingDate;
                               const status = (s.status || '').toUpperCase();
                               return (
-                                <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                  <td className="px-4 py-3 font-mono font-bold text-slate-800 dark:text-white">
-                                    {plate}
-                                  </td>
-                                  <td className="px-4 py-3 text-xs text-slate-600 dark:text-slate-400">
+                                <tr key={s.id} className="tr-hover/50">
+                                  <td className="px-4 py-3 font-mono font-bold text-[var(--text-primary)]">{plate}</td>
+                                  <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">
                                     {[brand, model].filter(Boolean).join(' ') || '—'}
                                   </td>
                                   <td className="px-4 py-3 text-xs">
@@ -959,7 +962,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                   </td>
                                   <td className="px-4 py-3 text-center">
                                     <span
-                                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : status === 'CANCELLED' || status === 'CANCELED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-600'}`}
+                                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : status === 'CANCELLED' || status === 'CANCELED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
                                     >
                                       {status === 'ACTIVE'
                                         ? 'Actif'
@@ -975,7 +978,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                             })
                           ) : (
                             <tr>
-                              <td colSpan={6} className="px-4 py-8 text-center text-slate-500 text-sm">
+                              <td colSpan={6} className="px-4 py-8 text-center text-[var(--text-secondary)] text-sm">
                                 Aucun abonnement associé à ce contrat.
                               </td>
                             </tr>
@@ -993,7 +996,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                               <td className="px-4 py-2 text-right text-[var(--primary)] dark:text-[var(--primary)]">
                                 {formatPrice(subsTotal)}
                               </td>
-                              <td colSpan={2} className="px-4 py-2 text-center text-slate-500">
+                              <td colSpan={2} className="px-4 py-2 text-center text-[var(--text-secondary)]">
                                 {contractSubs.filter((s) => (s.status || '').toUpperCase() === 'ACTIVE').length}{' '}
                                 actif(s) / {contractSubs.length}
                               </td>
@@ -1002,7 +1005,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                         )}
                       </table>
                     </div>
-                    <div className="p-3 border-t border-slate-100 dark:border-slate-700">
+                    <div className="p-3 border-t border-[var(--border)] border-[var(--border)]">
                       <PaginationControls
                         total={contractSubs.length}
                         current={currentPage}
@@ -1016,10 +1019,10 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
 
             {/* ── INVOICES ─────────────────────────────────────────── */}
             {activeTab === 'INVOICES' && (
-              <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col">
+              <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden shadow-sm flex flex-col">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
-                    <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 uppercase text-xs sticky top-0">
+                    <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase text-xs sticky top-0">
                       <tr>
                         <th className="px-5 py-3">Numéro</th>
                         <th className="px-5 py-3">Date</th>
@@ -1029,10 +1032,10 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                         <th className="px-5 py-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                    <tbody className="divide-y divide-[var(--border)]">
                       {contractInvoices.length > 0 ? (
                         paginate(contractInvoices).map((inv) => (
-                          <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                          <tr key={inv.id} className="tr-hover/50">
                             <td className="px-5 py-3 font-mono text-[var(--primary)] text-xs">{inv.number}</td>
                             <td className="px-5 py-3 text-xs">{new Date(inv.date).toLocaleDateString('fr-FR')}</td>
                             <td className="px-5 py-3 text-xs">{new Date(inv.dueDate).toLocaleDateString('fr-FR')}</td>
@@ -1047,7 +1050,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                             <td className="px-5 py-3 text-right">
                               <button
                                 onClick={() => handleDownloadInvoice(inv)}
-                                className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors"
+                                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors"
                                 title="Télécharger"
                               >
                                 <Download className="w-3.5 h-3.5" />
@@ -1057,7 +1060,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={6} className="px-5 py-8 text-center text-slate-500 text-sm">
+                          <td colSpan={6} className="px-5 py-8 text-center text-[var(--text-secondary)] text-sm">
                             Aucune facture générée pour ce contrat.
                           </td>
                         </tr>
@@ -1065,7 +1068,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                     </tbody>
                   </table>
                 </div>
-                <div className="p-3 border-t border-slate-100 dark:border-slate-700">
+                <div className="p-3 border-t border-[var(--border)] border-[var(--border)]">
                   <PaginationControls
                     total={contractInvoices.length}
                     current={currentPage}
@@ -1088,7 +1091,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                 </div>
 
                 {/* Document preview */}
-                <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
                   {/* Document header */}
                   <div className="bg-[var(--primary-dim)] px-8 py-5 text-white">
                     <p className="text-xs font-semibold uppercase tracking-widest opacity-70 mb-1">
@@ -1106,44 +1109,48 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                     </div>
                   </div>
 
-                  <div className="p-8 space-y-6 text-sm text-slate-700 dark:text-slate-300">
+                  <div className="p-8 space-y-6 text-sm text-[var(--text-primary)]">
                     {/* Parties */}
                     <div>
-                      <p className="text-xs font-bold uppercase text-slate-500 mb-3">Entre les soussignés</p>
+                      <p className="text-xs font-bold uppercase text-[var(--text-secondary)] mb-3">
+                        Entre les soussignés
+                      </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="p-4 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-xl">
                           <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-2">Le Prestataire</p>
-                          <p className="font-bold text-slate-800 dark:text-white">{branding?.name || 'TrackYu'}</p>
-                          {branding?.address && <p className="text-xs text-slate-500 mt-1">{branding.address}</p>}
-                          {branding?.phone && <p className="text-xs text-slate-500">{branding.phone}</p>}
-                          {branding?.email && <p className="text-xs text-slate-500">{branding.email}</p>}
+                          <p className="font-bold text-[var(--text-primary)]">{branding?.name || 'TrackYu'}</p>
+                          {branding?.address && (
+                            <p className="text-xs text-[var(--text-secondary)] mt-1">{branding.address}</p>
+                          )}
+                          {branding?.phone && <p className="text-xs text-[var(--text-secondary)]">{branding.phone}</p>}
+                          {branding?.email && <p className="text-xs text-[var(--text-secondary)]">{branding.email}</p>}
                         </div>
                         <div className="p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl">
                           <p className="text-[10px] font-bold text-purple-600 uppercase mb-2">Le Client</p>
-                          <p className="font-bold text-slate-800 dark:text-white">
-                            {client?.name || contract.clientId}
-                          </p>
-                          {client?.address && <p className="text-xs text-slate-500 mt-1">{client.address}</p>}
-                          {client?.phone && <p className="text-xs text-slate-500">{client.phone}</p>}
-                          {client?.email && <p className="text-xs text-slate-500">{client.email}</p>}
+                          <p className="font-bold text-[var(--text-primary)]">{client?.name || contract.clientId}</p>
+                          {client?.address && (
+                            <p className="text-xs text-[var(--text-secondary)] mt-1">{client.address}</p>
+                          )}
+                          {client?.phone && <p className="text-xs text-[var(--text-secondary)]">{client.phone}</p>}
+                          {client?.email && <p className="text-xs text-[var(--text-secondary)]">{client.email}</p>}
                         </div>
                       </div>
                     </div>
 
                     {/* Subscriptions table */}
                     <div>
-                      <p className="text-xs font-bold uppercase text-slate-500 mb-3 flex items-center gap-2">
+                      <p className="text-xs font-bold uppercase text-[var(--text-secondary)] mb-3 flex items-center gap-2">
                         <Receipt className="w-3.5 h-3.5" /> Détail des Abonnements
                       </p>
                       {subsLoading ? (
-                        <div className="text-center py-4 text-slate-400 text-xs">
+                        <div className="text-center py-4 text-[var(--text-muted)] text-xs">
                           <RefreshCw className="w-4 h-4 animate-spin inline mr-2" />
                           Chargement…
                         </div>
                       ) : (
-                        <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div className="overflow-x-auto rounded-lg border border-[var(--border)]">
                           <table className="w-full text-xs">
-                            <thead className="bg-slate-50 dark:bg-slate-900 text-slate-500 uppercase">
+                            <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase">
                               <tr>
                                 <th className="px-3 py-2.5 text-left font-bold">Plaque</th>
                                 <th className="px-3 py-2.5 text-left font-bold">Véhicule</th>
@@ -1152,7 +1159,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                 <th className="px-3 py-2.5 text-center font-bold">Statut</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tbody className="divide-y divide-[var(--border)]">
                               {contractSubs.length > 0 ? (
                                 contractSubs.map((s: any) => {
                                   const plate = s.vehicle_plate || s.vehiclePlate || '—';
@@ -1160,9 +1167,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                   const model = s.vehicle_model || s.vehicleModel || '';
                                   const status = (s.status || '').toUpperCase();
                                   return (
-                                    <tr key={s.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                    <tr key={s.id} className="tr-hover/40">
                                       <td className="px-3 py-2 font-mono font-bold">{plate}</td>
-                                      <td className="px-3 py-2 text-slate-600 dark:text-slate-400">
+                                      <td className="px-3 py-2 text-[var(--text-secondary)]">
                                         {[brand, model].filter(Boolean).join(' ') || '—'}
                                       </td>
                                       <td className="px-3 py-2">
@@ -1175,7 +1182,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                       </td>
                                       <td className="px-3 py-2 text-center">
                                         <span
-                                          className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}
+                                          className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
                                         >
                                           {status === 'ACTIVE' ? 'Actif' : status}
                                         </span>
@@ -1185,7 +1192,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                 })
                               ) : (
                                 <tr>
-                                  <td colSpan={5} className="px-3 py-4 text-center text-slate-500 italic">
+                                  <td colSpan={5} className="px-3 py-4 text-center text-[var(--text-secondary)] italic">
                                     Aucun abonnement.
                                   </td>
                                 </tr>
@@ -1213,8 +1220,8 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                     </div>
 
                     {/* Legal articles */}
-                    <div className="space-y-4 pt-2 border-t border-slate-200 dark:border-slate-700">
-                      <p className="text-xs font-bold uppercase text-slate-500">Conditions Générales</p>
+                    <div className="space-y-4 pt-2 border-t border-[var(--border)]">
+                      <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">Conditions Générales</p>
                       {[
                         {
                           title: 'Article 1 – Objet du contrat',
@@ -1249,47 +1256,47 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                           <p className="font-bold text-[var(--primary)] dark:text-[var(--primary)] text-xs mb-1">
                             {art.title}
                           </p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{art.body}</p>
+                          <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{art.body}</p>
                         </div>
                       ))}
                     </div>
 
                     {/* Signature blocks */}
-                    <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-                      <p className="text-xs font-bold uppercase text-slate-500 mb-4 flex items-center gap-2">
+                    <div className="pt-4 border-t border-[var(--border)]">
+                      <p className="text-xs font-bold uppercase text-[var(--text-secondary)] mb-4 flex items-center gap-2">
                         <FileSignature className="w-3.5 h-3.5" /> Signatures
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Client signature */}
                         <div className="p-5 border-2 border-dashed border-purple-200 dark:border-purple-800 rounded-xl bg-purple-50/40 dark:bg-purple-900/10">
                           <p className="text-[10px] font-bold text-purple-600 uppercase mb-1">Le Client</p>
-                          <p className="font-bold text-sm text-slate-800 dark:text-white mb-3">
+                          <p className="font-bold text-sm text-[var(--text-primary)] mb-3">
                             {client?.name || contract.clientId}
                           </p>
-                          <p className="text-xs text-slate-500 mb-1">Nom et qualité du signataire :</p>
-                          <div className="border-b border-slate-300 dark:border-slate-600 mb-4 py-3" />
-                          <p className="text-xs text-slate-500 mb-1">Date : ____________________</p>
-                          <div className="border-b border-slate-300 dark:border-slate-600 mt-8" />
-                          <p className="text-[10px] text-slate-400 mt-1 text-center italic">
+                          <p className="text-xs text-[var(--text-secondary)] mb-1">Nom et qualité du signataire :</p>
+                          <div className="border-b border-[var(--border)] mb-4 py-3" />
+                          <p className="text-xs text-[var(--text-secondary)] mb-1">Date : ____________________</p>
+                          <div className="border-b border-[var(--border)] mt-8" />
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 text-center italic">
                             Signature précédée de la mention « Lu et approuvé »
                           </p>
                         </div>
                         {/* Company signature */}
                         <div className="p-5 border-2 border-dashed border-[var(--border)] dark:border-[var(--primary)] rounded-xl bg-[var(--primary-dim)]/40 dark:bg-[var(--primary-dim)]">
                           <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-1">Le Prestataire</p>
-                          <p className="font-bold text-sm text-slate-800 dark:text-white mb-3">
+                          <p className="font-bold text-sm text-[var(--text-primary)] mb-3">
                             {branding?.name || 'TrackYu'}
                           </p>
-                          <p className="text-xs text-slate-500 mb-1">Cachet et signature autorisée :</p>
-                          <div className="border-b border-slate-300 dark:border-slate-600 mb-4 py-3" />
-                          <p className="text-xs text-slate-500 mb-1">Date : ____________________</p>
-                          <div className="border-b border-slate-300 dark:border-slate-600 mt-8" />
-                          <p className="text-[10px] text-slate-400 mt-1 text-center italic">
+                          <p className="text-xs text-[var(--text-secondary)] mb-1">Cachet et signature autorisée :</p>
+                          <div className="border-b border-[var(--border)] mb-4 py-3" />
+                          <p className="text-xs text-[var(--text-secondary)] mb-1">Date : ____________________</p>
+                          <div className="border-b border-[var(--border)] mt-8" />
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1 text-center italic">
                             Signature précédée de la mention « Lu et approuvé »
                           </p>
                         </div>
                       </div>
-                      <p className="text-[10px] text-slate-400 text-center mt-4 italic">
+                      <p className="text-[10px] text-[var(--text-muted)] text-center mt-4 italic">
                         Fait en deux exemplaires originaux.
                       </p>
                     </div>
@@ -1308,15 +1315,15 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                         <div
                           className={`w-2 h-2 rounded-full mt-2 ${item.type === 'CREATION' ? 'bg-[var(--primary)]' : 'bg-slate-400'}`}
                         />
-                        <div className="w-0.5 flex-1 bg-slate-200 dark:bg-slate-700 my-1" />
+                        <div className="w-0.5 flex-1 bg-slate-200 bg-[var(--bg-elevated)] my-1" />
                       </div>
                       <div className="pb-5">
                         <p
-                          className={`text-sm ${item.type === 'CREATION' ? 'font-bold text-slate-800 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}
+                          className={`text-sm ${item.type === 'CREATION' ? 'font-bold text-[var(--text-primary)]' : 'text-[var(--text-primary)]'}`}
                         >
                           {item.text}
                         </p>
-                        <p className="text-xs text-slate-500">{item.date}</p>
+                        <p className="text-xs text-[var(--text-secondary)]">{item.date}</p>
                       </div>
                     </div>
                   ))}

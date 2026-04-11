@@ -15,60 +15,66 @@ interface PullToRefreshProps {
  * Wraps content and adds a pull gesture to trigger refresh.
  * Only activates on touch devices when at scroll position 0.
  */
-export const PullToRefresh: React.FC<PullToRefreshProps> = ({ 
-  onRefresh, 
+export const PullToRefresh: React.FC<PullToRefreshProps> = ({
+  onRefresh,
   children,
   className = '',
   disabled = false,
-  threshold = 80
+  threshold = 80,
 }) => {
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPulling, setIsPulling] = useState(false);
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
   const startYRef = useRef(0);
   const currentYRef = useRef(0);
 
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (disabled || isRefreshing) return;
-    
-    // Only start if scrolled to top
-    const container = containerRef.current;
-    if (container && container.scrollTop <= 0) {
-      startYRef.current = e.touches[0].clientY;
-      setIsPulling(true);
-    }
-  }, [disabled, isRefreshing]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (disabled || isRefreshing) return;
 
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isPulling || disabled || isRefreshing) return;
-    
-    currentYRef.current = e.touches[0].clientY;
-    const delta = currentYRef.current - startYRef.current;
-    
-    if (delta > 0) {
-      // Apply resistance - the further you pull, the harder it gets
-      const resistance = 0.5;
-      const distance = Math.min(delta * resistance, threshold * 1.5);
-      setPullDistance(distance);
-      
-      // Prevent scroll while pulling
-      if (distance > 10) {
-        e.preventDefault();
+      // Only start if scrolled to top
+      const container = containerRef.current;
+      if (container && container.scrollTop <= 0) {
+        startYRef.current = e.touches[0].clientY;
+        setIsPulling(true);
       }
-    }
-  }, [isPulling, disabled, isRefreshing, threshold]);
+    },
+    [disabled, isRefreshing]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isPulling || disabled || isRefreshing) return;
+
+      currentYRef.current = e.touches[0].clientY;
+      const delta = currentYRef.current - startYRef.current;
+
+      if (delta > 0) {
+        // Apply resistance - the further you pull, the harder it gets
+        const resistance = 0.5;
+        const distance = Math.min(delta * resistance, threshold * 1.5);
+        setPullDistance(distance);
+
+        // Prevent scroll while pulling
+        if (distance > 10) {
+          e.preventDefault();
+        }
+      }
+    },
+    [isPulling, disabled, isRefreshing, threshold]
+  );
 
   const handleTouchEnd = useCallback(async () => {
     if (!isPulling || disabled) return;
-    
+
     setIsPulling(false);
-    
+
     if (pullDistance >= threshold && !isRefreshing) {
       setIsRefreshing(true);
       setPullDistance(threshold / 2); // Keep spinner visible
-      
+
       try {
         await onRefresh();
       } catch (error) {
@@ -80,7 +86,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
     } else {
       setPullDistance(0);
     }
-    
+
     startYRef.current = 0;
     currentYRef.current = 0;
   }, [isPulling, pullDistance, threshold, isRefreshing, onRefresh, disabled]);
@@ -89,7 +95,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
   const shouldTrigger = pullDistance >= threshold;
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`relative ${className}`}
       onTouchStart={handleTouchStart}
@@ -98,29 +104,31 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
       onTouchCancel={handleTouchEnd}
     >
       {/* Pull indicator */}
-      <div 
+      <div
         className="absolute left-0 right-0 flex justify-center items-center pointer-events-none z-10 transition-opacity duration-200"
-        style={{ 
+        style={{
           top: -60,
           transform: `translateY(${pullDistance}px)`,
-          opacity: pullDistance > 10 ? 1 : 0
+          opacity: pullDistance > 10 ? 1 : 0,
         }}
       >
-        <div 
-          className={`flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-200 ${
-            shouldTrigger || isRefreshing ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]' : ''
+        <div
+          className={`flex items-center justify-center w-10 h-10 rounded-full bg-[var(--bg-elevated)] shadow-lg border border-[var(--border)] transition-all duration-200 ${
+            shouldTrigger || isRefreshing
+              ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]'
+              : ''
           }`}
         >
-          <RefreshCw 
+          <RefreshCw
             className={`w-5 h-5 transition-all duration-200 ${
-              isRefreshing 
-                ? 'animate-spin text-[var(--primary)] dark:text-[var(--primary)]' 
-                : shouldTrigger 
-                  ? 'text-[var(--primary)] dark:text-[var(--primary)]' 
-                  : 'text-slate-400 dark:text-slate-500'
+              isRefreshing
+                ? 'animate-spin text-[var(--primary)] dark:text-[var(--primary)]'
+                : shouldTrigger
+                  ? 'text-[var(--primary)] dark:text-[var(--primary)]'
+                  : 'text-[var(--text-muted)]'
             }`}
-            style={{ 
-              transform: isRefreshing ? 'none' : `rotate(${progress * 360}deg)` 
+            style={{
+              transform: isRefreshing ? 'none' : `rotate(${progress * 360}deg)`,
             }}
           />
         </div>
@@ -131,7 +139,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
         className="h-full"
         style={{
           transform: `translateY(${isRefreshing ? threshold / 2 : pullDistance}px)`,
-          transition: isPulling ? 'none' : 'transform 0.3s ease-out'
+          transition: isPulling ? 'none' : 'transform 0.3s ease-out',
         }}
       >
         {children}
@@ -139,18 +147,20 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({
 
       {/* Release text indicator */}
       {isPulling && pullDistance > 20 && (
-        <div 
+        <div
           className="absolute left-0 right-0 flex justify-center pointer-events-none z-10"
-          style={{ 
+          style={{
             top: pullDistance - 20,
-            opacity: progress
+            opacity: progress,
           }}
         >
-          <span className={`text-xs font-medium px-3 py-1 rounded-full transition-colors ${
-            shouldTrigger 
-              ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' 
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
-          }`}>
+          <span
+            className={`text-xs font-medium px-3 py-1 rounded-full transition-colors ${
+              shouldTrigger
+                ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
+                : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
+            }`}
+          >
             {shouldTrigger ? 'Relâchez pour rafraîchir' : 'Tirez pour rafraîchir'}
           </span>
         </div>

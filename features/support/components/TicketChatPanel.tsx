@@ -109,7 +109,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
 
   if (!ticket) {
     return (
-      <div className={`flex flex-col items-center justify-center h-full text-slate-400 ${className}`}>
+      <div className={`flex flex-col items-center justify-center h-full text-[var(--text-muted)] ${className}`}>
         <MessageSquare className="w-12 h-12 mb-4 opacity-20" />
         <p>Ticket introuvable</p>
       </div>
@@ -117,9 +117,9 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
   }
 
   return (
-    <div className={`flex flex-col h-full bg-white dark:bg-slate-900 ${className}`}>
+    <div className={`flex flex-col h-full bg-[var(--bg-surface)] ${className}`}>
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-900/50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 bg-[var(--bg-surface)]/50">
         {ticket.messages && ticket.messages.length > 0 ? (
           ticket.messages.map((msg: TicketMessage) => (
             <div
@@ -127,7 +127,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
               className={`flex ${msg.sender === 'SUPPORT' ? 'justify-end' : msg.sender === 'SYSTEM' ? 'justify-center' : 'justify-start'}`}
             >
               {msg.sender === 'SYSTEM' ? (
-                <div className="bg-slate-200 dark:bg-slate-700 px-4 py-1 rounded-full text-[10px] text-slate-600 dark:text-slate-300 max-w-[90%] text-center">
+                <div className="bg-slate-200 bg-[var(--bg-elevated)] px-4 py-1 rounded-full text-[10px] text-[var(--text-secondary)] max-w-[90%] text-center">
                   {msg.text}
                 </div>
               ) : (
@@ -135,12 +135,12 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
                   className={`max-w-[85%] p-3 rounded-xl text-sm ${
                     msg.sender === 'SUPPORT'
                       ? 'bg-[var(--primary)] text-white rounded-tr-none shadow-sm'
-                      : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-tl-none shadow-sm text-slate-700 dark:text-slate-200'
+                      : 'bg-[var(--bg-elevated)] border border-[var(--border)] rounded-tl-none shadow-sm text-[var(--text-primary)]'
                   }`}
                 >
                   <p className="whitespace-pre-wrap break-words">{msg.text}</p>
                   <span
-                    className={`text-[10px] block mt-1 text-right ${msg.sender === 'SUPPORT' ? 'text-[var(--primary)]' : 'text-slate-400'}`}
+                    className={`text-[10px] block mt-1 text-right ${msg.sender === 'SUPPORT' ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
                   >
                     {new Date(msg.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
@@ -159,12 +159,12 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
 
       {/* Input Area */}
       {!isClosed && !readOnly && (
-        <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-elevated)]">
           {/* Macros & Actions */}
           <div className="flex items-center justify-between mb-2">
             {macros.length > 0 && (
               <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                <span className="text-[10px] font-bold text-slate-400 uppercase flex items-center shrink-0">
+                <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase flex items-center shrink-0">
                   <Zap className="w-3 h-3 mr-1" /> Macros:
                 </span>
                 {macros
@@ -173,7 +173,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
                     <button
                       key={m.id}
                       onClick={() => insertMacro(m.text)}
-                      className="px-3 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 text-slate-600 dark:text-slate-300 rounded-full text-[10px] whitespace-nowrap transition-colors border border-transparent hover:border-[var(--border)]"
+                      className="px-3 py-1 bg-[var(--bg-elevated)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/30 text-[var(--text-secondary)] rounded-full text-[10px] whitespace-nowrap transition-colors border border-transparent hover:border-[var(--border)]"
                     >
                       {m.label}
                     </button>
@@ -200,7 +200,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
 
           <div className="relative">
             <textarea
-              className="w-full pl-4 pr-12 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-sm resize-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none transition-all dark:text-white"
+              className="w-full pl-4 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl text-sm resize-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none transition-all text-[var(--text-primary)]"
               placeholder="Répondre..."
               rows={2}
               value={messageInput}
@@ -225,7 +225,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
       )}
 
       {isClosed && (
-        <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 text-center text-xs text-slate-500 italic">
+        <div className="p-4 bg-[var(--bg-elevated)] border-t border-[var(--border)] text-center text-xs text-[var(--text-secondary)] italic">
           Ce ticket est {ticket.status === 'RESOLVED' ? 'résolu' : 'clôturé'}. Les réponses sont désactivées.
         </div>
       )}

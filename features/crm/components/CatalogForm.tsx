@@ -95,7 +95,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
         </FormField>
 
         {/* Checkboxes */}
-        <div className="col-span-3 flex gap-6 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div className="col-span-3 flex gap-6 p-4 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)]">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -271,7 +271,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
+              className="text-sm text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
             />
           </div>
         </FormField>
@@ -284,11 +284,11 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
           />
         </FormField>
       </FormGrid>
-      <div className="flex justify-end gap-2 pt-4 border-t dark:border-slate-700">
+      <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+          className="px-4 py-2.5 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-xl transition-colors"
         >
           Annuler
         </button>

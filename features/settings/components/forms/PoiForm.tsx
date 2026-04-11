@@ -5,10 +5,7 @@ import type { PoiFormData } from '../../../../schemas/poiSchema';
 import { PoiSchema } from '../../../../schemas/poiSchema';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../contexts/ToastContext';
-import { 
-  Copy, MapPin, Users, CheckSquare, Square, ChevronDown, 
-  ChevronUp, Globe 
-} from 'lucide-react';
+import { Copy, MapPin, Users, CheckSquare, Square, ChevronDown, ChevronUp, Globe } from 'lucide-react';
 import { FormField, Input, Select, FormGrid } from '../../../../components/form';
 
 interface ResellerOption {
@@ -51,23 +48,33 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const [showClients, setShowClients] = useState(false);
     const [clientSearch, setClientSearch] = useState('');
 
-    const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<PoiFormData>({
-       
+    const {
+      register,
+      handleSubmit,
+      formState: { errors },
+      setValue,
+      watch,
+    } = useForm<PoiFormData>({
       resolver: zodResolver(PoiSchema),
-      defaultValues: initialData ? {
-        ...initialData,
-        rayon: (typeof initialData.rayon === 'string' ? (parseInt(initialData.rayon as string, 10) || 50) : initialData.rayon ?? 50),
-        clientIds: initialData.clientIds || [],
-        allClients: initialData.allClients || false,
-      } : {
-        statut: 'Actif',
-        rayon: 50,
-        type: 'Station Service',
-        color: '#3b82f6',
-        isShared: false,
-        clientIds: [],
-        allClients: false,
-      }
+      defaultValues: initialData
+        ? {
+            ...initialData,
+            rayon:
+              typeof initialData.rayon === 'string'
+                ? parseInt(initialData.rayon as string, 10) || 50
+                : (initialData.rayon ?? 50),
+            clientIds: initialData.clientIds || [],
+            allClients: initialData.allClients || false,
+          }
+        : {
+            statut: 'Actif',
+            rayon: 50,
+            type: 'Station Service',
+            color: '#3b82f6',
+            isShared: false,
+            clientIds: [],
+            allClients: false,
+          },
     });
 
     const allClients = watch('allClients');
@@ -77,19 +84,19 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     // Filtrer les clients selon le revendeur sélectionné ou l'utilisateur connecté
     const accessibleClients = useMemo(() => {
       if (!user) return clients;
-      
+
       const normalizedRole = user.role?.toUpperCase().replace(/_/g, '');
       if (normalizedRole === 'SUPERADMIN' || normalizedRole === 'ADMIN') {
         if (selectedResellerId) {
-          return clients.filter(c => c.resellerId === selectedResellerId);
+          return clients.filter((c) => c.resellerId === selectedResellerId);
         }
         return clients;
       }
-      
+
       if (user.role === 'RESELLER') {
-        return clients.filter(c => c.resellerId === user.resellerId);
+        return clients.filter((c) => c.resellerId === user.resellerId);
       }
-      
+
       return [];
     }, [clients, user, selectedResellerId]);
 
@@ -97,16 +104,18 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const filteredClients = useMemo(() => {
       if (!clientSearch) return accessibleClients;
       const search = clientSearch.toLowerCase();
-      return accessibleClients.filter(c => 
-        c.name?.toLowerCase().includes(search)
-      );
+      return accessibleClients.filter((c) => c.name?.toLowerCase().includes(search));
     }, [accessibleClients, clientSearch]);
 
     const [isSaving, setIsSaving] = useState(false);
     const onSubmit = async (data: PoiFormData) => {
       if (isSaving) return;
       setIsSaving(true);
-      try { await onFormSubmit(data); } finally { setIsSaving(false); }
+      try {
+        await onFormSubmit(data);
+      } finally {
+        setIsSaving(false);
+      }
     };
 
     const handleClone = () => {
@@ -114,14 +123,17 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         setValue('id', undefined);
         setValue('clientIds', []);
         setValue('allClients', false);
-        showToast("Mode clonage activé : Sélectionnez les clients et enregistrez pour créer une copie.", 'info');
+        showToast('Mode clonage activé : Sélectionnez les clients et enregistrez pour créer une copie.', 'info');
       }
     };
 
     const toggleClient = (clientId: string) => {
       const current = selectedClientIds || [];
       if (current.includes(clientId)) {
-        setValue('clientIds', current.filter(id => id !== clientId));
+        setValue(
+          'clientIds',
+          current.filter((id) => id !== clientId)
+        );
       } else {
         setValue('clientIds', [...current, clientId]);
       }
@@ -131,7 +143,10 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       if (selectedClientIds.length === filteredClients.length) {
         setValue('clientIds', []);
       } else {
-        setValue('clientIds', filteredClients.map(c => c.id));
+        setValue(
+          'clientIds',
+          filteredClients.map((c) => c.id)
+        );
       }
     };
 
@@ -140,7 +155,11 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         {/* Header Actions */}
         <div className="flex justify-end">
           {initialData && (
-            <button type="button" onClick={handleClone} className="text-xs flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] px-3 py-1.5 rounded-lg transition-colors">
+            <button
+              type="button"
+              onClick={handleClone}
+              className="text-xs flex items-center gap-1 text-[var(--primary)] hover:text-[var(--primary)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] px-3 py-1.5 rounded-lg transition-colors"
+            >
               <Copy className="w-3 h-3" /> Dupliquer le POI
             </button>
           )}
@@ -175,7 +194,11 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
           <FormField label="Revendeur propriétaire" hint="Laisser vide pour un POI accessible à tous">
             <Select {...register('resellerId')}>
               <option value="">-- POI global (tous) --</option>
-              {resellers.map((r) => <option key={r.id} value={r.id}>{r.nom || r.name}</option>)}
+              {resellers.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.nom || r.name}
+                </option>
+              ))}
             </Select>
           </FormField>
         )}
@@ -193,33 +216,35 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               Partagez ce point d'intérêt entre plusieurs clients
             </p>
           </div>
-          
+
           <div className="p-4 space-y-4">
             {/* Option: Tous les clients */}
-            <label className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors">
+            <label className="flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-xl cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 border border-[var(--border)] transition-colors">
               <input
                 type="checkbox"
                 {...register('allClients')}
-                className="w-5 h-5 text-green-600 rounded-lg border-slate-300 focus:ring-green-500 focus:ring-offset-0"
+                className="w-5 h-5 text-green-600 rounded-lg border-[var(--border)] focus:ring-green-500 focus:ring-offset-0"
               />
               <div>
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                <span className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-2">
                   <Globe className="w-4 h-4 text-green-500" />
                   Tous les clients
                 </span>
-                <p className="text-xs text-slate-500">Accessible à tous les clients {selectedResellerId ? 'de ce revendeur' : ''}</p>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  Accessible à tous les clients {selectedResellerId ? 'de ce revendeur' : ''}
+                </p>
               </div>
             </label>
 
             {/* Sélection individuelle */}
             {!allClients && (
-              <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-white dark:bg-slate-800">
+              <div className="border border-[var(--border)] rounded-xl overflow-hidden bg-[var(--bg-elevated)]">
                 <button
                   type="button"
                   onClick={() => setShowClients(!showClients)}
-                  className="w-full p-3 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                  className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
                 >
-                  <span className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                  <span className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
                     Sélection individuelle
                     {selectedClientIds.length > 0 && (
                       <span className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
@@ -229,40 +254,44 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   </span>
                   {showClients ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 </button>
-                
+
                 {showClients && (
-                  <div className="p-3 border-t border-slate-200 dark:border-slate-700 space-y-3">
+                  <div className="p-3 border-t border-[var(--border)] space-y-3">
                     <Input
                       value={clientSearch}
                       onChange={(e) => setClientSearch(e.target.value)}
                       placeholder="Rechercher un client..."
                     />
-                    
+
                     <button
                       type="button"
                       onClick={toggleSelectAll}
                       className="text-xs text-green-600 hover:text-green-800 flex items-center gap-1 font-medium"
                     >
                       {selectedClientIds.length === filteredClients.length ? (
-                        <><CheckSquare className="w-3 h-3" /> Tout désélectionner</>
+                        <>
+                          <CheckSquare className="w-3 h-3" /> Tout désélectionner
+                        </>
                       ) : (
-                        <><Square className="w-3 h-3" /> Tout sélectionner</>
+                        <>
+                          <Square className="w-3 h-3" /> Tout sélectionner
+                        </>
                       )}
                     </button>
-                    
+
                     <div className="max-h-32 overflow-y-auto space-y-1">
                       {filteredClients.length === 0 ? (
-                        <p className="text-xs text-slate-400 text-center py-2">Aucun client trouvé</p>
+                        <p className="text-xs text-[var(--text-muted)] text-center py-2">Aucun client trouvé</p>
                       ) : (
                         filteredClients.map((client) => (
-                          <label 
-                            key={client.id} 
-                            className="flex items-center gap-2 p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg cursor-pointer transition-colors"
+                          <label
+                            key={client.id}
+                            className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] rounded-lg cursor-pointer transition-colors"
                           >
                             <button
                               type="button"
                               onClick={() => toggleClient(client.id)}
-                              className="text-slate-400 hover:text-green-600"
+                              className="text-[var(--text-muted)] hover:text-green-600"
                             >
                               {selectedClientIds.includes(client.id) ? (
                                 <CheckSquare className="w-4 h-4 text-green-600" />
@@ -270,9 +299,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                                 <Square className="w-4 h-4" />
                               )}
                             </button>
-                            <span className="text-sm text-slate-700 dark:text-slate-300">
-                              {client.name}
-                            </span>
+                            <span className="text-sm text-[var(--text-primary)]">{client.name}</span>
                           </label>
                         ))
                       )}
@@ -281,15 +308,14 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                 )}
               </div>
             )}
-            
+
             {/* Résumé */}
             {(allClients || selectedClientIds.length > 0) && (
               <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg flex items-center gap-2 font-medium">
                 <CheckSquare className="w-4 h-4" />
-                {allClients 
+                {allClients
                   ? `POI partagé avec tous les clients${selectedResellerId ? ' du revendeur' : ''}`
-                  : `POI partagé avec ${selectedClientIds.length} client(s)`
-                }
+                  : `POI partagé avec ${selectedClientIds.length} client(s)`}
               </div>
             )}
           </div>
@@ -298,20 +324,37 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         {/* Coordonnées */}
         <FormGrid columns={2}>
           <FormField label="Latitude" error={errors.lat?.message as string}>
-            <Input {...register('lat', { valueAsNumber: true })} type="number" step="any" placeholder="Ex: 5.316" error={!!errors.lat} />
+            <Input
+              {...register('lat', { valueAsNumber: true })}
+              type="number"
+              step="any"
+              placeholder="Ex: 5.316"
+              error={!!errors.lat}
+            />
           </FormField>
           <FormField label="Longitude" error={errors.lng?.message as string}>
-            <Input {...register('lng', { valueAsNumber: true })} type="number" step="any" placeholder="Ex: -4.008" error={!!errors.lng} />
+            <Input
+              {...register('lng', { valueAsNumber: true })}
+              type="number"
+              step="any"
+              placeholder="Ex: -4.008"
+              error={!!errors.lng}
+            />
           </FormField>
         </FormGrid>
 
         {/* Map Placeholder */}
-        <div className="border rounded-xl overflow-hidden border-slate-200 dark:border-slate-700">
-          <div className="bg-slate-100 dark:bg-slate-800 px-4 py-2.5 border-b border-slate-200 dark:border-slate-700">
-            <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Positionner sur la carte</span>
+        <div className="border rounded-xl overflow-hidden border-[var(--border)]">
+          <div className="bg-[var(--bg-elevated)] px-4 py-2.5 border-b border-[var(--border)]">
+            <span className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">
+              Positionner sur la carte
+            </span>
           </div>
-          <div className="h-32 bg-slate-200 dark:bg-slate-900 flex items-center justify-center relative">
-            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+          <div className="h-32 bg-slate-200 bg-[var(--bg-surface)] flex items-center justify-center relative">
+            <div
+              className="absolute inset-0 opacity-20"
+              style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}
+            ></div>
             <MapPin className="w-8 h-8 text-red-500 z-10 drop-shadow-lg" />
           </div>
         </div>
@@ -322,7 +365,11 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             <Input {...register('rayon', { valueAsNumber: true })} type="number" error={!!errors.rayon} />
           </FormField>
           <FormField label="Couleur">
-            <input {...register('color')} type="color" className="w-full h-[42px] p-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 cursor-pointer" />
+            <input
+              {...register('color')}
+              type="color"
+              className="w-full h-[42px] p-1.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] cursor-pointer"
+            />
           </FormField>
           <FormField label="Statut">
             <Select {...register('statut')}>

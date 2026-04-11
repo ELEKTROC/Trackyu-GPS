@@ -219,7 +219,7 @@ export const TierList: React.FC<TierListProps> = ({
       action: 'fusionner',
       label: 'Fusionner',
       icon: Layers,
-      color: 'text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800',
+      color: 'text-[var(--text-secondary)] tr-hover',
     },
   ];
 
@@ -231,7 +231,10 @@ export const TierList: React.FC<TierListProps> = ({
     },
     GPS51: { label: 'GPS51', className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300' },
     WHATSGPS: { label: 'WhatsGPS', className: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
-    AUTRES: { label: 'Autres', className: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400' },
+    AUTRES: {
+      label: 'Autres',
+      className: 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
+    },
   };
 
   // Dynamic Columns based on Type
@@ -242,24 +245,24 @@ export const TierList: React.FC<TierListProps> = ({
         const appBadge = APP_BADGE[appKey] ?? APP_BADGE['AUTRES'];
         return (
           <>
-            <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">{tier.phone || '-'}</td>
-            <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm text-center font-bold">
+            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.phone || '-'}</td>
+            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm text-center font-bold">
               {tier.clientData?.fleetSize || 0}
             </td>
-            <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">
+            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">
               <span
                 className={`px-2 py-1 rounded-full text-xs font-semibold ${
                   tier.clientData?.segment === 'VIP'
                     ? 'bg-purple-100 text-purple-700'
                     : tier.clientData?.segment === 'Grand Compte'
                       ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
-                      : 'bg-slate-100 text-slate-600'
+                      : 'bg-slate-100 text-[var(--text-secondary)]'
                 }`}
               >
                 {tier.clientData?.segment || 'Standard'}
               </span>
             </td>
-            <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">
+            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">
               <span
                 className={`px-2 py-1 rounded-full text-xs font-semibold ${appBadge.className}`}
                 title={appKey === 'AUTRES' && tier.applicationDetail ? tier.applicationDetail : undefined}
@@ -270,7 +273,7 @@ export const TierList: React.FC<TierListProps> = ({
             <td className="px-6 py-4 text-sm text-right">
               <div className="flex flex-col items-end gap-1">
                 <span
-                  className={`font-mono font-semibold ${(tier.clientData?.balance || 0) < 0 ? 'text-red-600' : 'text-slate-700 dark:text-slate-300'}`}
+                  className={`font-mono font-semibold ${(tier.clientData?.balance || 0) < 0 ? 'text-red-600' : 'text-[var(--text-primary)]'}`}
                 >
                   {formatPrice(tier.clientData?.balance || 0)}
                 </span>
@@ -291,8 +294,8 @@ export const TierList: React.FC<TierListProps> = ({
       case 'RESELLER':
         return (
           <>
-            <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">{tier.resellerData?.domain || '-'}</td>
-            <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm text-center font-semibold">
+            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.resellerData?.domain || '-'}</td>
+            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm text-center font-semibold">
               {tier.resellerData?.activeClients || 0}
             </td>
           </>
@@ -300,13 +303,11 @@ export const TierList: React.FC<TierListProps> = ({
       case 'SUPPLIER':
         return (
           <>
-            <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">
-              {tier.supplierData?.category || '-'}
-            </td>
+            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.supplierData?.category || '-'}</td>
             <td className="px-6 py-4 text-sm text-right">
               <div className="flex flex-col items-end gap-1">
                 <span
-                  className={`font-mono font-semibold ${(tier.supplierData?.balance || 0) < 0 ? 'text-orange-600' : 'text-slate-700 dark:text-slate-300'}`}
+                  className={`font-mono font-semibold ${(tier.supplierData?.balance || 0) < 0 ? 'text-orange-600' : 'text-[var(--text-primary)]'}`}
                 >
                   {formatPrice(tier.supplierData?.balance || 0)}
                 </span>
@@ -363,7 +364,7 @@ export const TierList: React.FC<TierListProps> = ({
   };
 
   return (
-    <Card className="flex-1 flex flex-col overflow-hidden border-slate-200 dark:border-slate-700 shadow-sm relative">
+    <Card className="flex-1 flex flex-col overflow-hidden border-[var(--border)] shadow-sm relative">
       {/* BULK ACTIONS BAR */}
       {selectedIds.size > 0 && (
         <div className="absolute top-0 left-0 right-0 h-14 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--primary)] dark:border-[var(--primary)] rounded-t-lg">
@@ -373,13 +374,13 @@ export const TierList: React.FC<TierListProps> = ({
           <div className="flex gap-2">
             <button
               onClick={() => handleBulkAction('mark_inactive')}
-              className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors flex items-center gap-1.5"
+              className="text-xs bg-[var(--bg-elevated)] border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors flex items-center gap-1.5"
             >
               <X className="w-3 h-3" /> Désactiver
             </button>
             <button
               onClick={() => handleBulkAction('delete')}
-              className="text-xs bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 px-3 py-1.5 rounded shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5"
+              className="text-xs bg-[var(--bg-elevated)] border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 px-3 py-1.5 rounded shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5"
             >
               <Trash2 className="w-3 h-3" /> Supprimer
             </button>
@@ -396,7 +397,7 @@ export const TierList: React.FC<TierListProps> = ({
       {isMobile ? (
         <MobileCardList bordered={false}>
           {paginatedTiers.length === 0 ? (
-            <div className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">Aucun élément trouvé</div>
+            <div className="px-6 py-12 text-center text-[var(--text-muted)]">Aucun élément trouvé</div>
           ) : (
             paginatedTiers.map((tier) => {
               const borderColor =
@@ -446,13 +447,13 @@ export const TierList: React.FC<TierListProps> = ({
                       {(tier.name || '??').substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-sm text-slate-800 dark:text-white truncate">{tier.name}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                      <p className="font-bold text-sm text-[var(--text-primary)] truncate">{tier.name}</p>
+                      <p className="text-xs text-[var(--text-secondary)] truncate">
                         {tier.email || tier.contactName || '—'}
                       </p>
                     </div>
                     <span
-                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${tier.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'}`}
+                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${tier.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'}`}
                     >
                       {tier.status === 'ACTIVE' ? 'Actif' : 'Inactif'}
                     </span>
@@ -463,16 +464,14 @@ export const TierList: React.FC<TierListProps> = ({
                       {typeLabel}
                     </span>
                     {tier.type === 'CLIENT' && !!tier.clientData?.fleetSize && (
-                      <span className="text-slate-500 dark:text-slate-400">{tier.clientData.fleetSize} véh.</span>
+                      <span className="text-[var(--text-secondary)]">{tier.clientData.fleetSize} véh.</span>
                     )}
                     {tier.type === 'RESELLER' && tier.resellerData?.activeClients !== undefined && (
-                      <span className="text-slate-500 dark:text-slate-400">
-                        {tier.resellerData.activeClients} clients
-                      </span>
+                      <span className="text-[var(--text-secondary)]">{tier.resellerData.activeClients} clients</span>
                     )}
                     {balance !== null && (
                       <span
-                        className={`font-mono font-semibold ${balance < 0 ? 'text-red-500' : 'text-slate-600 dark:text-slate-300'}`}
+                        className={`font-mono font-semibold ${balance < 0 ? 'text-red-500' : 'text-[var(--text-secondary)]'}`}
                       >
                         {formatPrice(balance)}
                       </span>
@@ -500,15 +499,15 @@ export const TierList: React.FC<TierListProps> = ({
         <div className="flex-1 overflow-auto custom-scrollbar pb-16 lg:pb-0">
           <table className="w-full text-left border-collapse">
             <thead
-              className={`bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 sticky top-0 z-10 ${selectedIds.size > 0 ? 'opacity-0' : ''}`}
+              className={`bg-[var(--bg-elevated)] text-[var(--text-secondary)] sticky top-0 z-10 ${selectedIds.size > 0 ? 'opacity-0' : ''}`}
             >
               <tr>
-                <th className="px-4 py-3 w-10 border-b dark:border-slate-700">
+                <th className="px-4 py-3 w-10 border-b border-[var(--border)]">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={handleSelectAll}
-                    className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                    className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
                 </th>
                 {getHeaders().map((col) => (
@@ -523,13 +522,13 @@ export const TierList: React.FC<TierListProps> = ({
                   />
                 ))}
                 {(!readOnly || onViewDetail) && (
-                  <th className="px-6 py-3 text-xs font-bold uppercase border-b dark:border-slate-700 text-right w-16">
+                  <th className="px-6 py-3 text-xs font-bold uppercase border-b border-[var(--border)] text-right w-16">
                     Actions
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-900">
+            <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-surface)]">
               {paginatedTiers.map((tier) => (
                 <tr
                   key={tier.id}
@@ -537,7 +536,7 @@ export const TierList: React.FC<TierListProps> = ({
                     setOpenMenuId(null);
                     onViewDetail?.(tier);
                   }}
-                  className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group ${selectedIds.has(tier.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
+                  className={`tr-hover/50 transition-colors cursor-pointer group ${selectedIds.has(tier.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
                 >
                   <td
                     className="px-4 py-4"
@@ -550,7 +549,7 @@ export const TierList: React.FC<TierListProps> = ({
                       type="checkbox"
                       checked={selectedIds.has(tier.id)}
                       onChange={() => {}}
-                      className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                      className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                     />
                   </td>
 
@@ -569,13 +568,13 @@ export const TierList: React.FC<TierListProps> = ({
                         {(tier.name || '??').substring(0, 2).toUpperCase()}
                       </div>
                       <div>
-                        <div className="font-bold text-slate-700 dark:text-slate-200 text-sm">{tier.name}</div>
-                        <div className="text-xs text-slate-400 font-mono">{tier.id}</div>
+                        <div className="font-bold text-[var(--text-primary)] text-sm">{tier.name}</div>
+                        <div className="text-xs text-[var(--text-muted)] font-mono">{tier.id}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">{tier.contactName || '-'}</td>
-                  <td className="px-6 py-4 text-slate-600 dark:text-slate-300 text-sm">{tier.email || '-'}</td>
+                  <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.contactName || '-'}</td>
+                  <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.email || '-'}</td>
 
                   {/* Specific Columns */}
                   {renderSpecificColumns(tier)}
@@ -589,7 +588,7 @@ export const TierList: React.FC<TierListProps> = ({
                             e.stopPropagation();
                             setOpenMenuId(openMenuId === tier.id ? null : tier.id);
                           }}
-                          className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
                           title="Actions rapides"
                         >
                           <MoreHorizontal className="w-4 h-4" />
@@ -603,7 +602,7 @@ export const TierList: React.FC<TierListProps> = ({
                                 setOpenMenuId(null);
                               }}
                             />
-                            <div className="absolute right-0 top-full mt-1 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-40 py-1 animate-in fade-in zoom-in-95 duration-150">
+                            <div className="absolute right-0 top-full mt-1 w-56 bg-[var(--bg-elevated)] rounded-xl shadow-xl border border-[var(--border)] z-40 py-1 animate-in fade-in zoom-in-95 duration-150">
                               {quickActions.map(({ action, label, icon: Icon, color }) => (
                                 <button
                                   key={action}
@@ -624,7 +623,7 @@ export const TierList: React.FC<TierListProps> = ({
               ))}
               {paginatedTiers.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-6 py-12 text-center text-slate-400 dark:text-slate-500">
+                  <td colSpan={10} className="px-6 py-12 text-center text-[var(--text-muted)]">
                     Aucun élément trouvé
                   </td>
                 </tr>
@@ -639,7 +638,7 @@ export const TierList: React.FC<TierListProps> = ({
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        className="p-3 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+        className="p-3 border-t border-[var(--border)] bg-[var(--bg-surface)]"
       />
       <ConfirmDialogComponent />
     </Card>

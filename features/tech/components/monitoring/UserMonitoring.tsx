@@ -134,19 +134,19 @@ export const UserMonitoring: React.FC = () => {
     <div className="space-y-4 h-full flex flex-col">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-        <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+        <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
             <Shield className="w-5 h-5 text-[var(--primary)]" />
             Suivi des Utilisateurs
-            <span className="text-xs font-normal text-slate-400 ml-2">({stats.total} utilisateurs)</span>
+            <span className="text-xs font-normal text-[var(--text-muted)] ml-2">({stats.total} utilisateurs)</span>
         </h3>
         <div className="relative w-full sm:w-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Rechercher un utilisateur..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
+            className="w-full pl-9 pr-4 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
           />
         </div>
       </div>
@@ -169,23 +169,23 @@ export const UserMonitoring: React.FC = () => {
           <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">{stats.withErrors}</div>
           <div className="text-xs text-orange-600 dark:text-orange-500 flex items-center justify-center gap-1"><AlertCircle className="w-3 h-3" /> Erreurs MDP</div>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-slate-700 dark:text-slate-300">{stats.neverLoggedIn}</div>
-          <div className="text-xs text-slate-500 flex items-center justify-center gap-1"><XCircle className="w-3 h-3" /> Jamais connecté</div>
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-[var(--text-primary)]">{stats.neverLoggedIn}</div>
+          <div className="text-xs text-[var(--text-secondary)] flex items-center justify-center gap-1"><XCircle className="w-3 h-3" /> Jamais connecté</div>
         </div>
       </div>
 
       {/* Table */}
       <div className="flex-1 overflow-auto custom-scrollbar pb-16 lg:pb-0">
         {enhancedUsers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+          <div className="flex flex-col items-center justify-center h-64 text-[var(--text-muted)]">
             <Users className="w-12 h-12 mb-3 opacity-30" />
-            <p className="font-medium text-slate-500">{searchTerm ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur'}</p>
+            <p className="font-medium text-[var(--text-secondary)]">{searchTerm ? 'Aucun utilisateur trouvé' : 'Aucun utilisateur'}</p>
             <p className="text-sm mt-1">{searchTerm ? 'Essayez un autre terme de recherche' : 'Les utilisateurs du système apparaîtront ici'}</p>
           </div>
         ) : (
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 uppercase font-bold text-xs sticky top-0 z-10">
+          <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase font-bold text-xs sticky top-0 z-10">
             <tr>
               <SortableHeader label="Utilisateur" sortKey="name" currentSortKey={userSortConfig.key} currentDirection={userSortConfig.direction} onSort={handleUserSort} />
               <SortableHeader label="Rôle" sortKey="role" currentSortKey={userSortConfig.key} currentDirection={userSortConfig.direction} onSort={handleUserSort} />
@@ -198,22 +198,22 @@ export const UserMonitoring: React.FC = () => {
               <th className="px-3 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+          <tbody className="divide-y divide-[var(--border)]">
             {sortedUsers.map((user) => {
               const isOnline = user.lastLogin && (Date.now() - new Date(user.lastLogin).getTime()) < 15 * 60 * 1000;
               return (
-              <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+              <tr key={user.id} className="tr-hover/50 transition-colors">
                 <td className="px-3 py-2.5">
                   <div className="flex items-center gap-2">
                     <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
                     <div>
-                      <div className="font-medium text-slate-800 dark:text-slate-200">{user.name}</div>
-                      <div className="text-xs text-slate-500">{user.email}</div>
+                      <div className="font-medium text-[var(--text-primary)]">{user.name}</div>
+                      <div className="text-xs text-[var(--text-secondary)]">{user.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-3 py-2.5">
-                    <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold">
+                    <span className="px-2 py-0.5 rounded bg-[var(--bg-elevated)] text-[var(--text-secondary)] text-xs font-bold">
                         {user.role}
                     </span>
                 </td>
@@ -226,7 +226,7 @@ export const UserMonitoring: React.FC = () => {
                   <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${
                     user.avgLoginsPerWeek >= 5 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
                     user.avgLoginsPerWeek >= 1 ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]' :
-                    'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                    'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'
                   }`}>
                     {user.avgLoginsPerWeek}
                   </span>
@@ -235,7 +235,7 @@ export const UserMonitoring: React.FC = () => {
                   <div className="flex flex-col items-center">
                     <span className="font-semibold text-purple-700 dark:text-purple-400">{user.totalActions}</span>
                     {user.mostUsedAction && (
-                      <span className="text-[10px] text-slate-400 truncate max-w-[80px]" title={user.mostUsedAction}>
+                      <span className="text-[10px] text-[var(--text-muted)] truncate max-w-[80px]" title={user.mostUsedAction}>
                         {ACTION_LABELS[user.mostUsedAction] || user.mostUsedAction}
                       </span>
                     )}
@@ -243,9 +243,9 @@ export const UserMonitoring: React.FC = () => {
                 </td>
                 <td className="px-3 py-2.5">
                   <div className="flex flex-col">
-                    <span className="text-slate-700 dark:text-slate-300 text-xs">{formatRelative(user.lastLogin)}</span>
-                    {user.lastLogin && <span className="text-[10px] text-slate-400">{formatDate(user.lastLogin)}</span>}
-                    {user.lastLoginIp && <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1"><Globe className="w-2.5 h-2.5" />{user.lastLoginIp}</span>}
+                    <span className="text-[var(--text-primary)] text-xs">{formatRelative(user.lastLogin)}</span>
+                    {user.lastLogin && <span className="text-[10px] text-[var(--text-muted)]">{formatDate(user.lastLogin)}</span>}
+                    {user.lastLoginIp && <span className="text-[10px] text-[var(--text-muted)] font-mono flex items-center gap-1"><Globe className="w-2.5 h-2.5" />{user.lastLoginIp}</span>}
                   </div>
                 </td>
                 <td className="px-3 py-2.5 text-center">
@@ -254,7 +254,7 @@ export const UserMonitoring: React.FC = () => {
                         {user.passwordErrors}
                     </span>
                   ) : (
-                    <span className="text-slate-400">-</span>
+                    <span className="text-[var(--text-muted)]">-</span>
                   )}
                 </td>
                 <td className="px-3 py-2.5">
@@ -272,7 +272,7 @@ export const UserMonitoring: React.FC = () => {
                   <div className="flex justify-end gap-1">
                     <button 
                         onClick={() => handleViewLogs(user)}
-                        className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-[var(--primary)] transition-colors disabled:opacity-50" 
+                        className="p-1.5 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors disabled:opacity-50" 
                         title="Voir les logs"
                         disabled={loadingAction === `VIEW_LOGS-${user.id}`}
                     >
@@ -280,7 +280,7 @@ export const UserMonitoring: React.FC = () => {
                     </button>
                     <button 
                         onClick={() => setConfirmReset(user)}
-                        className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-slate-500 hover:text-orange-600 transition-colors disabled:opacity-50" 
+                        className="p-1.5 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)] hover:text-orange-600 transition-colors disabled:opacity-50" 
                         title="Réinitialiser mot de passe"
                         disabled={loadingAction === `RESET_PASSWORD-${user.id}`}
                     >
@@ -299,13 +299,13 @@ export const UserMonitoring: React.FC = () => {
       {/* Logs Modal */}
       {logsModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setLogsModal(null)}>
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl max-w-3xl w-full max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center p-4 border-b dark:border-slate-700">
+          <div className="bg-[var(--bg-surface)] rounded-xl shadow-xl max-w-3xl w-full max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-4 border-b border-[var(--border)]">
               <div>
-                <h3 className="font-bold text-slate-800 dark:text-white">Logs — {logsModal.user.name}</h3>
-                <p className="text-xs text-slate-500 mt-0.5">{logsModal.user.email} · {logsModal.logs.length} entrées</p>
+                <h3 className="font-bold text-[var(--text-primary)]">Logs — {logsModal.user.name}</h3>
+                <p className="text-xs text-[var(--text-secondary)] mt-0.5">{logsModal.user.email} · {logsModal.logs.length} entrées</p>
               </div>
-              <button onClick={() => setLogsModal(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded" title="Fermer"><X className="w-5 h-5" /></button>
+              <button onClick={() => setLogsModal(null)} className="p-1 hover:bg-[var(--bg-elevated)] rounded" title="Fermer"><X className="w-5 h-5" /></button>
             </div>
             {/* User summary in modal */}
             <div className="grid grid-cols-4 gap-3 px-4 pt-3">
@@ -328,10 +328,10 @@ export const UserMonitoring: React.FC = () => {
             </div>
             <div className="flex-1 overflow-auto p-4">
               {logsModal.logs.length === 0 ? (
-                <p className="text-center text-slate-400 py-8">Aucun log trouvé pour cet utilisateur</p>
+                <p className="text-center text-[var(--text-muted)] py-8">Aucun log trouvé pour cet utilisateur</p>
               ) : (
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-slate-50 dark:bg-slate-800 text-xs text-slate-500 dark:text-slate-300 uppercase sticky top-0">
+                  <thead className="bg-[var(--bg-elevated)] text-xs text-[var(--text-secondary)] uppercase sticky top-0">
                     <tr>
                       <th className="px-3 py-2">Date</th>
                       <th className="px-3 py-2">Action</th>
@@ -340,24 +340,24 @@ export const UserMonitoring: React.FC = () => {
                       <th className="px-3 py-2">IP</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                  <tbody className="divide-y divide-[var(--border)]">
                     {logsModal.logs.map((log: AuditLog) => (
-                      <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td className="px-3 py-2 text-xs text-slate-500 whitespace-nowrap">{formatDate(log.created_at)}</td>
+                      <tr key={log.id} className="tr-hover/50">
+                        <td className="px-3 py-2 text-xs text-[var(--text-secondary)] whitespace-nowrap">{formatDate(log.created_at)}</td>
                         <td className="px-3 py-2">
                           <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${
                             log.action === 'LOGIN' ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]' :
                             log.action === 'LOGIN_FAILED' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
                             log.action === 'CREATE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
                             log.action === 'DELETE' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                            'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300'
+                            'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                           }`}>
                             {ACTION_LABELS[log.action] || log.action}
                           </span>
                         </td>
-                        <td className="px-3 py-2 text-slate-600 dark:text-slate-400 text-xs">{log.entity_type}</td>
-                        <td className="px-3 py-2 text-[10px] text-slate-400 font-mono truncate max-w-[120px]" title={log.entity_id}>{log.entity_id ? log.entity_id.substring(0, 8) + '...' : '-'}</td>
-                        <td className="px-3 py-2 text-xs text-slate-400 font-mono">{log.ip_address || '-'}</td>
+                        <td className="px-3 py-2 text-[var(--text-secondary)] text-xs">{log.entity_type}</td>
+                        <td className="px-3 py-2 text-[10px] text-[var(--text-muted)] font-mono truncate max-w-[120px]" title={log.entity_id}>{log.entity_id ? log.entity_id.substring(0, 8) + '...' : '-'}</td>
+                        <td className="px-3 py-2 text-xs text-[var(--text-muted)] font-mono">{log.ip_address || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -374,13 +374,13 @@ export const UserMonitoring: React.FC = () => {
           <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-orange-100 rounded-full"><Lock className="w-5 h-5 text-orange-600" /></div>
-              <h3 className="font-bold text-slate-800">Réinitialiser le mot de passe</h3>
+              <h3 className="font-bold text-[var(--text-primary)]">Réinitialiser le mot de passe</h3>
             </div>
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-sm text-[var(--text-secondary)] mb-4">
               Êtes-vous sûr de vouloir réinitialiser le mot de passe de <strong>{confirmReset.name}</strong> ({confirmReset.email}) ?
             </p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setConfirmReset(null)} className="px-4 py-2 text-sm text-slate-600 hover:bg-slate-100 rounded-lg">Annuler</button>
+              <button onClick={() => setConfirmReset(null)} className="px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg">Annuler</button>
               <button 
                 onClick={() => handleResetPassword(confirmReset)} 
                 className="px-4 py-2 text-sm bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50"

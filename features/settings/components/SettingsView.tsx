@@ -143,7 +143,7 @@ const LoadingFallback: React.FC<{ label?: string }> = ({ label = 'Chargement...'
   <div className="flex items-center justify-center h-full min-h-[200px]">
     <div className="flex flex-col items-center gap-3">
       <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
-      <span className="text-sm text-slate-500">{label}</span>
+      <span className="text-sm text-[var(--text-secondary)]">{label}</span>
     </div>
   </div>
 );
@@ -755,10 +755,10 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
     const colLower = column.toLowerCase();
 
     if (type === 'vehicle') {
-      if (colLower.includes('nom')) return <div className="font-bold text-slate-800 dark:text-white">{item.name}</div>;
+      if (colLower.includes('nom')) return <div className="font-bold text-[var(--text-primary)]">{item.name}</div>;
       if (colLower.includes('plaque'))
         return (
-          <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs text-slate-600 dark:text-slate-300">
+          <span className="font-mono bg-[var(--bg-elevated)] px-2 py-0.5 rounded text-xs text-[var(--text-secondary)]">
             {item.id}
           </span>
         );
@@ -766,55 +766,52 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         const STATUS_FR: Record<string, { label: string; cls: string }> = {
           MOVING: { label: 'En mouvement', cls: 'bg-green-100 text-green-700' },
           IDLE: { label: 'Ralenti', cls: 'bg-yellow-100 text-yellow-700' },
-          STOPPED: { label: 'Arrêté', cls: 'bg-slate-100 text-slate-600' },
+          STOPPED: { label: 'Arrêté', cls: 'bg-slate-100 text-[var(--text-secondary)]' },
           OFFLINE: { label: 'Hors ligne', cls: 'bg-red-100 text-red-600' },
         };
         const statusKey = String(item.status ?? '');
-        const s = STATUS_FR[statusKey] ?? { label: statusKey, cls: 'bg-slate-100 text-slate-500' };
+        const s = STATUS_FR[statusKey] ?? { label: statusKey, cls: 'bg-slate-100 text-[var(--text-secondary)]' };
         return <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${s.cls}`}>{s.label}</span>;
       }
     }
 
     if (type === 'client') {
       if (colLower.includes('nom') || colLower.includes('société'))
-        return <div className="font-bold text-slate-800 dark:text-white">{item.name}</div>;
-      if (colLower.includes('contact'))
-        return <span className="text-slate-600 dark:text-slate-400">{item.contactName}</span>;
+        return <div className="font-bold text-[var(--text-primary)]">{item.name}</div>;
+      if (colLower.includes('contact')) return <span className="text-[var(--text-secondary)]">{item.contactName}</span>;
       if (colLower.includes('email')) return <span className="text-[var(--primary)] text-xs">{item.email}</span>;
-      if (colLower.includes('ville'))
-        return <span className="text-slate-600 dark:text-slate-400">{item.city || 'N/A'}</span>;
+      if (colLower.includes('ville')) return <span className="text-[var(--text-secondary)]">{item.city || 'N/A'}</span>;
     }
 
     // Generic
-    if (colLower.includes('id')) return <span className="font-mono text-xs text-slate-500">{item.id}</span>;
+    if (colLower.includes('id'))
+      return <span className="font-mono text-xs text-[var(--text-secondary)]">{item.id}</span>;
     if (colLower.includes('nom') || colLower.includes('véhicule'))
       return (
-        <span className="font-bold text-slate-800 dark:text-white">
+        <span className="font-bold text-[var(--text-primary)]">
           {item.nom || item.name || item.vehicule || item.vehicleId}
         </span>
       );
-    if (colLower.includes('email'))
-      return <span className="text-slate-600 dark:text-slate-400 text-sm">{item.email}</span>;
+    if (colLower.includes('email')) return <span className="text-[var(--text-secondary)] text-sm">{item.email}</span>;
     if (colLower.includes('clients'))
-      return <span className="font-bold text-slate-800 dark:text-slate-400">{item.clients}</span>;
+      return <span className="font-bold text-[var(--text-primary)] dark:text-[var(--text-muted)]">{item.clients}</span>;
     if (colLower.includes('véhicules'))
       return (
-        <span className="font-bold text-slate-800 dark:text-slate-400">
+        <span className="font-bold text-[var(--text-primary)] dark:text-[var(--text-muted)]">
           {item.vehicules || item.vehicleCount || (item.vehicleIds ? item.vehicleIds.length : 0)}
         </span>
       );
-    if (colLower.includes('créé le')) return <span className="text-xs text-slate-500">{item.createdAt}</span>;
+    if (colLower.includes('créé le'))
+      return <span className="text-xs text-[var(--text-secondary)]">{item.createdAt}</span>;
     if (colLower.includes('dernière connexion'))
-      return <span className="text-xs text-slate-500">{item.lastLogin}</span>;
+      return <span className="text-xs text-[var(--text-secondary)]">{item.lastLogin}</span>;
     if (colLower.includes('revendeur'))
-      return <span className="text-slate-600 dark:text-slate-400 text-sm">{item.reseller || '--'}</span>;
+      return <span className="text-[var(--text-secondary)] text-sm">{item.reseller || '--'}</span>;
     if (colLower.includes('client'))
-      return (
-        <span className="font-medium text-slate-700 dark:text-slate-300">{item.client || item.clientId || '--'}</span>
-      );
+      return <span className="font-medium text-[var(--text-primary)]">{item.client || item.clientId || '--'}</span>;
     if (colLower.includes('canal'))
       return (
-        <span className="text-xs font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+        <span className="text-xs font-mono bg-[var(--bg-elevated)] px-2 py-1 rounded">
           {item.channel || item.transport || 'GPRS'}
         </span>
       );
@@ -827,16 +824,19 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         </span>
       );
     if (colLower.includes('envoyé'))
-      return <span className="text-xs text-slate-500">{item.envoye || item.sentAt}</span>;
+      return <span className="text-xs text-[var(--text-secondary)]">{item.envoye || item.sentAt}</span>;
     if (colLower.includes('erreurs'))
       return <span className="text-xs font-mono text-red-500">{item.passwordErrors || 0}</span>;
     if (colLower.includes('actions'))
       return (
         <div className="flex gap-2">
-          <button className="p-1 hover:bg-slate-100 rounded text-slate-500" title="Voir logs">
+          <button className="p-1 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)]" title="Voir logs">
             <FileText className="w-3 h-3" />
           </button>
-          <button className="p-1 hover:bg-slate-100 rounded text-slate-500" title="Reset Password">
+          <button
+            className="p-1 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)]"
+            title="Reset Password"
+          >
             <Lock className="w-3 h-3" />
           </button>
         </div>
@@ -856,25 +856,25 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         return item.enableTimeRestriction ? (
           <span className="text-xs bg-[var(--primary-dim)] text-[var(--primary)] px-2 py-1 rounded">Oui</span>
         ) : (
-          <span className="text-xs text-slate-400">Non</span>
+          <span className="text-xs text-[var(--text-muted)]">Non</span>
         );
       if (colLower.includes('distance'))
         return item.enableDistanceLimit ? (
           <span className="text-xs font-mono">{item.maxDistancePerDay} km</span>
         ) : (
-          <span className="text-xs text-slate-400">--</span>
+          <span className="text-xs text-[var(--text-muted)]">--</span>
         );
       if (colLower.includes('vitesse'))
         return item.enableSpeedLimit ? (
           <span className="text-xs font-mono">{item.maxSpeed} km/h</span>
         ) : (
-          <span className="text-xs text-slate-400">--</span>
+          <span className="text-xs text-[var(--text-muted)]">--</span>
         );
       if (colLower.includes('moteur'))
         return item.enableEngineHoursLimit ? (
           <span className="text-xs font-mono">{item.maxEngineHoursPerDay} h</span>
         ) : (
-          <span className="text-xs text-slate-400">--</span>
+          <span className="text-xs text-[var(--text-muted)]">--</span>
         );
       if (colLower.includes('custom'))
         return item.enableCustomRestriction ? (
@@ -882,7 +882,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
             Oui
           </span>
         ) : (
-          <span className="text-xs text-slate-400">Non</span>
+          <span className="text-xs text-[var(--text-muted)]">Non</span>
         );
     }
 
@@ -899,19 +899,17 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
     if (type === 'driver') {
       if (colLower.includes('permis'))
         return (
-          <span className="text-xs font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
-            {item.permis || '--'}
-          </span>
+          <span className="text-xs font-mono bg-[var(--bg-elevated)] px-2 py-1 rounded">{item.permis || '--'}</span>
         );
       if (colLower.includes('rfid'))
-        return <span className="text-xs font-mono text-slate-500">{item.rfidTag || '--'}</span>;
+        return <span className="text-xs font-mono text-[var(--text-secondary)]">{item.rfidTag || '--'}</span>;
       if (colLower.includes('téléphone'))
-        return <span className="text-sm text-slate-600 dark:text-slate-400">{item.telephone || '--'}</span>;
+        return <span className="text-sm text-[var(--text-secondary)]">{item.telephone || '--'}</span>;
     }
 
     if (type === 'tech') {
       if (colLower.includes('spécialité'))
-        return <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{item.specialite}</span>;
+        return <span className="text-sm font-medium text-[var(--text-primary)]">{item.specialite}</span>;
       if (colLower.includes('zone'))
         return (
           <span className="text-xs bg-[var(--primary-dim)] text-[var(--primary)] px-2 py-1 rounded">{item.zone}</span>
@@ -919,17 +917,17 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       if (colLower.includes('niveau'))
         return (
           <span
-            className={`text-xs px-2 py-1 rounded-full ${item.niveau === 'Expert' ? 'bg-purple-100 text-purple-700' : item.niveau === 'Confirmé' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-slate-100 text-slate-600'}`}
+            className={`text-xs px-2 py-1 rounded-full ${item.niveau === 'Expert' ? 'bg-purple-100 text-purple-700' : item.niveau === 'Confirmé' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
           >
             {item.niveau}
           </span>
         );
       if (colLower.includes('société'))
-        return <span className="text-sm text-slate-600 dark:text-slate-400">{item.societe || 'Interne'}</span>;
+        return <span className="text-sm text-[var(--text-secondary)]">{item.societe || 'Interne'}</span>;
     }
 
     const val = item[Object.keys(item).find((k) => k.toLowerCase().includes(colLower.substring(0, 3))) || ''];
-    return <span className="text-slate-600 dark:text-slate-400">{val || '--'}</span>;
+    return <span className="text-[var(--text-secondary)]">{val || '--'}</span>;
   };
 
   return (
@@ -937,22 +935,22 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       {/* Header & Toolbar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300 shadow-sm border border-slate-200 dark:border-slate-700">
+          <div className="p-2 bg-[var(--bg-elevated)] rounded-lg text-[var(--text-secondary)] shadow-sm border border-[var(--border)]">
             <Icon className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">Gestion des {title}s</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">{filteredData.length} éléments enregistrés</p>
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">Gestion des {title}s</h3>
+            <p className="text-xs text-[var(--text-secondary)]">{filteredData.length} éléments enregistrés</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <div className="relative flex-1 sm:flex-none">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher..."
-              className="w-full sm:w-64 pl-9 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] outline-none shadow-sm"
+              className="w-full sm:w-64 pl-9 pr-4 py-2 border border-[var(--border)] rounded-lg text-sm bg-[var(--bg-surface)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] outline-none shadow-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -961,29 +959,29 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
           <div className="relative" ref={columnMenuRef}>
             <button
               onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-              className={`p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors ${isColumnMenuOpen ? 'bg-slate-50 dark:bg-slate-700 ring-2 ring-[var(--primary)]/20' : ''} shadow-sm`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''} shadow-sm`}
               title="Gérer les colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
             </button>
             {isColumnMenuOpen && (
-              <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="p-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">
+              <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="p-2 bg-[var(--bg-elevated)] border-b border-[var(--border)] border-[var(--border)] text-[10px] font-bold text-[var(--text-secondary)] uppercase">
                   Colonnes
                 </div>
                 <div className="max-h-48 overflow-y-auto custom-scrollbar p-1">
                   {columns.map((col) => (
                     <label
                       key={col}
-                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded cursor-pointer text-sm"
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer text-sm"
                     >
                       <input
                         type="checkbox"
                         checked={visibleColumns.includes(col)}
                         onChange={() => toggleColumn(col)}
-                        className="rounded border-slate-300 dark:border-slate-600 text-[var(--primary)] focus:ring-[var(--primary)] bg-white dark:bg-slate-900"
+                        className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)] bg-[var(--bg-surface)]"
                       />
-                      <span className="text-slate-700 dark:text-slate-200">{col}</span>
+                      <span className="text-[var(--text-primary)]">{col}</span>
                     </label>
                   ))}
                 </div>
@@ -1003,13 +1001,13 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       </div>
 
       {/* Table Content */}
-      <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden flex flex-col shadow-sm relative">
+      <div className="flex-1 bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-hidden flex flex-col shadow-sm relative">
         {/* Bulk Actions Bar */}
         {selectedIds.size > 0 && (
           <div className="absolute top-0 left-0 right-0 h-12 bg-[var(--primary-dim)] flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--border)]">
             <span className="text-sm font-bold text-[var(--text-primary)]">{selectedIds.size} sélectionné(s)</span>
             <div className="flex gap-2">
-              <button className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] transition-colors">
+              <button className="text-xs bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] transition-colors">
                 Exporter
               </button>
               <button
@@ -1024,14 +1022,14 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
 
         <div className="overflow-x-auto overflow-y-auto custom-scrollbar flex-1">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10 shadow-sm">
+            <thead className="bg-[var(--bg-elevated)] sticky top-0 z-10 shadow-sm">
               <tr>
-                <th className="px-4 py-3 w-10 border-b border-slate-200 dark:border-slate-700">
+                <th className="px-4 py-3 w-10 border-b border-[var(--border)]">
                   <input
                     type="checkbox"
                     checked={isAllSelected}
                     onChange={handleSelectAll}
-                    className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                    className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
                 </th>
                 {columns.map(
@@ -1044,20 +1042,20 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                         currentSortKey={settingsSortConfig?.key || null}
                         currentDirection={settingsSortConfig?.direction || null}
                         onSort={handleSettingsSort}
-                        className="px-6 py-3 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 whitespace-nowrap"
+                        className="px-6 py-3 text-xs font-bold text-[var(--text-secondary)] uppercase border-b border-[var(--border)] whitespace-nowrap"
                       />
                     )
                 )}
-                <th className="px-6 py-3 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 text-right w-20">
+                <th className="px-6 py-3 text-xs font-bold text-[var(--text-secondary)] uppercase border-b border-[var(--border)] text-right w-20">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            <tbody className="divide-y divide-[var(--border)]">
               {paginatedData.map((item: GenericItem, idx: number) => (
                 <tr
                   key={idx}
-                  className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer ${selectedIds.has(item.id) ? 'bg-[var(--primary-dim)]' : ''}`}
+                  className={`tr-hover/50 transition-colors group cursor-pointer ${selectedIds.has(item.id) ? 'bg-[var(--primary-dim)]' : ''}`}
                   onClick={() => toggleSelection(item.id)}
                 >
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
@@ -1065,7 +1063,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                       type="checkbox"
                       checked={selectedIds.has(item.id)}
                       onChange={() => toggleSelection(item.id)}
-                      className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                      className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                     />
                   </td>
                   {columns.map(
@@ -1085,7 +1083,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                               e.stopPropagation();
                               setStatusMenuOpen(statusMenuOpen === item.id ? null : item.id);
                             }}
-                            className="p-1.5 text-slate-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+                            className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
                             title="Changer le statut"
                           >
                             <Power className="w-4 h-4" />
@@ -1093,7 +1091,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                           {statusMenuOpen === item.id && (
                             <div
                               ref={statusMenuRef}
-                              className="absolute right-0 mt-2 w-32 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50 animate-in fade-in zoom-in-95 duration-200"
+                              className="absolute right-0 mt-2 w-32 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 animate-in fade-in zoom-in-95 duration-200"
                             >
                               {['Actif', 'Suspendu', 'Inactif', 'Résilié'].map((status) => (
                                 <button
@@ -1102,7 +1100,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                     e.stopPropagation();
                                     handleStatusChange(item.id, status);
                                   }}
-                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-slate-700 dark:text-slate-300'}`}
+                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
                                 >
                                   {status}
                                 </button>
@@ -1113,11 +1111,11 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                       )}
                       <button
                         onClick={() => onEdit(item)}
-                        className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded transition-colors"
+                        className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded transition-colors"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
+                      <button className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -1126,7 +1124,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
               ))}
               {filteredData.length === 0 && (
                 <tr>
-                  <td colSpan={columns.length + 2} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={columns.length + 2} className="px-6 py-12 text-center text-[var(--text-muted)]">
                     Aucune donnée ne correspond à votre recherche.
                   </td>
                 </tr>
@@ -1136,13 +1134,13 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         </div>
 
         {/* Footer Pagination */}
-        <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex justify-between items-center text-xs">
+        <div className="p-3 border-t border-[var(--border)] bg-[var(--bg-elevated)] flex justify-between items-center text-xs">
           <div className="flex items-center gap-2">
-            <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">Lignes par page:</span>
+            <span className="text-[var(--text-secondary)] hidden sm:inline">Lignes par page:</span>
             <select
               value={itemsPerPage}
               onChange={(e) => setItemsPerPage(Number(e.target.value))}
-              className="text-xs border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 p-1 focus:ring-2 focus:ring-[var(--primary)] outline-none"
+              className="text-xs border border-[var(--border)] rounded bg-[var(--bg-surface)] text-[var(--text-primary)] p-1 focus:ring-2 focus:ring-[var(--primary)] outline-none"
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -1968,7 +1966,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
         );
 
       default:
-        return <div className="p-4 text-center text-slate-500">Section en construction ({activeTab})</div>;
+        return (
+          <div className="p-4 text-center text-[var(--text-secondary)]">Section en construction ({activeTab})</div>
+        );
     }
   };
 
@@ -1983,16 +1983,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
               setActiveTab('profile');
               setMobileShowList(false);
             }}
-            className="w-full flex items-center gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm text-left"
+            className="w-full flex items-center gap-3 p-4 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm text-left"
           >
             <div className="w-12 h-12 rounded-full bg-[var(--primary-dim)] flex items-center justify-center text-[var(--primary)] font-bold text-lg shrink-0">
               {(user?.name || user?.email || '?')[0].toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-bold text-sm text-slate-800 dark:text-white truncate">{user?.name || 'Profil'}</p>
-              <p className="text-xs text-slate-400 truncate">{user?.email}</p>
+              <p className="font-bold text-sm text-[var(--text-primary)] truncate">{user?.name || 'Profil'}</p>
+              <p className="text-xs text-[var(--text-muted)] truncate">{user?.email}</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600 shrink-0" />
+            <ChevronRight className="w-5 h-5 text-slate-300 dark:text-[var(--text-secondary)] shrink-0" />
           </button>
 
           {/* Grouped settings list */}
@@ -2000,10 +2000,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             .filter((g) => g.title !== 'Profil')
             .map((group) => (
               <div key={group.title}>
-                <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase px-1 mb-1.5">
-                  {group.title}
-                </p>
-                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden divide-y divide-slate-100 dark:divide-slate-700">
+                <p className="section-title px-1 mb-1.5">{group.title}</p>
+                <div className="bg-[var(--bg-elevated)] rounded-2xl border border-[var(--border)] overflow-hidden divide-y divide-[var(--border)]">
                   {group.items.map((item) => {
                     const Icon = item.icon;
                     const bgColor = ICON_COLORS[item.id] || 'bg-slate-500';
@@ -2014,15 +2012,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
                           setActiveTab(item.id as TabId);
                           setMobileShowList(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 active:bg-slate-100 dark:active:bg-slate-700 text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 active:bg-slate-100 dark:active:bg-slate-700 text-left"
                       >
                         <div className={`w-9 h-9 rounded-full ${bgColor} flex items-center justify-center shrink-0`}>
                           <Icon className="w-4.5 h-4.5 text-white" style={{ width: 18, height: 18 }} />
                         </div>
-                        <span className="flex-1 text-sm font-medium text-slate-700 dark:text-slate-200">
-                          {item.label}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 shrink-0" />
+                        <span className="flex-1 text-sm font-medium text-[var(--text-primary)]">{item.label}</span>
+                        <ChevronRight className="w-4 h-4 text-slate-300 dark:text-[var(--text-secondary)] shrink-0" />
                       </button>
                     );
                   })}
@@ -2041,7 +2037,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           >
             <ChevronLeft className="w-4 h-4" /> Paramètres
           </button>
-          <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm">
             <div className="flex-1 overflow-auto p-4 relative">{renderContent()}</div>
           </div>
         </div>
@@ -2071,7 +2067,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm">
             <div className="flex-1 overflow-hidden p-6 relative">{renderContent()}</div>
           </div>
         </>
@@ -2088,7 +2084,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           <div className="flex justify-end gap-3 w-full">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded text-slate-600 dark:text-slate-300 text-sm font-bold hover:bg-white dark:hover:bg-slate-700 transition-colors"
+              className="px-4 py-2 border border-[var(--border)] rounded text-[var(--text-secondary)] text-sm font-bold hover:bg-white dark:hover:bg-slate-700 transition-colors"
             >
               Annuler
             </button>
@@ -2212,7 +2208,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           ) : activeTab === 'groups' ? (
             <GroupForm ref={formRef} initialData={editingItem} onFormSubmit={handleFormSubmit} />
           ) : (
-            <div className="p-4 text-center text-slate-500">Formulaire non disponible</div>
+            <div className="p-4 text-center text-[var(--text-secondary)]">Formulaire non disponible</div>
           )}
         </Suspense>
       </Modal>

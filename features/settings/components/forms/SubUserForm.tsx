@@ -2,13 +2,23 @@ import React, { useMemo, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import type { Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { SubUserFormData} from '../../../../schemas/subUserSchema';
+import type { SubUserFormData } from '../../../../schemas/subUserSchema';
 import { SubUserSchema, ROLE_PERMISSION_PRESETS } from '../../../../schemas/subUserSchema';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { 
-  User, Building2, Car, Shield, 
-  Map, Bell, FileText, Wrench, Package,
-  CheckSquare, Square, ChevronDown, ChevronUp
+import {
+  User,
+  Building2,
+  Car,
+  Shield,
+  Map,
+  Bell,
+  FileText,
+  Wrench,
+  Package,
+  CheckSquare,
+  Square,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { FormField, FormSection, FormGrid, Input, Select, Textarea } from '../../../../components/form';
 
@@ -62,15 +72,15 @@ const PERMISSION_GROUPS = [
       { key: 'canEditVehicles', label: 'Modifier les véhicules' },
       { key: 'canViewDrivers', label: 'Voir les conducteurs' },
       { key: 'canEditDrivers', label: 'Modifier les conducteurs' },
-    ]
+    ],
   },
   {
     title: 'Carte & Historique',
     icon: Map,
     permissions: [
       { key: 'canViewMap', label: 'Voir la carte' },
-      { key: 'canViewHistory', label: 'Voir l\'historique' },
-    ]
+      { key: 'canViewHistory', label: "Voir l'historique" },
+    ],
   },
   {
     title: 'Alertes',
@@ -78,7 +88,7 @@ const PERMISSION_GROUPS = [
     permissions: [
       { key: 'canViewAlerts', label: 'Voir les alertes' },
       { key: 'canConfigureAlerts', label: 'Configurer les alertes' },
-    ]
+    ],
   },
   {
     title: 'Rapports',
@@ -86,7 +96,7 @@ const PERMISSION_GROUPS = [
     permissions: [
       { key: 'canViewReports', label: 'Voir les rapports' },
       { key: 'canExportReports', label: 'Exporter les rapports' },
-    ]
+    ],
   },
   {
     title: 'Interventions',
@@ -94,7 +104,7 @@ const PERMISSION_GROUPS = [
     permissions: [
       { key: 'canViewInterventions', label: 'Voir les interventions' },
       { key: 'canCreateInterventions', label: 'Créer des interventions' },
-    ]
+    ],
   },
   {
     title: 'Stock',
@@ -102,18 +112,36 @@ const PERMISSION_GROUPS = [
     permissions: [
       { key: 'canViewStock', label: 'Voir le stock' },
       { key: 'canManageStock', label: 'Gérer le stock' },
-    ]
+    ],
   },
 ];
 
 export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
-  ({ initialData, onFormSubmit, clients = [], branches = [], vehicles = [], hideClientSelector = false, forcedClientId }, ref) => {
+  (
+    {
+      initialData,
+      onFormSubmit,
+      clients = [],
+      branches = [],
+      vehicles = [],
+      hideClientSelector = false,
+      forcedClientId,
+    },
+    ref
+  ) => {
     const { user } = useAuth();
     const [showPermissions, setShowPermissions] = React.useState(false);
     const [showVehicles, setShowVehicles] = React.useState(false);
     const [vehicleSearch, setVehicleSearch] = React.useState('');
 
-    const { register, handleSubmit, watch, setValue, control, formState: { errors } } = useForm<SubUserFormData>({
+    const {
+      register,
+      handleSubmit,
+      watch,
+      setValue,
+      control,
+      formState: { errors },
+    } = useForm<SubUserFormData>({
       resolver: zodResolver(SubUserSchema),
       defaultValues: initialData || {
         nom: '',
@@ -127,7 +155,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         allVehicles: false,
         permissions: ROLE_PERMISSION_PRESETS.User,
         notes: '',
-      }
+      },
     });
 
     // Sync forcedClientId into form when provided
@@ -144,35 +172,35 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     // Filtrer les clients selon le rôle de l'utilisateur connecté
     const accessibleClients = useMemo(() => {
       if (!user) return clients;
-      
+
       const normalizedRole = user.role?.toUpperCase().replace(/_/g, '');
       if (normalizedRole === 'SUPERADMIN' || normalizedRole === 'ADMIN') {
         return clients;
       }
-      
+
       if (user.role === 'RESELLER') {
-        return clients.filter(c => c.resellerId === user.resellerId);
+        return clients.filter((c) => c.resellerId === user.resellerId);
       }
-      
+
       if (user.role === 'CLIENT') {
-        return clients.filter(c => c.id === user.clientId);
+        return clients.filter((c) => c.id === user.clientId);
       }
-      
+
       return [];
     }, [clients, user]);
 
     // Filtrer les branches selon le client sélectionné
     const filteredBranches = useMemo(() => {
       if (!selectedClientId) return [];
-      return branches.filter(b => b.clientId === selectedClientId);
+      return branches.filter((b) => b.clientId === selectedClientId);
     }, [branches, selectedClientId]);
 
     // Filtrer les véhicules selon le client sélectionné, puis par branche si sélectionnée
     const clientVehicles = useMemo(() => {
       if (!selectedClientId) return [];
-      const clientName = clients.find(c => c.id === selectedClientId)?.name;
-      const byClient = vehicles.filter(v => v.clientId === selectedClientId || v.name === clientName);
-      if (selectedBranchId) return byClient.filter(v => !v.branchId || v.branchId === selectedBranchId);
+      const clientName = clients.find((c) => c.id === selectedClientId)?.name;
+      const byClient = vehicles.filter((v) => v.clientId === selectedClientId || v.name === clientName);
+      if (selectedBranchId) return byClient.filter((v) => !v.branchId || v.branchId === selectedBranchId);
       return byClient;
     }, [vehicles, clients, selectedClientId, selectedBranchId]);
 
@@ -180,9 +208,8 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const filteredVehicles = useMemo(() => {
       if (!vehicleSearch) return clientVehicles;
       const search = vehicleSearch.toLowerCase();
-      return clientVehicles.filter(v => 
-        v.name?.toLowerCase().includes(search) ||
-        v.plate?.toLowerCase().includes(search)
+      return clientVehicles.filter(
+        (v) => v.name?.toLowerCase().includes(search) || v.plate?.toLowerCase().includes(search)
       );
     }, [clientVehicles, vehicleSearch]);
 
@@ -204,7 +231,10 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const toggleVehicle = (vehicleId: string) => {
       const current = selectedVehicleIds || [];
       if (current.includes(vehicleId)) {
-        setValue('vehicleIds', current.filter(id => id !== vehicleId));
+        setValue(
+          'vehicleIds',
+          current.filter((id) => id !== vehicleId)
+        );
       } else {
         setValue('vehicleIds', [...current, vehicleId]);
       }
@@ -214,28 +244,31 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const onSubmit = async (data: SubUserFormData) => {
       if (isSaving) return;
       setIsSaving(true);
-      try { await onFormSubmit(data); } finally { setIsSaving(false); }
+      try {
+        await onFormSubmit(data);
+      } finally {
+        setIsSaving(false);
+      }
     };
 
     return (
       <form ref={ref} onSubmit={handleSubmit(onSubmit)} className="space-y-4 h-[600px] flex flex-col">
         <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4">
-          
           {/* Section Identité */}
           <FormSection icon={User} title="Identité">
             <FormGrid columns={2}>
               <FormField label="Nom complet" required error={errors.nom?.message}>
                 <Input {...register('nom')} placeholder="Jean Dupont" />
               </FormField>
-              
+
               <FormField label="Email" required error={errors.email?.message}>
                 <Input {...register('email')} type="email" placeholder="jean@entreprise.com" />
               </FormField>
-              
+
               <FormField label="Téléphone">
                 <Input {...register('phone')} type="tel" placeholder="+225 07 XX XX XX XX" />
               </FormField>
-              
+
               <FormField label="Statut">
                 <Select {...register('statut')}>
                   <option value="Actif">✅ Actif</option>
@@ -254,28 +287,37 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   <Select {...register('clientId')}>
                     <option value="">Sélectionner un client...</option>
                     {accessibleClients.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
                     ))}
                   </Select>
                 </FormField>
               )}
 
-              <FormField label="Branche (optionnel)" hint={!selectedClientId ? "Sélectionnez d'abord un client" : undefined}>
+              <FormField
+                label="Branche (optionnel)"
+                hint={!selectedClientId ? "Sélectionnez d'abord un client" : undefined}
+              >
                 <Select {...register('branchId')} disabled={!selectedClientId}>
                   <option value="">Toutes les branches</option>
                   {filteredBranches.map((b) => (
-                    <option key={b.id} value={b.id}>{b.name || b.nom}</option>
+                    <option key={b.id} value={b.id}>
+                      {b.name || b.nom}
+                    </option>
                   ))}
                 </Select>
               </FormField>
-              
-              <FormField 
-                label="Rôle" 
-                required 
+
+              <FormField
+                label="Rôle"
+                required
                 hint={
-                  selectedRole === 'Manager' ? 'Accès complet sauf administration' :
-                  selectedRole === 'User' ? 'Accès standard en lecture/écriture limitée' :
-                  'Accès en lecture seule'
+                  selectedRole === 'Manager'
+                    ? 'Accès complet sauf administration'
+                    : selectedRole === 'User'
+                      ? 'Accès standard en lecture/écriture limitée'
+                      : 'Accès en lecture seule'
                 }
               >
                 <Select {...register('role')}>
@@ -288,13 +330,13 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
           </FormSection>
 
           {/* Section Véhicules */}
-          <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+          <div className="border border-[var(--border)] rounded-xl overflow-hidden">
             <button
               type="button"
               onClick={() => setShowVehicles(!showVehicles)}
-              className="w-full p-3 bg-slate-100 dark:bg-slate-800 flex items-center justify-between hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="w-full p-3 bg-[var(--bg-elevated)] flex items-center justify-between hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
             >
-              <span className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
                 <div className="p-1 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
                   <Car className="w-4 h-4 text-[var(--primary)] dark:text-[var(--primary)]" />
                 </div>
@@ -312,13 +354,11 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               </span>
               {showVehicles ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
-            
+
             {showVehicles && (
               <div className="p-4 space-y-3">
                 {!selectedClientId ? (
-                  <p className="text-sm text-slate-400 text-center py-4">
-                    Sélectionnez d'abord un client
-                  </p>
+                  <p className="text-sm text-[var(--text-muted)] text-center py-4">Sélectionnez d'abord un client</p>
                 ) : (
                   <>
                     <label className="flex items-center gap-2 p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-xl cursor-pointer">
@@ -331,7 +371,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                         Accès à tous les véhicules du client
                       </span>
                     </label>
-                    
+
                     {!allVehicles && (
                       <>
                         <Input
@@ -339,17 +379,17 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                           onChange={(e) => setVehicleSearch(e.target.value)}
                           placeholder="Rechercher un véhicule..."
                         />
-                        
+
                         <div className="max-h-40 overflow-y-auto space-y-1">
                           {filteredVehicles.map((v) => (
-                            <label 
-                              key={v.id} 
-                              className="flex items-center gap-2 p-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg cursor-pointer transition-colors"
+                            <label
+                              key={v.id}
+                              className="flex items-center gap-2 p-2.5 hover:bg-[var(--bg-elevated)] rounded-lg cursor-pointer transition-colors"
                             >
                               <button
                                 type="button"
                                 onClick={() => toggleVehicle(v.id)}
-                                className="text-slate-400 hover:text-[var(--primary)]"
+                                className="text-[var(--text-muted)] hover:text-[var(--primary)]"
                               >
                                 {selectedVehicleIds.includes(v.id) ? (
                                   <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
@@ -357,13 +397,13 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                                   <Square className="w-4 h-4" />
                                 )}
                               </button>
-                              <span className="text-sm text-slate-700 dark:text-slate-300">
-                                {v.name} <span className="text-slate-400">({v.plate})</span>
+                              <span className="text-sm text-[var(--text-primary)]">
+                                {v.name} <span className="text-[var(--text-muted)]">({v.plate})</span>
                               </span>
                             </label>
                           ))}
                           {filteredVehicles.length === 0 && (
-                            <p className="text-xs text-slate-400 text-center py-2">Aucun véhicule trouvé</p>
+                            <p className="text-xs text-[var(--text-muted)] text-center py-2">Aucun véhicule trouvé</p>
                           )}
                         </div>
                       </>
@@ -375,13 +415,13 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
           </div>
 
           {/* Section Permissions */}
-          <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+          <div className="border border-[var(--border)] rounded-xl overflow-hidden">
             <button
               type="button"
               onClick={() => setShowPermissions(!showPermissions)}
-              className="w-full p-3 bg-slate-100 dark:bg-slate-800 flex items-center justify-between hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="w-full p-3 bg-[var(--bg-elevated)] flex items-center justify-between hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
             >
-              <span className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
                 <div className="p-1 bg-purple-100 dark:bg-purple-800 rounded-lg">
                   <Shield className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                 </div>
@@ -389,18 +429,18 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               </span>
               {showPermissions ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
-            
+
             {showPermissions && (
               <div className="p-4 space-y-4">
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Les permissions sont pré-remplies selon le rôle. Personnalisez si nécessaire.
                 </p>
-                
+
                 {PERMISSION_GROUPS.map((group) => {
                   const Icon = group.icon;
                   return (
                     <div key={group.title} className="space-y-2">
-                      <h5 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-2">
+                      <h5 className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wide flex items-center gap-2">
                         <Icon className="w-3 h-3" /> {group.title}
                       </h5>
                       <div className="grid grid-cols-2 gap-2">
@@ -410,16 +450,14 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                             name={`permissions.${perm.key}` as Path<SubUserFormData>}
                             control={control}
                             render={({ field }) => (
-                              <label className="flex items-center gap-2 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 p-2 rounded-lg transition-colors">
+                              <label className="flex items-center gap-2 text-sm cursor-pointer hover:bg-[var(--bg-elevated)] p-2 rounded-lg transition-colors">
                                 <input
                                   type="checkbox"
                                   checked={!!field.value}
                                   onChange={field.onChange}
                                   className="w-4 h-4 text-[var(--primary)] rounded-lg"
                                 />
-                                <span className="text-slate-600 dark:text-slate-400">
-                                  {perm.label}
-                                </span>
+                                <span className="text-[var(--text-secondary)]">{perm.label}</span>
                               </label>
                             )}
                           />
@@ -434,9 +472,9 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
           {/* Notes */}
           <FormField label="Notes internes">
-            <Textarea 
-              {...register('notes')} 
-              rows={2} 
+            <Textarea
+              {...register('notes')}
+              rows={2}
               placeholder="Notes visibles uniquement par les administrateurs..."
             />
           </FormField>

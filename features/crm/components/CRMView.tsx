@@ -3,7 +3,6 @@ import {
   Users,
   Briefcase,
   Plus,
-  Search,
   Filter,
   List,
   LayoutGrid,
@@ -29,6 +28,7 @@ import { generatePDF } from '../../../services/pdfService';
 import { useTenantBranding } from '../../../hooks/useTenantBranding';
 import { api } from '../../../services/apiLazy';
 import { useQueryClient } from '@tanstack/react-query';
+import { SearchBar } from '../../../components/SearchBar';
 import { TierDetailModal } from './TierDetailModal';
 import { TierForm } from './TierForm';
 import { TierList } from './TierList';
@@ -479,7 +479,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
     <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 sm:h-[calc(100vh-140px)] sm:flex sm:flex-col">
       {/* HEADER CONTROLS */}
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center shrink-0">
-        <h2 className="hidden sm:flex text-xl font-bold text-slate-800 dark:text-white items-center gap-2">
+        <h2 className="hidden sm:flex text-xl font-bold text-[var(--text-primary)] items-center gap-2">
           {mode === 'LEADS' ? (
             <Users className="w-6 h-6 text-[var(--primary)]" />
           ) : mode === 'CLIENTS' ? (
@@ -495,16 +495,12 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
         </h2>
         <div className="flex flex-wrap gap-2 items-center">
           {/* Search */}
-          <div className="relative flex-1 sm:flex-none">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Rechercher..."
-              className="pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white w-full sm:w-64"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Rechercher..."
+            className="flex-1 sm:w-64 sm:flex-none"
+          />
 
           {/* Company Filter — desktop only */}
           {!isMobile && (mode === 'LEADS' || mode === 'CLIENTS') && uniqueCompanies.length > 0 && (
@@ -512,7 +508,8 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
               <select
                 value={selectedCompany}
                 onChange={(e) => setSelectedCompany(e.target.value)}
-                className="pl-3 pr-8 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white appearance-none cursor-pointer min-w-[150px]"
+                className="pl-3 pr-8 py-2 border border-[var(--border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none cursor-pointer min-w-[150px]"
+                style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
               >
                 <option value="all">Toutes les sociétés</option>
                 {uniqueCompanies.map((c) => (
@@ -521,23 +518,23 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
             </div>
           )}
 
           {/* View Mode Toggle — desktop only */}
           {!isMobile && mode === 'LEADS' && (
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700">
+            <div className="flex bg-[var(--bg-elevated)] p-1 rounded-lg border border-[var(--border)]">
               <button
                 onClick={() => setViewMode('KANBAN')}
-                className={`p-1.5 rounded ${viewMode === 'KANBAN' ? 'bg-white dark:bg-slate-700 shadow text-[var(--primary)]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                className={`p-1.5 rounded transition-colors ${viewMode === 'KANBAN' ? 'bg-[var(--bg-surface)] shadow text-[var(--primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
                 title="Vue Kanban"
               >
                 <LayoutGrid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('LIST')}
-                className={`p-1.5 rounded ${viewMode === 'LIST' ? 'bg-white dark:bg-slate-700 shadow text-[var(--primary)]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                className={`p-1.5 rounded transition-colors ${viewMode === 'LIST' ? 'bg-[var(--bg-surface)] shadow text-[var(--primary)]' : 'text-[var(--text-muted)] hover:text-[var(--text-primary)]'}`}
                 title="Vue Liste"
               >
                 <List className="w-4 h-4" />
@@ -551,14 +548,14 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
               {!isMobile && (
                 <button
                   onClick={() => setIsImportModalOpen(true)}
-                  className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600"
+                  className="icon-btn px-4 py-2 text-sm font-bold flex items-center gap-2"
                 >
                   <Download className="w-4 h-4" /> Import CSV
                 </button>
               )}
               <button
                 onClick={() => setIsQuickLeadFormOpen(true)}
-                className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-1.5 transition-colors shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600"
+                className="icon-btn px-3 py-2 text-sm font-bold flex items-center gap-1.5"
                 title="Saisie rapide"
               >
                 <Plus className="w-4 h-4" />
@@ -601,21 +598,21 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
           {/* Filter & Export */}
           <div className="flex gap-2">
             <div className="relative" ref={filterMenuRef}>
-              <button
-                onClick={() => setIsFilterOpen(!isFilterOpen)}
-                className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors flex items-center gap-1.5"
-              >
+              <button onClick={() => setIsFilterOpen(!isFilterOpen)} className="icon-btn flex items-center gap-1.5">
                 <Filter className="w-4 h-4" /> <span className="text-sm font-medium">Filtres</span>
               </button>
               {isFilterOpen && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-20 p-4 space-y-4 animate-in fade-in slide-in-from-top-2">
+                <div
+                  className="absolute top-full right-0 mt-2 w-64 border border-[var(--border)] rounded-lg shadow-xl z-20 p-4 space-y-4 animate-in fade-in slide-in-from-top-2"
+                  style={{ backgroundColor: 'var(--bg-surface)' }}
+                >
                   {mode === 'CATALOG' && (
                     <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Catégorie</label>
+                      <label className="section-title mb-2 block">Catégorie</label>
                       <select
                         value={filters.category}
                         onChange={(e) => setFilters((f) => ({ ...f, category: e.target.value }))}
-                        className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                        className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] text-sm"
                       >
                         <option value="ALL">Toutes</option>
                         <option value="Matériel">Matériel</option>
@@ -626,11 +623,11 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                     </div>
                   )}
                   <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Revendeur</label>
+                    <label className="section-title mb-2 block">Revendeur</label>
                     <select
                       value={filters.reseller}
                       onChange={(e) => setFilters((f) => ({ ...f, reseller: e.target.value }))}
-                      className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-sm"
+                      className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] text-sm"
                     >
                       <option value="ALL">Tous</option>
                       {tiers
@@ -645,18 +642,10 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                 </div>
               )}
             </div>
-            <button
-              onClick={() => setIsImportModalOpen(true)}
-              className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"
-              title="Importer CSV"
-            >
+            <button onClick={() => setIsImportModalOpen(true)} className="icon-btn" title="Importer CSV">
               <Upload className="w-4 h-4" />
             </button>
-            <button
-              onClick={handleExport}
-              className="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"
-              title="Exporter PDF"
-            >
+            <button onClick={handleExport} className="icon-btn" title="Exporter PDF">
               <Download className="w-4 h-4" />
             </button>
           </div>
@@ -806,21 +795,21 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase">Contact</label>
-                <p className="font-bold text-slate-800 dark:text-white">{selectedLead.contactName}</p>
+                <label className="section-title">Contact</label>
+                <p className="font-bold text-[var(--text-primary)]">{selectedLead.contactName}</p>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase">Email</label>
-                <p className="text-slate-600 dark:text-slate-300">{selectedLead.email}</p>
+                <label className="section-title">Email</label>
+                <p className="text-[var(--text-secondary)]">{selectedLead.email}</p>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase">Valeur Potentielle</label>
+                <label className="section-title">Valeur Potentielle</label>
                 <p className="font-bold text-[var(--primary)]">
                   {(selectedLead.potentialValue ?? 0).toLocaleString('fr-FR')}
                 </p>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase">Statut</label>
+                <label className="section-title">Statut</label>
                 <span
                   className={`px-2 py-1 rounded text-xs font-bold uppercase ${
                     selectedLead.status === 'WON'
@@ -834,12 +823,12 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
                 </span>
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase">Revendeur</label>
-                <p className="text-slate-600 dark:text-slate-300">{selectedLead.resellerName || 'Global'}</p>
+                <label className="section-title">Revendeur</label>
+                <p className="text-[var(--text-secondary)]">{selectedLead.resellerName || 'Global'}</p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-2">
+            <div className="pt-4 border-t border-[var(--border)] flex justify-end gap-2">
               {onCreateQuote && (
                 <button
                   onClick={() => {
@@ -853,7 +842,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
               )}
               <button
                 onClick={() => setIsLeadDetailOpen(false)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800"
+                className="px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-bold tr-hover"
               >
                 Fermer
               </button>
@@ -867,7 +856,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
         <div className="p-4 text-center">
           <Award className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
           <h3 className="text-lg font-bold">Félicitations !</h3>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-[var(--text-secondary)]">
             Vous avez gagné l'affaire <strong>{justWonLead?.companyName}</strong>.
           </p>
         </div>
@@ -936,15 +925,15 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
         title="Changement de statut"
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-slate-300">
+          <p className="text-sm text-[var(--text-secondary)]">
             Vous êtes sur le point de changer le statut vers{' '}
             <span className="font-bold">{statusChangeModal.newStatus}</span>. Veuillez indiquer un motif pour ce
             changement.
           </p>
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Motif / Commentaire</label>
+            <label className="section-title mb-1 block">Motif / Commentaire</label>
             <textarea
-              className="w-full p-2 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
+              className="w-full p-2 border border-[var(--border)] rounded bg-[var(--bg-surface)] text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
               rows={3}
               value={statusChangeModal.reason}
               onChange={(e) => setStatusChangeModal({ ...statusChangeModal, reason: e.target.value })}
@@ -955,7 +944,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
           <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={() => setStatusChangeModal({ ...statusChangeModal, isOpen: false })}
-              className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-bold tr-hover"
             >
               Annuler
             </button>

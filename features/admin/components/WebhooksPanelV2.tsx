@@ -359,8 +359,10 @@ export const WebhooksPanelV2 = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Webhooks</h2>
-          <p className="text-sm text-slate-500">Configurez des notifications automatiques vers vos systèmes externes</p>
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Webhooks</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Configurez des notifications automatiques vers vos systèmes externes
+          </p>
         </div>
         <button
           onClick={() => {
@@ -433,8 +435,8 @@ export const WebhooksPanelV2 = () => {
         {webhooks.length === 0 ? (
           <Card className="p-8 text-center">
             <Webhook className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">Aucun webhook configuré</h3>
-            <p className="text-sm text-slate-500 mb-4">
+            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">Aucun webhook configuré</h3>
+            <p className="text-sm text-[var(--text-secondary)] mb-4">
               Créez votre premier webhook pour recevoir des notifications automatiques
             </p>
             <button
@@ -457,20 +459,20 @@ export const WebhooksPanelV2 = () => {
                     className={`p-2 rounded-lg ${
                       webhook.status === 'ACTIVE'
                         ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                        : 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'
                     }`}
                   >
                     <Webhook className="w-6 h-6" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-base font-semibold text-slate-900 dark:text-white truncate">{webhook.url}</h3>
+                      <h3 className="text-base font-semibold text-[var(--text-primary)] truncate">{webhook.url}</h3>
                       <button
                         onClick={() => copyToClipboard(webhook.url)}
-                        className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+                        className="p-1 hover:bg-[var(--bg-elevated)] rounded"
                         title="Copier l'URL"
                       >
-                        <Copy className="w-3.5 h-3.5 text-slate-400" />
+                        <Copy className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-1.5 mt-2">
@@ -483,7 +485,7 @@ export const WebhooksPanelV2 = () => {
                         </span>
                       ))}
                       {webhook.events.length > 4 && (
-                        <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full dark:bg-slate-700 dark:text-slate-400">
+                        <span className="px-2 py-0.5 bg-slate-100 text-[var(--text-secondary)] text-xs rounded-full bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
                           +{webhook.events.length - 4} autres
                         </span>
                       )}
@@ -511,10 +513,10 @@ export const WebhooksPanelV2 = () => {
                   </button>
                   <button
                     onClick={() => openEditModal(webhook)}
-                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                    className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
                     title="Modifier"
                   >
-                    <Edit2 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                    <Edit2 className="w-4 h-4 text-[var(--text-secondary)]" />
                   </button>
                   <button
                     onClick={() => handleDelete(webhook.id)}
@@ -538,21 +540,19 @@ export const WebhooksPanelV2 = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              URL de destination
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">URL de destination</label>
             <input
               type="url"
               value={formData.url}
               onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] focus:ring-2 focus:ring-[var(--primary)]"
               placeholder="https://api.example.com/webhook"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Secret de signature (HMAC-SHA256)
             </label>
             <div className="flex gap-2">
@@ -560,13 +560,13 @@ export const WebhooksPanelV2 = () => {
                 type="text"
                 value={formData.secret}
                 onChange={(e) => setFormData({ ...formData, secret: e.target.value })}
-                className="flex-1 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
+                className="flex-1 px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] focus:ring-2 focus:ring-[var(--primary)]"
                 placeholder="Optionnel - pour vérifier l'authenticité"
               />
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, secret: crypto.randomUUID() })}
-                className="px-3 py-2 text-sm bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg"
+                className="px-3 py-2 text-sm bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
               >
                 Générer
               </button>
@@ -574,29 +574,29 @@ export const WebhooksPanelV2 = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
               Événements à surveiller ({formData.events?.length || 0} sélectionnés)
             </label>
-            <div className="max-h-64 overflow-y-auto border rounded-lg dark:border-slate-700">
+            <div className="max-h-64 overflow-y-auto border rounded-lg border-[var(--border)]">
               {Object.entries(EVENT_CATEGORIES).map(([category, events]) => {
                 const categorySelected = events.filter((e) => formData.events?.includes(e)).length;
                 const allSelected = categorySelected === events.length;
 
                 return (
-                  <div key={category} className="border-b dark:border-slate-700 last:border-b-0">
+                  <div key={category} className="border-b border-[var(--border)] last:border-b-0">
                     <button
                       type="button"
                       onClick={() => selectAllInCategory(category)}
-                      className="w-full px-3 py-2 flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
+                      className="w-full px-3 py-2 flex items-center justify-between bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                     >
-                      <span className="font-medium text-sm text-slate-700 dark:text-slate-300">{category}</span>
+                      <span className="font-medium text-sm text-[var(--text-primary)]">{category}</span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${
                           allSelected
                             ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
                             : categorySelected > 0
                               ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
-                              : 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400'
+                              : 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'
                         }`}
                       >
                         {categorySelected}/{events.length}
@@ -606,15 +606,15 @@ export const WebhooksPanelV2 = () => {
                       {events.map((event) => (
                         <label
                           key={event}
-                          className="flex items-center space-x-2 p-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 rounded cursor-pointer"
+                          className="flex items-center space-x-2 p-1.5 tr-hover rounded cursor-pointer"
                         >
                           <input
                             type="checkbox"
                             checked={formData.events?.includes(event)}
                             onChange={() => toggleEvent(event)}
-                            className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                            className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                           />
-                          <span className="text-xs text-slate-600 dark:text-slate-400">{event}</span>
+                          <span className="text-xs text-[var(--text-secondary)]">{event}</span>
                         </label>
                       ))}
                     </div>
@@ -630,17 +630,17 @@ export const WebhooksPanelV2 = () => {
                 type="checkbox"
                 checked={formData.status === 'ACTIVE'}
                 onChange={(e) => setFormData({ ...formData, status: e.target.checked ? 'ACTIVE' : 'INACTIVE' })}
-                className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
               />
-              <span className="text-sm text-slate-700 dark:text-slate-300">Webhook actif</span>
+              <span className="text-sm text-[var(--text-primary)]">Webhook actif</span>
             </label>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4 border-t dark:border-slate-700">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-[var(--border)]">
             <button
               type="button"
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
             >
               Annuler
             </button>
@@ -657,23 +657,21 @@ export const WebhooksPanelV2 = () => {
       {/* Test Modal */}
       <Modal isOpen={isTestModalOpen} onClose={() => setIsTestModalOpen(false)} title="Tester le webhook">
         <div className="space-y-4">
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <p className="text-sm text-slate-600 dark:text-slate-400">
+          <div className="bg-[var(--bg-elevated)] rounded-lg p-3">
+            <p className="text-sm text-[var(--text-secondary)]">
               <span className="font-medium">URL:</span> {selectedWebhookForTest?.url}
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Événement à simuler
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Événement à simuler</label>
             <select
               value={testEvent}
               onChange={(e) => {
                 setTestEvent(e.target.value);
                 setTestPayload(JSON.stringify(SAMPLE_PAYLOADS[e.target.value] || {}, null, 2));
               }}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+              className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
             >
               {ALL_EVENTS.map((event) => (
                 <option key={event} value={event}>
@@ -684,11 +682,11 @@ export const WebhooksPanelV2 = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Payload JSON</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Payload JSON</label>
             <textarea
               value={testPayload}
               onChange={(e) => setTestPayload(e.target.value)}
-              className="w-full h-48 px-3 py-2 border rounded-lg font-mono text-xs dark:bg-slate-800 dark:border-slate-700"
+              className="w-full h-48 px-3 py-2 border rounded-lg font-mono text-xs bg-[var(--bg-elevated)] border-[var(--border)]"
             />
           </div>
 
@@ -705,10 +703,10 @@ export const WebhooksPanelV2 = () => {
             </div>
           )}
 
-          <div className="flex justify-end space-x-3 pt-4 border-t dark:border-slate-700">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsTestModalOpen(false)}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               Fermer
             </button>
@@ -727,15 +725,15 @@ export const WebhooksPanelV2 = () => {
       {/* History Modal */}
       <Modal isOpen={isHistoryModalOpen} onClose={() => setIsHistoryModalOpen(false)} title="Historique de livraison">
         <div className="space-y-4">
-          <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-3">
-            <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+          <div className="bg-[var(--bg-elevated)] rounded-lg p-3">
+            <p className="text-sm text-[var(--text-secondary)] truncate">
               <span className="font-medium">URL:</span> {selectedWebhookForHistory?.url}
             </p>
           </div>
 
           <div className="max-h-96 overflow-y-auto space-y-2">
             {deliveries.length === 0 ? (
-              <div className="text-center py-8 text-slate-500">
+              <div className="text-center py-8 text-[var(--text-secondary)]">
                 <History className="w-10 h-10 mx-auto mb-2 opacity-50" />
                 <p>Aucune livraison enregistrée</p>
               </div>
@@ -758,9 +756,9 @@ export const WebhooksPanelV2 = () => {
                       )}
                       <span className="font-medium text-sm">{delivery.event}</span>
                     </div>
-                    <span className="text-xs text-slate-500">{formatTimeAgo(delivery.created_at)}</span>
+                    <span className="text-xs text-[var(--text-secondary)]">{formatTimeAgo(delivery.created_at)}</span>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)]">
                     <span
                       className={`px-1.5 py-0.5 rounded ${
                         delivery.response_status && delivery.response_status < 400
@@ -791,10 +789,10 @@ export const WebhooksPanelV2 = () => {
             )}
           </div>
 
-          <div className="flex justify-end pt-4 border-t dark:border-slate-700">
+          <div className="flex justify-end pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsHistoryModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg"
+              className="px-4 py-2 bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
             >
               Fermer
             </button>

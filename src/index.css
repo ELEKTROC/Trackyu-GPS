@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TAILWIND v4 — @theme inline
@@ -7,76 +7,76 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 @theme inline {
   /* Couleurs de marque */
-  --color-primary:       var(--primary);
+  --color-primary: var(--primary);
   --color-primary-light: var(--primary-light);
-  --color-primary-dim:   var(--primary-dim);
+  --color-primary-dim: var(--primary-dim);
 
   /* Arrière-plans */
-  --color-bg-primary:  var(--bg-primary);
-  --color-bg-surface:  var(--bg-surface);
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-surface: var(--bg-surface);
   --color-bg-elevated: var(--bg-elevated);
 
   /* Texte */
-  --color-text-primary:    var(--text-primary);
-  --color-text-secondary:  var(--text-secondary);
-  --color-text-muted:      var(--text-muted);
-  --color-text-inverse:    var(--text-inverse);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
   --color-text-on-primary: var(--text-on-primary);
 
   /* Bordures */
-  --color-border:        var(--border);
+  --color-border: var(--border);
   --color-border-strong: var(--border-strong);
 
   /* Navigation */
-  --color-nav-bg:       var(--nav-bg);
-  --color-nav-active:   var(--nav-active);
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-active: var(--nav-active);
   --color-nav-inactive: var(--nav-inactive);
 
   /* Statuts véhicules */
-  --color-status-moving:  var(--status-moving);
-  --color-status-idle:    var(--status-idle);
+  --color-status-moving: var(--status-moving);
+  --color-status-idle: var(--status-idle);
   --color-status-stopped: var(--status-stopped);
-  --color-status-alert:   var(--status-alert);
+  --color-status-alert: var(--status-alert);
   --color-status-offline: var(--status-offline);
 
   /* Couleurs fonctionnelles */
   --color-success: var(--color-success);
   --color-warning: var(--color-warning);
-  --color-error:   var(--color-error);
-  --color-info:    var(--color-info);
+  --color-error: var(--color-error);
+  --color-info: var(--color-info);
 
   /* Typographie (échelle mobile — tokens.ts) */
-  --font-size-display: 2rem;       /* 32px — titres majeurs */
-  --font-size-title:   1.25rem;    /* 20px — titres de section */
-  --font-size-body:    0.9375rem;  /* 15px — corps de texte */
-  --font-size-sm:      0.8125rem;  /* 13px — texte secondaire */
-  --font-size-xs:      0.6875rem;  /* 11px — labels, badges */
+  --font-size-display: 2rem; /* 32px — titres majeurs */
+  --font-size-title: 1.25rem; /* 20px — titres de section */
+  --font-size-body: 0.9375rem; /* 15px — corps de texte */
+  --font-size-sm: 0.8125rem; /* 13px — texte secondaire */
+  --font-size-xs: 0.6875rem; /* 11px — labels, badges */
 
   /* Border radius (mobile tokens.ts) */
-  --radius-xs:   0.25rem;    /* 4px */
-  --radius-sm:   0.5rem;     /* 8px */
-  --radius-md:   0.75rem;    /* 12px */
-  --radius-lg:   1rem;       /* 16px */
-  --radius-xl:   1.25rem;    /* 20px */
-  --radius-card: 0.875rem;   /* 14px — Card mobile */
-  --radius-full: 9999px;     /* pill */
+  --radius-xs: 0.25rem; /* 4px */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 0.75rem; /* 12px */
+  --radius-lg: 1rem; /* 16px */
+  --radius-xl: 1.25rem; /* 20px */
+  --radius-card: 0.875rem; /* 14px — Card mobile */
+  --radius-full: 9999px; /* pill */
 
   /* Ombres */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.18), 0 1px 2px rgba(0,0,0,0.12);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.12);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.35), 0 4px 8px rgba(0,0,0,0.15);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* ===== Accent color globale — checkboxes, radios, range suivent la couleur primaire ===== */
-input[type="checkbox"],
-input[type="radio"] {
+input[type='checkbox'],
+input[type='radio'] {
   accent-color: var(--primary);
 }
 
 /* ===== Global Focus Styles for Accessibility ===== */
 /* Base focus ring for all form elements - ensures keyboard users always see focus */
 /* Individual utility classes (focus:ring-*) will override these via specificity */
-input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+input:not([type='checkbox']):not([type='radio']):not([type='range']):focus,
 select:focus,
 textarea:focus {
   outline: none;
@@ -84,7 +84,7 @@ textarea:focus {
   border-color: var(--primary);
 }
 
-.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+.dark input:not([type='checkbox']):not([type='radio']):not([type='range']):focus,
 .dark select:focus,
 .dark textarea:focus {
   box-shadow: 0 0 0 2px var(--primary-dim);
@@ -93,7 +93,7 @@ textarea:focus {
 
 /* ===== Dark Mode Global Text Fix for Inputs ===== */
 /* Ensures text is visible in dark mode across ALL form fields */
-.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark input:not([type='checkbox']):not([type='radio']):not([type='range']),
 .dark select,
 .dark textarea {
   color: #f1f5f9; /* slate-100 — visible on dark backgrounds */
@@ -134,17 +134,17 @@ textarea:focus {
 /* ── Tokens invariants (identiques sur tous les thèmes) ─────────────────── */
 :root {
   /* Statuts véhicules — alignés sur mobile feedback_vehicle_status_colors */
-  --status-moving:  #22C55E;
-  --status-idle:    #F97316;
-  --status-stopped: #EF4444;
-  --status-alert:   #DC2626;
-  --status-offline: #6B7280;
+  --status-moving: #22c55e;
+  --status-idle: #f97316;
+  --status-stopped: #ef4444;
+  --status-alert: #dc2626;
+  --status-offline: #6b7280;
 
   /* Couleurs fonctionnelles */
-  --color-success: #22C55E;
-  --color-warning: #F97316;
-  --color-error:   #EF4444;
-  --color-info:    #3B82F6;
+  --color-success: #22c55e;
+  --color-warning: #f97316;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
 
   /* Typographie */
   --brand-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -165,91 +165,107 @@ textarea:focus {
 
 /* ── Thème 1 : TrackYu Dark (défaut) ────────────────────────────────────── */
 :root,
-[data-theme="dark"] {
-  --bg-primary:  #0D0D0F;
-  --bg-surface:  #1A1A1E;
+[data-theme='dark'] {
+  --bg-primary: #0d0d0f;
+  --bg-surface: #1a1a1e;
   --bg-elevated: #252529;
-  --bg-overlay:  rgba(0, 0, 0, 0.65);
+  --bg-overlay: rgba(0, 0, 0, 0.65);
 
-  --primary:      #E8771A;
-  --primary-light: #F5943A;
-  --primary-dim:  rgba(232, 119, 26, 0.15);
+  --primary: #e8771a;
+  --primary-light: #f5943a;
+  --primary-dim: rgba(232, 119, 26, 0.15);
 
-  --text-primary:    #F9FAFB;
-  --text-secondary:  #9CA3AF;
-  --text-muted:      #4B5563;
-  --text-inverse:    #0D0D0F;
-  --text-on-primary: #FFFFFF;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-muted: #4b5563;
+  --text-inverse: #0d0d0f;
+  --text-on-primary: #ffffff;
 
-  --border:        #2A2A2E;
-  --border-strong: #3A3A3E;
+  --border: #2a2a2e;
+  --border-strong: #3a3a3e;
 
-  --nav-bg:       #131316;
-  --nav-active:   #E8771A;
-  --nav-inactive: #6B7280;
-  --nav-border:   #2A2A2E;
+  --nav-bg: #131316;
+  --nav-active: #e8771a;
+  --nav-inactive: #6b7280;
+  --nav-border: #2a2a2e;
 
   /* Backward compat AppearanceContext */
-  --brand-primary:   #E8771A;
-  --brand-secondary: #F5943A;
+  --brand-primary: #e8771a;
+  --brand-secondary: #f5943a;
+
+  /* ── Remap Tailwind slate/gray → theme tokens ──────────────────────── */
+  /* NOTE : slate-950 uniquement — slate-900/800 affectent aussi text-* (risque)   */
+  /* Les backgrounds dark:bg-slate-9xx sont corrigés fichier par fichier           */
+  --color-slate-950: var(--bg-primary);
+  --color-gray-950: var(--bg-primary);
 }
 
 /* ── Thème 2 : Ocean Dark ────────────────────────────────────────────────── */
-[data-theme="ocean"] {
-  --bg-primary:  #080E1A;
-  --bg-surface:  #0F1B2D;
+[data-theme='ocean'] {
+  --bg-primary: #080e1a;
+  --bg-surface: #0f1b2d;
   --bg-elevated: #162338;
-  --bg-overlay:  rgba(0, 8, 26, 0.70);
+  --bg-overlay: rgba(0, 8, 26, 0.7);
 
-  --primary:       #3B82F6;
-  --primary-light: #60A5FA;
-  --primary-dim:   rgba(59, 130, 246, 0.15);
+  --primary: #3b82f6;
+  --primary-light: #60a5fa;
+  --primary-dim: rgba(59, 130, 246, 0.15);
 
-  --text-primary:    #F0F6FF;
-  --text-secondary:  #8BAAC4;
-  --text-muted:      #3D5A73;
-  --text-inverse:    #080E1A;
-  --text-on-primary: #FFFFFF;
+  --text-primary: #f0f6ff;
+  --text-secondary: #8baac4;
+  --text-muted: #3d5a73;
+  --text-inverse: #080e1a;
+  --text-on-primary: #ffffff;
 
-  --border:        #1E2E42;
-  --border-strong: #2A3F58;
+  --border: #1e2e42;
+  --border-strong: #2a3f58;
 
-  --nav-bg:       #060C16;
-  --nav-active:   #3B82F6;
-  --nav-inactive: #4A6580;
-  --nav-border:   #1E2E42;
+  --nav-bg: #060c16;
+  --nav-active: #3b82f6;
+  --nav-inactive: #4a6580;
+  --nav-border: #1e2e42;
 
-  --brand-primary:   #3B82F6;
-  --brand-secondary: #60A5FA;
+  --brand-primary: #3b82f6;
+  --brand-secondary: #60a5fa;
+
+  /* ── Remap Tailwind slate/gray → theme tokens */
+  --color-slate-950: var(--bg-primary);
+  --color-slate-900: var(--bg-surface);
+  --color-slate-800: var(--bg-elevated);
+  --color-slate-700: var(--bg-elevated);
+  --color-gray-950: var(--bg-primary);
+  --color-gray-900: var(--bg-surface);
+  --color-gray-800: var(--bg-elevated);
+  --color-gray-700: var(--bg-elevated);
 }
 
 /* ── Thème 3 : Light Pro ─────────────────────────────────────────────────── */
-[data-theme="light"] {
-  --bg-primary:  #F8FAFC;
-  --bg-surface:  #FFFFFF;
-  --bg-elevated: #F1F5F9;
-  --bg-overlay:  rgba(15, 23, 42, 0.45);
+[data-theme='light'] {
+  --bg-primary: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f1f5f9;
+  --bg-overlay: rgba(15, 23, 42, 0.45);
 
-  --primary:       #E8771A;
-  --primary-light: #F5943A;
-  --primary-dim:   rgba(232, 119, 26, 0.10);
+  --primary: #e8771a;
+  --primary-light: #f5943a;
+  --primary-dim: rgba(232, 119, 26, 0.1);
 
-  --text-primary:    #0F172A;
-  --text-secondary:  #64748B;
-  --text-muted:      #94A3B8;
-  --text-inverse:    #FFFFFF;
-  --text-on-primary: #FFFFFF;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+  --text-on-primary: #ffffff;
 
-  --border:        #E2E8F0;
-  --border-strong: #CBD5E1;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  --nav-bg:       #FFFFFF;
-  --nav-active:   #E8771A;
-  --nav-inactive: #94A3B8;
-  --nav-border:   #E2E8F0;
+  --nav-bg: #ffffff;
+  --nav-active: #e8771a;
+  --nav-inactive: #94a3b8;
+  --nav-border: #e2e8f0;
 
-  --brand-primary:   #E8771A;
-  --brand-secondary: #F5943A;
+  --brand-primary: #e8771a;
+  --brand-secondary: #f5943a;
 }
 
 /* Custom styles from index.html */
@@ -294,18 +310,33 @@ body {
 
 /* Custom CSS animations */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideIn {
-  from { transform: translateY(-10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes pulse-slow {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .animate-fadeIn {
@@ -396,7 +427,7 @@ body {
     transform: scale(0.97);
     opacity: 0.9;
   }
-  
+
   .card-touch:active {
     transform: scale(0.99);
     box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.5);
@@ -425,9 +456,15 @@ body {
 
 /* Haptic feedback simulation (visual) */
 @keyframes haptic-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(0.95); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .haptic-feedback:active {
@@ -457,16 +494,16 @@ body {
 
 /* Prevent zoom on iOS when focusing inputs (must be 16px minimum) */
 @media screen and (max-width: 768px) {
-  input[type="text"],
-  input[type="email"],
-  input[type="password"],
-  input[type="number"],
-  input[type="tel"],
-  input[type="url"],
-  input[type="search"],
-  input[type="date"],
-  input[type="time"],
-  input[type="datetime-local"],
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='tel'],
+  input[type='url'],
+  input[type='search'],
+  input[type='date'],
+  input[type='time'],
+  input[type='datetime-local'],
   select,
   textarea {
     font-size: 16px !important;
@@ -474,14 +511,14 @@ body {
     padding: 12px;
     border-radius: 10px;
   }
-  
+
   /* Better touch targets for form elements */
-  input[type="checkbox"],
-  input[type="radio"] {
+  input[type='checkbox'],
+  input[type='radio'] {
     width: 20px;
     height: 20px;
   }
-  
+
   /* Sticky footer for form buttons */
   .form-actions-mobile {
     position: sticky;
@@ -490,11 +527,11 @@ body {
     right: 0;
     padding: 12px 16px;
     background: inherit;
-    border-top: 1px solid rgba(0,0,0,0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
     margin-top: auto;
     z-index: 10;
   }
-  
+
   /* Labels more compact on mobile */
   label {
     font-size: 11px;
@@ -520,8 +557,8 @@ body {
 }
 
 /* Number input with better controls */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
   height: 30px;
   opacity: 1;
 }
@@ -585,7 +622,6 @@ input[type="number"]::-webkit-outer-spin-button {
    Usage : className="btn btn-primary" / "badge badge-moving" / "card"
    ═══════════════════════════════════════════════════════════════════════════ */
 @layer components {
-
   /* ── Boutons ─────────────────────────────────────────────────────────── */
   .btn {
     display: inline-flex;
@@ -594,7 +630,10 @@ input[type="number"]::-webkit-outer-spin-button {
     gap: 0.5rem;
     font-family: var(--brand-font);
     font-weight: 700;
-    transition: opacity 0.15s ease, transform 0.1s ease, background-color 0.15s ease;
+    transition:
+      opacity 0.15s ease,
+      transform 0.1s ease,
+      background-color 0.15s ease;
     cursor: pointer;
     white-space: nowrap;
     border: none;
@@ -615,15 +654,15 @@ input[type="number"]::-webkit-outer-spin-button {
 
   /* Tailles — identiques mobile (paddingV / paddingH / fontSize / borderRadius) */
   .btn-sm {
-    font-size: 0.8125rem;     /* 13px */
+    font-size: 0.8125rem; /* 13px */
     padding: 0.4375rem 0.875rem; /* 7px 14px */
     border-radius: var(--radius-sm); /* 8px */
     min-height: 32px;
   }
   .btn-md {
-    font-size: 0.875rem;      /* 14px */
+    font-size: 0.875rem; /* 14px */
     padding: 0.75rem 1.25rem; /* 12px 20px */
-    border-radius: 0.625rem;  /* 10px — entre sm et md comme mobile */
+    border-radius: 0.625rem; /* 10px — entre sm et md comme mobile */
     min-height: 44px;
   }
   .btn-lg {
@@ -677,8 +716,8 @@ input[type="number"]::-webkit-outer-spin-button {
   .card {
     background-color: var(--bg-surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius-card);  /* 14px — identique mobile */
-    padding: 0.875rem;                  /* 14px — identique mobile */
+    border-radius: var(--radius-card); /* 14px — identique mobile */
+    padding: 0.875rem; /* 14px — identique mobile */
     box-shadow: var(--shadow-sm);
     transition: box-shadow 0.2s ease;
   }
@@ -701,7 +740,9 @@ input[type="number"]::-webkit-outer-spin-button {
     padding: 0.625rem 0.875rem;
     min-height: 44px;
     outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
   }
   .input-base::placeholder {
     color: var(--text-muted);
@@ -771,6 +812,157 @@ input[type="number"]::-webkit-outer-spin-button {
     border: 1px solid var(--border);
   }
 
+  /* ── Filter chip (boutons statut/catégorie dans les toolbars) ───────── */
+  /* Usage: className={`filter-chip ${isActive ? 'active' : ''}`} */
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.875rem; /* 6px 14px */
+    border-radius: var(--radius-sm); /* 8px — miroir mobile */
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background-color: var(--bg-elevated);
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 34px;
+    line-height: 1;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-chip:hover:not(.active) {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    background-color: var(--bg-elevated);
+  }
+  .filter-chip.active {
+    background-color: var(--primary-dim);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  .filter-chip:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-dim);
+  }
+
+  /* ── Icon button (actions toolbar : export, filtre, config...) ───────── */
+  /* Usage: className="icon-btn" ou className={`icon-btn ${isActive ? 'active' : ''}`} */
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.4375rem 0.75rem; /* 7px 12px */
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+    min-height: 34px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    line-height: 1;
+  }
+  .icon-btn:hover:not(:disabled) {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+  .icon-btn.active {
+    background-color: var(--primary-dim);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  .icon-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .icon-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-dim);
+  }
+
+  /* ── Toolbar (ligne search + filtres + actions) ──────────────────────── */
+  /* Usage: <div className="toolbar"> */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+  }
+  .toolbar-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* ── Titres de page ──────────────────────────────────────────────────── */
+  .page-title {
+    font-size: 1.375rem; /* 22px — miroir mobile fontSize title */
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .page-subtitle {
+    font-size: var(--font-size-sm); /* 13px */
+    color: var(--text-secondary);
+    margin-top: 0.125rem;
+    font-weight: 400;
+  }
+
+  /* ── Titres de section (à l'intérieur des cards/panels) ─────────────── */
+  .section-title {
+    font-size: var(--font-size-xs); /* 11px */
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── En-tête de tableau ──────────────────────────────────────────────── */
+  .th-base {
+    padding: 0.625rem 1rem;
+    text-align: left;
+    font-size: var(--font-size-xs); /* 11px */
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .td-base {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+  }
+  .tr-hover:hover {
+    background-color: var(--bg-elevated);
+  }
+
+  /* ── Messages d'erreur inline ────────────────────────────────────────── */
+  .form-error {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: var(--font-size-xs);
+    color: var(--color-error);
+    margin-top: 0.25rem;
+    line-height: 1.4;
+  }
+
   /* ── Séparateur ──────────────────────────────────────────────────────── */
   .divider {
     border: none;
@@ -780,18 +972,17 @@ input[type="number"]::-webkit-outer-spin-button {
 
   /* ── Skeleton loader ─────────────────────────────────────────────────── */
   .skeleton {
-    background: linear-gradient(
-      90deg,
-      var(--bg-elevated) 25%,
-      var(--border) 50%,
-      var(--bg-elevated) 75%
-    );
+    background: linear-gradient(90deg, var(--bg-elevated) 25%, var(--border) 50%, var(--bg-elevated) 75%);
     background-size: 200% 100%;
     animation: skeleton-shimmer 1.5s ease-in-out infinite;
     border-radius: var(--radius-sm);
   }
   @keyframes skeleton-shimmer {
-    0%   { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
   }
 }

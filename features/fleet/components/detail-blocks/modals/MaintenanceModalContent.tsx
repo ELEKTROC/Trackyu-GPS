@@ -4,9 +4,36 @@ import { Check, AlertCircle, Clock, Calendar, FileText, Wrench } from 'lucide-re
 export const MaintenanceModalContent: React.FC = () => {
   // Mock Data étendu pour la modale
   const maintenanceHistory = [
-    { id: 1, date: '12/11/2025', type: 'Préventive', task: 'Vidange Moteur + Filtres', garage: 'Garage Central', cost: 250, status: 'completed', technician: 'Jean Dupont' },
-    { id: 2, date: '10/09/2025', type: 'Corrective', task: 'Remplacement Plaquettes Frein', garage: 'Norauto Pro', cost: 180, status: 'completed', technician: 'Marc Martin' },
-    { id: 3, date: '15/05/2025', type: 'Réglementaire', task: 'Contrôle Technique', garage: 'Dekra', cost: 85, status: 'completed', technician: 'Centre 12' },
+    {
+      id: 1,
+      date: '12/11/2025',
+      type: 'Préventive',
+      task: 'Vidange Moteur + Filtres',
+      garage: 'Garage Central',
+      cost: 250,
+      status: 'completed',
+      technician: 'Jean Dupont',
+    },
+    {
+      id: 2,
+      date: '10/09/2025',
+      type: 'Corrective',
+      task: 'Remplacement Plaquettes Frein',
+      garage: 'Norauto Pro',
+      cost: 180,
+      status: 'completed',
+      technician: 'Marc Martin',
+    },
+    {
+      id: 3,
+      date: '15/05/2025',
+      type: 'Réglementaire',
+      task: 'Contrôle Technique',
+      garage: 'Dekra',
+      cost: 85,
+      status: 'completed',
+      technician: 'Centre 12',
+    },
   ];
 
   const upcomingMaintenance = [
@@ -18,25 +45,30 @@ export const MaintenanceModalContent: React.FC = () => {
     <div className="p-6 space-y-8">
       {/* Section Prochaines Interventions */}
       <section>
-        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
           <Clock className="w-5 h-5 text-[var(--primary)]" />
           Interventions à venir
         </h3>
         <div className="grid gap-4">
           {upcomingMaintenance.map((item) => (
-            <div key={item.id} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm flex justify-between items-center">
+            <div
+              key={item.id}
+              className="bg-white border border-[var(--border)] rounded-lg p-4 shadow-sm flex justify-between items-center"
+            >
               <div className="flex items-start gap-4">
-                <div className={`p-2 rounded-full ${item.priority === 'high' ? 'bg-red-100 text-red-600' : item.priority === 'medium' ? 'bg-orange-100 text-orange-600' : 'bg-[var(--primary-dim)] text-[var(--primary)]'}`}>
+                <div
+                  className={`p-2 rounded-full ${item.priority === 'high' ? 'bg-red-100 text-red-600' : item.priority === 'medium' ? 'bg-orange-100 text-orange-600' : 'bg-[var(--primary-dim)] text-[var(--primary)]'}`}
+                >
                   <Wrench className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-700">{item.task}</h4>
-                  <p className="text-sm text-slate-500 font-medium">{item.due}</p>
+                  <h4 className="font-bold text-[var(--text-primary)]">{item.task}</h4>
+                  <p className="text-sm text-[var(--text-secondary)] font-medium">{item.due}</p>
                 </div>
               </div>
               <div className="text-right">
-                <span className="block font-mono font-bold text-slate-700">{item.estimatedCost}</span>
-                <span className="text-xs text-slate-400">Estimé</span>
+                <span className="block font-mono font-bold text-[var(--text-primary)]">{item.estimatedCost}</span>
+                <span className="text-xs text-[var(--text-muted)]">Estimé</span>
               </div>
             </div>
           ))}
@@ -45,13 +77,13 @@ export const MaintenanceModalContent: React.FC = () => {
 
       {/* Section Historique */}
       <section>
-        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-slate-500" />
+        <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-[var(--text-secondary)]" />
           Historique d'entretien
         </h3>
-        <div className="border border-slate-200 rounded-lg overflow-hidden">
+        <div className="border border-[var(--border)] rounded-lg overflow-hidden">
           <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-slate-500 font-medium border-b border-slate-200">
+            <thead className="bg-slate-50 text-[var(--text-secondary)] font-medium border-b border-[var(--border)]">
               <tr>
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Intervention</th>
@@ -63,13 +95,13 @@ export const MaintenanceModalContent: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {maintenanceHistory.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-4 py-3 font-mono text-slate-600">{item.date}</td>
+                <tr key={item.id} className="hover:bg-[var(--bg-elevated)] transition-colors">
+                  <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">{item.date}</td>
                   <td className="px-4 py-3">
-                    <div className="font-bold text-slate-700">{item.task}</div>
-                    <div className="text-xs text-slate-400">{item.type}</div>
+                    <div className="font-bold text-[var(--text-primary)]">{item.task}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{item.type}</div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{item.garage}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{item.garage}</td>
                   <td className="px-4 py-3 text-right font-mono font-medium">{item.cost}</td>
                   <td className="px-4 py-3 text-center">
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">

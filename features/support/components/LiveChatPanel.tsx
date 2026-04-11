@@ -84,7 +84,7 @@ const STATUS_CONFIG = {
     bg: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]',
     dot: 'bg-[var(--primary-dim)]0',
   },
-  closed: { label: 'Fermée', color: 'text-slate-400', bg: 'bg-slate-100 dark:bg-slate-800', dot: 'bg-slate-400' },
+  closed: { label: 'Fermée', color: 'text-[var(--text-muted)]', bg: 'bg-[var(--bg-elevated)]', dot: 'bg-slate-400' },
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -454,14 +454,14 @@ export const LiveChatPanel: React.FC = () => {
     <div className="flex-1 flex h-full overflow-hidden">
       {/* ---- LEFT: CONVERSATION LIST ---- */}
       <div
-        className={`${showMobileList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 lg:w-96 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900`}
+        className={`${showMobileList ? 'flex' : 'hidden'} md:flex flex-col w-full md:w-80 lg:w-96 border-r border-[var(--border)] bg-[var(--bg-surface)]`}
       >
         {/* Header */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+        <div className="p-4 border-b border-[var(--border)]">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Headset className="w-5 h-5 text-[var(--primary)]" />
-              <h3 className="font-bold text-slate-800 dark:text-white">Live Chat</h3>
+              <h3 className="font-bold text-[var(--text-primary)]">Live Chat</h3>
               <span className={`flex items-center gap-1 text-xs ${isConnected ? 'text-green-500' : 'text-red-500'}`}>
                 {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
               </span>
@@ -478,16 +478,16 @@ export const LiveChatPanel: React.FC = () => {
               )}
               <button
                 onClick={reloadCurrent}
-                className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                 title="Rafraîchir"
               >
-                <RefreshCw className={`w-4 h-4 text-slate-500 ${isLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 text-[var(--text-secondary)] ${isLoading ? 'animate-spin' : ''}`} />
               </button>
             </div>
           </div>
 
           {/* Support / Internal tab switcher */}
-          <div className="flex gap-1 mb-3 bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5">
+          <div className="flex gap-1 mb-3 bg-[var(--bg-elevated)] rounded-lg p-0.5">
             <button
               onClick={() => {
                 setChatTab('support');
@@ -496,8 +496,8 @@ export const LiveChatPanel: React.FC = () => {
               }}
               className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 chatTab === 'support'
-                  ? 'bg-white dark:bg-slate-700 text-[var(--primary)] dark:text-[var(--primary)] shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                  ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               <Headset className="w-3.5 h-3.5" /> Support
@@ -510,8 +510,8 @@ export const LiveChatPanel: React.FC = () => {
               }}
               className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 chatTab === 'internal'
-                  ? 'bg-white dark:bg-slate-700 text-green-600 dark:text-green-400 shadow-sm'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                  ? 'bg-[var(--bg-elevated)] text-green-600 dark:text-green-400 shadow-sm'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               <Users className="w-3.5 h-3.5" /> Équipe
@@ -539,7 +539,7 @@ export const LiveChatPanel: React.FC = () => {
                     ? chatTab === 'support'
                       ? 'bg-[var(--primary)] text-white'
                       : 'bg-green-600 text-white'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'
                 }`}
               >
                 {f.label}
@@ -552,12 +552,12 @@ export const LiveChatPanel: React.FC = () => {
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <RefreshCw className="w-5 h-5 text-slate-400 animate-spin" />
+              <RefreshCw className="w-5 h-5 text-[var(--text-muted)] animate-spin" />
             </div>
           ) : filteredConversations.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <MessageSquare className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <MessageSquare className="w-10 h-10 text-slate-300 dark:text-[var(--text-secondary)] mx-auto mb-3" />
+              <p className="text-sm text-[var(--text-secondary)]">
                 {chatTab === 'internal' ? "Aucune conversation d'équipe" : 'Aucune conversation de support'}
               </p>
               {chatTab === 'internal' && (
@@ -581,7 +581,7 @@ export const LiveChatPanel: React.FC = () => {
                 <button
                   key={conv.id}
                   onClick={() => openConversation({ ...conv, conversation_type: isInternal ? 'internal' : 'support' })}
-                  className={`w-full text-left p-4 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+                  className={`w-full text-left p-4 border-b border-[var(--border)] border-[var(--border)] tr-hover/50 transition-colors ${
                     activeConversation?.id === conv.id
                       ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-2 border-l-blue-500'
                       : ''
@@ -591,27 +591,27 @@ export const LiveChatPanel: React.FC = () => {
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="relative">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-green-100 dark:bg-green-900/30' : 'bg-slate-200 dark:bg-slate-700'}`}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-green-100 dark:bg-green-900/30' : 'bg-slate-200 bg-[var(--bg-elevated)]'}`}
                         >
                           {isInternal ? (
                             <Users className="w-4 h-4 text-green-600" />
                           ) : (
-                            <User className="w-4 h-4 text-slate-500" />
+                            <User className="w-4 h-4 text-[var(--text-secondary)]" />
                           )}
                         </div>
                         <div
-                          className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-slate-900 ${STATUS_CONFIG[conv.status]?.dot || 'bg-slate-400'}`}
+                          className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-surface)] ${STATUS_CONFIG[conv.status]?.dot || 'bg-slate-400'}`}
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">{displayName}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                        <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{displayName}</p>
+                        <p className="text-xs text-[var(--text-secondary)] truncate">
                           {conv.last_message || 'Nouvelle conversation'}
                         </p>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1 shrink-0">
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-[var(--text-muted)]">
                         {formatTime(conv.updated_at || conv.created_at)}
                       </span>
                       <span
@@ -629,11 +629,11 @@ export const LiveChatPanel: React.FC = () => {
       </div>
 
       {/* ---- RIGHT: CHAT AREA ---- */}
-      <div className={`${!showMobileList ? 'flex' : 'hidden'} md:flex flex-col flex-1 bg-slate-50 dark:bg-slate-950`}>
+      <div className={`${!showMobileList ? 'flex' : 'hidden'} md:flex flex-col flex-1 bg-[var(--bg-elevated)]`}>
         {activeConversation ? (
           <>
             {/* Chat Header */}
-            <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="flex items-center justify-between px-4 py-3 bg-[var(--bg-surface)] border-b border-[var(--border)] shadow-sm">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => {
@@ -642,7 +642,7 @@ export const LiveChatPanel: React.FC = () => {
                   className="md:hidden p-1"
                   title="Retour à la liste"
                 >
-                  <ChevronLeft className="w-5 h-5 text-slate-500" />
+                  <ChevronLeft className="w-5 h-5 text-[var(--text-secondary)]" />
                 </button>
                 <div
                   className={`w-9 h-9 rounded-full flex items-center justify-center ${activeConversation.conversation_type === 'internal' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'}`}
@@ -654,12 +654,12 @@ export const LiveChatPanel: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-800 dark:text-white">
+                  <p className="text-sm font-bold text-[var(--text-primary)]">
                     {activeConversation.conversation_type === 'internal'
                       ? getInternalDisplayName(activeConversation)
                       : activeConversation.user_name || activeConversation.user_email || 'Utilisateur'}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                     {activeConversation.conversation_type === 'internal' && (
                       <span className="text-green-600 font-medium">Interne</span>
                     )}
@@ -689,10 +689,10 @@ export const LiveChatPanel: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {isLoadingMessages ? (
                 <div className="flex items-center justify-center h-full">
-                  <RefreshCw className="w-6 h-6 text-slate-400 animate-spin" />
+                  <RefreshCw className="w-6 h-6 text-[var(--text-muted)] animate-spin" />
                 </div>
               ) : messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                <div className="flex flex-col items-center justify-center h-full text-[var(--text-muted)]">
                   <MessageSquare className="w-10 h-10 mb-2 opacity-50" />
                   <p className="text-sm">Aucun message pour le moment</p>
                 </div>
@@ -704,7 +704,7 @@ export const LiveChatPanel: React.FC = () => {
                   if (isSystem) {
                     return (
                       <div key={msg.id} className="flex justify-center">
-                        <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                        <span className="text-xs text-[var(--text-muted)] bg-[var(--bg-elevated)] px-3 py-1 rounded-full">
                           {msg.message}
                         </span>
                       </div>
@@ -717,7 +717,7 @@ export const LiveChatPanel: React.FC = () => {
                         className={`max-w-[75%] ${
                           isSelf
                             ? 'bg-[var(--primary)] text-white rounded-2xl rounded-br-md'
-                            : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded-2xl rounded-bl-md shadow-sm border border-slate-200 dark:border-slate-700'
+                            : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-2xl rounded-bl-md shadow-sm border border-[var(--border)]'
                         } px-4 py-2.5`}
                       >
                         {!isSelf && (
@@ -726,7 +726,9 @@ export const LiveChatPanel: React.FC = () => {
                           </p>
                         )}
                         <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-                        <p className={`text-[10px] mt-1 ${isSelf ? 'text-[var(--primary)]' : 'text-slate-400'}`}>
+                        <p
+                          className={`text-[10px] mt-1 ${isSelf ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
+                        >
                           {formatTime(msg.created_at)}
                         </p>
                       </div>
@@ -737,8 +739,8 @@ export const LiveChatPanel: React.FC = () => {
               {/* Typing indicator */}
               {typingUser && (
                 <div className="flex justify-start">
-                  <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl rounded-bl-md px-4 py-2.5 shadow-sm">
-                    <p className="text-xs text-slate-500 italic">{typingUser} est en train d'écrire...</p>
+                  <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl rounded-bl-md px-4 py-2.5 shadow-sm">
+                    <p className="text-xs text-[var(--text-secondary)] italic">{typingUser} est en train d'écrire...</p>
                   </div>
                 </div>
               )}
@@ -747,7 +749,7 @@ export const LiveChatPanel: React.FC = () => {
 
             {/* Input (only if not closed) */}
             {activeConversation.status !== 'closed' ? (
-              <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+              <div className="p-3 bg-[var(--bg-surface)] border-t border-[var(--border)]">
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
@@ -766,7 +768,7 @@ export const LiveChatPanel: React.FC = () => {
                         sendMessage();
                       }
                     }}
-                    className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                    className="flex-1 px-4 py-2.5 border border-[var(--border)] rounded-xl bg-[var(--bg-elevated)] text-sm text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
                     placeholder={
                       activeConversation.conversation_type === 'internal' ? 'Message...' : 'Répondre au client...'
                     }
@@ -782,8 +784,8 @@ export const LiveChatPanel: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="p-3 bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 text-center">
-                <p className="text-sm text-slate-500 flex items-center justify-center gap-2">
+              <div className="p-3 bg-[var(--bg-elevated)] border-t border-[var(--border)] text-center">
+                <p className="text-sm text-[var(--text-secondary)] flex items-center justify-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
                   Conversation fermée
                 </p>
@@ -792,7 +794,7 @@ export const LiveChatPanel: React.FC = () => {
           </>
         ) : (
           /* No conversation selected */
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600">
+          <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)] dark:text-[var(--text-secondary)]">
             {chatTab === 'internal' ? (
               <Users className="w-16 h-16 mb-4 opacity-30" />
             ) : (
@@ -815,32 +817,32 @@ export const LiveChatPanel: React.FC = () => {
                     onClick={() => setShowNewInternalModal(false)}
                   >
                     <div
-                      className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-md mx-4 max-h-[70vh] flex flex-col"
+                      className="bg-[var(--bg-surface)] rounded-xl shadow-2xl w-full max-w-md mx-4 max-h-[70vh] flex flex-col"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+                      <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
                         <div className="flex items-center gap-2">
                           <Users className="w-5 h-5 text-green-600" />
-                          <h3 className="font-bold text-slate-800 dark:text-white">Nouvelle conversation</h3>
+                          <h3 className="font-bold text-[var(--text-primary)]">Nouvelle conversation</h3>
                         </div>
                         <button
                           onClick={() => setShowNewInternalModal(false)}
-                          className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
+                          className="p-1 hover:bg-[var(--bg-elevated)] rounded-lg"
                           title="Fermer"
                         >
-                          <X className="w-4 h-4 text-slate-500" />
+                          <X className="w-4 h-4 text-[var(--text-secondary)]" />
                         </button>
                       </div>
 
                       {/* Search */}
-                      <div className="p-3 border-b border-slate-100 dark:border-slate-800">
+                      <div className="p-3 border-b border-[var(--border)] border-[var(--border)]">
                         <div className="relative">
-                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                           <input
                             type="text"
                             value={agentSearch}
                             onChange={(e) => setAgentSearch(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="w-full pl-9 pr-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-[var(--text-primary)] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500"
                             placeholder="Rechercher un collègue..."
                             autoFocus
                           />
@@ -850,7 +852,7 @@ export const LiveChatPanel: React.FC = () => {
                       {/* Agent list */}
                       <div className="flex-1 overflow-y-auto">
                         {filteredAgents.length === 0 ? (
-                          <div className="text-center py-8 text-slate-400">
+                          <div className="text-center py-8 text-[var(--text-muted)]">
                             <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
                             <p className="text-sm">Aucun agent trouvé</p>
                           </div>
@@ -859,20 +861,18 @@ export const LiveChatPanel: React.FC = () => {
                             <button
                               key={agent.id}
                               onClick={() => startInternalChat(agent)}
-                              className="w-full text-left p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 transition-colors flex items-center gap-3"
+                              className="w-full text-left p-3 tr-hover/50 border-b border-[var(--border)] border-[var(--border)] transition-colors flex items-center gap-3"
                             >
                               <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
                                 <User className="w-4.5 h-4.5 text-green-600" />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <p className="text-sm font-semibold text-slate-800 dark:text-white truncate">
+                                <p className="text-sm font-semibold text-[var(--text-primary)] truncate">
                                   {agent.name || agent.email}
                                 </p>
                                 <div className="flex items-center gap-2">
-                                  <span className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                                    {agent.email}
-                                  </span>
-                                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-medium">
+                                  <span className="text-xs text-[var(--text-secondary)] truncate">{agent.email}</span>
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] font-medium">
                                     {ROLE_LABELS[agent.role?.toUpperCase()] || agent.role}
                                   </span>
                                 </div>
@@ -887,7 +887,7 @@ export const LiveChatPanel: React.FC = () => {
                 )}
               </button>
             )}
-            <p className="text-xs mt-2 text-slate-400">
+            <p className="text-xs mt-2 text-[var(--text-muted)]">
               {filteredConversations.length} conversation{filteredConversations.length !== 1 ? 's' : ''}
             </p>
           </div>

@@ -435,7 +435,7 @@ export const SupportSettingsPanel: React.FC = () => {
       case 'LOW':
         return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       default:
-        return 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-400';
+        return 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]';
     }
   };
 
@@ -444,8 +444,8 @@ export const SupportSettingsPanel: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Configuration des délais SLA</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Configuration des délais SLA</h3>
+          <p className="text-sm text-[var(--text-secondary)]">
             Définissez le temps de réponse maximum pour chaque niveau de priorité
           </p>
         </div>
@@ -475,13 +475,15 @@ export const SupportSettingsPanel: React.FC = () => {
               max="168"
               value={slaConfig.critical}
               onChange={(e) => handleSlaChange('critical', parseInt(e.target.value) || 4)}
-              className="w-24 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="w-24 px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Délai SLA critique en heures"
               aria-label="Délai SLA critique"
             />
-            <span className="text-slate-600 dark:text-slate-400">heures</span>
+            <span className="text-[var(--text-secondary)]">heures</span>
           </div>
-          <p className="text-xs text-slate-500 mt-2">Problèmes bloquants nécessitant une action immédiate</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-2">
+            Problèmes bloquants nécessitant une action immédiate
+          </p>
         </div>
 
         {/* High */}
@@ -497,13 +499,13 @@ export const SupportSettingsPanel: React.FC = () => {
               max="168"
               value={slaConfig.high}
               onChange={(e) => handleSlaChange('high', parseInt(e.target.value) || 24)}
-              className="w-24 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="w-24 px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Délai SLA haute priorité en heures"
               aria-label="Délai SLA haute priorité"
             />
-            <span className="text-slate-600 dark:text-slate-400">heures</span>
+            <span className="text-[var(--text-secondary)]">heures</span>
           </div>
-          <p className="text-xs text-slate-500 mt-2">Problèmes importants impactant l'activité</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-2">Problèmes importants impactant l'activité</p>
         </div>
 
         {/* Medium */}
@@ -519,13 +521,13 @@ export const SupportSettingsPanel: React.FC = () => {
               max="336"
               value={slaConfig.medium}
               onChange={(e) => handleSlaChange('medium', parseInt(e.target.value) || 48)}
-              className="w-24 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="w-24 px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Délai SLA moyenne priorité en heures"
               aria-label="Délai SLA moyenne priorité"
             />
-            <span className="text-slate-600 dark:text-slate-400">heures</span>
+            <span className="text-[var(--text-secondary)]">heures</span>
           </div>
-          <p className="text-xs text-slate-500 mt-2">Demandes standard avec délai raisonnable</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-2">Demandes standard avec délai raisonnable</p>
         </div>
 
         {/* Low */}
@@ -541,13 +543,13 @@ export const SupportSettingsPanel: React.FC = () => {
               max="720"
               value={slaConfig.low}
               onChange={(e) => handleSlaChange('low', parseInt(e.target.value) || 72)}
-              className="w-24 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="w-24 px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Délai SLA basse priorité en heures"
               aria-label="Délai SLA basse priorité"
             />
-            <span className="text-slate-600 dark:text-slate-400">heures</span>
+            <span className="text-[var(--text-secondary)]">heures</span>
           </div>
-          <p className="text-xs text-slate-500 mt-2">Demandes non urgentes, améliorations</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-2">Demandes non urgentes, améliorations</p>
         </div>
       </div>
     </div>
@@ -558,8 +560,8 @@ export const SupportSettingsPanel: React.FC = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Catégories de tickets</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Gérez les catégories principales des tickets</p>
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Catégories de tickets</h3>
+          <p className="text-sm text-[var(--text-secondary)]">Gérez les catégories principales des tickets</p>
         </div>
         <button
           onClick={() => setNewCategory({ name: '', icon: 'Tag', is_active: true })}
@@ -580,12 +582,12 @@ export const SupportSettingsPanel: React.FC = () => {
               placeholder="Nom de la catégorie"
               value={newCategory.name || ''}
               onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-              className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
             />
             <select
               value={newCategory.icon || 'Tag'}
               onChange={(e) => setNewCategory({ ...newCategory, icon: e.target.value })}
-              className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Sélectionner l'icône de la catégorie"
             >
               {Object.keys(AVAILABLE_ICONS).map((icon) => (
@@ -605,7 +607,7 @@ export const SupportSettingsPanel: React.FC = () => {
               </button>
               <button
                 onClick={() => setNewCategory(null)}
-                className="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600"
+                className="px-4 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600"
                 title="Annuler"
               >
                 <X className="w-4 h-4" />
@@ -626,8 +628,8 @@ export const SupportSettingsPanel: React.FC = () => {
               key={category.id}
               className={`p-4 border rounded-lg transition-colors ${
                 category.is_active
-                  ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
-                  : 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-600 opacity-60'
+                  ? 'bg-[var(--bg-elevated)] border-[var(--border)]'
+                  : 'bg-slate-100 bg-[var(--bg-surface)] border-[var(--border)] opacity-60'
               }`}
             >
               {isEditing ? (
@@ -636,14 +638,14 @@ export const SupportSettingsPanel: React.FC = () => {
                     type="text"
                     value={editingCategory.name}
                     onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                    className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+                    className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                     title="Nom de la catégorie"
                     placeholder="Nom de la catégorie"
                   />
                   <select
                     value={editingCategory.icon}
                     onChange={(e) => setEditingCategory({ ...editingCategory, icon: e.target.value })}
-                    className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+                    className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                     title="Icône de la catégorie"
                   >
                     {Object.keys(AVAILABLE_ICONS).map((icon) => (
@@ -663,7 +665,7 @@ export const SupportSettingsPanel: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setEditingCategory(null)}
-                      className="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
+                      className="px-4 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
                       title="Annuler"
                     >
                       <X className="w-4 h-4" />
@@ -673,8 +675,8 @@ export const SupportSettingsPanel: React.FC = () => {
               ) : (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <IconComponent className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                    <span className="font-medium text-slate-900 dark:text-white">{category.name}</span>
+                    <IconComponent className="w-5 h-5 text-[var(--text-secondary)]" />
+                    <span className="font-medium text-[var(--text-primary)]">{category.name}</span>
                     {category.is_system && (
                       <span className="text-xs px-2 py-1 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center gap-1">
                         <Globe className="w-3 h-3" />
@@ -682,7 +684,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       </span>
                     )}
                     {category.subcategory_count !== undefined && category.subcategory_count > 0 && (
-                      <span className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded-full">
+                      <span className="text-xs px-2 py-1 bg-[var(--bg-elevated)] rounded-full">
                         {category.subcategory_count} sous-catégorie{category.subcategory_count > 1 ? 's' : ''}
                       </span>
                     )}
@@ -701,20 +703,20 @@ export const SupportSettingsPanel: React.FC = () => {
                     {category.can_hide && (
                       <button
                         onClick={() => toggleCategoryActive(category)}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                        className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg"
                         title={category.is_hidden ? 'Afficher' : 'Masquer pour votre organisation'}
                       >
                         {category.is_hidden ? (
-                          <Eye className="w-4 h-4 text-slate-500" />
+                          <Eye className="w-4 h-4 text-[var(--text-secondary)]" />
                         ) : (
-                          <EyeOff className="w-4 h-4 text-slate-400" />
+                          <EyeOff className="w-4 h-4 text-[var(--text-muted)]" />
                         )}
                       </button>
                     )}
                     {category.can_edit ? (
                       <button
                         onClick={() => setEditingCategory(category)}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                        className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg"
                         title="Modifier"
                       >
                         <Edit2 className="w-4 h-4 text-[var(--primary)]" />
@@ -727,7 +729,7 @@ export const SupportSettingsPanel: React.FC = () => {
                     {category.can_delete ? (
                       <button
                         onClick={() => deleteCategory(category)}
-                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                        className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg"
                         title="Supprimer"
                       >
                         <Trash2 className="w-4 h-4 text-red-500" />
@@ -748,8 +750,8 @@ export const SupportSettingsPanel: React.FC = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Sous-catégories de tickets</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Sous-catégories de tickets</h3>
+          <p className="text-sm text-[var(--text-secondary)]">
             Gérez les sous-catégories avec leur priorité et SLA par défaut
           </p>
         </div>
@@ -779,7 +781,7 @@ export const SupportSettingsPanel: React.FC = () => {
             <select
               value={newSubcategory.category_id || ''}
               onChange={(e) => setNewSubcategory({ ...newSubcategory, category_id: parseInt(e.target.value) })}
-              className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Catégorie parente"
             >
               <option value="">Catégorie parente...</option>
@@ -796,7 +798,7 @@ export const SupportSettingsPanel: React.FC = () => {
               placeholder="Nom"
               value={newSubcategory.name || ''}
               onChange={(e) => setNewSubcategory({ ...newSubcategory, name: e.target.value })}
-              className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
             />
             <select
               value={newSubcategory.default_priority || 'MEDIUM'}
@@ -806,7 +808,7 @@ export const SupportSettingsPanel: React.FC = () => {
                   default_priority: e.target.value as Subcategory['default_priority'],
                 })
               }
-              className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Priorité par défaut"
             >
               <option value="CRITICAL">Critique</option>
@@ -821,10 +823,10 @@ export const SupportSettingsPanel: React.FC = () => {
                 min="1"
                 value={newSubcategory.sla_hours || 48}
                 onChange={(e) => setNewSubcategory({ ...newSubcategory, sla_hours: parseInt(e.target.value) })}
-                className="w-20 px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+                className="w-20 px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                 title="Délai SLA en heures"
               />
-              <span className="text-sm text-slate-500">h</span>
+              <span className="text-sm text-[var(--text-secondary)]">h</span>
             </div>
             <div className="flex gap-2">
               <button
@@ -837,7 +839,7 @@ export const SupportSettingsPanel: React.FC = () => {
               </button>
               <button
                 onClick={() => setNewSubcategory(null)}
-                className="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
+                className="px-4 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
                 title="Annuler"
               >
                 <X className="w-4 h-4" />
@@ -856,7 +858,7 @@ export const SupportSettingsPanel: React.FC = () => {
         const isExpanded = expandedCategories.has(category.id);
 
         return (
-          <div key={category.id} className="border rounded-lg dark:border-slate-700">
+          <div key={category.id} className="border rounded-lg border-[var(--border)]">
             <button
               onClick={() => {
                 const newExpanded = new Set(expandedCategories);
@@ -867,22 +869,22 @@ export const SupportSettingsPanel: React.FC = () => {
                 }
                 setExpandedCategories(newExpanded);
               }}
-              className={`w-full flex items-center justify-between p-3 hover:bg-slate-50 dark:hover:bg-slate-800 ${
+              className={`w-full flex items-center justify-between p-3 tr-hover ${
                 !category.is_active ? 'opacity-60' : ''
               }`}
             >
               <div className="flex items-center gap-2">
                 {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                <IconComponent className="w-4 h-4 text-slate-500" />
+                <IconComponent className="w-4 h-4 text-[var(--text-secondary)]" />
                 <span className="font-medium">{category.name}</span>
-                <span className="text-xs text-slate-500">({categorySubcats.length})</span>
+                <span className="text-xs text-[var(--text-secondary)]">({categorySubcats.length})</span>
               </div>
             </button>
 
             {isExpanded && (
-              <div className="border-t dark:border-slate-700">
+              <div className="border-t border-[var(--border)]">
                 {categorySubcats.length === 0 ? (
-                  <p className="p-4 text-sm text-slate-500 text-center">Aucune sous-catégorie</p>
+                  <p className="p-4 text-sm text-[var(--text-secondary)] text-center">Aucune sous-catégorie</p>
                 ) : (
                   categorySubcats.map((subcat) => {
                     const isEditing = editingSubcategory?.id === subcat.id;
@@ -890,8 +892,8 @@ export const SupportSettingsPanel: React.FC = () => {
                     return (
                       <div
                         key={subcat.id}
-                        className={`p-3 border-b last:border-b-0 dark:border-slate-700 ${
-                          !subcat.is_active ? 'opacity-50 bg-slate-50 dark:bg-slate-900' : ''
+                        className={`p-3 border-b last:border-b-0 border-[var(--border)] ${
+                          !subcat.is_active ? 'opacity-50 bg-[var(--bg-elevated)]' : ''
                         }`}
                       >
                         {isEditing ? (
@@ -904,7 +906,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                   category_id: parseInt(e.target.value),
                                 })
                               }
-                              className="px-2 py-1 border rounded dark:bg-slate-800 dark:border-slate-600 text-sm"
+                              className="px-2 py-1 border rounded bg-[var(--bg-elevated)] border-[var(--border)] text-sm"
                               title="Catégorie parente"
                             >
                               {categories
@@ -924,7 +926,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                   name: e.target.value,
                                 })
                               }
-                              className="px-2 py-1 border rounded dark:bg-slate-800 dark:border-slate-600 text-sm"
+                              className="px-2 py-1 border rounded bg-[var(--bg-elevated)] border-[var(--border)] text-sm"
                               title="Nom de la sous-catégorie"
                               placeholder="Nom"
                             />
@@ -936,7 +938,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                   default_priority: e.target.value as Subcategory['default_priority'],
                                 })
                               }
-                              className="px-2 py-1 border rounded dark:bg-slate-800 dark:border-slate-600 text-sm"
+                              className="px-2 py-1 border rounded bg-[var(--bg-elevated)] border-[var(--border)] text-sm"
                               title="Priorité par défaut"
                             >
                               <option value="CRITICAL">Critique</option>
@@ -955,7 +957,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                     sla_hours: parseInt(e.target.value),
                                   })
                                 }
-                                className="w-16 px-2 py-1 border rounded dark:bg-slate-800 dark:border-slate-600 text-sm"
+                                className="w-16 px-2 py-1 border rounded bg-[var(--bg-elevated)] border-[var(--border)] text-sm"
                                 title="Délai SLA en heures"
                               />
                               <span className="text-xs">h</span>
@@ -970,7 +972,7 @@ export const SupportSettingsPanel: React.FC = () => {
                               </button>
                               <button
                                 onClick={() => setEditingSubcategory(null)}
-                                className="px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded"
+                                className="px-2 py-1 bg-slate-200 bg-[var(--bg-elevated)] rounded"
                                 title="Annuler"
                               >
                                 <X className="w-4 h-4" />
@@ -980,7 +982,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         ) : (
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <span className="text-slate-900 dark:text-white">{subcat.name}</span>
+                              <span className="text-[var(--text-primary)]">{subcat.name}</span>
                               {subcat.is_system && (
                                 <span className="text-xs px-1.5 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center gap-1">
                                   <Globe className="w-2.5 h-2.5" />
@@ -991,7 +993,7 @@ export const SupportSettingsPanel: React.FC = () => {
                               >
                                 {subcat.default_priority}
                               </span>
-                              <span className="text-xs text-slate-500">SLA: {subcat.sla_hours}h</span>
+                              <span className="text-xs text-[var(--text-secondary)]">SLA: {subcat.sla_hours}h</span>
                               {!subcat.is_active && (
                                 <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full">
                                   Désactivée
@@ -1007,20 +1009,20 @@ export const SupportSettingsPanel: React.FC = () => {
                               {subcat.can_hide && (
                                 <button
                                   onClick={() => toggleSubcategoryActive(subcat)}
-                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+                                  className="p-1.5 hover:bg-[var(--bg-elevated)] rounded"
                                   title={subcat.is_hidden ? 'Afficher' : 'Masquer'}
                                 >
                                   {subcat.is_hidden ? (
-                                    <Eye className="w-4 h-4 text-slate-500" />
+                                    <Eye className="w-4 h-4 text-[var(--text-secondary)]" />
                                   ) : (
-                                    <EyeOff className="w-4 h-4 text-slate-400" />
+                                    <EyeOff className="w-4 h-4 text-[var(--text-muted)]" />
                                   )}
                                 </button>
                               )}
                               {subcat.can_edit ? (
                                 <button
                                   onClick={() => setEditingSubcategory(subcat)}
-                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+                                  className="p-1.5 hover:bg-[var(--bg-elevated)] rounded"
                                   title="Modifier"
                                 >
                                   <Edit2 className="w-4 h-4 text-[var(--primary)]" />
@@ -1033,7 +1035,7 @@ export const SupportSettingsPanel: React.FC = () => {
                               {subcat.can_delete && (
                                 <button
                                   onClick={() => deleteSubcategory(subcat)}
-                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
+                                  className="p-1.5 hover:bg-[var(--bg-elevated)] rounded"
                                   title="Désactiver"
                                 >
                                   <Trash2 className="w-4 h-4 text-red-500" />
@@ -1059,10 +1061,8 @@ export const SupportSettingsPanel: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Configuration des Interventions</h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Gérez les types et natures d'interventions techniques
-          </p>
+          <h3 className="text-lg font-semibold text-[var(--text-primary)]">Configuration des Interventions</h3>
+          <p className="text-sm text-[var(--text-secondary)]">Gérez les types et natures d'interventions techniques</p>
         </div>
         <button
           onClick={() => setNewIntType({ code: '', label: '', isActive: true, isSystem: false })}
@@ -1082,14 +1082,14 @@ export const SupportSettingsPanel: React.FC = () => {
               placeholder="Code (ex: INSTALL)"
               value={newIntType.code || ''}
               onChange={(e) => setNewIntType({ ...newIntType, code: e.target.value.toUpperCase() })}
-              className="px-3 py-2 border rounded-lg dark:bg-slate-800"
+              className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)]"
             />
             <input
               type="text"
               placeholder="Libellé (ex: Installation)"
               value={newIntType.label || ''}
               onChange={(e) => setNewIntType({ ...newIntType, label: e.target.value })}
-              className="px-3 py-2 border rounded-lg dark:bg-slate-800"
+              className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)]"
             />
             <div className="flex gap-2">
               <button
@@ -1100,7 +1100,7 @@ export const SupportSettingsPanel: React.FC = () => {
               </button>
               <button
                 onClick={() => setNewIntType(null)}
-                className="px-3 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
+                className="px-3 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1117,9 +1117,9 @@ export const SupportSettingsPanel: React.FC = () => {
           const isEditing = editingIntType?.id === type.id;
 
           return (
-            <div key={type.id} className="border rounded-xl dark:border-slate-700 overflow-hidden">
+            <div key={type.id} className="border rounded-xl border-[var(--border)] overflow-hidden">
               <div
-                className={`p-4 flex items-center justify-between ${isExpanded ? 'bg-slate-50 dark:bg-slate-800' : 'bg-white dark:bg-slate-900'}`}
+                className={`p-4 flex items-center justify-between ${isExpanded ? 'bg-[var(--bg-elevated)]' : 'bg-[var(--bg-surface)]'}`}
               >
                 <div className="flex items-center gap-3">
                   <button
@@ -1129,7 +1129,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       else next.add(type.id);
                       setExpandedIntTypes(next);
                     }}
-                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded"
+                    className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded"
                   >
                     {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                   </button>
@@ -1139,7 +1139,7 @@ export const SupportSettingsPanel: React.FC = () => {
                         type="text"
                         value={editingIntType.label}
                         onChange={(e) => setEditingIntType({ ...editingIntType, label: e.target.value })}
-                        className="px-2 py-1 border rounded text-sm dark:bg-slate-800"
+                        className="px-2 py-1 border rounded text-sm bg-[var(--bg-elevated)]"
                       />
                       <button onClick={() => saveIntType(editingIntType)} className="p-1 text-green-600">
                         <Check className="w-4 h-4" />
@@ -1150,8 +1150,8 @@ export const SupportSettingsPanel: React.FC = () => {
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-slate-800 dark:text-white">{type.label}</span>
-                      <span className="text-[10px] font-mono bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-500 uppercase">
+                      <span className="font-bold text-[var(--text-primary)]">{type.label}</span>
+                      <span className="text-[10px] font-mono bg-[var(--bg-elevated)] px-1.5 py-0.5 rounded text-[var(--text-secondary)] uppercase">
                         {type.code}
                       </span>
                     </div>
@@ -1170,7 +1170,7 @@ export const SupportSettingsPanel: React.FC = () => {
                   </button>
                   <button
                     onClick={() => setEditingIntType(type)}
-                    className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400"
+                    className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg text-[var(--text-muted)]"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
@@ -1186,7 +1186,7 @@ export const SupportSettingsPanel: React.FC = () => {
               </div>
 
               {isExpanded && (
-                <div className="p-4 bg-white dark:bg-slate-900 border-t dark:border-slate-700 space-y-3">
+                <div className="p-4 bg-[var(--bg-surface)] border-t border-[var(--border)] space-y-3">
                   {/* New Nature Form */}
                   {newIntNature && newIntNature.typeId === type.id && (
                     <div className="flex items-center gap-3 p-3 bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)] rounded-lg border border-[var(--primary)] dark:border-[var(--primary)]/30">
@@ -1195,14 +1195,14 @@ export const SupportSettingsPanel: React.FC = () => {
                         placeholder="Code nature"
                         value={newIntNature.code || ''}
                         onChange={(e) => setNewIntNature({ ...newIntNature, code: e.target.value })}
-                        className="flex-1 px-3 py-1.5 border rounded-lg text-sm dark:bg-slate-800"
+                        className="flex-1 px-3 py-1.5 border rounded-lg text-sm bg-[var(--bg-elevated)]"
                       />
                       <input
                         type="text"
                         placeholder="Libellé nature"
                         value={newIntNature.label || ''}
                         onChange={(e) => setNewIntNature({ ...newIntNature, label: e.target.value })}
-                        className="flex-1 px-3 py-1.5 border rounded-lg text-sm dark:bg-slate-800"
+                        className="flex-1 px-3 py-1.5 border rounded-lg text-sm bg-[var(--bg-elevated)]"
                       />
                       <button
                         onClick={() => saveIntNature(newIntNature)}
@@ -1212,7 +1212,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       </button>
                       <button
                         onClick={() => setNewIntNature(null)}
-                        className="p-2 bg-slate-200 dark:bg-slate-700 rounded-lg"
+                        className="p-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -1221,14 +1221,14 @@ export const SupportSettingsPanel: React.FC = () => {
 
                   {typeNatures.length === 0 ? (
                     <div className="text-center py-6">
-                      <p className="text-sm text-slate-500 italic">Aucune nature définie pour ce type</p>
+                      <p className="text-sm text-[var(--text-secondary)] italic">Aucune nature définie pour ce type</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {typeNatures.map((nature) => (
                         <div
                           key={nature.id}
-                          className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
+                          className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] hover:border-[var(--border)] dark:hover:border-slate-600 transition-colors"
                         >
                           {editingIntNature?.id === nature.id ? (
                             <div className="flex-1 flex gap-2">
@@ -1236,7 +1236,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                 type="text"
                                 value={editingIntNature.label}
                                 onChange={(e) => setEditingIntNature({ ...editingIntNature, label: e.target.value })}
-                                className="flex-1 px-2 py-1 border rounded text-xs dark:bg-slate-800"
+                                className="flex-1 px-2 py-1 border rounded text-xs bg-[var(--bg-elevated)]"
                               />
                               <button onClick={() => saveIntNature(editingIntNature)} className="text-green-600">
                                 <Check className="w-4 h-4" />
@@ -1247,13 +1247,11 @@ export const SupportSettingsPanel: React.FC = () => {
                             </div>
                           ) : (
                             <>
-                              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                {nature.label}
-                              </span>
+                              <span className="text-sm font-medium text-[var(--text-primary)]">{nature.label}</span>
                               <div className="flex items-center gap-1">
                                 <button
                                   onClick={() => setEditingIntNature(nature)}
-                                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400"
+                                  className="p-1.5 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-muted)]"
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
                                 </button>
@@ -1316,7 +1314,7 @@ export const SupportSettingsPanel: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Settings className="w-6 h-6 text-[var(--primary)]" />
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Configuration du support</h2>
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">Configuration du support</h2>
           {isSuperAdmin && (
             <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full flex items-center gap-1">
               <Globe className="w-3 h-3" />
@@ -1327,7 +1325,7 @@ export const SupportSettingsPanel: React.FC = () => {
         {!isSuperAdmin && (
           <button
             onClick={handleResetOverrides}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--text-secondary)] bg-slate-100 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
             title="Réinitialiser aux valeurs système par défaut"
           >
             <RotateCcw className="w-4 h-4" />
@@ -1337,14 +1335,14 @@ export const SupportSettingsPanel: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-slate-200 dark:border-slate-700">
+      <div className="border-b border-[var(--border)]">
         <nav className="flex gap-4">
           <button
             onClick={() => setActiveTab('sla')}
             className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'sla'
                 ? 'border-[var(--primary)] text-[var(--primary)]'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -1357,7 +1355,7 @@ export const SupportSettingsPanel: React.FC = () => {
             className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'categories'
                 ? 'border-[var(--primary)] text-[var(--primary)]'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -1370,7 +1368,7 @@ export const SupportSettingsPanel: React.FC = () => {
             className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'subcategories'
                 ? 'border-[var(--primary)] text-[var(--primary)]'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -1383,7 +1381,7 @@ export const SupportSettingsPanel: React.FC = () => {
             className={`pb-3 px-1 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'interventions'
                 ? 'border-[var(--primary)] text-[var(--primary)]'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <div className="flex items-center gap-2">

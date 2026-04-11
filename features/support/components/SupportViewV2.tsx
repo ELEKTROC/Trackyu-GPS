@@ -46,6 +46,7 @@ import {
 import { EmptyState } from '../../../components/EmptyState';
 import { Modal } from '../../../components/Modal';
 import { Card } from '../../../components/Card';
+import { SearchBar } from '../../../components/SearchBar';
 import { ListItemSkeleton } from '../../../components/Skeleton';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';
@@ -1116,7 +1117,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
       CRITICAL: 'bg-red-100 text-red-700 border-red-200',
       HIGH: 'bg-orange-100 text-orange-700 border-orange-200',
       MEDIUM: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]',
-      LOW: 'bg-slate-100 text-slate-600 border-slate-200',
+      LOW: 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]',
     };
     return styles[priority] || styles.MEDIUM;
   };
@@ -1161,11 +1162,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-slate-800 dark:bg-white text-white dark:text-slate-900 shadow-md'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
+                className={`filter-chip flex items-center gap-2 ${activeTab === tab.id ? 'active' : ''}`}
               >
                 <tab.icon className="w-4 h-4" />
                 <span className="hidden sm:inline">{tab.label}</span>
@@ -1180,7 +1177,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
         )}
         <div className="flex items-center gap-2">
           {/* Export + Import — desktop only */}
-          <div className="hidden sm:flex items-center gap-1 border-r border-slate-200 dark:border-slate-700 pr-2">
+          <div className="hidden sm:flex items-center gap-1 border-r border-[var(--border)] pr-2">
             <button
               onClick={handleExportCSV}
               className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] hover:bg-[var(--primary-dim)] transition-colors"
@@ -1234,8 +1231,8 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-blue-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Ouverts</p>
-                    <p className="text-2xl font-bold text-slate-800 dark:text-white">{ticketCounts.OPEN || 0}</p>
+                    <p className="section-title">Ouverts</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">{ticketCounts.OPEN || 0}</p>
                   </div>
                   <MessageSquare className="w-8 h-8 text-[var(--primary)] opacity-50" />
                 </div>
@@ -1243,8 +1240,8 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-orange-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">En Cours</p>
-                    <p className="text-2xl font-bold text-slate-800 dark:text-white">{ticketCounts.IN_PROGRESS || 0}</p>
+                    <p className="section-title">En Cours</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">{ticketCounts.IN_PROGRESS || 0}</p>
                   </div>
                   <Clock className="w-8 h-8 text-orange-500 opacity-50" />
                 </div>
@@ -1252,9 +1249,9 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-green-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Résolus</p>
-                    <p className="text-2xl font-bold text-slate-800 dark:text-white">{ticketCounts.RESOLVED || 0}</p>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="section-title">Résolus</p>
+                    <p className="text-2xl font-bold text-[var(--text-primary)]">{ticketCounts.RESOLVED || 0}</p>
+                    <p className="text-[10px] text-[var(--text-muted)]">
                       {(() => {
                         const now = new Date();
                         return tickets.filter(
@@ -1274,7 +1271,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-red-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">SLA Critique</p>
+                    <p className="section-title">SLA Critique</p>
                     <p className="text-2xl font-bold text-red-600">{slaStats.critical.length}</p>
                   </div>
                   <AlertTriangle className="w-8 h-8 text-red-500 opacity-50" />
@@ -1283,7 +1280,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-emerald-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Taux SLA</p>
+                    <p className="section-title">Taux SLA</p>
                     <p className="text-2xl font-bold text-emerald-600">{slaStats.respectRate}%</p>
                   </div>
                   <Target className="w-8 h-8 text-emerald-500 opacity-50" />
@@ -1296,12 +1293,12 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-cyan-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Temps Moyen</p>
+                    <p className="section-title">Temps Moyen</p>
                     <p className="text-2xl font-bold text-cyan-600">
                       {resolutionStats.average !== null ? formatTicketDuration(resolutionStats.average) : '-'}
                     </p>
                     {resolutionStats.count > 0 && (
-                      <p className="text-[10px] text-slate-400">sur {resolutionStats.count} tickets</p>
+                      <p className="text-[10px] text-[var(--text-muted)]">sur {resolutionStats.count} tickets</p>
                     )}
                   </div>
                   <Timer className="w-8 h-8 text-cyan-500 opacity-50" />
@@ -1310,13 +1307,13 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-indigo-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Temps Réponse</p>
+                    <p className="section-title">Temps Réponse</p>
                     <p className="text-2xl font-bold text-indigo-600">
                       {resolutionStats.avgResponseTime !== null
                         ? formatTicketDuration(resolutionStats.avgResponseTime)
                         : '-'}
                     </p>
-                    <p className="text-[10px] text-slate-400">1ère prise en charge</p>
+                    <p className="text-[10px] text-[var(--text-muted)]">1ère prise en charge</p>
                   </div>
                   <Play className="w-8 h-8 text-indigo-500 opacity-50" />
                 </div>
@@ -1324,13 +1321,13 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-violet-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Temps Traitement</p>
+                    <p className="section-title">Temps Traitement</p>
                     <p className="text-2xl font-bold text-violet-600">
                       {resolutionStats.avgHandlingTime !== null
                         ? formatTicketDuration(resolutionStats.avgHandlingTime)
                         : '-'}
                     </p>
-                    <p className="text-[10px] text-slate-400">durée de travail</p>
+                    <p className="text-[10px] text-[var(--text-muted)]">durée de travail</p>
                   </div>
                   <Zap className="w-8 h-8 text-violet-500 opacity-50" />
                 </div>
@@ -1338,9 +1335,9 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               <Card className="p-4 border-l-4 border-l-teal-500">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase">Conformité SLA</p>
+                    <p className="section-title">Conformité SLA</p>
                     <p className="text-2xl font-bold text-teal-600">{resolutionStats.slaComplianceRate}%</p>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="text-[10px] text-[var(--text-muted)]">
                       {resolutionStats.withinSLA}/{resolutionStats.count} dans les temps
                     </p>
                   </div>
@@ -1352,7 +1349,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             {/* Charts Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Tickets par Statut</h3>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Tickets par Statut</h3>
                 <div className="h-64">
                   <ResponsiveContainer
                     width="100%"
@@ -1394,7 +1391,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 </div>
               </Card>
               <Card className="p-6">
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Tickets par Catégorie</h3>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Tickets par Catégorie</h3>
                 <div className="h-64">
                   <ResponsiveContainer
                     width="100%"
@@ -1436,9 +1433,9 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                       className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg cursor-pointer hover:bg-red-100 transition-colors"
                     >
                       <div>
-                        <span className="font-bold text-slate-800 dark:text-white">{t.id}</span>
-                        <span className="mx-2 text-slate-400">•</span>
-                        <span className="text-slate-600 dark:text-slate-300">{t.subject}</span>
+                        <span className="font-bold text-[var(--text-primary)]">{t.id}</span>
+                        <span className="mx-2 text-[var(--text-muted)]">•</span>
+                        <span className="text-[var(--text-secondary)]">{t.subject}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span
@@ -1456,32 +1453,32 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
 
             {/* Statistiques par Agent */}
             <Card className="p-6">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                 <Users className="w-5 h-5 text-[var(--primary)]" /> Performance par Agent
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
-                    <tr className="border-b border-slate-200 dark:border-slate-700">
-                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                  <thead className="bg-[var(--bg-elevated)] sticky top-0 z-10">
+                    <tr className="border-b border-[var(--border)]">
+                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Agent
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Créés
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Assignés
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Résolus
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         En cours
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Temps moy.
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Taux SLA
                       </th>
                     </tr>
@@ -1543,7 +1540,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                       if (agents.length === 0)
                         return (
                           <tr>
-                            <td colSpan={7} className="text-center py-4 text-slate-400">
+                            <td colSpan={7} className="text-center py-4 text-[var(--text-muted)]">
                               Aucune donnée agent
                             </td>
                           </tr>
@@ -1574,9 +1571,9 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         return (
                           <tr
                             key={i}
-                            className="density-row border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                            className="density-row border-b border-[var(--border)] border-[var(--border)] tr-hover/50"
                           >
-                            <td className="py-2 px-3 font-medium text-slate-800 dark:text-white">{a.name}</td>
+                            <td className="py-2 px-3 font-medium text-[var(--text-primary)]">{a.name}</td>
                             <td className="text-center py-2 px-3">
                               <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-bold">
                                 {a.created}
@@ -1597,7 +1594,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                 {a.inProgress}
                               </span>
                             </td>
-                            <td className="text-center py-2 px-3 text-xs text-slate-600 dark:text-slate-300">
+                            <td className="text-center py-2 px-3 text-xs text-[var(--text-secondary)]">
                               {a.resCount > 0 ? `${hours}h${mins.toString().padStart(2, '0')}` : '—'}
                             </td>
                             <td className="text-center py-2 px-3">
@@ -1617,26 +1614,23 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                       const gMins = Math.floor((avgGlobalTime % 3600000) / 60000);
 
                       rows.push(
-                        <tr
-                          key="total"
-                          className="border-t-2 border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 font-bold"
-                        >
+                        <tr key="total" className="border-t-2 border-[var(--border)] bg-[var(--bg-elevated)] font-bold">
                           <td className="py-3 px-3 text-[var(--primary)] uppercase tracking-wider">
                             TOTAUX / MOY. GLOBALE
                           </td>
-                          <td className="text-center py-3 px-3 text-slate-800 dark:text-white text-base">
+                          <td className="text-center py-3 px-3 text-[var(--text-primary)] text-base">
                             <div className="flex flex-col">
                               <span>{totalCreated}</span>
-                              <span className="text-[10px] text-slate-400 font-normal">tickets</span>
+                              <span className="text-[10px] text-[var(--text-muted)] font-normal">tickets</span>
                             </div>
                           </td>
-                          <td className="text-center py-3 px-3 text-slate-800 dark:text-white text-base">
+                          <td className="text-center py-3 px-3 text-[var(--text-primary)] text-base">
                             <div className="flex flex-col">
                               <span>{totalAssigned}</span>
-                              <span className="text-[10px] text-slate-400 font-normal">100%</span>
+                              <span className="text-[10px] text-[var(--text-muted)] font-normal">100%</span>
                             </div>
                           </td>
-                          <td className="text-center py-3 px-3 text-slate-800 dark:text-white text-base">
+                          <td className="text-center py-3 px-3 text-[var(--text-primary)] text-base">
                             <div className="flex flex-col">
                               <span>{totalResolved}</span>
                               <span className="text-[10px] text-green-500 font-normal">
@@ -1644,7 +1638,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                               </span>
                             </div>
                           </td>
-                          <td className="text-center py-3 px-3 text-slate-800 dark:text-white text-base">
+                          <td className="text-center py-3 px-3 text-[var(--text-primary)] text-base">
                             <div className="flex flex-col">
                               <span>{totalInProgress}</span>
                               <span className="text-[10px] text-orange-500 font-normal">
@@ -1652,7 +1646,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                               </span>
                             </div>
                           </td>
-                          <td className="text-center py-3 px-3 text-slate-800 dark:text-white text-base font-mono">
+                          <td className="text-center py-3 px-3 text-[var(--text-primary)] text-base font-mono">
                             {sumResCount > 0 ? `${gHours}h${gMins.toString().padStart(2, '0')}` : '—'}
                           </td>
                           <td className="text-center py-3 px-3">
@@ -1679,32 +1673,25 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
           <div className="flex flex-col lg:flex-row h-full gap-4 overflow-hidden">
             {/* LEFT: TICKET LIST — masqué sur mobile quand un ticket est ouvert */}
             <div
-              className={`w-full lg:w-[460px] shrink-0 flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden lg:max-h-none ${isMobile && selectedTicketId ? 'hidden' : 'flex h-full'}`}
+              className={`w-full lg:w-[460px] shrink-0 flex-col rounded-xl overflow-hidden lg:max-h-none ${isMobile && selectedTicketId ? 'hidden' : 'flex h-full'}`}
+              style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)' }}
             >
               {/* Search & Filters */}
-              <div className="p-4 border-b border-slate-200 dark:border-slate-700 space-y-3">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Rechercher par ID, sujet, client, agent, véhicule, message..."
-                    className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+              <div className="p-4 border-b border-[var(--border)] space-y-3">
+                <SearchBar
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Rechercher par ID, sujet, client, agent, véhicule, message..."
+                />
                 <div className="flex gap-2 flex-wrap">
                   {FILTERS_CONFIG.map((f) => (
                     <button
                       key={f.id}
                       onClick={() => setStatusFilter(f.id)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
-                        statusFilter === f.id
-                          ? 'bg-[var(--primary)] text-white'
-                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
-                      }`}
+                      className={`filter-chip ${statusFilter === f.id ? 'active' : ''}`}
                     >
-                      {f.label} {f.id !== 'ALL' && <span className="ml-1 opacity-70">({ticketCounts[f.id] || 0})</span>}
+                      {f.label}
+                      {f.id !== 'ALL' && <span className="opacity-60 text-[11px]">({ticketCounts[f.id] || 0})</span>}
                     </button>
                   ))}
                 </div>
@@ -1735,7 +1722,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     </button>
                     <button
                       onClick={clearSelection}
-                      className="px-2 py-1.5 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-xs transition-colors"
+                      className="px-2 py-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300 text-xs transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -1744,11 +1731,14 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               )}
               {/* Select All Header */}
               {pagedTickets.length > 0 && (
-                <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <div
+                  className="px-4 py-2 border-b border-[var(--border)] flex items-center justify-between"
+                  style={{ backgroundColor: 'var(--bg-elevated)' }}
+                >
                   <div className="flex items-center gap-2">
                     <button
                       onClick={toggleSelectAll}
-                      className="p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+                      className="p-0.5 hover:bg-[var(--bg-elevated)] rounded transition-colors"
                       title={
                         selectedTicketIds.size === pagedTickets.length ? 'Tout désélectionner' : 'Tout sélectionner'
                       }
@@ -1758,13 +1748,13 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                       ) : selectedTicketIds.size > 0 ? (
                         <MinusSquare className="w-4 h-4 text-[var(--primary)]" />
                       ) : (
-                        <Square className="w-4 h-4 text-slate-400" />
+                        <Square className="w-4 h-4 text-[var(--text-muted)]" />
                       )}
                     </button>
-                    <span className="text-xs text-slate-500">{totalTicketCount} ticket(s)</span>
+                    <span className="text-xs text-[var(--text-muted)]">{totalTicketCount} ticket(s)</span>
                   </div>
                   {totalPages > 1 && (
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-[var(--text-muted)]">
                       Page {currentPage}/{totalPages}
                     </span>
                   )}
@@ -1802,28 +1792,28 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                       <div
                         key={ticket.id}
                         onClick={() => setSelectedTicketId(ticket.id)}
-                        className={`density-row p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer transition-colors ${
+                        className={`density-row p-4 border-b border-[var(--border)] cursor-pointer transition-colors ${
                           selectedTicketId === ticket.id
-                            ? 'bg-[var(--primary-dim)] border-l-4 border-l-blue-500'
-                            : 'hover:bg-slate-50 dark:hover:bg-slate-800 border-l-4 border-l-transparent'
+                            ? 'bg-[var(--primary-dim)] border-l-4 border-l-[var(--primary)]'
+                            : 'hover:bg-[var(--bg-elevated)] border-l-4 border-l-transparent'
                         }`}
                       >
                         <div className="flex gap-3">
                           {/* Checkbox */}
                           <button
                             onClick={(e) => toggleTicketSelection(ticket.id, e)}
-                            className="mt-0.5 shrink-0 p-0.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+                            className="mt-0.5 shrink-0 p-0.5 hover:bg-[var(--bg-elevated)] rounded transition-colors"
                           >
                             {isChecked ? (
                               <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                             ) : (
-                              <Square className="w-4 h-4 text-slate-400" />
+                              <Square className="w-4 h-4 text-[var(--text-muted)]" />
                             )}
                           </button>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center gap-2">
-                                <span className="font-mono text-xs text-slate-400">{ticket.id}</span>
+                                <span className="font-mono text-xs text-[var(--text-muted)]">{ticket.id}</span>
                                 <span
                                   className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${getPriorityBadge(ticket.priority)}`}
                                 >
@@ -1845,10 +1835,10 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                 {getStatusInfo(ticket.status).label}
                               </span>
                             </div>
-                            <p className="font-medium text-slate-800 dark:text-white text-sm mb-1 line-clamp-1">
+                            <p className="font-medium text-[var(--text-primary)] text-sm mb-1 line-clamp-1">
                               {ticket.subject}
                             </p>
-                            <p className="text-xs text-slate-500 flex items-center gap-2">
+                            <p className="text-xs text-[var(--text-secondary)] flex items-center gap-2">
                               <User className="w-3 h-3" /> {getClientName(ticket)}
                               <span className="text-slate-300">•</span>
                               {ticket.source && ticket.source !== 'TrackYu' && (
@@ -1884,11 +1874,14 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               </div>
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="px-4 py-2.5 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between bg-white dark:bg-slate-900">
+                <div
+                  className="px-4 py-2.5 border-t border-[var(--border)] flex items-center justify-between"
+                  style={{ backgroundColor: 'var(--bg-surface)' }}
+                >
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="pagination-btn"
                   >
                     <ChevronLeft className="w-3.5 h-3.5" /> Préc.
                   </button>
@@ -1900,7 +1893,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         <button
                           key={p}
                           onClick={() => setCurrentPage(p)}
-                          className={`w-7 h-7 rounded text-xs font-medium transition-colors ${p === currentPage ? 'bg-[var(--primary)] text-white' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                          className={`pagination-btn ${p === currentPage ? 'active' : ''}`}
                         >
                           {p}
                         </button>
@@ -1910,7 +1903,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="pagination-btn"
                   >
                     Suiv. <ChevronRight className="w-3.5 h-3.5" />
                   </button>
@@ -1920,12 +1913,16 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
 
             {/* CENTER: TICKET DETAIL — masqué sur mobile quand aucun ticket sélectionné */}
             <div
-              className={`flex-1 flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden ${isMobile && !selectedTicketId ? 'hidden' : ''}`}
+              className={`flex-1 flex flex-col rounded-xl overflow-hidden ${isMobile && !selectedTicketId ? 'hidden' : ''}`}
+              style={{ backgroundColor: 'var(--bg-surface)', border: '1px solid var(--border)' }}
             >
               {selectedTicket ? (
                 <>
                   {/* Header */}
-                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                  <div
+                    className="p-4 border-b border-[var(--border)]"
+                    style={{ backgroundColor: 'var(--bg-elevated)' }}
+                  >
                     {/* Bouton retour mobile */}
                     {isMobile && (
                       <button
@@ -1938,7 +1935,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     <div className="flex items-start justify-between">
                       <div>
                         <div className="flex items-center gap-3 mb-1">
-                          <h2 className="text-lg font-bold text-slate-800 dark:text-white">{selectedTicket.subject}</h2>
+                          <h2 className="text-lg font-bold text-[var(--text-primary)]">{selectedTicket.subject}</h2>
                           <span
                             className={`px-2 py-0.5 rounded text-xs font-bold border ${getStatusInfo(selectedTicket.status).style}`}
                           >
@@ -1959,9 +1956,9 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-slate-500 flex items-center gap-2 flex-wrap">
+                        <p className="text-sm text-[var(--text-secondary)] flex items-center gap-2 flex-wrap">
                           <User className="w-4 h-4" /> {clientDetails?.name || getClientName(selectedTicket)}
-                          <span className="text-slate-300">|</span>
+                          <span className="text-[var(--border-strong)]">|</span>
                           {selectedTicket.source && (
                             <span
                               className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
@@ -2010,15 +2007,15 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                             </button>
                             <button
                               onClick={openEditModal}
-                              className="p-2 bg-white dark:bg-slate-700 border border-slate-200 rounded-lg hover:border-[var(--primary)]"
+                              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:border-[var(--primary)]"
                               title="Modifier"
                             >
-                              <Edit2 className="w-4 h-4 text-slate-600" />
+                              <Edit2 className="w-4 h-4 text-[var(--text-secondary)]" />
                             </button>
                             {hasPermission('DELETE_TICKETS') && (
                               <button
                                 onClick={() => handleDeleteTicket(selectedTicket.id, selectedTicket.subject)}
-                                className="p-2 bg-white dark:bg-slate-700 border border-slate-200 rounded-lg hover:border-red-300 hover:bg-red-50"
+                                className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:border-red-300 hover:bg-red-50"
                                 title="Supprimer"
                               >
                                 <Trash2 className="w-4 h-4 text-red-500" />
@@ -2146,7 +2143,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                   />
                 </>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                <div className="flex flex-col items-center justify-center h-full text-[var(--text-muted)]">
                   <MessageSquare className="w-16 h-16 mb-4 opacity-20" />
                   <p className="text-lg font-medium">Sélectionnez un ticket</p>
                 </div>
@@ -2159,7 +2156,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 {/* Fiche Client */}
                 <Card className="p-4 shrink-0">
                   <div className="flex justify-between items-center mb-3">
-                    <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
                       <User className="w-3 h-3" /> Fiche Client
                     </h4>
                     {clientMetrics?.paymentStatus === 'OK' ? (
@@ -2174,55 +2171,49 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                   </div>
                   <div className="space-y-3">
                     <div>
-                      <p className="font-bold text-slate-800 dark:text-white text-base">{clientDetails?.name}</p>
-                      <p className="text-xs text-slate-500">{clientDetails?.subscriptionPlan || 'Plan Standard'}</p>
+                      <p className="font-bold text-[var(--text-primary)] text-base">{clientDetails?.name}</p>
+                      <p className="text-xs text-[var(--text-secondary)]">
+                        {clientDetails?.subscriptionPlan || 'Plan Standard'}
+                      </p>
                     </div>
 
                     {/* Contacts */}
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2 text-sm">
-                        <User className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="text-slate-600 dark:text-slate-300">
+                        <User className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+                        <span className="text-[var(--text-secondary)]">
                           {clientDetails?.contactName || 'Non renseigné'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="w-3.5 h-3.5 text-slate-400 text-center">📞</span>
-                        <span className="text-slate-600 dark:text-slate-300">
-                          {clientDetails?.phone || 'Non renseigné'}
-                        </span>
+                        <span className="w-3.5 h-3.5 text-[var(--text-muted)] text-center">📞</span>
+                        <span className="text-[var(--text-secondary)]">{clientDetails?.phone || 'Non renseigné'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="w-3.5 h-3.5 text-slate-400 text-center">✉️</span>
-                        <span className="text-slate-600 dark:text-slate-300">
-                          {clientDetails?.email || 'Non renseigné'}
-                        </span>
+                        <span className="w-3.5 h-3.5 text-[var(--text-muted)] text-center">✉️</span>
+                        <span className="text-[var(--text-secondary)]">{clientDetails?.email || 'Non renseigné'}</span>
                       </div>
                     </div>
 
                     {/* Métriques */}
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                      <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700">
-                        <div className="flex items-center gap-1.5 text-slate-400 text-[10px] uppercase font-bold mb-1">
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--border)] border-[var(--border)]">
+                      <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)] border-[var(--border)]">
+                        <div className="flex items-center gap-1.5 text-[var(--text-muted)] text-[10px] uppercase font-bold mb-1">
                           <Clock className="w-3 h-3" /> Ancienneté
                         </div>
-                        <p className="font-bold text-slate-700 dark:text-slate-300">
-                          {clientMetrics?.seniorityYears || 1} ans
-                        </p>
+                        <p className="font-bold text-[var(--text-primary)]">{clientMetrics?.seniorityYears || 1} ans</p>
                       </div>
-                      <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700">
-                        <div className="flex items-center gap-1.5 text-slate-400 text-[10px] uppercase font-bold mb-1">
+                      <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)] border-[var(--border)]">
+                        <div className="flex items-center gap-1.5 text-[var(--text-muted)] text-[10px] uppercase font-bold mb-1">
                           <Shield className="w-3 h-3" /> Flotte
                         </div>
-                        <p className="font-bold text-slate-700 dark:text-slate-300">
-                          {clientMetrics?.vehicleCount || 0} véh.
-                        </p>
+                        <p className="font-bold text-[var(--text-primary)]">{clientMetrics?.vehicleCount || 0} véh.</p>
                       </div>
-                      <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-700 col-span-2">
-                        <div className="flex items-center gap-1.5 text-slate-400 text-[10px] uppercase font-bold mb-1">
+                      <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)] border-[var(--border)] col-span-2">
+                        <div className="flex items-center gap-1.5 text-[var(--text-muted)] text-[10px] uppercase font-bold mb-1">
                           <TrendingUp className="w-3 h-3" /> CA Annuel
                         </div>
-                        <p className="font-bold text-slate-700 dark:text-slate-300">
+                        <p className="font-bold text-[var(--text-primary)]">
                           {(clientMetrics?.revenueYTD || 0).toLocaleString()}
                         </p>
                       </div>
@@ -2232,47 +2223,49 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
 
                 {/* Interventions */}
                 <Card className="p-4 shrink-0">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-3 flex items-center gap-2">
                     <Shield className="w-3 h-3" /> Interventions
                   </h4>
                   {relatedInterventions.length > 0 ? (
                     relatedInterventions.slice(0, 3).map((int) => (
-                      <div key={int.id} className="p-2 bg-slate-50 dark:bg-slate-800 rounded mb-2">
+                      <div key={int.id} className="p-2 bg-[var(--bg-elevated)] rounded mb-2">
                         <span className="font-bold text-xs">{int.type}</span>
-                        <p className="text-[10px] text-slate-500">
+                        <p className="text-[10px] text-[var(--text-secondary)]">
                           {new Date(int.scheduledDate).toLocaleDateString('fr-FR')}
                         </p>
                       </div>
                     ))
                   ) : (
-                    <p className="text-xs text-slate-400 italic">Aucune intervention</p>
+                    <p className="text-xs text-[var(--text-muted)] italic">Aucune intervention</p>
                   )}
                 </Card>
 
                 {/* Description */}
                 <Card className="p-4 max-h-48 overflow-y-auto shrink-0">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2 sticky top-0 bg-white dark:bg-slate-900 pb-1">
+                  <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-3 flex items-center gap-2 sticky top-0 bg-[var(--bg-surface)] pb-1">
                     <FileText className="w-3 h-3" /> Description
                   </h4>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
-                    {selectedTicket.description || <span className="italic text-slate-400">Aucune description</span>}
+                  <p className="text-sm text-[var(--text-primary)] whitespace-pre-wrap leading-relaxed">
+                    {selectedTicket.description || (
+                      <span className="italic text-[var(--text-muted)]">Aucune description</span>
+                    )}
                   </p>
                 </Card>
 
                 {/* Historique / Timeline */}
                 <Card className="p-4 max-h-64 overflow-y-auto shrink-0">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2 sticky top-0 bg-white dark:bg-slate-900 pb-1">
+                  <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-3 flex items-center gap-2 sticky top-0 bg-[var(--bg-surface)] pb-1">
                     <Clock className="w-3 h-3" /> Historique
                   </h4>
-                  <div className="relative pl-4 border-l-2 border-slate-200 dark:border-slate-700 space-y-3">
+                  <div className="relative pl-4 border-l-2 border-[var(--border)] space-y-3">
                     {/* Création */}
                     <div className="relative">
-                      <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[var(--primary-dim)]0 border-2 border-white dark:border-slate-900" />
-                      <p className="text-xs text-slate-700 dark:text-slate-300">
+                      <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[var(--primary-dim)]0 border-2 border-[var(--bg-surface)]" />
+                      <p className="text-xs text-[var(--text-primary)]">
                         <span className="font-semibold">Créé</span> par{' '}
                         {selectedTicket.createdByName || selectedTicket.assignedUserName || user?.name || 'Inconnu'}
                       </p>
-                      <p className="text-[10px] text-slate-400">
+                      <p className="text-[10px] text-[var(--text-muted)]">
                         {new Date(selectedTicket.createdAt).toLocaleDateString('fr-FR')} à{' '}
                         {new Date(selectedTicket.createdAt).toLocaleTimeString('fr-FR', {
                           hour: '2-digit',
@@ -2283,11 +2276,11 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {/* Première réponse */}
                     {selectedTicket.firstResponseAt && (
                       <div className="relative">
-                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-white dark:border-slate-900" />
-                        <p className="text-xs text-slate-700 dark:text-slate-300">
+                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-cyan-500 border-2 border-[var(--bg-surface)]" />
+                        <p className="text-xs text-[var(--text-primary)]">
                           <span className="font-semibold">Première réponse</span>
                         </p>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-[var(--text-muted)]">
                           {new Date(selectedTicket.firstResponseAt).toLocaleDateString('fr-FR')} à{' '}
                           {new Date(selectedTicket.firstResponseAt).toLocaleTimeString('fr-FR', {
                             hour: '2-digit',
@@ -2299,12 +2292,12 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {/* Prise en charge */}
                     {selectedTicket.startedAt && (
                       <div className="relative">
-                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-yellow-500 border-2 border-white dark:border-slate-900" />
-                        <p className="text-xs text-slate-700 dark:text-slate-300">
+                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-yellow-500 border-2 border-[var(--bg-surface)]" />
+                        <p className="text-xs text-[var(--text-primary)]">
                           <span className="font-semibold">Pris en charge</span>
                           {selectedTicket.assignedUserName ? ` par ${selectedTicket.assignedUserName}` : ''}
                         </p>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-[var(--text-muted)]">
                           {new Date(selectedTicket.startedAt).toLocaleDateString('fr-FR')} à{' '}
                           {new Date(selectedTicket.startedAt).toLocaleTimeString('fr-FR', {
                             hour: '2-digit',
@@ -2316,11 +2309,11 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {/* Escalade */}
                     {selectedTicket.escalatedAt && (
                       <div className="relative">
-                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-orange-500 border-2 border-white dark:border-slate-900" />
-                        <p className="text-xs text-slate-700 dark:text-slate-300">
+                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-orange-500 border-2 border-[var(--bg-surface)]" />
+                        <p className="text-xs text-[var(--text-primary)]">
                           <span className="font-semibold">Escaladé</span> (×{selectedTicket.escalationCount || 1})
                         </p>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-[var(--text-muted)]">
                           {new Date(selectedTicket.escalatedAt).toLocaleDateString('fr-FR')} à{' '}
                           {new Date(selectedTicket.escalatedAt).toLocaleTimeString('fr-FR', {
                             hour: '2-digit',
@@ -2333,11 +2326,11 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {selectedTicket.updatedAt &&
                       new Date(selectedTicket.updatedAt).getTime() !== new Date(selectedTicket.createdAt).getTime() && (
                         <div className="relative">
-                          <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-slate-400 border-2 border-white dark:border-slate-900" />
-                          <p className="text-xs text-slate-700 dark:text-slate-300">
+                          <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-slate-400 border-2 border-[var(--bg-surface)]" />
+                          <p className="text-xs text-[var(--text-primary)]">
                             <span className="font-semibold">Modifié</span>
                           </p>
-                          <p className="text-[10px] text-slate-400">
+                          <p className="text-[10px] text-[var(--text-muted)]">
                             {new Date(selectedTicket.updatedAt).toLocaleDateString('fr-FR')} à{' '}
                             {new Date(selectedTicket.updatedAt).toLocaleTimeString('fr-FR', {
                               hour: '2-digit',
@@ -2349,11 +2342,11 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {/* Résolu */}
                     {selectedTicket.resolvedAt && (
                       <div className="relative">
-                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white dark:border-slate-900" />
-                        <p className="text-xs text-slate-700 dark:text-slate-300">
+                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-[var(--bg-surface)]" />
+                        <p className="text-xs text-[var(--text-primary)]">
                           <span className="font-semibold">Résolu</span>
                         </p>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-[var(--text-muted)]">
                           {new Date(selectedTicket.resolvedAt).toLocaleDateString('fr-FR')} à{' '}
                           {new Date(selectedTicket.resolvedAt).toLocaleTimeString('fr-FR', {
                             hour: '2-digit',
@@ -2365,11 +2358,11 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {/* Clôturé */}
                     {selectedTicket.closedAt && (
                       <div className="relative">
-                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-slate-700 border-2 border-white dark:border-slate-900" />
-                        <p className="text-xs text-slate-700 dark:text-slate-300">
+                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-slate-700 border-2 border-[var(--bg-surface)]" />
+                        <p className="text-xs text-[var(--text-primary)]">
                           <span className="font-semibold">Clôturé</span>
                         </p>
-                        <p className="text-[10px] text-slate-400">
+                        <p className="text-[10px] text-[var(--text-muted)]">
                           {new Date(selectedTicket.closedAt).toLocaleDateString('fr-FR')} à{' '}
                           {new Date(selectedTicket.closedAt).toLocaleTimeString('fr-FR', {
                             hour: '2-digit',
@@ -2383,7 +2376,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
 
                 {/* Pièces jointes */}
                 <Card className="p-4 shrink-0">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-3 flex items-center gap-2">
                     <Paperclip className="w-3 h-3" /> Pièces jointes
                   </h4>
                   <AttachmentUpload ticketId={selectedTicket.id} />
@@ -2391,7 +2384,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
 
                 {/* Tickets Récents */}
                 <Card className="p-4 shrink-0 max-h-64 overflow-y-auto">
-                  <h4 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-3 flex items-center gap-2">
                     <MessageSquare className="w-3 h-3" /> Tickets Récents du Client
                   </h4>
                   {(() => {
@@ -2403,26 +2396,24 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         <div
                           key={t.id}
                           onClick={() => setSelectedTicketId(t.id)}
-                          className="p-2 bg-slate-50 dark:bg-slate-800 rounded mb-2 cursor-pointer hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
+                          className="p-2 bg-[var(--bg-elevated)] rounded mb-2 cursor-pointer hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
                         >
                           <div className="flex items-center justify-between mb-1">
-                            <span className="font-mono text-[10px] text-slate-400">{t.id}</span>
+                            <span className="font-mono text-[10px] text-[var(--text-muted)]">{t.id}</span>
                             <span
                               className={`px-1.5 py-0.5 rounded text-[9px] font-bold border ${getStatusInfo(t.status).style}`}
                             >
                               {getStatusInfo(t.status).label}
                             </span>
                           </div>
-                          <p className="text-xs font-medium text-slate-700 dark:text-slate-300 line-clamp-1">
-                            {t.subject}
-                          </p>
-                          <p className="text-[10px] text-slate-400 mt-1">
+                          <p className="text-xs font-medium text-[var(--text-primary)] line-clamp-1">{t.subject}</p>
+                          <p className="text-[10px] text-[var(--text-muted)] mt-1">
                             {new Date(t.createdAt).toLocaleDateString('fr-FR')}
                           </p>
                         </div>
                       ))
                     ) : (
-                      <p className="text-xs text-slate-400 italic">Aucun autre ticket</p>
+                      <p className="text-xs text-[var(--text-muted)] italic">Aucun autre ticket</p>
                     );
                   })()}
                 </Card>
@@ -2439,7 +2430,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               return (
                 <div
                   key={col.id}
-                  className="flex-shrink-0 w-80 flex flex-col bg-slate-100 dark:bg-slate-800 rounded-xl"
+                  className="flex-shrink-0 w-80 flex flex-col bg-[var(--bg-elevated)] rounded-xl"
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => {
                     const ticketId = e.dataTransfer.getData('ticketId');
@@ -2448,8 +2439,8 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 >
                   <div className={`p-4 border-b-2 ${col.borderClass}`}>
                     <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-slate-800 dark:text-white">{col.label}</h3>
-                      <span className="px-2 py-0.5 bg-white dark:bg-slate-700 rounded-full text-sm font-bold">
+                      <h3 className="font-bold text-[var(--text-primary)]">{col.label}</h3>
+                      <span className="px-2 py-0.5 bg-[var(--bg-elevated)] rounded-full text-sm font-bold">
                         {columnTickets.length}
                       </span>
                     </div>
@@ -2463,17 +2454,17 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                           key={ticket.id}
                           draggable
                           onDragStart={(e) => e.dataTransfer.setData('ticketId', ticket.id)}
-                          className={`p-3 bg-white dark:bg-slate-900 rounded-lg shadow-sm cursor-grab hover:shadow-md transition-shadow border-l-4 ${ticket.priority === 'CRITICAL' ? 'border-l-red-500' : ticket.priority === 'HIGH' ? 'border-l-orange-500' : 'border-l-blue-500'}`}
+                          className={`p-3 bg-[var(--bg-surface)] rounded-lg shadow-sm cursor-grab hover:shadow-md transition-shadow border-l-4 ${ticket.priority === 'CRITICAL' ? 'border-l-red-500' : ticket.priority === 'HIGH' ? 'border-l-orange-500' : 'border-l-blue-500'}`}
                         >
                           <div className="flex items-center justify-between mb-2">
-                            <span className="font-mono text-xs text-slate-400">{ticket.id}</span>
+                            <span className="font-mono text-xs text-[var(--text-muted)]">{ticket.id}</span>
                             {getSlaBadge(ticket)}
                           </div>
-                          <p className="text-sm font-medium text-slate-800 dark:text-white line-clamp-2">
+                          <p className="text-sm font-medium text-[var(--text-primary)] line-clamp-2">
                             {ticket.subject}
                           </p>
                           <div className="flex items-center justify-between mt-2">
-                            <p className="text-xs text-slate-500">{getClientName(ticket)}</p>
+                            <p className="text-xs text-[var(--text-secondary)]">{getClientName(ticket)}</p>
                             {agentName && (
                               <span className="text-xs text-[var(--primary)] font-medium">{agentName}</span>
                             )}
@@ -2493,7 +2484,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
           <div className="flex-1 overflow-y-auto space-y-6 pb-16 lg:pb-0">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="p-6 text-center">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Taux de Respect SLA</p>
+                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Taux de Respect SLA</p>
                 <p
                   className={`text-4xl font-bold ${slaStats.respectRate >= 80 ? 'text-green-600' : slaStats.respectRate >= 60 ? 'text-orange-600' : 'text-red-600'}`}
                 >
@@ -2501,48 +2492,48 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 </p>
               </Card>
               <Card className="p-6 text-center border-l-4 border-l-green-500">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Dans les Temps</p>
+                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Dans les Temps</p>
                 <p className="text-3xl font-bold text-green-600">{slaStats.ok.length}</p>
               </Card>
               <Card className="p-6 text-center border-l-4 border-l-orange-500">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Attention</p>
+                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Attention</p>
                 <p className="text-3xl font-bold text-orange-600">{slaStats.warning.length}</p>
               </Card>
               <Card className="p-6 text-center border-l-4 border-l-red-500">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Critique / Dépassé</p>
+                <p className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">Critique / Dépassé</p>
                 <p className="text-3xl font-bold text-red-600">{slaStats.critical.length}</p>
               </Card>
             </div>
 
             {/* Liste SLA Critiques */}
             <Card className="p-6">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Tickets Nécessitant Attention</h3>
+              <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Tickets Nécessitant Attention</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
-                    <tr className="border-b border-slate-200 dark:border-slate-700">
-                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                  <thead className="bg-[var(--bg-elevated)] sticky top-0 z-10">
+                    <tr className="border-b border-[var(--border)]">
+                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         ID
                       </th>
-                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Sujet
                       </th>
-                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Client
                       </th>
-                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-left px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Agent
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Priorité
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Créé le
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300">
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
                         Temps restant
                       </th>
-                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-300"></th>
+                      <th className="text-center px-3 py-3 text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2563,7 +2554,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                       return (
                         <tr
                           key={t.id}
-                          className="density-row border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                          className="density-row border-b border-[var(--border)] border-[var(--border)] tr-hover/50"
                         >
                           <td className="py-2 px-3">
                             <div className="flex items-center gap-2">
@@ -2582,21 +2573,19 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                               </button>
                             </div>
                           </td>
-                          <td className="py-2 px-3 text-slate-700 dark:text-slate-300 max-w-[200px] truncate">
-                            {t.subject}
+                          <td className="py-2 px-3 text-[var(--text-primary)] max-w-[200px] truncate">{t.subject}</td>
+                          <td className="py-2 px-3 text-[var(--text-secondary)] text-xs">
+                            {clientName || <span className="italic text-[var(--text-muted)]">—</span>}
                           </td>
-                          <td className="py-2 px-3 text-slate-600 dark:text-slate-400 text-xs">
-                            {clientName || <span className="italic text-slate-400">—</span>}
-                          </td>
-                          <td className="py-2 px-3 text-slate-600 dark:text-slate-400 text-xs">
-                            {agentName || <span className="italic text-slate-400">Non assigné</span>}
+                          <td className="py-2 px-3 text-[var(--text-secondary)] text-xs">
+                            {agentName || <span className="italic text-[var(--text-muted)]">Non assigné</span>}
                           </td>
                           <td className="text-center py-2 px-3">
                             <span className={`px-2 py-0.5 rounded text-xs font-bold ${getPriorityBadge(t.priority)}`}>
                               {t.priority}
                             </span>
                           </td>
-                          <td className="text-center py-2 px-3 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                          <td className="text-center py-2 px-3 text-xs text-[var(--text-secondary)] whitespace-nowrap">
                             {new Date(t.createdAt).toLocaleDateString('fr-FR', {
                               day: '2-digit',
                               month: '2-digit',
@@ -2623,7 +2612,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                   </tbody>
                 </table>
                 {slaStats.critical.length === 0 && slaStats.warning.length === 0 && (
-                  <p className="text-center text-slate-400 py-8">Tous les tickets sont dans les délais SLA</p>
+                  <p className="text-center text-[var(--text-muted)] py-8">Tous les tickets sont dans les délais SLA</p>
                 )}
               </div>
             </Card>
@@ -2637,7 +2626,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               {/* Macros */}
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-white">Macros de Réponse</h3>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">Macros de Réponse</h3>
                   <button
                     onClick={() => {
                       setIsEditingMacro(null);
@@ -2650,7 +2639,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 </div>
 
                 {/* Form */}
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg mb-4 space-y-3">
+                <div className="p-4 bg-[var(--bg-elevated)] rounded-lg mb-4 space-y-3">
                   <input
                     type="text"
                     placeholder="Label (ex: Bonjour)"
@@ -2675,7 +2664,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                           setIsEditingMacro(null);
                           setNewMacro({ label: '', text: '', category: '' });
                         }}
-                        className="px-4 py-2 text-slate-600"
+                        className="px-4 py-2 text-[var(--text-secondary)]"
                       >
                         Annuler
                       </button>
@@ -2686,19 +2675,19 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 {/* List */}
                 <div className="space-y-2">
                   {loadingMacros && (
-                    <div className="text-center py-4 text-slate-400 text-sm">Chargement des macros...</div>
+                    <div className="text-center py-4 text-[var(--text-muted)] text-sm">Chargement des macros...</div>
                   )}
                   {!loadingMacros && macros.length === 0 && (
-                    <div className="text-center py-6 text-slate-400 text-sm">Aucune macro configurée</div>
+                    <div className="text-center py-6 text-[var(--text-muted)] text-sm">Aucune macro configurée</div>
                   )}
                   {macros.map((m) => (
                     <div
                       key={m.id}
-                      className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 border rounded-lg"
+                      className="flex items-center justify-between p-3 bg-[var(--bg-surface)] border rounded-lg"
                     >
                       <div>
-                        <p className="font-medium text-slate-800 dark:text-white">{m.label}</p>
-                        <p className="text-xs text-slate-500 line-clamp-1">{m.text}</p>
+                        <p className="font-medium text-[var(--text-primary)]">{m.label}</p>
+                        <p className="text-xs text-[var(--text-secondary)] line-clamp-1">{m.text}</p>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -2706,10 +2695,10 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                             setIsEditingMacro(m);
                             setNewMacro({ label: m.label, text: m.text, category: m.category || '' });
                           }}
-                          className="p-1 hover:bg-slate-100 rounded"
+                          className="p-1 hover:bg-[var(--bg-elevated)] rounded"
                           title="Modifier la macro"
                         >
-                          <Edit2 className="w-4 h-4 text-slate-400" />
+                          <Edit2 className="w-4 h-4 text-[var(--text-muted)]" />
                         </button>
                         <button
                           onClick={() => deleteMacro(m.id)}
@@ -2727,8 +2716,8 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               {/* SLA Config */}
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-white">Configuration SLA</h3>
-                  <span className="text-xs text-slate-400 italic">Modifiable dans Admin → Paramètres</span>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)]">Configuration SLA</h3>
+                  <span className="text-xs text-[var(--text-muted)] italic">Modifiable dans Admin → Paramètres</span>
                 </div>
                 <div className="space-y-3">
                   {Object.entries(slaConfig || {}).map(([key, hours]) => {
@@ -2737,15 +2726,15 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     return (
                       <div
                         key={priority}
-                        className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg"
+                        className="flex items-center justify-between p-3 bg-[var(--bg-elevated)] rounded-lg"
                       >
                         <div className="flex items-center gap-3">
                           <span className={`px-2 py-0.5 rounded text-xs font-bold ${getPriorityBadge(priority)}`}>
                             {priority}
                           </span>
-                          <span className="text-slate-600 dark:text-slate-300">Délai maximum</span>
+                          <span className="text-[var(--text-secondary)]">Délai maximum</span>
                         </div>
-                        <span className="font-bold text-slate-800 dark:text-white">{hours as React.ReactNode}h</span>
+                        <span className="font-bold text-[var(--text-primary)]">{hours as React.ReactNode}h</span>
                       </div>
                     );
                   })}
@@ -2754,15 +2743,12 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
 
               {/* Categories & SLA */}
               <Card className="p-6">
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Catégories & SLA</h3>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-4">Catégories & SLA</h3>
                 <div className="space-y-3">
                   {ticketCategories.map((cat: TicketCategory) => (
-                    <div
-                      key={cat.id}
-                      className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden"
-                    >
+                    <div key={cat.id} className="border border-[var(--border)] rounded-lg overflow-hidden">
                       <div
-                        className="p-3 bg-slate-50 dark:bg-slate-800 flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        className="p-3 bg-[var(--bg-elevated)] flex items-center justify-between cursor-pointer hover:bg-[var(--bg-elevated)] transition-colors"
                         onClick={async () => {
                           if (expandedCategory === cat.id) {
                             setExpandedCategory(null);
@@ -2783,19 +2769,19 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                           {expandedCategory === cat.id ? (
                             <ChevronDown className="w-4 h-4" />
                           ) : (
-                            <Play className="w-3 h-3 text-slate-400" />
+                            <Play className="w-3 h-3 text-[var(--text-muted)]" />
                           )}
-                          <span className="font-medium text-slate-800 dark:text-white">{cat.name}</span>
+                          <span className="font-medium text-[var(--text-primary)]">{cat.name}</span>
                         </div>
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-[var(--text-secondary)]">
                           {expandedCategory === cat.id ? configSubCategories.length : '?'} sous-catégories
                         </span>
                       </div>
 
                       {expandedCategory === cat.id && (
-                        <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 space-y-2">
+                        <div className="p-3 bg-[var(--bg-surface)] border-t border-[var(--border)] space-y-2">
                           {loadingConfig ? (
-                            <div className="text-center py-2 text-slate-400 text-sm">Chargement...</div>
+                            <div className="text-center py-2 text-[var(--text-muted)] text-sm">Chargement...</div>
                           ) : configSubCategories.length > 0 ? (
                             configSubCategories.map((sub: SubCategoryConfig) => {
                               const saveSubCat = async (s: SubCategoryConfig) => {
@@ -2815,14 +2801,11 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                 }
                               };
                               return (
-                                <div
-                                  key={sub.id}
-                                  className="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded"
-                                >
+                                <div key={sub.id} className="flex items-center justify-between p-2 tr-hover rounded">
                                   <div className="flex-1">
                                     <input
                                       type="text"
-                                      className="bg-transparent border-none p-0 text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-[var(--primary)] w-full"
+                                      className="bg-transparent border-none p-0 text-sm font-medium text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] w-full"
                                       value={sub.name}
                                       onChange={(e) => {
                                         const newSubs = configSubCategories.map((s: SubCategoryConfig) =>
@@ -2835,7 +2818,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                   </div>
                                   <div className="flex items-center gap-2">
                                     <select
-                                      className="px-2 py-1 text-xs border rounded bg-slate-50 dark:bg-slate-800 dark:text-white"
+                                      className="px-2 py-1 text-xs border rounded bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                                       value={sub.default_priority}
                                       onChange={(e) => {
                                         const val = e.target.value;
@@ -2863,7 +2846,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                     <div className="flex items-center gap-1">
                                       <input
                                         type="number"
-                                        className="w-16 px-2 py-1 text-xs border rounded bg-slate-50 dark:bg-slate-800 dark:text-white"
+                                        className="w-16 px-2 py-1 text-xs border rounded bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                                         value={sub.sla_hours || 0}
                                         onChange={(e) => {
                                           const newSubs = configSubCategories.map((s: SubCategoryConfig) =>
@@ -2875,7 +2858,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                         }}
                                         onBlur={() => saveSubCat(sub)}
                                       />
-                                      <span className="text-xs text-slate-500">h</span>
+                                      <span className="text-xs text-[var(--text-secondary)]">h</span>
                                     </div>
                                     {sub._modified && (
                                       <button
@@ -2891,9 +2874,11 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                               );
                             })
                           ) : (
-                            <div className="text-center py-2 text-slate-400 text-sm">Aucune sous-catégorie</div>
+                            <div className="text-center py-2 text-[var(--text-muted)] text-sm">
+                              Aucune sous-catégorie
+                            </div>
                           )}
-                          <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-center">
+                          <div className="pt-2 border-t border-[var(--border)] border-[var(--border)] flex justify-center">
                             <button
                               className="text-xs text-[var(--primary)] hover:text-[var(--primary-light)] flex items-center gap-1"
                               onClick={async () => {
@@ -2973,7 +2958,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                   setIsImportModalOpen(false);
                   setImportPreview([]);
                 }}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+                className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 Annuler
               </button>
@@ -3004,7 +2989,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             </div>
             <div>
               <label
-                className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
+                className="block text-sm font-medium text-[var(--text-primary)] mb-2"
                 htmlFor="import-tickets-file"
               >
                 Fichier CSV
@@ -3016,17 +3001,15 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 accept=".csv,.txt"
                 onChange={handleImportFile}
                 title="Sélectionner un fichier CSV à importer"
-                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
+                className="block w-full text-sm text-[var(--text-secondary)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-[var(--primary-dim)] file:text-[var(--primary)] hover:file:bg-[var(--primary-dim)]"
               />
             </div>
             {importPreview.length > 0 && (
               <div>
-                <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Aperçu ({importPreview.length} lignes)
-                </h4>
-                <div className="max-h-48 overflow-auto border border-slate-200 dark:border-slate-700 rounded-lg">
+                <h4 className="font-bold text-[var(--text-primary)] mb-2">Aperçu ({importPreview.length} lignes)</h4>
+                <div className="max-h-48 overflow-auto border border-[var(--border)] rounded-lg">
                   <table className="w-full text-xs">
-                    <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0">
+                    <thead className="bg-[var(--bg-elevated)] sticky top-0">
                       <tr>
                         <th className="px-2 py-1 text-left">Ligne</th>
                         <th className="px-2 py-1 text-left">Client</th>
@@ -3034,9 +3017,9 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         <th className="px-2 py-1 text-left">Priorité</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                    <tbody className="divide-y divide-[var(--border)]">
                       {importPreview.slice(0, 10).map((item, idx) => (
-                        <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <tr key={idx} className="tr-hover">
                           <td className="px-2 py-1">{item._row}</td>
                           <td className="px-2 py-1">{item.clientid || '-'}</td>
                           <td className="px-2 py-1">{item.subject || '-'}</td>
@@ -3045,7 +3028,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                       ))}
                       {importPreview.length > 10 && (
                         <tr>
-                          <td colSpan={4} className="px-2 py-1 text-center text-slate-500">
+                          <td colSpan={4} className="px-2 py-1 text-center text-[var(--text-secondary)]">
                             ... et {importPreview.length - 10} autres
                           </td>
                         </tr>
@@ -3066,7 +3049,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             <>
               <button
                 onClick={() => setIsStatusModalOpen(false)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+                className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 Annuler
               </button>
@@ -3077,7 +3060,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
           }
         >
           <div className="space-y-4">
-            <p className="text-slate-600">
+            <p className="text-[var(--text-secondary)]">
               Ticket <strong>{selectedTicket?.id}</strong> →{' '}
               <span className="font-bold">{targetStatus && getStatusInfo(targetStatus).label}</span>
             </p>
@@ -3100,7 +3083,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             <>
               <button
                 onClick={() => setPendingKanbanDrop(null)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 Annuler
               </button>
@@ -3115,14 +3098,14 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
           }
         >
           <div className="space-y-4">
-            <p className="text-slate-600 dark:text-slate-300">
+            <p className="text-[var(--text-secondary)]">
               Ticket <strong>{pendingKanbanDrop?.ticketId}</strong> →{' '}
               <span className="font-bold">
                 {pendingKanbanDrop?.newStatus && getStatusInfo(pendingKanbanDrop.newStatus).label}
               </span>
             </p>
             <textarea
-              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-600"
+              className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               rows={3}
               placeholder="Motif obligatoire du changement de statut..."
               required

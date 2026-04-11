@@ -104,12 +104,12 @@ const StatCard: React.FC<{
             <p className={`text-xs font-bold ${textColors[color]}`}>{title}</p>
             <p className={`text-lg font-bold ${textColors[color]}`}>{value}</p>
             {subtitle && (
-              <p className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>
+              <p className="text-xs text-[var(--text-secondary)]">{subtitle}</p>
             )}
           </div>
         </div>
         {trend && (
-          <div className={`${trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-slate-400'}`}>
+          <div className={`${trend === 'up' ? 'text-green-500' : trend === 'down' ? 'text-red-500' : 'text-[var(--text-muted)]'}`}>
             {trend === 'up' ? <ArrowUp className="w-4 h-4" /> : 
              trend === 'down' ? <ArrowDown className="w-4 h-4" /> : null}
           </div>
@@ -129,12 +129,12 @@ const ProgressBar: React.FC<{
   return (
     <div className="w-full">
       {label && (
-        <div className="flex justify-between text-xs text-slate-500 mb-1">
+        <div className="flex justify-between text-xs text-[var(--text-secondary)] mb-1">
           <span>{label}</span>
           <span>{value.toFixed(1)}%</span>
         </div>
       )}
-      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+      <div className="w-full bg-slate-200 bg-[var(--bg-elevated)] rounded-full h-2">
         <div
           className={`h-2 rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${percent}%` }}
@@ -185,12 +185,12 @@ export const SystemMetricsPanel: React.FC = () => {
       {/* Header avec bouton refresh */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+          <h3 className="text-lg font-bold text-[var(--text-primary)]">
             Métriques Système & Pipeline GPS
           </h3>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--text-secondary)]">
             Mis à jour toutes les 3 secondes • 
-            <span className="ml-1 text-xs text-slate-400">
+            <span className="ml-1 text-xs text-[var(--text-muted)]">
               {gpsMetrics?.timestamp ? new Date(gpsMetrics.timestamp).toLocaleTimeString('fr-FR') : '...'}
             </span>
           </p>
@@ -199,9 +199,9 @@ export const SystemMetricsPanel: React.FC = () => {
           onClick={() => refetch()}
           title="Rafraîchir les métriques"
           aria-label="Rafraîchir les métriques"
-          className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          className="p-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
         >
-          <RefreshCw className={`w-4 h-4 text-slate-600 dark:text-slate-400 ${loadingGps ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-4 h-4 text-[var(--text-secondary)] ${loadingGps ? 'animate-spin' : ''}`} />
         </button>
       </div>
 
@@ -323,13 +323,13 @@ export const SystemMetricsPanel: React.FC = () => {
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="text-slate-600 dark:text-slate-400">
+              <span className="text-[var(--text-secondary)]">
                 Hits: {formatNumber(gpsMetrics?.cache.hits || 0)}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500" />
-              <span className="text-slate-600 dark:text-slate-400">
+              <span className="text-[var(--text-secondary)]">
                 Misses: {formatNumber(gpsMetrics?.cache.misses || 0)}
               </span>
             </div>
@@ -362,13 +362,13 @@ export const SystemMetricsPanel: React.FC = () => {
           <div className="flex items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="text-slate-600 dark:text-slate-400">
+              <span className="text-[var(--text-secondary)]">
                 Requêtes: {formatNumber(gpsMetrics?.database.queries || 0)}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-[var(--primary-dim)]0" />
-              <span className="text-slate-600 dark:text-slate-400">
+              <span className="text-[var(--text-secondary)]">
                 Batch inserts: {formatNumber(gpsMetrics?.database.batchInserts || 0)}
               </span>
             </div>
@@ -432,10 +432,10 @@ export const SystemMetricsPanel: React.FC = () => {
       <Card className="p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border-orange-200 dark:border-orange-800">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-bold text-slate-800 dark:text-white">
+            <h4 className="font-bold text-[var(--text-primary)]">
               📈 Dashboards Grafana
             </h4>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[var(--text-secondary)]">
               Pour des graphiques avancés et l'historique des métriques
             </p>
           </div>

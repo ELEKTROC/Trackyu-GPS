@@ -312,7 +312,7 @@ const AppContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4">
+      <div className="min-h-screen p-4" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <DashboardSkeleton />
       </div>
     );
@@ -508,31 +508,47 @@ const AppContent: React.FC = () => {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors duration-300">
+    <div
+      className="flex h-screen overflow-hidden transition-colors duration-300"
+      style={{ backgroundColor: 'var(--bg-primary)' }}
+    >
       <OfflineBanner />
       <Sidebar currentView={currentView} onNavigate={handleNavigate} isMobileMenuOpen={isMobileMenuOpen} />
 
       <div className="flex-1 flex flex-col overflow-hidden relative lg:ml-64 transition-all duration-300">
         {/* Top Header - with safe-area support on mobile */}
         <header
-          className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6 shadow-sm z-10 shrink-0 transition-colors mobile-header"
-          style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top, 0px))' }}
+          className="h-16 flex items-center justify-between px-4 sm:px-6 shadow-sm z-10 shrink-0 transition-colors mobile-header"
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            borderBottom: '1px solid var(--border)',
+            paddingTop: 'max(0.5rem, env(safe-area-inset-top, 0px))',
+          }}
         >
           <div className="flex items-center gap-4">
             {/* Hamburger menu - hidden on mobile since we have BottomNavigation */}
             <button
               aria-label="Toggle menu"
-              className="hidden p-2.5 min-h-[44px] min-w-[44px] items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 rounded-lg haptic-feedback"
+              className="hidden p-2.5 min-h-[44px] min-w-[44px] items-center justify-center rounded-lg haptic-feedback transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+              }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               <Menu className="w-6 h-6" />
             </button>
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="hidden lg:block text-xs font-medium text-slate-400 dark:text-slate-500 shrink-0">
+              <span className="hidden lg:block text-xs font-medium shrink-0" style={{ color: 'var(--text-muted)' }}>
                 {getViewGroup()}
               </span>
-              <span className="hidden lg:block text-slate-300 dark:text-slate-600 text-xs">/</span>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate">
+              <span className="hidden lg:block text-xs" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+                /
+              </span>
+              <h1 className="text-lg sm:text-xl font-bold truncate" style={{ color: 'var(--text-primary)' }}>
                 {getHeaderTitle()}
               </h1>
             </div>
@@ -552,7 +568,14 @@ const AppContent: React.FC = () => {
             <button
               aria-label="Search"
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="md:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 rounded-full haptic-feedback"
+              className="md:hidden p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full haptic-feedback transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+              }}
             >
               <Search className="w-5 h-5" />
             </button>
@@ -560,27 +583,61 @@ const AppContent: React.FC = () => {
             {/* DESKTOP SEARCH TRIGGER */}
             <button
               onClick={() => setIsCommandPaletteOpen(true)}
-              className="hidden md:flex items-center gap-3 px-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-300 transition-all group"
+              className="hidden md:flex items-center gap-3 px-4 py-2 rounded-lg transition-all group"
+              style={{
+                backgroundColor: 'var(--bg-elevated)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-muted)',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--primary)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)';
+              }}
             >
-              <Search className="w-4 h-4 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200" />
+              <Search className="w-4 h-4" />
               <span className="text-sm">Rechercher...</span>
               <div className="flex items-center gap-1 ml-2">
-                <span className="text-[10px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-1.5 rounded shadow-sm text-slate-400 dark:text-slate-300">
+                <span
+                  className="text-[10px] font-bold px-1.5 rounded shadow-sm"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
                   Ctrl
                 </span>
-                <span className="text-[10px] font-bold bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 px-1.5 rounded shadow-sm text-slate-400 dark:text-slate-300">
+                <span
+                  className="text-[10px] font-bold px-1.5 rounded shadow-sm"
+                  style={{
+                    backgroundColor: 'var(--bg-surface)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--text-muted)',
+                  }}
+                >
                   K
                 </span>
               </div>
             </button>
 
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-800 mx-1 hidden sm:block"></div>
+            <div className="h-8 w-px mx-1 hidden sm:block" style={{ backgroundColor: 'var(--border)' }}></div>
 
             <div className="flex items-center gap-1 sm:gap-2">
               {/* Theme toggle - visible on all screen sizes */}
               <button
                 onClick={toggleTheme}
-                className="flex p-2.5 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 transition-colors haptic-feedback"
+                className="flex p-2.5 min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-colors haptic-feedback"
+                style={{ color: 'var(--text-muted)' }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                }}
                 title={isDarkMode ? 'Mode Clair' : 'Mode Sombre'}
               >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -588,7 +645,14 @@ const AppContent: React.FC = () => {
               <button
                 onClick={handleGlobalRefresh}
                 disabled={isRefreshing}
-                className={`p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full transition-colors haptic-feedback ${isRefreshing ? 'text-[var(--primary)]' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700'}`}
+                className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full transition-colors haptic-feedback"
+                style={{ color: isRefreshing ? 'var(--primary)' : 'var(--text-muted)' }}
+                onMouseEnter={(e) => {
+                  if (!isRefreshing) (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                }}
                 title="Rafraîchir toutes les données"
               >
                 <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -596,17 +660,31 @@ const AppContent: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsNotificationOpen(true)}
-                  className={`p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full relative transition-colors haptic-feedback ${isNotificationOpen ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700'}`}
+                  className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full relative transition-colors haptic-feedback"
+                  style={{
+                    backgroundColor: isNotificationOpen ? 'var(--primary-dim)' : 'transparent',
+                    color: isNotificationOpen ? 'var(--primary)' : 'var(--text-muted)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isNotificationOpen)
+                      (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isNotificationOpen) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                  }}
                 >
                   <Bell className="w-5 h-5" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+                    <span
+                      className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 animate-pulse"
+                      style={{ borderColor: 'var(--bg-surface)' }}
+                    ></span>
                   )}
                 </button>
               </div>
             </div>
-            <div className="h-8 w-px bg-slate-200 dark:bg-slate-800 mx-2 hidden sm:block"></div>
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden sm:block">
+            <div className="h-8 w-px mx-2 hidden sm:block" style={{ backgroundColor: 'var(--border)' }}></div>
+            <span className="text-sm font-medium hidden sm:block" style={{ color: 'var(--text-secondary)' }}>
               {new Date().toLocaleDateString('fr-FR')}
             </span>
           </div>

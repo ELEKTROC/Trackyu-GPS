@@ -80,7 +80,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
             <Input
               readOnly
               value={initialData?.resellerName || 'Non défini'}
-              className="bg-slate-100 dark:bg-slate-800 cursor-not-allowed"
+              className="bg-[var(--bg-elevated)] cursor-not-allowed"
             />
           ) : (
             <Select
@@ -140,7 +140,9 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
         {/* Date fin */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Date de fin</label>
+            <label className="text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide">
+              Date de fin
+            </label>
             <label className="flex items-center gap-1.5 cursor-pointer">
               <input
                 type="checkbox"
@@ -154,9 +156,9 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
                     autoRenew: e.target.checked ? true : formData.autoRenew,
                   })
                 }
-                className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
               />
-              <span className="text-xs font-medium text-slate-500">N'expire jamais</span>
+              <span className="text-xs font-medium text-[var(--text-secondary)]">N'expire jamais</span>
             </label>
           </div>
           {formData.endDate ? (
@@ -188,7 +190,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
                   TERMINATED: 'Résilié',
                 }[formData.status || 'ACTIVE'] || formData.status
               }
-              className="bg-slate-100 dark:bg-slate-800 cursor-not-allowed"
+              className="bg-[var(--bg-elevated)] cursor-not-allowed"
             />
           ) : (
             <Select
@@ -209,9 +211,9 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
               id="autoRenew"
               checked={!!formData.autoRenew}
               onChange={(e) => setFormData({ ...formData, autoRenew: e.target.checked })}
-              className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+              className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
             />
-            <label htmlFor="autoRenew" className="text-sm text-slate-700 dark:text-slate-300">
+            <label htmlFor="autoRenew" className="text-sm text-[var(--text-primary)]">
               Renouvellement automatique
             </label>
           </div>
@@ -253,11 +255,11 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
         </FormField>
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+      <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+          className="px-4 py-2.5 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-xl transition-colors"
         >
           Annuler
         </button>

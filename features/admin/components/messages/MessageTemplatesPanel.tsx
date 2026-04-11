@@ -371,8 +371,8 @@ export const MessageTemplatesPanel: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Modèles de messages</h2>
-          <p className="text-sm text-slate-500">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Modèles de messages</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
             Gérez vos templates de communication (Email, SMS, WhatsApp, Telegram)
           </p>
         </div>
@@ -402,13 +402,13 @@ export const MessageTemplatesPanel: React.FC = () => {
               className={`p-3 rounded-lg border transition-all ${
                 filterCategory === cat.id
                   ? `border-${cat.color}-400 bg-${cat.color}-50 dark:bg-${cat.color}-900/30`
-                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                  : 'border-[var(--border)] hover:border-[var(--border)]'
               }`}
             >
               <Icon className={`w-5 h-5 mb-1 text-${cat.color}-500`} />
-              <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{cat.label}</p>
-              <p className="text-lg font-bold text-slate-900 dark:text-white">{count}</p>
-              <p className="text-xs text-slate-500">{activeCount} actifs</p>
+              <p className="text-xs font-medium text-[var(--text-primary)]">{cat.label}</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{count}</p>
+              <p className="text-xs text-[var(--text-secondary)]">{activeCount} actifs</p>
             </button>
           );
         })}
@@ -417,20 +417,20 @@ export const MessageTemplatesPanel: React.FC = () => {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Rechercher un template..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+            className="w-full pl-10 pr-4 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
           />
         </div>
         <div className="flex gap-2">
           <select
             value={filterChannel}
             onChange={(e) => setFilterChannel(e.target.value as MessageChannel | 'ALL')}
-            className="px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+            className="px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
           >
             <option value="ALL">Tous les canaux</option>
             {MESSAGE_CHANNELS.map((ch) => (
@@ -454,8 +454,8 @@ export const MessageTemplatesPanel: React.FC = () => {
             <div key={category}>
               <div className="flex items-center gap-2 mb-3">
                 <CatIcon className={`w-5 h-5 text-${catConfig?.color}-500`} />
-                <h3 className="font-semibold text-slate-700 dark:text-slate-300">{catConfig?.label}</h3>
-                <span className="text-xs text-slate-500">({categoryTemplates.length})</span>
+                <h3 className="font-semibold text-[var(--text-primary)]">{catConfig?.label}</h3>
+                <span className="text-xs text-[var(--text-secondary)]">({categoryTemplates.length})</span>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -486,23 +486,27 @@ export const MessageTemplatesPanel: React.FC = () => {
                               </span>
                             )}
                             {template.delay_days && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
                                 <Clock className="w-3 h-3" />J{template.delay_days > 0 ? '+' : ''}
                                 {template.delay_days}
                               </span>
                             )}
                           </div>
 
-                          <h4 className="font-medium text-slate-900 dark:text-white truncate">
+                          <h4 className="font-medium text-[var(--text-primary)] truncate">
                             {template.name}
-                            {template.is_system && <span className="ml-2 text-xs text-slate-400">(système)</span>}
+                            {template.is_system && (
+                              <span className="ml-2 text-xs text-[var(--text-muted)]">(système)</span>
+                            )}
                           </h4>
 
                           {template.subject && (
-                            <p className="text-sm text-slate-500 truncate mt-1">Objet: {template.subject}</p>
+                            <p className="text-sm text-[var(--text-secondary)] truncate mt-1">
+                              Objet: {template.subject}
+                            </p>
                           )}
 
-                          <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+                          <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2">
                             {template.content.substring(0, 100)}...
                           </p>
                         </div>
@@ -514,7 +518,7 @@ export const MessageTemplatesPanel: React.FC = () => {
                             className={`p-1.5 rounded-lg transition-colors ${
                               template.is_active
                                 ? 'text-green-600 hover:bg-green-50'
-                                : 'text-slate-400 hover:bg-slate-100'
+                                : 'text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]'
                             }`}
                             title={template.is_active ? 'Désactiver' : 'Activer'}
                           >
@@ -526,24 +530,24 @@ export const MessageTemplatesPanel: React.FC = () => {
                           </button>
                           <button
                             onClick={() => openPreview(template)}
-                            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                            className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                             title="Prévisualiser"
                           >
-                            <Eye className="w-4 h-4 text-slate-500" />
+                            <Eye className="w-4 h-4 text-[var(--text-secondary)]" />
                           </button>
                           <button
                             onClick={() => handleDuplicate(template)}
-                            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                            className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                             title="Dupliquer"
                           >
-                            <Copy className="w-4 h-4 text-slate-500" />
+                            <Copy className="w-4 h-4 text-[var(--text-secondary)]" />
                           </button>
                           <button
                             onClick={() => openEditModal(template)}
-                            className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                            className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                             title="Modifier"
                           >
-                            <Edit2 className="w-4 h-4 text-slate-500" />
+                            <Edit2 className="w-4 h-4 text-[var(--text-secondary)]" />
                           </button>
                           {!template.is_system && (
                             <button
@@ -567,8 +571,8 @@ export const MessageTemplatesPanel: React.FC = () => {
         {filteredTemplates.length === 0 && (
           <Card className="p-8 text-center">
             <MessageSquare className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">Aucun template trouvé</h3>
-            <p className="text-sm text-slate-500">
+            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">Aucun template trouvé</h3>
+            <p className="text-sm text-[var(--text-secondary)]">
               {searchQuery || filterCategory !== 'ALL' || filterChannel !== 'ALL'
                 ? 'Modifiez vos filtres ou créez un nouveau template'
                 : 'Commencez par créer votre premier template de message'}
@@ -586,12 +590,12 @@ export const MessageTemplatesPanel: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
           {/* Nom */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom du template</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Nom du template</label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+              className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               placeholder="Ex: Relance paiement J+7"
               required
             />
@@ -600,11 +604,11 @@ export const MessageTemplatesPanel: React.FC = () => {
           {/* Catégorie + Canal + Trigger */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Catégorie</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Catégorie</label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as MessageCategory })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+                className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               >
                 {MESSAGE_CATEGORIES.map((cat) => (
                   <option key={cat.id} value={cat.id}>
@@ -614,11 +618,11 @@ export const MessageTemplatesPanel: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Canal</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Canal</label>
               <select
                 value={formData.channel}
                 onChange={(e) => setFormData({ ...formData, channel: e.target.value as MessageChannel })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+                className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               >
                 {MESSAGE_CHANNELS.map((ch) => (
                   <option key={ch.id} value={ch.id}>
@@ -628,11 +632,11 @@ export const MessageTemplatesPanel: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Déclencheur</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Déclencheur</label>
               <select
                 value={formData.trigger}
                 onChange={(e) => setFormData({ ...formData, trigger: e.target.value as MessageTrigger })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+                className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
               >
                 <option value="MANUAL">Manuel</option>
                 <option value="SCHEDULED">Planifié</option>
@@ -648,14 +652,14 @@ export const MessageTemplatesPanel: React.FC = () => {
           {/* Délai (pour les triggers automatiques) */}
           {formData.trigger !== 'MANUAL' && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 Délai (jours) - négatif = avant, positif = après
               </label>
               <input
                 type="number"
                 value={formData.delay_days || 0}
                 onChange={(e) => setFormData({ ...formData, delay_days: parseInt(e.target.value) })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+                className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                 placeholder="Ex: 7 pour J+7"
               />
             </div>
@@ -664,14 +668,12 @@ export const MessageTemplatesPanel: React.FC = () => {
           {/* Sujet (pour Email) */}
           {formData.channel === 'EMAIL' && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Objet de l'email
-              </label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Objet de l'email</label>
               <input
                 type="text"
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700"
+                className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                 placeholder="Ex: Rappel : Facture {{invoice.number}} à régler"
               />
             </div>
@@ -679,22 +681,22 @@ export const MessageTemplatesPanel: React.FC = () => {
 
           {/* Variables disponibles */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Variables disponibles <span className="text-slate-400">(cliquez pour insérer)</span>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+              Variables disponibles <span className="text-[var(--text-muted)]">(cliquez pour insérer)</span>
             </label>
-            <div className="border rounded-lg dark:border-slate-700 max-h-40 overflow-y-auto">
+            <div className="border rounded-lg border-[var(--border)] max-h-40 overflow-y-auto">
               {Object.entries(availableVariables).map(([category, vars], idx) => (
-                <div key={category} className={idx > 0 ? 'border-t dark:border-slate-700' : ''}>
+                <div key={category} className={idx > 0 ? 'border-t border-[var(--border)]' : ''}>
                   <button
                     type="button"
                     onClick={() => setActiveVariableCategory(activeVariableCategory === category ? null : category)}
-                    className="w-full px-3 py-2 flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-sm"
+                    className="w-full px-3 py-2 flex items-center justify-between bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-sm"
                   >
-                    <span className="font-medium text-slate-700 dark:text-slate-300">{category}</span>
+                    <span className="font-medium text-[var(--text-primary)]">{category}</span>
                     {activeVariableCategory === category ? (
-                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                      <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                      <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
                     )}
                   </button>
                   {activeVariableCategory === category && (
@@ -720,9 +722,9 @@ export const MessageTemplatesPanel: React.FC = () => {
           {/* Contenu */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contenu du message</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)]">Contenu du message</label>
               {formData.channel === 'SMS' && (
-                <span className={`text-xs ${charCount > 160 ? 'text-orange-500' : 'text-slate-500'}`}>
+                <span className={`text-xs ${charCount > 160 ? 'text-orange-500' : 'text-[var(--text-secondary)]'}`}>
                   {charCount} caractères ({smsCount} SMS)
                 </span>
               )}
@@ -731,7 +733,7 @@ export const MessageTemplatesPanel: React.FC = () => {
               ref={contentRef}
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full h-48 px-3 py-2 border rounded-lg font-mono text-sm dark:bg-slate-800 dark:border-slate-700"
+              className="w-full h-48 px-3 py-2 border rounded-lg font-mono text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
               placeholder="Saisissez votre message ici..."
               required
             />
@@ -743,20 +745,20 @@ export const MessageTemplatesPanel: React.FC = () => {
               type="checkbox"
               checked={formData.is_active}
               onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
-              className="rounded border-slate-300 text-[var(--primary)] mr-2"
+              className="rounded border-[var(--border)] text-[var(--primary)] mr-2"
             />
-            <label className="text-sm text-slate-700 dark:text-slate-300">Template actif</label>
+            <label className="text-sm text-[var(--text-primary)]">Template actif</label>
           </div>
 
           {/* Actions */}
-          <div className="flex justify-between pt-4 border-t dark:border-slate-700">
+          <div className="flex justify-between pt-4 border-t border-[var(--border)]">
             <button
               type="button"
               onClick={() => {
                 setPreviewTemplate({ ...formData, id: 'preview' } as MessageTemplate);
                 setIsPreviewModalOpen(true);
               }}
-              className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              className="flex items-center gap-2 px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               <Eye className="w-4 h-4" />
               Prévisualiser
@@ -765,7 +767,7 @@ export const MessageTemplatesPanel: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 Annuler
               </button>
@@ -793,21 +795,21 @@ export const MessageTemplatesPanel: React.FC = () => {
             <>
               {/* Channel indicator */}
               <div className="flex items-center gap-2">
-                {React.createElement(getChannelIcon(previewTemplate.channel), { className: 'w-5 h-5 text-slate-500' })}
+                {React.createElement(getChannelIcon(previewTemplate.channel), {
+                  className: 'w-5 h-5 text-[var(--text-secondary)]',
+                })}
                 <span className="font-medium">{getChannelConfig(previewTemplate.channel)?.label}</span>
               </div>
 
               {/* Email preview */}
               {previewTemplate.channel === 'EMAIL' && (
                 <div className="border rounded-lg overflow-hidden">
-                  <div className="bg-slate-100 dark:bg-slate-800 px-4 py-2 border-b">
+                  <div className="bg-[var(--bg-elevated)] px-4 py-2 border-b">
                     <p className="text-sm">
-                      <span className="text-slate-500">Objet:</span> {previewContent.subject}
+                      <span className="text-[var(--text-secondary)]">Objet:</span> {previewContent.subject}
                     </p>
                   </div>
-                  <div className="p-4 bg-white dark:bg-slate-900 whitespace-pre-wrap text-sm">
-                    {previewContent.content}
-                  </div>
+                  <div className="p-4 bg-[var(--bg-surface)] whitespace-pre-wrap text-sm">{previewContent.content}</div>
                 </div>
               )}
 
@@ -833,7 +835,7 @@ export const MessageTemplatesPanel: React.FC = () => {
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap">{previewContent.content}</p>
-                      <p className="text-xs text-slate-400 text-right mt-2">
+                      <p className="text-xs text-[var(--text-muted)] text-right mt-2">
                         {new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
@@ -841,14 +843,16 @@ export const MessageTemplatesPanel: React.FC = () => {
                 </div>
               )}
 
-              <p className="text-xs text-slate-500 text-center">Les variables sont remplacées par des exemples</p>
+              <p className="text-xs text-[var(--text-secondary)] text-center">
+                Les variables sont remplacées par des exemples
+              </p>
             </>
           )}
 
-          <div className="flex justify-end pt-4 border-t dark:border-slate-700">
+          <div className="flex justify-end pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsPreviewModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg"
+              className="px-4 py-2 bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
             >
               Fermer
             </button>

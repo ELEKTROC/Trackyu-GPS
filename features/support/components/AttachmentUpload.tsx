@@ -129,7 +129,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
     if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext || ''))
       return <ImageIcon className="w-5 h-5 text-[var(--primary)]" />;
     if (['pdf'].includes(ext || '')) return <FileText className="w-5 h-5 text-red-500" />;
-    return <File className="w-5 h-5 text-slate-500" />;
+    return <File className="w-5 h-5 text-[var(--text-secondary)]" />;
   };
 
   const isImageFile = (fileName: string) => {
@@ -139,7 +139,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
 
   return (
     <div className="space-y-3">
-      <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+      <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
         <Upload className="w-3 h-3" /> Pièces Jointes ({attachments.length})
       </h4>
 
@@ -154,16 +154,18 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
                     ${
                       isDragging
                         ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
-                        : 'border-slate-300 dark:border-slate-600 hover:border-[var(--primary)]'
+                        : 'border-[var(--border)] hover:border-[var(--primary)]'
                     }
                     ${isUploading ? 'opacity-50 pointer-events-none' : ''}
                 `}
       >
-        <Upload className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-[var(--primary)]' : 'text-slate-400'}`} />
-        <p className="text-sm text-slate-600 dark:text-slate-300 mb-1">
+        <Upload
+          className={`w-8 h-8 mx-auto mb-2 ${isDragging ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
+        />
+        <p className="text-sm text-[var(--text-secondary)] mb-1">
           {isUploading ? 'Upload en cours...' : 'Glissez-déposez ou cliquez'}
         </p>
-        <p className="text-xs text-slate-400">PDF, Images, Docs (max 10 MB)</p>
+        <p className="text-xs text-[var(--text-muted)]">PDF, Images, Docs (max 10 MB)</p>
         <input
           ref={fileInputRef}
           type="file"
@@ -181,12 +183,12 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
           {attachments.map((attachment) => (
             <div
               key={attachment.id}
-              className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700"
+              className="flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)]"
             >
               {getFileIcon(attachment.fileName)}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 dark:text-white truncate">{attachment.fileName}</p>
-                <p className="text-xs text-slate-500">
+                <p className="text-sm font-medium text-[var(--text-primary)] truncate">{attachment.fileName}</p>
+                <p className="text-xs text-[var(--text-secondary)]">
                   {formatFileSize(attachment.fileSize)} • {new Date(attachment.uploadedAt).toLocaleDateString('fr-FR')}
                 </p>
               </div>
@@ -194,10 +196,10 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
                 <a
                   href={attachment.fileUrl}
                   download
-                  className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors"
+                  className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded transition-colors"
                   title="Télécharger"
                 >
-                  <Download className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                  <Download className="w-4 h-4 text-[var(--text-secondary)]" />
                 </a>
                 <button
                   onClick={() => handleDelete(attachment.id)}
@@ -223,7 +225,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
                 href={attachment.fileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 hover:opacity-80 transition-opacity"
+                className="aspect-square rounded-lg overflow-hidden border border-[var(--border)] hover:opacity-80 transition-opacity"
               >
                 <img src={attachment.fileUrl} alt={attachment.fileName} className="w-full h-full object-cover" />
               </a>

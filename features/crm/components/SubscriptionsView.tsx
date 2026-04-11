@@ -11,8 +11,8 @@ import { SubscriptionDetailModal } from './SubscriptionDetailModal';
 import { SubscriptionForm, type SubscriptionFormData } from './SubscriptionForm';
 import { MobileFilterSheet, FilterRadioRow, type MobileFilterTab } from '../../../components/MobileFilterSheet';
 import { api } from '../../../services/apiLazy';
+import { SearchBar } from '../../../components/SearchBar';
 import {
-  Search,
   TrendingUp,
   AlertTriangle,
   RefreshCw,
@@ -84,7 +84,10 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   ACTIVE: { label: 'Actif', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
   PENDING: { label: 'En attente', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' },
   EXPIRED: { label: 'Expiré', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
-  CANCELLED: { label: 'Résilié', color: 'bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:text-slate-400' },
+  CANCELLED: {
+    label: 'Résilié',
+    color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
+  },
   SUSPENDED: { label: 'Suspendu', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
   EXPIRING_SOON: {
     label: 'Expire bientôt',
@@ -560,7 +563,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           {sub.daysUntilExpiry}j
         </span>
       );
-    return <span className="text-slate-600 dark:text-slate-400 text-xs">{sub.daysUntilExpiry}j</span>;
+    return <span className="text-[var(--text-secondary)] text-xs">{sub.daysUntilExpiry}j</span>;
   };
 
   const formatDate = (d?: string) => (d ? new Date(d).toLocaleDateString('fr-FR') : '-');
@@ -576,8 +579,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 <Truck className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Véhicules Actifs</p>
-                <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.totalVehicles}</p>
+                <p className="section-title">Véhicules Actifs</p>
+                <p className="text-xl font-bold text-[var(--text-primary)]">{kpis.totalVehicles}</p>
               </div>
             </div>
           </Card>
@@ -587,8 +590,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">MRR</p>
-                <p className="text-xl font-bold text-slate-800 dark:text-white">{formatPrice(kpis.mrr)}</p>
+                <p className="section-title">MRR</p>
+                <p className="text-xl font-bold text-[var(--text-primary)]">{formatPrice(kpis.mrr)}</p>
               </div>
             </div>
           </Card>
@@ -598,8 +601,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 <RefreshCw className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Expire sous 30j</p>
-                <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.expiringSoon}</p>
+                <p className="section-title">Expire sous 30j</p>
+                <p className="text-xl font-bold text-[var(--text-primary)]">{kpis.expiringSoon}</p>
               </div>
             </div>
           </Card>
@@ -609,8 +612,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Expirés</p>
-                <p className="text-xl font-bold text-slate-800 dark:text-white">{kpis.expired}</p>
+                <p className="section-title">Expirés</p>
+                <p className="text-xl font-bold text-[var(--text-primary)]">{kpis.expired}</p>
               </div>
             </div>
           </Card>
@@ -619,26 +622,18 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Rechercher N° abonnement, véhicule, client, plaque..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
-          />
-        </div>
+        <SearchBar
+          value={searchTerm}
+          onChange={(v) => {
+            setSearchTerm(v);
+            setCurrentPage(1);
+          }}
+          placeholder="Rechercher N° abonnement, véhicule, client, plaque..."
+          className="flex-1 min-w-[200px] max-w-md"
+        />
         {/* Mobile filter button */}
         {isMobile && (
-          <button
-            onClick={() => setMobileFilterOpen(true)}
-            className="relative flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-600 dark:text-slate-300"
-          >
-            <Search className="w-4 h-4" style={{ display: 'none' }} />
+          <button onClick={() => setMobileFilterOpen(true)} className="icon-btn relative flex items-center gap-1.5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -669,7 +664,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             setStatusFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="hidden sm:block px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
+          className="hidden sm:block px-3 py-2 border border-[var(--border)] rounded-lg text-sm"
         >
           <option value="ALL">Tous les statuts</option>
           <option value="ACTIVE">Actifs seulement</option>
@@ -684,7 +679,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             setResellerFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="hidden sm:block px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
+          className="hidden sm:block px-3 py-2 border border-[var(--border)] rounded-lg text-sm"
         >
           <option value="ALL">Tous les revendeurs</option>
           {resellers.map((r) => (
@@ -699,7 +694,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             setCycleFilter(e.target.value);
             setCurrentPage(1);
           }}
-          className="hidden sm:block px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm dark:text-white"
+          className="hidden sm:block px-3 py-2 border border-[var(--border)] rounded-lg text-sm"
         >
           <option value="ALL">Toutes périodicités</option>
           <option value="MONTHLY">Mensuel</option>
@@ -713,7 +708,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           onChange={setVisibleColumns}
           title="Colonnes"
         />
-        <span className="text-sm text-slate-500 ml-auto">
+        <span className="text-sm text-[var(--text-secondary)] ml-auto">
           {loadingData
             ? 'Chargement…'
             : `${filteredSubscriptions.length} abonnement${filteredSubscriptions.length > 1 ? 's' : ''}`}
@@ -734,16 +729,13 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             {selectedIds.size} sélectionné{selectedIds.size > 1 ? 's' : ''}
           </span>
           <div className="flex gap-2 ml-auto">
-            <button
-              onClick={handleBulkViewInvoices}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
-            >
+            <button onClick={handleBulkViewInvoices} className="icon-btn flex items-center gap-1.5 text-xs">
               <FileText className="w-3.5 h-3.5 text-green-500" />
               Voir factures
             </button>
             <button
               onClick={handleBulkRemove}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-red-200 dark:border-red-800 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Supprimer
@@ -781,7 +773,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             paginatedSubscriptions.map((sub) => {
               const statusInfo = STATUS_LABELS[sub.effectiveStatus] || {
                 label: sub.effectiveStatus,
-                color: 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300',
+                color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
               };
               const borderColor =
                 sub.effectiveStatus === 'ACTIVE'
@@ -800,19 +792,17 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {/* Primary: Client + Plaque + Montant */}
                   <div className="flex items-start justify-between gap-2 mb-1">
                     <div className="min-w-0 flex-1">
-                      <p className="font-bold text-sm text-slate-800 dark:text-white truncate">
-                        {sub.clientName || '—'}
-                      </p>
-                      <span className="font-mono text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded">
+                      <p className="font-bold text-sm text-[var(--text-primary)] truncate">{sub.clientName || '—'}</p>
+                      <span className="font-mono text-xs bg-[var(--bg-elevated)] text-[var(--text-secondary)] px-1.5 py-0.5 rounded">
                         {sub.licensePlate || sub.vehicleName || '—'}
                       </span>
                     </div>
-                    <p className="font-bold text-sm text-slate-800 dark:text-white shrink-0">
+                    <p className="font-bold text-sm text-[var(--text-primary)] shrink-0">
                       {formatPrice(sub.periodicFee)}
                     </p>
                   </div>
                   {/* Secondary: Cycle + Statut + Prochaine facturation */}
-                  <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2 flex-wrap">
+                  <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)] mb-2 flex-wrap">
                     <span>{BILLING_CYCLE_LABELS[sub.billingCycle] || sub.billingCycle}</span>
                     <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${statusInfo.color}`}>
                       {statusInfo.label}
@@ -845,10 +835,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
         <Card className="flex-1 overflow-hidden">
           <div className="overflow-x-auto h-full">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-900 sticky top-0 dark:text-white">
+              <thead className="bg-[var(--bg-elevated)] sticky top-0">
                 <tr>
                   <th className="px-3 py-3 w-10">
-                    <button onClick={toggleSelectAll} className="text-slate-400 hover:text-[var(--primary)]">
+                    <button onClick={toggleSelectAll} className="text-[var(--text-muted)] hover:text-[var(--primary)]">
                       {selectedIds.size === paginatedSubscriptions.length && paginatedSubscriptions.length > 0 ? (
                         <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
                       ) : (
@@ -859,7 +849,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {visibleColumns.includes('subscriptionNumber') && (
                     <th
                       onClick={() => handleSort('subscriptionNumber')}
-                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-left section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center gap-1">
                         N° Abonnement <SortIcon sortField={sortField} sortDir={sortDir} field="subscriptionNumber" />
@@ -869,7 +859,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {visibleColumns.includes('vehicleName') && (
                     <th
                       onClick={() => handleSort('vehicleName')}
-                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-left section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center gap-1">
                         Véhicule <SortIcon sortField={sortField} sortDir={sortDir} field="vehicleName" />
@@ -879,7 +869,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {visibleColumns.includes('licensePlate') && (
                     <th
                       onClick={() => handleSort('licensePlate')}
-                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-left section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center gap-1">
                         Plaque <SortIcon sortField={sortField} sortDir={sortDir} field="licensePlate" />
@@ -889,7 +879,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {visibleColumns.includes('clientName') && (
                     <th
                       onClick={() => handleSort('clientName')}
-                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-left section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center gap-1">
                         Client <SortIcon sortField={sortField} sortDir={sortDir} field="clientName" />
@@ -897,12 +887,12 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     </th>
                   )}
                   {visibleColumns.includes('contractNumber') && (
-                    <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase">Contrat</th>
+                    <th className="px-4 py-3 text-left section-title">Contrat</th>
                   )}
                   {visibleColumns.includes('resellerName') && (
                     <th
                       onClick={() => handleSort('resellerName')}
-                      className="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-left section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center gap-1">
                         Revendeur <SortIcon sortField={sortField} sortDir={sortDir} field="resellerName" />
@@ -910,12 +900,12 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     </th>
                   )}
                   {visibleColumns.includes('effectiveStatus') && (
-                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Statut</th>
+                    <th className="px-4 py-3 text-center section-title">Statut</th>
                   )}
                   {visibleColumns.includes('periodicFee') && (
                     <th
                       onClick={() => handleSort('periodicFee')}
-                      className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-right section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center justify-end gap-1">
                         Tarif <SortIcon sortField={sortField} sortDir={sortDir} field="periodicFee" />
@@ -923,12 +913,12 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     </th>
                   )}
                   {visibleColumns.includes('billingCycle') && (
-                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Périodicité</th>
+                    <th className="px-4 py-3 text-center section-title">Périodicité</th>
                   )}
                   {visibleColumns.includes('nextBillingDate') && (
                     <th
                       onClick={() => handleSort('nextBillingDate')}
-                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-center section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center justify-center gap-1">
                         Proch. Fact. <SortIcon sortField={sortField} sortDir={sortDir} field="nextBillingDate" />
@@ -938,7 +928,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {visibleColumns.includes('installDate') && (
                     <th
                       onClick={() => handleSort('installDate')}
-                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-center section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center justify-center gap-1">
                         Date install. <SortIcon sortField={sortField} sortDir={sortDir} field="installDate" />
@@ -948,7 +938,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {visibleColumns.includes('invoiceCount') && (
                     <th
                       onClick={() => handleSort('invoiceCount')}
-                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-center section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center justify-center gap-1">
                         Factures <SortIcon sortField={sortField} sortDir={sortDir} field="invoiceCount" />
@@ -956,12 +946,12 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     </th>
                   )}
                   {visibleColumns.includes('gpsImei') && (
-                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Statut GPS</th>
+                    <th className="px-4 py-3 text-center section-title">Statut GPS</th>
                   )}
                   {visibleColumns.includes('renewalCount') && (
                     <th
                       onClick={() => handleSort('renewalCount')}
-                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-center section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center justify-center gap-1">
                         Renouv. <SortIcon sortField={sortField} sortDir={sortDir} field="renewalCount" />
@@ -971,7 +961,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   {visibleColumns.includes('daysUntilExpiry') && (
                     <th
                       onClick={() => handleSort('daysUntilExpiry')}
-                      className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                      className="px-4 py-3 text-center section-title cursor-pointer hover:bg-[var(--bg-elevated)]"
                     >
                       <div className="flex items-center justify-center gap-1">
                         Expiration <SortIcon sortField={sortField} sortDir={sortDir} field="daysUntilExpiry" />
@@ -979,11 +969,11 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     </th>
                   )}
                   {visibleColumns.includes('actions') && (
-                    <th className="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase">Actions</th>
+                    <th className="px-4 py-3 text-center section-title">Actions</th>
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+              <tbody className="divide-y divide-[var(--border)]">
                 {paginatedSubscriptions.length === 0 ? (
                   <tr>
                     <td colSpan={visibleColumns.length + 1}>
@@ -1011,7 +1001,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     return (
                       <tr
                         key={sub.id}
-                        className={`hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${
+                        className={`tr-hover/50 transition-colors ${
                           isExpired
                             ? 'bg-red-50/50 dark:bg-red-900/10'
                             : isExpiringSoon
@@ -1022,7 +1012,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         <td className="px-3 py-3">
                           <button
                             onClick={() => toggleSelect(sub.id)}
-                            className="text-slate-400 hover:text-[var(--primary)]"
+                            className="text-[var(--text-muted)] hover:text-[var(--primary)]"
                           >
                             {selectedIds.has(sub.id) ? (
                               <CheckSquare className="w-4 h-4 text-[var(--primary)]" />
@@ -1044,10 +1034,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         {visibleColumns.includes('vehicleName') && (
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              <div className="p-1.5 bg-slate-100 dark:bg-slate-700 rounded dark:text-white">
-                                <Truck className="w-4 h-4 text-slate-500" />
+                              <div className="p-1.5 bg-[var(--bg-elevated)] rounded text-[var(--text-primary)]">
+                                <Truck className="w-4 h-4 text-[var(--text-secondary)]" />
                               </div>
-                              <span className="font-medium text-slate-800 dark:text-white truncate max-w-[150px]">
+                              <span className="font-medium text-[var(--text-primary)] truncate max-w-[150px]">
                                 {sub.vehicleName}
                               </span>
                             </div>
@@ -1055,14 +1045,14 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         )}
                         {visibleColumns.includes('licensePlate') && (
                           <td className="px-4 py-3">
-                            <span className="font-mono text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded dark:text-white">
+                            <span className="font-mono text-xs bg-[var(--bg-elevated)] px-2 py-1 rounded text-[var(--text-primary)]">
                               {sub.licensePlate}
                             </span>
                           </td>
                         )}
                         {visibleColumns.includes('clientName') && (
                           <td className="px-4 py-3">
-                            <span className="text-slate-700 dark:text-slate-300 truncate max-w-[150px] block">
+                            <span className="text-[var(--text-primary)] truncate max-w-[150px] block">
                               {sub.clientName}
                             </span>
                           </td>
@@ -1080,8 +1070,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         )}
                         {visibleColumns.includes('resellerName') && (
                           <td className="px-4 py-3">
-                            <span className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400">
-                              <Building2 className="w-3 h-3 text-slate-400 shrink-0" />
+                            <span className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+                              <Building2 className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
                               {sub.resellerName}
                             </span>
                           </td>
@@ -1098,14 +1088,14 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                             <span className="font-bold text-green-600 dark:text-green-400">
                               {formatPrice(sub.periodicFee)}
                             </span>
-                            <span className="text-[10px] text-slate-400 block">
+                            <span className="text-[10px] text-[var(--text-muted)] block">
                               /{BILLING_CYCLE_LABELS[sub.billingCycle]?.toLowerCase() || sub.billingCycle}
                             </span>
                           </td>
                         )}
                         {visibleColumns.includes('billingCycle') && (
                           <td className="px-4 py-3 text-center">
-                            <span className="text-xs text-slate-600 dark:text-slate-400">
+                            <span className="text-xs text-[var(--text-secondary)]">
                               {BILLING_CYCLE_LABELS[sub.billingCycle] || sub.billingCycle}
                             </span>
                           </td>
@@ -1113,7 +1103,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         {visibleColumns.includes('nextBillingDate') && (
                           <td className="px-4 py-3 text-center">
                             <span
-                              className={`text-xs ${sub.nextBillingDate && new Date(sub.nextBillingDate) < new Date() ? 'text-red-600 font-medium' : 'text-slate-600 dark:text-slate-400'}`}
+                              className={`text-xs ${sub.nextBillingDate && new Date(sub.nextBillingDate) < new Date() ? 'text-red-600 font-medium' : 'text-[var(--text-secondary)]'}`}
                             >
                               {formatDate(sub.nextBillingDate)}
                             </span>
@@ -1121,7 +1111,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         )}
                         {visibleColumns.includes('installDate') && (
                           <td className="px-4 py-3 text-center">
-                            <span className="text-xs text-slate-600 dark:text-slate-400">
+                            <span className="text-xs text-[var(--text-secondary)]">
                               {sub.installDate !== '-' ? formatDate(sub.installDate) : '—'}
                             </span>
                           </td>
@@ -1129,7 +1119,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         {visibleColumns.includes('invoiceCount') && (
                           <td className="px-4 py-3 text-center">
                             <span
-                              className={`inline-flex items-center gap-1 text-xs font-medium ${sub.invoiceCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-slate-400'}`}
+                              className={`inline-flex items-center gap-1 text-xs font-medium ${sub.invoiceCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-[var(--text-muted)]'}`}
                             >
                               <FileText className="w-3 h-3" />
                               {sub.invoiceCount}
@@ -1165,8 +1155,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                   [VehicleStatus.OFFLINE]: {
                                     label: 'Hors ligne',
                                     dot: 'bg-slate-400',
-                                    text: 'text-slate-500 dark:text-slate-400',
-                                    bg: 'bg-slate-100 dark:bg-slate-700/40',
+                                    text: 'text-[var(--text-secondary)]',
+                                    bg: 'bg-[var(--bg-elevated)]/40',
                                   },
                                 };
                                 const cfg = sub.gpsStatus
@@ -1182,12 +1172,14 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                       />
                                       {cfg.label}
                                     </span>
-                                    <span className="font-mono text-[10px] text-slate-400">{sub.gpsImei}</span>
+                                    <span className="font-mono text-[10px] text-[var(--text-muted)]">
+                                      {sub.gpsImei}
+                                    </span>
                                   </div>
                                 );
                               })()
                             ) : (
-                              <span className="inline-flex items-center gap-1 text-xs text-slate-400">
+                              <span className="inline-flex items-center gap-1 text-xs text-[var(--text-muted)]">
                                 <WifiOff className="w-3 h-3" />
                                 Non configuré
                               </span>
@@ -1196,7 +1188,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         )}
                         {visibleColumns.includes('renewalCount') && (
                           <td className="px-4 py-3 text-center">
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-700 dark:text-slate-300">
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[var(--text-primary)]">
                               <RefreshCw className="w-3 h-3 text-green-500" />
                               {sub.renewalCount}
                             </span>
@@ -1206,7 +1198,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                           <td className="px-4 py-3 text-center">
                             {getExpiryBadge(sub)}
                             {sub.endDate && (
-                              <span className="text-[10px] text-slate-400 block">{formatDate(sub.endDate)}</span>
+                              <span className="text-[10px] text-[var(--text-muted)] block">
+                                {formatDate(sub.endDate)}
+                              </span>
                             )}
                           </td>
                         )}
@@ -1214,20 +1208,23 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                           <td className="px-4 py-3 text-center relative">
                             <button
                               onClick={() => setShowActionsFor(showActionsFor === sub.id ? null : sub.id)}
-                              className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                              className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
                             >
-                              <MoreVertical className="w-4 h-4 text-slate-500" />
+                              <MoreVertical className="w-4 h-4 text-[var(--text-secondary)]" />
                             </button>
                             {showActionsFor === sub.id && (
                               <>
                                 <div className="fixed inset-0 z-10" onClick={() => setShowActionsFor(null)} />
-                                <div className="absolute right-0 mt-1 w-52 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 z-20 py-1 dark:text-white">
+                                <div
+                                  className="absolute right-0 mt-1 w-52 rounded-lg shadow-xl border border-[var(--border)] z-20 py-1"
+                                  style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
+                                >
                                   <button
                                     onClick={() => {
                                       setSelectedSubscription(sub);
                                       setShowActionsFor(null);
                                     }}
-                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <CreditCard className="w-4 h-4 text-indigo-500" />
                                     Détail abonnement
@@ -1238,16 +1235,16 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                       if (raw) setEditingSub(raw);
                                       setShowActionsFor(null);
                                     }}
-                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Eye className="w-4 h-4 text-[var(--primary)]" />
                                     Modifier
                                   </button>
                                   <button
                                     onClick={() => handleViewContract(sub.contractId)}
-                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
-                                    <ExternalLink className="w-4 h-4 text-slate-500" />
+                                    <ExternalLink className="w-4 h-4 text-[var(--text-secondary)]" />
                                     Voir le contrat
                                   </button>
                                   <button
@@ -1260,12 +1257,12 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                       }
                                       setShowActionsFor(null);
                                     }}
-                                    className="w-full px-4 py-2 text-left text-sm hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Receipt className="w-4 h-4 text-green-500" />
                                     Générer une facture
                                   </button>
-                                  <hr className="my-1 border-slate-200 dark:border-slate-700" />
+                                  <hr className="my-1 border-[var(--border)]" />
                                   {sub.effectiveStatus === 'ACTIVE' && (
                                     <button
                                       onClick={() => {
@@ -1290,7 +1287,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                       Résilier
                                     </button>
                                   )}
-                                  <hr className="my-1 border-slate-200 dark:border-slate-700" />
+                                  <hr className="my-1 border-[var(--border)]" />
                                   <button
                                     onClick={() => handleDeleteSub(sub)}
                                     className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
@@ -1351,13 +1348,10 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
       {/* Edit Subscription Modal */}
       {editingSub && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-bold text-slate-800 dark:text-white">Modifier l'abonnement</h2>
-              <button
-                onClick={() => setEditingSub(null)}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
-              >
+          <div className="rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">Modifier l'abonnement</h2>
+              <button onClick={() => setEditingSub(null)} className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1398,52 +1392,52 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
       {/* Generate Invoice Modal */}
       {generatingInvoiceFor && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-sm">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <div className="rounded-xl shadow-2xl w-full max-w-sm">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Receipt className="w-5 h-5 text-green-500" />
                 Générer une facture
               </h2>
               <button
                 onClick={() => setGeneratingInvoiceFor(null)}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <div className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-sm text-slate-600 dark:text-slate-300">
+              <div className="p-3 rounded-lg text-sm text-[var(--text-secondary)]">
                 <p className="font-medium">{generatingInvoiceFor.vehicle_plate || generatingInvoiceFor.vehicle_id}</p>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   {generatingInvoiceFor.client_name || generatingInvoiceFor.client_id}
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                   Date de facturation <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
                   value={invoiceBillingDate}
                   onChange={(e) => setInvoiceBillingDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Date d'échéance <span className="text-slate-400 text-xs">(optionnel)</span>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+                  Date d'échéance <span className="text-[var(--text-muted)] text-xs">(optionnel)</span>
                 </label>
                 <input
                   type="date"
                   value={invoiceDueDate}
                   onChange={(e) => setInvoiceDueDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-800 dark:text-white text-sm"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-sm"
                 />
               </div>
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setGeneratingInvoiceFor(null)}
-                  className="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm hover:bg-slate-50 dark:hover:bg-slate-700"
+                  className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--bg-elevated)]"
                 >
                   Annuler
                 </button>
@@ -1468,9 +1462,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
       {/* Create Subscription — Step 1: Vehicle selection */}
       {showCreateForm && !createVehicle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <div className="rounded-xl shadow-2xl w-full max-w-md">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Plus className="w-5 h-5 text-[var(--primary)]" />
                 Sélectionner un véhicule
               </h2>
@@ -1479,15 +1473,17 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   setShowCreateForm(false);
                   setCreateVehicle(null);
                 }}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             <div className="p-6 space-y-4">
-              <p className="text-sm text-slate-500">Sélectionnez le véhicule (ABO) pour créer un nouvel abonnement.</p>
+              <p className="text-sm text-[var(--text-secondary)]">
+                Sélectionnez le véhicule (ABO) pour créer un nouvel abonnement.
+              </p>
               {vehicleOptions.length === 0 ? (
-                <div className="text-center py-6 text-slate-500">
+                <div className="text-center py-6 text-[var(--text-secondary)]">
                   <Truck className="w-10 h-10 mx-auto mb-2 opacity-30" />
                   <p className="text-sm">Tous les véhicules ont déjà un abonnement actif.</p>
                 </div>
@@ -1497,17 +1493,17 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                     <button
                       key={v.id}
                       onClick={() => setCreateVehicle(v)}
-                      className="w-full flex items-center gap-3 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 hover:border-[var(--primary)] text-left transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 hover:border-[var(--primary)] text-left transition-colors"
                     >
-                      <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                        <Truck className="w-4 h-4 text-slate-500" />
+                      <div className="p-2 bg-[var(--bg-elevated)] rounded-lg">
+                        <Truck className="w-4 h-4 text-[var(--text-secondary)]" />
                       </div>
                       <div>
                         <p className="font-mono text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)]">
                           {v.id}
                         </p>
-                        <p className="text-sm font-medium text-slate-800 dark:text-white">{v.plate}</p>
-                        {v.name && <p className="text-xs text-slate-500">{v.name}</p>}
+                        <p className="text-sm font-medium text-[var(--text-primary)]">{v.plate}</p>
+                        {v.name && <p className="text-xs text-[var(--text-secondary)]">{v.name}</p>}
                       </div>
                     </button>
                   ))}
@@ -1521,9 +1517,9 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
       {/* Create Subscription — Step 2: Form */}
       {showCreateForm && createVehicle && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <div className="rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                 <Plus className="w-5 h-5 text-[var(--primary)]" />
                 Créer un abonnement
               </h2>
@@ -1532,7 +1528,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                   setShowCreateForm(false);
                   setCreateVehicle(null);
                 }}
-                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>

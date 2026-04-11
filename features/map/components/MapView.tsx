@@ -281,7 +281,7 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({ veh
 
   return (
     <div
-      className={`lg:hidden fixed inset-x-0 bottom-0 z-40 bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl border-t border-slate-200 dark:border-slate-700 ${
+      className={`lg:hidden fixed inset-x-0 bottom-0 z-40 bg-[var(--bg-surface)] rounded-t-2xl shadow-2xl border-t border-[var(--border)] ${
         isDragging ? '' : 'transition-all duration-300 ease-out'
       }`}
       style={{
@@ -300,8 +300,8 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({ veh
           handleDragStart(e.clientY);
         }}
       >
-        <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full" />
-        <span className="text-xs text-slate-400 mt-1">
+        <div className="w-12 h-1.5 bg-slate-300 bg-[var(--bg-elevated)] rounded-full" />
+        <span className="text-xs text-[var(--text-muted)] mt-1">
           {sheetState === 'collapsed' ? 'Glisser vers le haut' : sheetState === 'full' ? 'Glisser vers le bas' : ''}
         </span>
       </div>
@@ -318,7 +318,7 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({ veh
             key={state}
             onClick={() => setSheetState(state)}
             className={`w-2.5 h-2.5 rounded-full transition-colors ${
-              sheetState === state ? 'bg-[var(--primary-dim)]0' : 'bg-slate-300 dark:bg-slate-600'
+              sheetState === state ? 'bg-[var(--primary-dim)]0' : 'bg-slate-300 bg-[var(--bg-elevated)]'
             }`}
             aria-label={`Taille ${state}`}
           />
@@ -1380,7 +1380,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const CENTER_LNG = -4.0083;
 
   return (
-    <div className="flex h-full w-full absolute inset-0 lg:relative overflow-hidden bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg select-none">
+    <div className="flex h-full w-full absolute inset-0 lg:relative overflow-hidden bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg select-none">
       {/* ── Socket connectivity banner ─────────────────────────────────────── */}
       {!isSocketConnected && (
         <div
@@ -1396,7 +1396,7 @@ export const MapView: React.FC<MapViewProps> = ({
       {isSidebarOpen && !isReplayActive && (
         <div
           style={{ width: sidebarWidth }}
-          className="hidden lg:flex bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex-col z-10 shadow-lg shrink-0 relative transition-all duration-75 ease-linear"
+          className="hidden lg:flex bg-[var(--bg-elevated)] border-r border-[var(--border)] flex-col z-10 shadow-lg shrink-0 relative transition-all duration-75 ease-linear"
         >
           {/* ... Sidebar Content ... */}
           <div className="grid grid-cols-5 gap-0 p-3 bg-slate-900 text-white text-center shrink-0 h-20 items-center select-none">
@@ -1406,7 +1406,7 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 px-1 cursor-pointer transition-colors ${activeStatusFilter === null ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
             >
               <span className="font-bold text-xl leading-none">{stats.total}</span>
-              <span className="text-[8px] uppercase text-slate-400 mt-1 truncate w-full">Total</span>
+              <span className="text-[8px] uppercase text-[var(--text-muted)] mt-1 truncate w-full">Total</span>
             </div>
             <div
               onClick={() => handleStatusFilterClick(VehicleStatus.MOVING)}
@@ -1431,27 +1431,27 @@ export const MapView: React.FC<MapViewProps> = ({
             </div>
             <div
               onClick={() => handleStatusFilterClick(VehicleStatus.OFFLINE)}
-              className={`flex flex-col items-center justify-center h-full text-slate-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
+              className={`flex flex-col items-center justify-center h-full text-[var(--text-muted)] px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
             >
               <span className="font-bold text-xl leading-none">{stats.offline}</span>
-              <span className="text-[8px] uppercase text-slate-500 mt-1 truncate w-full">Hors ligne</span>
+              <span className="text-[8px] uppercase text-[var(--text-secondary)] mt-1 truncate w-full">Hors ligne</span>
             </div>
           </div>
 
           {/* Toolbar */}
-          <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-700">
+          <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-elevated)] border-b border-[var(--border)] border-[var(--border)]">
             <div className="flex gap-2">
               <button
                 onClick={handleAddVehicleClick}
                 title="Ajouter un véhicule"
-                className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-slate-600 dark:text-slate-300"
+                className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-[var(--text-secondary)]"
               >
                 <Plus className="w-4 h-4" />
               </button>
               <button
                 onClick={handleCreateGeofenceClick}
                 title="Créer une geofence"
-                className="p-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-slate-600 dark:text-slate-300"
+                className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-[var(--text-secondary)]"
               >
                 <Hexagon className="w-4 h-4" />
               </button>
@@ -1460,14 +1460,14 @@ export const MapView: React.FC<MapViewProps> = ({
               <button
                 onClick={() => setIsConfigOpen(!isConfigOpen)}
                 title="Configurer l'affichage"
-                className={`p-2 border border-slate-200 dark:border-slate-600 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm ${isConfigOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
+                className={`p-2 border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] transition-colors shadow-sm ${isConfigOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
               >
                 <Settings2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 title="Filtres avancés"
-                className={`p-2 border border-slate-200 dark:border-slate-600 rounded hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm relative ${isFilterOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300'}`}
+                className={`p-2 border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] transition-colors shadow-sm relative ${isFilterOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
               >
                 <Filter className="w-4 h-4" />
                 {(filterClient || filterBranch || filterDeviceModel || filterVehicleType || filterContractStatus) && (
@@ -1479,15 +1479,15 @@ export const MapView: React.FC<MapViewProps> = ({
 
           {/* Config Panel */}
           {isConfigOpen && (
-            <div className="p-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-2">
+            <div className="p-3 bg-[var(--bg-elevated)] border-b border-[var(--border)] animate-in slide-in-from-top-2">
               <div className="flex justify-between items-center mb-2">
-                <h4 className="text-xs font-bold uppercase text-slate-500">Affichage Carte</h4>
+                <h4 className="text-xs font-bold uppercase text-[var(--text-secondary)]">Affichage Carte</h4>
                 <button onClick={() => setIsConfigOpen(false)} aria-label="Fermer la configuration" title="Fermer">
-                  <X className="w-3 h-3 text-slate-400 hover:text-slate-600" />
+                  <X className="w-3 h-3 text-[var(--text-muted)] hover:text-[var(--text-secondary)]" />
                 </button>
               </div>
               <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={cardConfig.showSpeed}
@@ -1496,7 +1496,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   />
                   Vitesse
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={cardConfig.showFuel}
@@ -1505,7 +1505,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   />
                   Carburant
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={cardConfig.showIgnition}
@@ -1514,7 +1514,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   />
                   Contact
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={cardConfig.showDriver}
@@ -1523,7 +1523,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   />
                   Chauffeur
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={cardConfig.showTime}
@@ -1532,7 +1532,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   />
                   Heure
                 </label>
-                <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={cardConfig.showStatusText}
@@ -1542,13 +1542,15 @@ export const MapView: React.FC<MapViewProps> = ({
                   Statut (Texte)
                 </label>
 
-                <div className="mt-2 border-t border-slate-200 dark:border-slate-700 pt-2">
-                  <h5 className="text-[10px] font-bold uppercase text-slate-500 mb-1">Affichage Nom (Max 2)</h5>
+                <div className="mt-2 border-t border-[var(--border)] pt-2">
+                  <h5 className="text-[10px] font-bold uppercase text-[var(--text-secondary)] mb-1">
+                    Affichage Nom (Max 2)
+                  </h5>
                   <div className="flex flex-col gap-1">
                     {['name', 'plate', 'wwPlate', 'vin'].map((opt) => (
                       <label
                         key={opt}
-                        className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer"
+                        className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer"
                       >
                         <input
                           type="checkbox"
@@ -1576,9 +1578,9 @@ export const MapView: React.FC<MapViewProps> = ({
 
           {/* Filter Panel */}
           {isFilterOpen && (
-            <div className="p-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 animate-in slide-in-from-top-2">
+            <div className="p-3 bg-[var(--bg-elevated)] border-b border-[var(--border)] animate-in slide-in-from-top-2">
               <div className="flex justify-between items-center mb-3">
-                <h4 className="text-xs font-bold uppercase text-slate-500">Filtres Avancés</h4>
+                <h4 className="text-xs font-bold uppercase text-[var(--text-secondary)]">Filtres Avancés</h4>
                 <div className="flex items-center gap-2">
                   {(filterClient || filterBranch || filterDeviceModel || filterVehicleType || filterContractStatus) && (
                     <button
@@ -1595,18 +1597,20 @@ export const MapView: React.FC<MapViewProps> = ({
                     </button>
                   )}
                   <button onClick={() => setIsFilterOpen(false)} aria-label="Fermer les filtres" title="Fermer">
-                    <X className="w-3 h-3 text-slate-400 hover:text-slate-600" />
+                    <X className="w-3 h-3 text-[var(--text-muted)] hover:text-[var(--text-secondary)]" />
                   </button>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 {!isClientRole && !isSousCompte && (
                   <div>
-                    <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Client</label>
+                    <label className="text-[10px] font-bold uppercase text-[var(--text-secondary)] mb-1 block">
+                      Client
+                    </label>
                     <select
                       value={filterClient}
                       onChange={(e) => setFilterClient(e.target.value)}
-                      className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                      className="w-full text-xs border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                     >
                       <option value="">Tous les clients</option>
                       {Array.from(new Set(accessibleVehicles.map((v) => v.client)))
@@ -1624,11 +1628,13 @@ export const MapView: React.FC<MapViewProps> = ({
                 )}
                 {uniqueMapBranches.length > 0 && (
                   <div>
-                    <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Branche</label>
+                    <label className="text-[10px] font-bold uppercase text-[var(--text-secondary)] mb-1 block">
+                      Branche
+                    </label>
                     <select
                       value={filterBranch}
                       onChange={(e) => setFilterBranch(e.target.value)}
-                      className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                      className="w-full text-xs border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                     >
                       <option value="">Toutes les branches</option>
                       {uniqueMapBranches.map((b) => (
@@ -1640,11 +1646,13 @@ export const MapView: React.FC<MapViewProps> = ({
                   </div>
                 )}
                 <div>
-                  <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Modèle Boîtier</label>
+                  <label className="text-[10px] font-bold uppercase text-[var(--text-secondary)] mb-1 block">
+                    Modèle Boîtier
+                  </label>
                   <select
                     value={filterDeviceModel}
                     onChange={(e) => setFilterDeviceModel(e.target.value)}
-                    className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                    className="w-full text-xs border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                   >
                     <option value="">Tous les modèles</option>
                     {Array.from(new Set(vehicles.map((v) => v.deviceModel).filter(Boolean)))
@@ -1657,11 +1665,13 @@ export const MapView: React.FC<MapViewProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Type d'Engin</label>
+                  <label className="text-[10px] font-bold uppercase text-[var(--text-secondary)] mb-1 block">
+                    Type d'Engin
+                  </label>
                   <select
                     value={filterVehicleType}
                     onChange={(e) => setFilterVehicleType(e.target.value)}
-                    className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                    className="w-full text-xs border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                   >
                     <option value="">Tous les types</option>
                     <option value="CAR">Voiture</option>
@@ -1673,11 +1683,13 @@ export const MapView: React.FC<MapViewProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase text-slate-500 mb-1 block">Statut Paiement</label>
+                  <label className="text-[10px] font-bold uppercase text-[var(--text-secondary)] mb-1 block">
+                    Statut Paiement
+                  </label>
                   <select
                     value={filterContractStatus}
                     onChange={(e) => setFilterContractStatus(e.target.value)}
-                    className="w-full text-xs border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                    className="w-full text-xs border border-[var(--border)] rounded-lg px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)]"
                   >
                     <option value="">Tous</option>
                     <option value="UP_TO_DATE">À jour</option>
@@ -1685,19 +1697,19 @@ export const MapView: React.FC<MapViewProps> = ({
                   </select>
                 </div>
               </div>
-              <div className="mt-2 text-[10px] text-slate-400">
+              <div className="mt-2 text-[10px] text-[var(--text-muted)]">
                 {filteredVehicles.length} véhicule(s) correspondant(s)
               </div>
             </div>
           )}
 
           {/* Search Bar */}
-          <div className="p-3 border-b border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <div className="p-3 border-b border-[var(--border)] border-[var(--border)] bg-[var(--bg-elevated)]">
             <div className="flex items-center gap-2 mb-1">
               {activeTab === 'vehicles' && (
                 <button
                   onClick={handleSelectAll}
-                  className="p-2.5 text-slate-400 hover:text-[var(--primary)] transition-colors border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 dark:bg-slate-800"
+                  className="p-2.5 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 bg-[var(--bg-elevated)]"
                   aria-label="Tout sélectionner"
                   title="Tout sélectionner"
                 >
@@ -1709,48 +1721,48 @@ export const MapView: React.FC<MapViewProps> = ({
                 </button>
               )}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                 <input
                   type="text"
                   placeholder="Nom, plaque, IMEI, client..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-slate-50 dark:bg-slate-900 dark:text-white transition-colors"
+                  className="w-full pl-9 pr-4 py-2.5 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)] transition-colors"
                 />
               </div>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+          <div className="flex border-b border-[var(--border)] bg-[var(--bg-elevated)]">
             <button
               onClick={() => setActiveTab('vehicles')}
-              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'vehicles' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'vehicles' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
             >
               Véhicules
             </button>
             <button
               onClick={() => setActiveTab('places')}
-              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'places' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'places' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
             >
               Geofence
             </button>
             <button
               onClick={() => setActiveTab('drivers')}
-              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'drivers' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+              className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-colors ${activeTab === 'drivers' ? 'border-[var(--primary)] text-[var(--primary)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]'}`}
             >
               Chauffeurs
             </button>
           </div>
 
           {/* List Content */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-900">
+          <div className="flex-1 overflow-y-auto custom-scrollbar bg-[var(--bg-surface)]">
             {/* Geofence Management Link */}
             {activeTab === 'places' && (
-              <div className="p-3 border-b border-slate-100 dark:border-slate-700 bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]">
+              <div className="p-3 border-b border-[var(--border)] border-[var(--border)] bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]">
                 <button
                   onClick={() => onNavigate && onNavigate(View.SETTINGS, { tab: 'geofence' })}
-                  className="w-full py-2 text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] border border-[var(--border)] dark:border-[var(--primary)] rounded bg-white dark:bg-slate-800 hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2 text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] border border-[var(--border)] dark:border-[var(--primary)] rounded bg-[var(--bg-elevated)] hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
                 >
                   <Hexagon className="w-3 h-3" />
                   Gérer les Geofences (CRUD)
@@ -1762,11 +1774,11 @@ export const MapView: React.FC<MapViewProps> = ({
               <MapSidebarSkeleton />
             ) : Object.keys(groupedData).length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full min-h-[200px] p-8 text-center">
-                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
-                  <Car className="w-8 h-8 text-slate-300 dark:text-slate-600" />
+                <div className="w-16 h-16 bg-[var(--bg-elevated)] rounded-full flex items-center justify-center mb-4">
+                  <Car className="w-8 h-8 text-slate-300 dark:text-[var(--text-secondary)]" />
                 </div>
-                <p className="text-slate-400 text-sm font-medium">Aucun élément trouvé</p>
-                <p className="text-slate-300 dark:text-slate-600 text-xs mt-1">
+                <p className="text-[var(--text-muted)] text-sm font-medium">Aucun élément trouvé</p>
+                <p className="text-slate-300 dark:text-[var(--text-secondary)] text-xs mt-1">
                   {activeTab === 'vehicles'
                     ? 'Modifiez vos filtres ou votre recherche'
                     : activeTab === 'places'
@@ -1781,12 +1793,15 @@ export const MapView: React.FC<MapViewProps> = ({
                   const group = data;
                   if (group.isClientGroup) {
                     return (
-                      <div key={groupKey} className="border-b border-slate-100 dark:border-slate-700 last:border-0">
+                      <div
+                        key={groupKey}
+                        className="border-b border-[var(--border)] border-[var(--border)] last:border-0"
+                      >
                         <button
                           onClick={() => toggleClient(groupKey)}
-                          className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 dark:bg-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-700 transition-colors"
+                          className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 dark:hover:bg-slate-700 transition-colors"
                         >
-                          <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider">
+                          <div className="flex items-center gap-2 font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider">
                             {expandedClients[groupKey] ? (
                               <ChevronDown className="w-3 h-3" />
                             ) : (
@@ -1794,23 +1809,23 @@ export const MapView: React.FC<MapViewProps> = ({
                             )}
                             {group.name}
                           </div>
-                          <span className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                          <span className="bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] text-[10px] px-1.5 py-0.5 rounded font-medium">
                             {group.totalCount}
                           </span>
                         </button>
 
                         {expandedClients[groupKey] && (
-                          <div className="bg-white dark:bg-slate-800/50">
+                          <div className="bg-[var(--bg-elevated)]/50">
                             {/* Branches within Client - juste un label, pas de dropdown */}
                             {Object.values(group.branches).map(
                               (branch: { id: string; name?: string; vehicles: Vehicle[] }) => (
                                 <div key={branch.id}>
                                   {/* Branch name as simple label - aligned left */}
-                                  <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-700/30">
-                                    <span className="font-medium text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
+                                  <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-elevated)]/30">
+                                    <span className="font-medium text-[var(--text-secondary)] text-[11px] uppercase tracking-wider">
                                       {branch.name}
                                     </span>
-                                    <span className="text-[10px] text-slate-400 font-medium">
+                                    <span className="text-[10px] text-[var(--text-muted)] font-medium">
                                       {branch.vehicles.length}
                                     </span>
                                   </div>
@@ -1834,11 +1849,11 @@ export const MapView: React.FC<MapViewProps> = ({
                             {group.directVehicles.length > 0 && (
                               <>
                                 {Object.keys(group.branches).length > 0 && (
-                                  <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-slate-700/30">
-                                    <span className="font-medium text-slate-500 dark:text-slate-400 text-[11px] uppercase tracking-wider">
+                                  <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-elevated)]/30">
+                                    <span className="font-medium text-[var(--text-secondary)] text-[11px] uppercase tracking-wider">
                                       Sans branche
                                     </span>
-                                    <span className="text-[10px] text-slate-400 font-medium">
+                                    <span className="text-[10px] text-[var(--text-muted)] font-medium">
                                       {group.directVehicles.length}
                                     </span>
                                   </div>
@@ -1866,12 +1881,15 @@ export const MapView: React.FC<MapViewProps> = ({
                     return (
                       items &&
                       items.length > 0 && (
-                        <div key={groupKey} className="border-b border-slate-100 dark:border-slate-700 last:border-0">
+                        <div
+                          key={groupKey}
+                          className="border-b border-[var(--border)] border-[var(--border)] last:border-0"
+                        >
                           <button
                             onClick={() => toggleClient(groupKey)}
-                            className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 dark:bg-slate-800 hover:bg-slate-200/50 dark:hover:bg-slate-700 transition-colors"
+                            className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 dark:hover:bg-slate-700 transition-colors"
                           >
-                            <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200 text-xs uppercase tracking-wider">
+                            <div className="flex items-center gap-2 font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider">
                               {expandedClients[groupKey] ? (
                                 <ChevronDown className="w-3 h-3" />
                               ) : (
@@ -1879,30 +1897,28 @@ export const MapView: React.FC<MapViewProps> = ({
                               )}
                               {groupKey}
                             </div>
-                            <span className="bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 text-[10px] px-1.5 py-0.5 rounded font-medium">
+                            <span className="bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] text-[10px] px-1.5 py-0.5 rounded font-medium">
                               {items.length}
                             </span>
                           </button>
 
                           {expandedClients[groupKey] && (
-                            <div className="bg-white dark:bg-slate-800/50">
+                            <div className="bg-[var(--bg-elevated)]/50">
                               {/* PLACE LIST */}
                               {activeTab === 'places' &&
                                 (items as Zone[]).map((z: Zone) => (
                                   <div
                                     key={z.id}
                                     onClick={() => focusOnZone(z)}
-                                    className="px-4 py-3 border-b border-slate-50 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50"
                                   >
                                     <div className="flex items-center gap-2 mb-1">
-                                      <Layers className="w-4 h-4 text-slate-400" />
-                                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                                        {z.name}
-                                      </span>
+                                      <Layers className="w-4 h-4 text-[var(--text-muted)]" />
+                                      <span className="text-sm font-bold text-[var(--text-primary)]">{z.name}</span>
                                     </div>
-                                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
+                                    <div className="flex justify-between text-xs text-[var(--text-secondary)]">
                                       <span>{z.type}</span>
-                                      <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-[10px]">
+                                      <span className="px-1.5 py-0.5 bg-[var(--bg-elevated)] rounded text-[10px]">
                                         {z.category}
                                       </span>
                                     </div>
@@ -1915,15 +1931,13 @@ export const MapView: React.FC<MapViewProps> = ({
                                 ).map((d) => (
                                   <div
                                     key={d.id}
-                                    className="px-4 py-3 border-b border-slate-50 dark:border-slate-700 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50"
                                   >
                                     <div className="flex items-center justify-between mb-1">
-                                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                                        {d.name}
-                                      </span>
+                                      <span className="text-sm font-bold text-[var(--text-primary)]">{d.name}</span>
                                       <span className="text-[10px] font-bold text-green-600">{d.score}/100</span>
                                     </div>
-                                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                                    <div className="text-xs text-[var(--text-secondary)]">
                                       Véhicule: {d.currentVehicle}
                                     </div>
                                   </div>
@@ -1948,7 +1962,7 @@ export const MapView: React.FC<MapViewProps> = ({
       {!isSidebarOpen && !isReplayActive && (
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="hidden lg:block absolute top-4 left-4 z-20 bg-white dark:bg-slate-800 p-2 rounded shadow-md border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:text-[var(--primary)]"
+          className="hidden lg:block absolute top-4 left-4 z-20 bg-[var(--bg-elevated)] p-2 rounded shadow-md border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--primary)]"
           aria-label="Ouvrir le panneau latéral"
           title="Ouvrir le panneau latéral"
         >
@@ -1958,7 +1972,7 @@ export const MapView: React.FC<MapViewProps> = ({
 
       {isSidebarOpen && !isReplayActive && (
         <div
-          className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-white dark:bg-slate-800 border border-l-0 border-slate-200 dark:border-slate-600 rounded-r-md shadow-sm cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-[var(--primary)] text-slate-400"
+          className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-[var(--bg-elevated)] border border-l-0 border-[var(--border)] rounded-r-md shadow-sm cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 hover:text-[var(--primary)] text-[var(--text-muted)]"
           style={{ left: sidebarWidth, top: '50%', transform: 'translateY(-50%)' }}
           onClick={() => setIsSidebarOpen(false)}
         >
@@ -1979,7 +1993,7 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === null ? 'bg-white/10' : ''}`}
             >
               <span className="font-bold text-sm">{stats.total}</span>
-              <span className="text-[8px] text-slate-400">Total</span>
+              <span className="text-[8px] text-[var(--text-muted)]">Total</span>
             </div>
             <div
               onClick={() => {
@@ -2018,8 +2032,8 @@ export const MapView: React.FC<MapViewProps> = ({
               }}
               className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10' : ''}`}
             >
-              <span className="font-bold text-sm text-slate-400">{stats.offline}</span>
-              <span className="text-[8px] text-slate-500">Offline</span>
+              <span className="font-bold text-sm text-[var(--text-muted)]">{stats.offline}</span>
+              <span className="text-[8px] text-[var(--text-secondary)]">Offline</span>
             </div>
             {/* OSM / Google toggle */}
             <div className="flex items-center bg-white/10 rounded px-1 gap-0.5 ml-1">
@@ -2031,7 +2045,7 @@ export const MapView: React.FC<MapViewProps> = ({
               </button>
               <button
                 onClick={() => googleMapsKey && setMapProvider('google')}
-                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white' : googleMapsKey ? 'text-slate-300' : 'text-slate-600 cursor-not-allowed'}`}
+                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white' : googleMapsKey ? 'text-slate-300' : 'text-[var(--text-secondary)] cursor-not-allowed'}`}
                 disabled={!googleMapsKey}
               >
                 G
@@ -2070,35 +2084,35 @@ export const MapView: React.FC<MapViewProps> = ({
           {/* Overlay */}
           <div className="absolute inset-0 bg-black/50" onClick={() => setIsMobileVehicleListOpen(false)} />
           {/* Bottom Sheet */}
-          <div className="absolute inset-x-0 bottom-0 bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom duration-300">
+          <div className="absolute inset-x-0 bottom-0 bg-[var(--bg-surface)] rounded-t-2xl shadow-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom duration-300">
             {/* Handle */}
-            <div className="flex justify-center py-2 border-b border-slate-200 dark:border-slate-700">
-              <div className="w-10 h-1 bg-slate-300 dark:bg-slate-600 rounded-full" />
+            <div className="flex justify-center py-2 border-b border-[var(--border)]">
+              <div className="w-10 h-1 bg-slate-300 bg-[var(--bg-elevated)] rounded-full" />
             </div>
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-              <h3 className="font-bold text-slate-800 dark:text-white">Véhicules ({listFilteredVehicles.length})</h3>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+              <h3 className="font-bold text-[var(--text-primary)]">Véhicules ({listFilteredVehicles.length})</h3>
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setIsMobileVehicleListOpen(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
+                  className="p-2 hover:bg-[var(--bg-elevated)] rounded-full"
                   aria-label="Fermer la liste"
                   title="Fermer"
                 >
-                  <X className="w-5 h-5 text-slate-500" />
+                  <X className="w-5 h-5 text-[var(--text-secondary)]" />
                 </button>
               </div>
             </div>
             {/* Search */}
-            <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+            <div className="p-3 border-b border-[var(--border)]">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                 <input
                   type="text"
                   placeholder="Nom, plaque, IMEI..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-0 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)]"
+                  className="w-full pl-9 pr-4 py-2 bg-[var(--bg-elevated)] border-0 rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)]"
                 />
               </div>
             </div>
@@ -2109,9 +2123,11 @@ export const MapView: React.FC<MapViewProps> = ({
             >
               {filteredVehicles.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-                  <Filter className="w-10 h-10 text-slate-300 dark:text-slate-600 mb-3" />
-                  <p className="font-medium text-slate-700 dark:text-slate-300 mb-1">Aucun véhicule trouvé</p>
-                  <p className="text-sm text-slate-500 mb-4">Aucun véhicule ne correspond aux filtres actifs.</p>
+                  <Filter className="w-10 h-10 text-slate-300 dark:text-[var(--text-secondary)] mb-3" />
+                  <p className="font-medium text-[var(--text-primary)] mb-1">Aucun véhicule trouvé</p>
+                  <p className="text-sm text-[var(--text-secondary)] mb-4">
+                    Aucun véhicule ne correspond aux filtres actifs.
+                  </p>
                   <button
                     onClick={() => {
                       setActiveStatusFilter(null);
@@ -2131,7 +2147,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     focusOnVehicle(v);
                     setIsMobileVehicleListOpen(false);
                   }}
-                  className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 dark:border-slate-800 active:bg-slate-50 dark:active:bg-slate-800 cursor-pointer"
+                  className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] border-[var(--border)] active:bg-slate-50 dark:active:bg-slate-800 cursor-pointer"
                 >
                   <div
                     className={`w-3 h-3 rounded-full shrink-0 ${
@@ -2146,21 +2162,21 @@ export const MapView: React.FC<MapViewProps> = ({
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-sm text-slate-800 dark:text-white truncate">{v.name}</p>
+                      <p className="font-medium text-sm text-[var(--text-primary)] truncate">{v.name}</p>
                       {v.plate && (
-                        <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-700 px-1.5 py-0 rounded shrink-0">
+                        <span className="text-[10px] font-mono text-[var(--text-muted)] bg-[var(--bg-elevated)] px-1.5 py-0 rounded shrink-0">
                           {v.plate}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="text-xs text-[var(--text-secondary)] truncate">
                       {v.speed} km/h • {v.client || 'Non assigné'}
                     </p>
                     {(v.address || v.geofence) && (
-                      <p className="text-xs text-slate-400 truncate mt-0.5">{v.address || v.geofence}</p>
+                      <p className="text-xs text-[var(--text-muted)] truncate mt-0.5">{v.address || v.geofence}</p>
                     )}
                   </div>
-                  <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
                 </div>
               ))}
             </div>
@@ -2237,7 +2253,7 @@ export const MapView: React.FC<MapViewProps> = ({
             activeCount: filterBranch ? 1 : 0,
             content:
               uniqueMapBranches.length === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-4">Aucune branche disponible</p>
+                <p className="text-sm text-[var(--text-muted)] text-center py-4">Aucune branche disponible</p>
               ) : (
                 <>
                   <FilterRadioRow
@@ -2264,13 +2280,13 @@ export const MapView: React.FC<MapViewProps> = ({
       />
 
       {/* MAP RENDERER */}
-      <div className="flex-1 relative bg-slate-100 dark:bg-slate-950 overflow-hidden z-0 min-h-[300px] flex items-center justify-center">
+      <div className="flex-1 relative bg-[var(--bg-elevated)] overflow-hidden z-0 min-h-[300px] flex items-center justify-center">
         {/* Diagnostic: Always show something even if map fails */}
-        <div className="absolute inset-0 flex items-center justify-center text-slate-400 z-[-1]">
+        <div className="absolute inset-0 flex items-center justify-center text-[var(--text-muted)] z-[-1]">
           <div className="flex flex-col items-center gap-2">
             <RefreshCw className="w-8 h-8 animate-spin" />
             <p className="text-sm font-medium">Initialisation de la carte...</p>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[10px] text-[var(--text-secondary)]">
               Si cet écran reste blanc, vérifiez votre connexion ou le fournisseur ({mapProvider})
             </p>
           </div>
@@ -2325,7 +2341,7 @@ export const MapView: React.FC<MapViewProps> = ({
                       >
                         <Popup>
                           <div className="font-bold">{zone.name}</div>
-                          <div className="text-xs text-slate-500">{zone.category}</div>
+                          <div className="text-xs text-[var(--text-secondary)]">{zone.category}</div>
                         </Popup>
                       </Circle>
                     );
@@ -2338,7 +2354,7 @@ export const MapView: React.FC<MapViewProps> = ({
                       >
                         <Popup>
                           <div className="font-bold">{zone.name}</div>
-                          <div className="text-xs text-slate-500">{zone.category}</div>
+                          <div className="text-xs text-[var(--text-secondary)]">{zone.category}</div>
                         </Popup>
                       </Polygon>
                     );
@@ -2452,10 +2468,10 @@ export const MapView: React.FC<MapViewProps> = ({
                           <p className="font-bold mb-1" style={{ color: stop.type === 'STOP' ? '#dc2626' : '#f97316' }}>
                             {stop.type === 'STOP' ? '🅿️ Arrêt' : '⏸️ Ralenti'} #{index + 1}
                           </p>
-                          <p className="text-slate-700 font-medium">
+                          <p className="text-[var(--text-primary)] font-medium">
                             {Math.floor(stop.duration)}min {Math.round((stop.duration % 1) * 60)}s
                           </p>
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="text-xs text-[var(--text-secondary)] mt-1">
                             {new Date(stop.startTime).toLocaleTimeString('fr-FR', {
                               hour: '2-digit',
                               minute: '2-digit',
@@ -2464,10 +2480,12 @@ export const MapView: React.FC<MapViewProps> = ({
                             {new Date(stop.endTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                           </p>
                           {stop.address && (
-                            <p className="text-xs text-slate-500 mt-1 truncate max-w-[180px]">{stop.address}</p>
+                            <p className="text-xs text-[var(--text-secondary)] mt-1 truncate max-w-[180px]">
+                              {stop.address}
+                            </p>
                           )}
                           {stop.location && (
-                            <p className="text-[10px] text-slate-400 mt-1 font-mono">
+                            <p className="text-[10px] text-[var(--text-muted)] mt-1 font-mono">
                               {stop.location.lat.toFixed(5)}, {stop.location.lng.toFixed(5)}
                             </p>
                           )}
@@ -2499,10 +2517,10 @@ export const MapView: React.FC<MapViewProps> = ({
                       <Popup>
                         <div style={{ minWidth: 150 }} className="text-sm">
                           <p className="font-bold text-red-600 mb-1">🚨 Excès #{index + 1}</p>
-                          <p className="text-slate-700 font-medium">{Math.round(event.speed)} km/h</p>
-                          <p className="text-xs text-slate-500">Limite : {event.maxAllowed} km/h</p>
-                          <p className="text-xs text-slate-500">Durée : {Math.round(event.duration)}s</p>
-                          <p className="text-xs text-slate-500 mt-1">
+                          <p className="text-[var(--text-primary)] font-medium">{Math.round(event.speed)} km/h</p>
+                          <p className="text-xs text-[var(--text-secondary)]">Limite : {event.maxAllowed} km/h</p>
+                          <p className="text-xs text-[var(--text-secondary)]">Durée : {Math.round(event.duration)}s</p>
+                          <p className="text-xs text-[var(--text-secondary)] mt-1">
                             {new Date(event.timestamp).toLocaleTimeString('fr-FR', {
                               hour: '2-digit',
                               minute: '2-digit',
@@ -2538,7 +2556,7 @@ export const MapView: React.FC<MapViewProps> = ({
                               <div className="text-sm font-bold text-green-600">
                                 🏁 Départ
                                 {first && (
-                                  <p className="text-xs font-normal text-slate-500 mt-1">
+                                  <p className="text-xs font-normal text-[var(--text-secondary)] mt-1">
                                     {new Date(first.timestamp).toLocaleTimeString('fr-FR', {
                                       hour: '2-digit',
                                       minute: '2-digit',
@@ -2556,7 +2574,7 @@ export const MapView: React.FC<MapViewProps> = ({
                               <div className="text-sm font-bold text-[var(--primary)]">
                                 📍 Arrivée
                                 {last && (
-                                  <p className="text-xs font-normal text-slate-500 mt-1">
+                                  <p className="text-xs font-normal text-[var(--text-secondary)] mt-1">
                                     {new Date(last.timestamp).toLocaleTimeString('fr-FR', {
                                       hour: '2-digit',
                                       minute: '2-digit',
@@ -2607,29 +2625,29 @@ export const MapView: React.FC<MapViewProps> = ({
             {/* Bloc central : KPIs + Boutons + Toggle OSM/Google */}
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] hidden lg:flex flex-col items-center gap-2">
               {/* KPIs Bar (sans nombre de véhicules) */}
-              <div className="flex items-center gap-1 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm shadow-lg rounded-full px-4 py-2 border border-slate-200 dark:border-slate-700">
-                <div className="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-1 bg-white/95 bg-[var(--bg-elevated)]/95 backdrop-blur-sm shadow-lg rounded-full px-4 py-2 border border-[var(--border)]">
+                <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
                   <Activity className="w-4 h-4 text-green-500" />
                   <span className="text-sm font-bold text-green-600">{mapKpis.activePercent}%</span>
-                  <span className="text-xs text-slate-400">actifs</span>
+                  <span className="text-xs text-[var(--text-muted)]">actifs</span>
                 </div>
-                <div className="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
                   <Route className="w-4 h-4 text-[var(--primary)]" />
                   <span className="text-sm font-bold text-[var(--primary)]">
                     {mapKpis.estimatedKmToday.toLocaleString()}
                   </span>
-                  <span className="text-xs text-slate-400">km today</span>
+                  <span className="text-xs text-[var(--text-muted)]">km today</span>
                 </div>
-                <div className="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
                   <Timer className="w-4 h-4 text-orange-500" />
                   <span className="text-sm font-bold text-orange-600">{mapKpis.avgStopMinutes}min</span>
-                  <span className="text-xs text-slate-400">arrêt moy</span>
+                  <span className="text-xs text-[var(--text-muted)]">arrêt moy</span>
                 </div>
                 {mapKpis.outOfZoneCount > 0 && (
-                  <div className="flex items-center gap-2 px-3 border-r border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
                     <MapPinOff className="w-4 h-4 text-red-500" />
                     <span className="text-sm font-bold text-red-600">{mapKpis.outOfZoneCount}</span>
-                    <span className="text-xs text-slate-400">hors zone</span>
+                    <span className="text-xs text-[var(--text-muted)]">hors zone</span>
                   </div>
                 )}
                 {/* Alertes badge */}
@@ -2646,11 +2664,11 @@ export const MapView: React.FC<MapViewProps> = ({
                     >
                       {mapKpis.totalAlerts}
                     </span>
-                    <span className="text-xs text-slate-400">alertes</span>
+                    <span className="text-xs text-[var(--text-muted)]">alertes</span>
                   </button>
                 )}
                 {/* Indicateur fraîcheur */}
-                <div className="flex items-center gap-2 px-3 text-xs text-slate-400">
+                <div className="flex items-center gap-2 px-3 text-xs text-[var(--text-muted)]">
                   <RefreshCw className={`w-3 h-3 ${isAutoRefreshEnabled ? 'animate-spin-slow' : ''}`} />
                   <span>MAJ: {getTimeSinceUpdate()}</span>
                 </div>
@@ -2660,21 +2678,21 @@ export const MapView: React.FC<MapViewProps> = ({
               <div className="flex gap-2 items-center">
                 <button
                   onClick={() => setShowAllVehicles(!showAllVehicles)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showAllVehicles ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showAllVehicles ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   {showAllVehicles ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   {showAllVehicles ? 'Masquer Flotte' : 'Voir toute la flotte'}
                 </button>
                 <button
                   onClick={() => setShowZones(!showZones)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showZones ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showZones ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   {showZones ? <EyeOff className="w-4 h-4" /> : <Hexagon className="w-4 h-4" />}
                   {showZones ? 'Masquer Zones' : 'Voir Zones'}
                 </button>
                 <button
                   onClick={() => setShowHeatmap(!showHeatmap)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showHeatmap ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showHeatmap ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   {showHeatmap ? <EyeOff className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
                   {showHeatmap ? 'Masquer Heatmap' : 'Voir Heatmap'}
@@ -2682,23 +2700,23 @@ export const MapView: React.FC<MapViewProps> = ({
                 {/* Toggle son alertes */}
                 <button
                   onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                  className={`p-2 rounded-full shadow-lg transition-all ${isSoundEnabled ? 'bg-white dark:bg-slate-800 text-slate-700' : 'bg-slate-200 dark:bg-slate-700 text-slate-400'}`}
+                  className={`p-2 rounded-full shadow-lg transition-all ${isSoundEnabled ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-muted)]'}`}
                   title={isSoundEnabled ? 'Désactiver son alertes' : 'Activer son alertes'}
                 >
                   {isSoundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                 </button>
                 {/* Toggle OSM / Google */}
-                <div className="flex items-center bg-white dark:bg-slate-800 rounded-full p-1 shadow-lg border border-slate-200 dark:border-slate-600">
+                <div className="flex items-center bg-[var(--bg-elevated)] rounded-full p-1 shadow-lg border border-[var(--border)]">
                   <button
                     onClick={() => setMapProvider('leaflet')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary-dim)]0 text-white shadow' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary-dim)]0 text-white shadow' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                     title="Carte OpenStreetMap"
                   >
                     OSM
                   </button>
                   <button
                     onClick={() => googleMapsKey && setMapProvider('google')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white shadow' : googleMapsKey ? 'text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700' : 'text-slate-300 cursor-not-allowed'}`}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white shadow' : googleMapsKey ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]' : 'text-slate-300 cursor-not-allowed'}`}
                     title={googleMapsKey ? 'Carte Google Maps' : 'Google Maps (Clé API requise)'}
                     disabled={!googleMapsKey}
                   >
@@ -2710,25 +2728,25 @@ export const MapView: React.FC<MapViewProps> = ({
 
             {/* Barre de recherche adresse - en haut à droite (desktop only) */}
             <div className="hidden lg:block absolute top-4 right-4 z-[400]">
-              <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full shadow-lg px-4 py-2 border border-slate-200 dark:border-slate-700">
-                <MapPin className="w-4 h-4 text-slate-400" />
+              <div className="flex items-center gap-2 bg-[var(--bg-elevated)] rounded-full shadow-lg px-4 py-2 border border-[var(--border)]">
+                <MapPin className="w-4 h-4 text-[var(--text-muted)]" />
                 <input
                   type="text"
                   value={searchAddress}
                   onChange={(e) => setSearchAddress(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && searchAddressLocation()}
                   placeholder="Rechercher un lieu..."
-                  className="bg-transparent border-none text-sm focus:outline-none w-40 dark:text-white"
+                  className="bg-transparent border-none text-sm focus:outline-none w-40 text-[var(--text-primary)]"
                 />
                 <button
                   onClick={searchAddressLocation}
                   disabled={isSearchingAddress}
-                  className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"
+                  className="p-1 hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
                 >
                   {isSearchingAddress ? (
                     <RefreshCw className="w-4 h-4 text-[var(--primary)] animate-spin" />
                   ) : (
-                    <Search className="w-4 h-4 text-slate-500" />
+                    <Search className="w-4 h-4 text-[var(--text-secondary)]" />
                   )}
                 </button>
               </div>
@@ -2736,23 +2754,23 @@ export const MapView: React.FC<MapViewProps> = ({
 
             {/* SPRINT 1: Panel Alertes */}
             {showAlertsPanel && liveAlerts.length > 0 && (
-              <div className="absolute top-32 right-4 z-[500] w-80 bg-white dark:bg-slate-800 rounded-lg shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+              <div className="absolute top-32 right-4 z-[500] w-80 bg-[var(--bg-elevated)] rounded-lg shadow-2xl border border-[var(--border)] overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 bg-[var(--bg-elevated)] border-b border-[var(--border)]">
                   <div className="flex items-center gap-2">
                     <AlertTriangle className="w-5 h-5 text-red-500" />
-                    <h3 className="font-bold text-slate-800 dark:text-white">Alertes en direct</h3>
+                    <h3 className="font-bold text-[var(--text-primary)]">Alertes en direct</h3>
                     <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 text-xs font-bold rounded-full">
                       {liveAlerts.length}
                     </span>
                   </div>
                   <button
                     onClick={() => setShowAlertsPanel(false)}
-                    className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded"
+                    className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded"
                   >
-                    <X className="w-4 h-4 text-slate-500" />
+                    <X className="w-4 h-4 text-[var(--text-secondary)]" />
                   </button>
                 </div>
-                <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-700">
+                <div className="max-h-80 overflow-y-auto divide-y divide-[var(--border)]">
                   {liveAlerts.map((alert) => (
                     <div
                       key={alert.id}
@@ -2760,7 +2778,7 @@ export const MapView: React.FC<MapViewProps> = ({
                         setSelectedVehicle(alert.vehicle);
                         setShowAlertsPanel(false);
                       }}
-                      className={`px-4 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
+                      className={`px-4 py-3 cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
                     >
                       <div
                         className={`p-2 rounded-full ${
@@ -2784,8 +2802,8 @@ export const MapView: React.FC<MapViewProps> = ({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800 dark:text-white truncate">{alert.message}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-sm font-medium text-[var(--text-primary)] truncate">{alert.message}</p>
+                        <p className="text-xs text-[var(--text-secondary)] mt-0.5">
                           {alert.type === 'SPEED'
                             ? 'Excès de vitesse'
                             : alert.type === 'ZONE'
@@ -2872,7 +2890,7 @@ export const MapView: React.FC<MapViewProps> = ({
       {selectedVehicle && !isReplayActive && (
         <>
           {/* Desktop Sidebar - overflow-hidden car VehicleDetailPanel gère son propre scroll */}
-          <div className="hidden lg:block w-96 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-700 shadow-2xl z-30 overflow-hidden absolute top-0 right-0 bottom-0 animate-in slide-in-from-right duration-300">
+          <div className="hidden lg:block w-96 bg-[var(--bg-surface)] border-l border-[var(--border)] shadow-2xl z-30 overflow-hidden absolute top-0 right-0 bottom-0 animate-in slide-in-from-right duration-300">
             <VehicleDetailPanel
               vehicle={selectedVehicle}
               onClose={() => setSelectedVehicle(null)}

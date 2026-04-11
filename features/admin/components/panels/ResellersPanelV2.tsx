@@ -374,16 +374,16 @@ export const ResellersPanelV2: React.FC = () => {
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* KPI Cards - Hidden on mobile */}
       <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">Revendeurs Actifs</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Revendeurs Actifs</p>
               {isLoadingStats ? (
-                <div className="h-8 w-16 bg-slate-200 dark:bg-slate-700 animate-pulse rounded" />
+                <div className="h-8 w-16 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-slate-800 dark:text-white">{globalStats.activeResellers}</p>
-                  <p className="text-xs text-slate-500">sur {resellers.length} total</p>
+                  <p className="text-2xl font-bold text-[var(--text-primary)]">{globalStats.activeResellers}</p>
+                  <p className="text-xs text-[var(--text-secondary)]">sur {resellers.length} total</p>
                 </>
               )}
             </div>
@@ -393,15 +393,15 @@ export const ResellersPanelV2: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">Clients Gérés</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Clients Gérés</p>
               {isLoadingStats ? (
-                <div className="h-8 w-16 bg-slate-200 dark:bg-slate-700 animate-pulse rounded" />
+                <div className="h-8 w-16 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-slate-800 dark:text-white">
+                  <p className="text-2xl font-bold text-[var(--text-primary)]">
                     {globalStats.totalClients.toLocaleString('fr-FR')}
                   </p>
                 </>
@@ -413,15 +413,15 @@ export const ResellersPanelV2: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">Véhicules Trackés</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Véhicules Trackés</p>
               {isLoadingStats ? (
-                <div className="h-8 w-16 bg-slate-200 dark:bg-slate-700 animate-pulse rounded" />
+                <div className="h-8 w-16 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-slate-800 dark:text-white">
+                  <p className="text-2xl font-bold text-[var(--text-primary)]">
                     {globalStats.totalVehicles.toLocaleString('fr-FR')}
                   </p>
                 </>
@@ -433,18 +433,18 @@ export const ResellersPanelV2: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+        <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold">MRR Total</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">MRR Total</p>
               {isLoadingStats ? (
-                <div className="h-8 w-20 bg-slate-200 dark:bg-slate-700 animate-pulse rounded" />
+                <div className="h-8 w-20 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-slate-800 dark:text-white">
+                  <p className="text-2xl font-bold text-[var(--text-primary)]">
                     {(globalStats.totalMRR / 1000000).toFixed(1)}M
                   </p>
-                  <p className="text-xs text-slate-500">Récurrent</p>
+                  <p className="text-xs text-[var(--text-secondary)]">Récurrent</p>
                 </>
               )}
             </div>
@@ -456,18 +456,18 @@ export const ResellersPanelV2: React.FC = () => {
       </div>
 
       {/* Filters & Actions */}
-      <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+      <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4">
           <div className="flex flex-wrap gap-3 flex-1">
             {/* Search */}
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <input
                 type="text"
                 placeholder="Rechercher un revendeur..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-white"
+                className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
               />
             </div>
 
@@ -475,7 +475,7 @@ export const ResellersPanelV2: React.FC = () => {
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value as any })}
-              className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+              className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
             >
               <option value="ALL">Tous les statuts</option>
               <option value="ACTIVE">Actifs</option>
@@ -493,7 +493,7 @@ export const ResellersPanelV2: React.FC = () => {
                 ];
                 setFilters({ ...filters, sortBy, sortOrder });
               }}
-              className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+              className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
             >
               <option value="name-asc">Nom A-Z</option>
               <option value="name-desc">Nom Z-A</option>
@@ -517,7 +517,7 @@ export const ResellersPanelV2: React.FC = () => {
         {isMobile && (
           <MobileCardList bordered={false}>
             {filteredResellers.length === 0 ? (
-              <div className="px-6 py-12 text-center text-slate-500">
+              <div className="px-6 py-12 text-center text-[var(--text-secondary)]">
                 <Building2 className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                 <p className="font-medium">Aucun revendeur trouvé</p>
               </div>
@@ -535,18 +535,16 @@ export const ResellersPanelV2: React.FC = () => {
                         {(reseller.slug || reseller.name.substring(0, 2)).toUpperCase().substring(0, 2)}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-slate-800 dark:text-white text-sm truncate">{reseller.name}</p>
+                        <p className="font-bold text-[var(--text-primary)] text-sm truncate">{reseller.name}</p>
                         <p className="text-xs text-[var(--primary)] truncate">{reseller.email}</p>
-                        <div className="mt-0.5 flex items-center gap-2 text-[10px] text-slate-500">
+                        <div className="mt-0.5 flex items-center gap-2 text-[10px] text-[var(--text-secondary)]">
                           <span>
-                            <span className="font-bold text-slate-700 dark:text-slate-300">{stats.clientCount}</span>{' '}
-                            clients
+                            <span className="font-bold text-[var(--text-primary)]">{stats.clientCount}</span> clients
                           </span>
                           <span>
-                            <span className="font-bold text-slate-700 dark:text-slate-300">{stats.vehicleCount}</span>{' '}
-                            véh.
+                            <span className="font-bold text-[var(--text-primary)]">{stats.vehicleCount}</span> véh.
                           </span>
-                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
+                          <span className="font-mono font-bold text-[var(--text-primary)]">
                             {formatMoney(stats.mrr)}
                           </span>
                         </div>
@@ -556,7 +554,7 @@ export const ResellersPanelV2: React.FC = () => {
                       {getStatusBadge(reseller.status)}
                       <button
                         onClick={() => handleEditClick(reseller)}
-                        className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded"
+                        className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -572,7 +570,7 @@ export const ResellersPanelV2: React.FC = () => {
         {!isMobile && (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-300 uppercase font-bold text-xs border-t border-b border-slate-200 dark:border-slate-700">
+              <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase font-bold text-xs border-t border-b border-[var(--border)]">
                 <tr>
                   <SortableHeader
                     label="Revendeur"
@@ -629,10 +627,10 @@ export const ResellersPanelV2: React.FC = () => {
                   <th className="px-6 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+              <tbody className="divide-y divide-[var(--border)]">
                 {filteredResellers.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-6 py-12 text-center text-slate-500">
+                    <td colSpan={8} className="px-6 py-12 text-center text-[var(--text-secondary)]">
                       <Building2 className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                       <p className="font-medium">Aucun revendeur trouvé</p>
                       <p className="text-sm">Modifiez vos filtres ou créez un nouveau revendeur</p>
@@ -644,7 +642,7 @@ export const ResellersPanelV2: React.FC = () => {
                     return (
                       <tr
                         key={reseller.id}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer"
+                        className="tr-hover/50 cursor-pointer"
                         onClick={() => handleViewDetails(reseller)}
                       >
                         <td className="px-6 py-4">
@@ -653,7 +651,7 @@ export const ResellersPanelV2: React.FC = () => {
                               {(reseller.slug || reseller.name.substring(0, 2)).toUpperCase()}
                             </div>
                             <div>
-                              <div className="font-bold text-slate-800 dark:text-white">{reseller.name}</div>
+                              <div className="font-bold text-[var(--text-primary)]">{reseller.name}</div>
                               <div className="text-xs text-[var(--primary)]">{reseller.email}</div>
                             </div>
                           </div>
@@ -662,23 +660,23 @@ export const ResellersPanelV2: React.FC = () => {
                           <code className="text-xs bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] px-2 py-1 rounded font-mono font-bold">
                             {reseller.slug || '-'}
                           </code>
-                          <div className="text-xs text-slate-400 mt-0.5 font-mono">
+                          <div className="text-xs text-[var(--text-muted)] mt-0.5 font-mono">
                             {reseller.tenantId?.substring(0, 15)}...
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="font-bold text-slate-800 dark:text-white">{stats.clientCount}</span>
+                          <span className="font-bold text-[var(--text-primary)]">{stats.clientCount}</span>
                         </td>
                         <td className="px-6 py-4 text-center">
-                          <span className="font-bold text-slate-800 dark:text-white">{stats.vehicleCount}</span>
+                          <span className="font-bold text-[var(--text-primary)]">{stats.vehicleCount}</span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300">
+                          <span className="font-mono font-bold text-[var(--text-primary)]">
                             {formatMoney(stats.mrr)}
                           </span>
                         </td>
                         <td className="px-6 py-4">{getStatusBadge(reseller.status)}</td>
-                        <td className="px-6 py-4 text-slate-500 text-xs">
+                        <td className="px-6 py-4 text-[var(--text-secondary)] text-xs">
                           {new Date(reseller.createdAt).toLocaleDateString('fr-FR')}
                         </td>
                         <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
@@ -692,7 +690,7 @@ export const ResellersPanelV2: React.FC = () => {
                             </button>
                             <button
                               onClick={() => handleEditClick(reseller)}
-                              className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded transition-colors"
+                              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded transition-colors"
                               title="Modifier"
                             >
                               <Edit2 className="w-4 h-4" />
@@ -700,7 +698,7 @@ export const ResellersPanelV2: React.FC = () => {
                             {reseller.status === 'ACTIVE' ? (
                               <button
                                 onClick={() => handleStatusChange(reseller, 'SUSPENDED')}
-                                className="p-1.5 text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
+                                className="p-1.5 text-[var(--text-muted)] hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
                                 title="Suspendre"
                               >
                                 <Pause className="w-4 h-4" />
@@ -708,7 +706,7 @@ export const ResellersPanelV2: React.FC = () => {
                             ) : (
                               <button
                                 onClick={() => handleStatusChange(reseller, 'ACTIVE')}
-                                className="p-1.5 text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                                className="p-1.5 text-[var(--text-muted)] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
                                 title="Réactiver"
                               >
                                 <Play className="w-4 h-4" />

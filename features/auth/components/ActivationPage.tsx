@@ -28,7 +28,7 @@ export const ActivationPage: React.FC = () => {
 
   useEffect(() => {
     if (!token) {
-      setErrorMessage('Aucun token d\'activation trouvé dans l\'URL.');
+      setErrorMessage("Aucun token d'activation trouvé dans l'URL.");
       setPageState('error');
       return;
     }
@@ -82,12 +82,12 @@ export const ActivationPage: React.FC = () => {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.message || 'Erreur lors de l\'activation');
+        throw new Error(data?.message || "Erreur lors de l'activation");
       }
 
       setPageState('success');
     } catch (err: unknown) {
-      setFormError(err instanceof Error ? err.message : 'Erreur lors de l\'activation du compte');
+      setFormError(err instanceof Error ? err.message : "Erreur lors de l'activation du compte");
     } finally {
       setIsSubmitting(false);
     }
@@ -102,7 +102,10 @@ export const ActivationPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left panel — branding */}
-      <div className="hidden lg:flex lg:w-1/2 relative p-12 text-white flex-col justify-between overflow-hidden" style={{ background: 'linear-gradient(135deg, #E8771A 0%, #C85F0E 50%, #8B3A00 100%)' }}>
+      <div
+        className="hidden lg:flex lg:w-1/2 relative p-12 text-white flex-col justify-between overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #E8771A 0%, #C85F0E 50%, #8B3A00 100%)' }}
+      >
         <div className="relative z-10 flex flex-col h-full justify-center">
           <div className="flex items-center gap-3 mb-8">
             <div className="p-3 bg-white/15 backdrop-blur rounded-xl">
@@ -110,9 +113,7 @@ export const ActivationPage: React.FC = () => {
             </div>
             <span className="text-3xl font-bold tracking-tight">TrackYU GPS</span>
           </div>
-          <h1 className="text-4xl font-bold leading-tight mb-4">
-            Activation de votre compte
-          </h1>
+          <h1 className="text-4xl font-bold leading-tight mb-4">Activation de votre compte</h1>
           <p className="text-lg text-white/80 leading-relaxed">
             Votre demande d'inscription a été approuvée. Définissez votre mot de passe pour accéder à la plateforme.
           </p>
@@ -133,20 +134,26 @@ export const ActivationPage: React.FC = () => {
       </div>
 
       {/* Right panel — form */}
-      <div className="w-full lg:w-1/2 h-screen overflow-y-auto flex flex-col p-8 animate-in slide-in-from-right-10 fade-in duration-500 dark:bg-slate-950">
+      <div
+        className="w-full lg:w-1/2 h-screen overflow-y-auto flex flex-col p-8 animate-in slide-in-from-right-10 fade-in duration-500"
+        style={{ backgroundColor: 'var(--bg-primary)' }}
+      >
         <div className="w-full max-w-md space-y-8 m-auto">
           {/* Mobile header */}
           <div className="text-center lg:text-left">
-            <div className="inline-flex lg:hidden items-center gap-2 mb-4 p-2 rounded-lg" style={{ backgroundColor: 'var(--primary-dim)' }}>
+            <div
+              className="inline-flex lg:hidden items-center gap-2 mb-4 p-2 rounded-lg"
+              style={{ backgroundColor: 'var(--primary-dim)' }}
+            >
               <Activity className="w-6 h-6" style={{ color: 'var(--primary)' }} />
-              <span className="font-bold text-slate-900 dark:text-white">TrackYU GPS</span>
+              <span className="font-bold text-[var(--text-primary)]">TrackYU GPS</span>
             </div>
 
             {/* Loading state */}
             {pageState === 'loading' && (
               <div className="flex flex-col items-center justify-center py-16 space-y-4">
                 <Loader2 className="w-12 h-12 animate-spin" style={{ color: 'var(--primary)' }} />
-                <p className="text-slate-500 text-lg">Vérification du lien d'activation...</p>
+                <p className="text-[var(--text-secondary)] text-lg">Vérification du lien d'activation...</p>
               </div>
             )}
 
@@ -157,12 +164,15 @@ export const ActivationPage: React.FC = () => {
                   <div className="p-4 bg-red-100 rounded-full">
                     <AlertCircle className="w-12 h-12 text-red-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Lien invalide</h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-center max-w-sm">{errorMessage}</p>
+                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">Lien invalide</h2>
+                  <p className="text-[var(--text-secondary)] text-center max-w-sm">{errorMessage}</p>
                 </div>
                 <button
                   onClick={goToLogin}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-medium transition-colors" style={{ backgroundColor: 'var(--primary)' }} onMouseEnter={e => (e.currentTarget.style.backgroundColor='var(--primary-light)')} onMouseLeave={e => (e.currentTarget.style.backgroundColor='var(--primary)')}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-medium transition-colors"
+                  style={{ backgroundColor: 'var(--primary)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-light)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary)')}
                 >
                   Retour à la connexion
                   <ArrowRight className="w-4 h-4" />
@@ -177,14 +187,18 @@ export const ActivationPage: React.FC = () => {
                   <div className="p-4 bg-green-100 rounded-full">
                     <CheckCircle className="w-12 h-12 text-green-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Compte activé !</h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-center max-w-sm">
-                    Votre compte a été activé avec succès. Vous pouvez maintenant vous connecter avec votre email et le mot de passe que vous venez de définir.
+                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">Compte activé !</h2>
+                  <p className="text-[var(--text-secondary)] text-center max-w-sm">
+                    Votre compte a été activé avec succès. Vous pouvez maintenant vous connecter avec votre email et le
+                    mot de passe que vous venez de définir.
                   </p>
                 </div>
                 <button
                   onClick={goToLogin}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-medium transition-colors" style={{ backgroundColor: 'var(--primary)' }} onMouseEnter={e => (e.currentTarget.style.backgroundColor='var(--primary-light)')} onMouseLeave={e => (e.currentTarget.style.backgroundColor='var(--primary)')}
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-medium transition-colors"
+                  style={{ backgroundColor: 'var(--primary)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-light)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary)')}
                 >
                   Se connecter
                   <ArrowRight className="w-4 h-4" />
@@ -195,26 +209,34 @@ export const ActivationPage: React.FC = () => {
             {/* Form state */}
             {pageState === 'form' && tokenData && (
               <>
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Activez votre compte</h2>
-                <p className="text-slate-500 dark:text-slate-400 mt-2">
-                  Bienvenue <span className="font-medium text-slate-700 dark:text-slate-200">{tokenData.name}</span> ! Définissez votre mot de passe pour accéder à <span className="font-medium" style={{ color: 'var(--primary)' }}>{tokenData.tenantName}</span>.
+                <h2 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">Activez votre compte</h2>
+                <p className="text-[var(--text-secondary)] mt-2">
+                  Bienvenue <span className="font-medium text-[var(--text-primary)]">{tokenData.name}</span> !
+                  Définissez votre mot de passe pour accéder à{' '}
+                  <span className="font-medium" style={{ color: 'var(--primary)' }}>
+                    {tokenData.tenantName}
+                  </span>
+                  .
                 </p>
 
                 {/* Account info card */}
-                <div className="mt-6 p-4 rounded-xl space-y-2" style={{ backgroundColor: 'var(--primary-dim)', border: '1px solid var(--primary)' }}>
+                <div
+                  className="mt-6 p-4 rounded-xl space-y-2"
+                  style={{ backgroundColor: 'var(--primary-dim)', border: '1px solid var(--primary)' }}
+                >
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Email</span>
-                    <span className="font-medium text-slate-700">{tokenData.email}</span>
+                    <span className="text-[var(--text-secondary)]">Email</span>
+                    <span className="font-medium text-[var(--text-primary)]">{tokenData.email}</span>
                   </div>
                   {tokenData.companyName && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-500">Entreprise</span>
-                      <span className="font-medium text-slate-700">{tokenData.companyName}</span>
+                      <span className="text-[var(--text-secondary)]">Entreprise</span>
+                      <span className="font-medium text-[var(--text-primary)]">{tokenData.companyName}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Plateforme</span>
-                    <span className="font-medium text-slate-700">{tokenData.tenantName}</span>
+                    <span className="text-[var(--text-secondary)]">Plateforme</span>
+                    <span className="font-medium text-[var(--text-primary)]">{tokenData.tenantName}</span>
                   </div>
                 </div>
 
@@ -228,22 +250,22 @@ export const ActivationPage: React.FC = () => {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Mot de passe</label>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">Mot de passe</label>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)] group-focus-within:text-[var(--primary)] transition-colors" />
                       <input
                         type={showPassword ? 'text' : 'password'}
                         required
                         minLength={8}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-slate-400 dark:placeholder-slate-500"
                         placeholder="Minimum 8 caractères"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       >
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
@@ -251,22 +273,24 @@ export const ActivationPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Confirmer le mot de passe</label>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
+                      Confirmer le mot de passe
+                    </label>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-[var(--primary)] transition-colors" />
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)] group-focus-within:text-[var(--primary)] transition-colors" />
                       <input
                         type={showConfirmPassword ? 'text' : 'password'}
                         required
                         minLength={8}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-slate-400 dark:placeholder-slate-500"
                         placeholder="Retapez votre mot de passe"
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                       >
                         {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
@@ -275,11 +299,15 @@ export const ActivationPage: React.FC = () => {
 
                   {/* Password strength hints */}
                   <div className="space-y-1">
-                    <div className={`flex items-center gap-2 text-xs ${password.length >= 8 ? 'text-green-600' : 'text-slate-400'}`}>
+                    <div
+                      className={`flex items-center gap-2 text-xs ${password.length >= 8 ? 'text-green-600' : 'text-[var(--text-muted)]'}`}
+                    >
                       <CheckCircle className="w-3.5 h-3.5" />
                       <span>Au moins 8 caractères</span>
                     </div>
-                    <div className={`flex items-center gap-2 text-xs ${password && password === confirmPassword ? 'text-green-600' : 'text-slate-400'}`}>
+                    <div
+                      className={`flex items-center gap-2 text-xs ${password && password === confirmPassword ? 'text-green-600' : 'text-[var(--text-muted)]'}`}
+                    >
                       <CheckCircle className="w-3.5 h-3.5" />
                       <span>Les mots de passe correspondent</span>
                     </div>
@@ -288,7 +316,13 @@ export const ActivationPage: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting || password.length < 8 || password !== confirmPassword}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-semibold focus:ring-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--shadow-md)]" style={{ backgroundColor: 'var(--primary)', '--tw-ring-color': 'var(--primary-dim)' } as React.CSSProperties}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 text-white rounded-xl font-semibold focus:ring-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[var(--shadow-md)]"
+                    style={
+                      {
+                        backgroundColor: 'var(--primary)',
+                        '--tw-ring-color': 'var(--primary-dim)',
+                      } as React.CSSProperties
+                    }
                   >
                     {isSubmitting ? (
                       <>

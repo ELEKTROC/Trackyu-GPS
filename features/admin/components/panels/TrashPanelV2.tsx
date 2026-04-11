@@ -42,7 +42,7 @@ interface TrashData {
 }
 
 const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`rounded-xl border border-slate-200 dark:border-slate-700 p-5 ${className}`}>{children}</div>
+  <div className={`rounded-xl border border-[var(--border)] p-5 ${className}`}>{children}</div>
 );
 
 export const TrashPanelV2: React.FC = () => {
@@ -200,10 +200,10 @@ export const TrashPanelV2: React.FC = () => {
   const renderUsersTable = () => {
     if (filteredUsers.length === 0) return null;
     return (
-      <Card className="bg-white dark:bg-slate-800">
+      <Card className="bg-[var(--bg-elevated)]">
         <div className="flex items-center gap-2 mb-4">
           <Users className="w-5 h-5 text-[var(--primary)]" />
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white">Utilisateurs</h3>
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">Utilisateurs</h3>
           <span className="px-2 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full text-xs font-medium">
             {filteredUsers.length}
           </span>
@@ -211,20 +211,26 @@ export const TrashPanelV2: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700">
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Utilisateur</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Rôle</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden md:table-cell">
+              <tr className="border-b border-[var(--border)]">
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  Utilisateur
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  Rôle
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase hidden md:table-cell">
                   Supprimé le
                 </th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.map((u: TrashUser) => (
                 <tr
                   key={`user-${u.id}`}
-                  className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/30"
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
@@ -232,19 +238,21 @@ export const TrashPanelV2: React.FC = () => {
                         {u.name?.charAt(0) || '?'}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-medium text-slate-800 dark:text-white text-sm line-through opacity-70 truncate">
+                        <p className="font-medium text-[var(--text-primary)] text-sm line-through opacity-70 truncate">
                           {u.name}
                         </p>
-                        <p className="text-xs text-slate-500 truncate">{u.email}</p>
+                        <p className="text-xs text-[var(--text-secondary)] truncate">{u.email}</p>
                       </div>
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--bg-elevated)] text-[var(--text-secondary)]">
                       {u.role}
                     </span>
                   </td>
-                  <td className="py-3 px-4 hidden md:table-cell text-sm text-slate-500">{formatDate(u.deleted_at)}</td>
+                  <td className="py-3 px-4 hidden md:table-cell text-sm text-[var(--text-secondary)]">
+                    {formatDate(u.deleted_at)}
+                  </td>
                   <td className="py-3 px-4">
                     <ActionButtons entityType="user" id={u.id} label={u.name || u.email} />
                   </td>
@@ -260,10 +268,10 @@ export const TrashPanelV2: React.FC = () => {
   const renderContractsTable = () => {
     if (filteredContracts.length === 0) return null;
     return (
-      <Card className="bg-white dark:bg-slate-800">
+      <Card className="bg-[var(--bg-elevated)]">
         <div className="flex items-center gap-2 mb-4">
           <FileText className="w-5 h-5 text-amber-500" />
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white">Contrats</h3>
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">Contrats</h3>
           <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full text-xs font-medium">
             {filteredContracts.length}
           </span>
@@ -271,32 +279,42 @@ export const TrashPanelV2: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700">
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">N° Contrat</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Client</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden sm:table-cell">
+              <tr className="border-b border-[var(--border)]">
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  N° Contrat
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  Client
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase hidden sm:table-cell">
                   Véhicule
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden md:table-cell">
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase hidden md:table-cell">
                   Supprimé le
                 </th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredContracts.map((c: TrashContract) => (
                 <tr
                   key={`contract-${c.id}`}
-                  className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/30"
                 >
                   <td className="py-3 px-4">
-                    <span className="font-medium text-slate-800 dark:text-white text-sm line-through opacity-70">
+                    <span className="font-medium text-[var(--text-primary)] text-sm line-through opacity-70">
                       {c.contract_number || `#${c.id?.slice(0, 8)}`}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">{c.client_name || '-'}</td>
-                  <td className="py-3 px-4 hidden sm:table-cell text-sm text-slate-500">{c.vehicle_plate || '-'}</td>
-                  <td className="py-3 px-4 hidden md:table-cell text-sm text-slate-500">{formatDate(c.deleted_at)}</td>
+                  <td className="py-3 px-4 text-sm text-[var(--text-secondary)]">{c.client_name || '-'}</td>
+                  <td className="py-3 px-4 hidden sm:table-cell text-sm text-[var(--text-secondary)]">
+                    {c.vehicle_plate || '-'}
+                  </td>
+                  <td className="py-3 px-4 hidden md:table-cell text-sm text-[var(--text-secondary)]">
+                    {formatDate(c.deleted_at)}
+                  </td>
                   <td className="py-3 px-4">
                     <ActionButtons
                       entityType="contract"
@@ -316,10 +334,10 @@ export const TrashPanelV2: React.FC = () => {
   const renderTenantsTable = () => {
     if (filteredTenants.length === 0) return null;
     return (
-      <Card className="bg-white dark:bg-slate-800">
+      <Card className="bg-[var(--bg-elevated)]">
         <div className="flex items-center gap-2 mb-4">
           <Building2 className="w-5 h-5 text-purple-500" />
-          <h3 className="text-base font-semibold text-slate-800 dark:text-white">Tenants / Organisations</h3>
+          <h3 className="text-base font-semibold text-[var(--text-primary)]">Tenants / Organisations</h3>
           <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs font-medium">
             {filteredTenants.length}
           </span>
@@ -327,39 +345,49 @@ export const TrashPanelV2: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700">
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Nom</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden sm:table-cell">
+              <tr className="border-b border-[var(--border)]">
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  Nom
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase hidden sm:table-cell">
                   Slug
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden md:table-cell">
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase hidden md:table-cell">
                   Contact
                 </th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-slate-500 uppercase hidden md:table-cell">
+                <th className="text-left py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase hidden md:table-cell">
                   Supprimé le
                 </th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-[var(--text-secondary)] uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredTenants.map((t: TrashTenant) => (
                 <tr
                   key={`tenant-${t.id}`}
-                  className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/30"
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 text-sm font-bold shrink-0">
                         {t.name?.charAt(0) || '?'}
                       </div>
-                      <span className="font-medium text-slate-800 dark:text-white text-sm line-through opacity-70">
+                      <span className="font-medium text-[var(--text-primary)] text-sm line-through opacity-70">
                         {t.name}
                       </span>
                     </div>
                   </td>
-                  <td className="py-3 px-4 hidden sm:table-cell text-sm text-slate-500">{t.slug || '-'}</td>
-                  <td className="py-3 px-4 hidden md:table-cell text-sm text-slate-500">{t.contact_email || '-'}</td>
-                  <td className="py-3 px-4 hidden md:table-cell text-sm text-slate-500">{formatDate(t.deleted_at)}</td>
+                  <td className="py-3 px-4 hidden sm:table-cell text-sm text-[var(--text-secondary)]">
+                    {t.slug || '-'}
+                  </td>
+                  <td className="py-3 px-4 hidden md:table-cell text-sm text-[var(--text-secondary)]">
+                    {t.contact_email || '-'}
+                  </td>
+                  <td className="py-3 px-4 hidden md:table-cell text-sm text-[var(--text-secondary)]">
+                    {formatDate(t.deleted_at)}
+                  </td>
                   <td className="py-3 px-4">
                     <ActionButtons entityType="tenant" id={t.id} label={t.name || t.slug} />
                   </td>
@@ -385,14 +413,14 @@ export const TrashPanelV2: React.FC = () => {
             <Archive className="w-5 h-5 text-red-500" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white">Corbeille globale</h2>
-            <p className="text-sm text-slate-500">Éléments supprimés de toute l'application</p>
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">Corbeille globale</h2>
+            <p className="text-sm text-[var(--text-secondary)]">Éléments supprimés de toute l'application</p>
           </div>
         </div>
         <button
           onClick={fetchTrash}
           disabled={loading}
-          className="px-4 py-2 text-sm bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 self-start sm:self-auto"
+          className="px-4 py-2 text-sm bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 self-start sm:self-auto"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Actualiser
@@ -408,15 +436,15 @@ export const TrashPanelV2: React.FC = () => {
             className={`p-3 rounded-xl border transition-all text-left ${
               subTab === tab.id
                 ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 ring-1 ring-red-200 dark:ring-red-800'
-                : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
+                : 'border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--border)] dark:hover:border-slate-600'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
-              <tab.icon className={`w-4 h-4 ${subTab === tab.id ? 'text-red-500' : 'text-slate-400'}`} />
-              <span className="text-xs text-slate-500 font-medium">{tab.label}</span>
+              <tab.icon className={`w-4 h-4 ${subTab === tab.id ? 'text-red-500' : 'text-[var(--text-muted)]'}`} />
+              <span className="text-xs text-[var(--text-secondary)] font-medium">{tab.label}</span>
             </div>
             <p
-              className={`text-xl font-bold ${subTab === tab.id ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-white'}`}
+              className={`text-xl font-bold ${subTab === tab.id ? 'text-red-600 dark:text-red-400' : 'text-[var(--text-primary)]'}`}
             >
               {tab.count}
             </p>
@@ -427,13 +455,13 @@ export const TrashPanelV2: React.FC = () => {
       {/* Search */}
       {!hasNoItems && (
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Rechercher dans la corbeille..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-sm text-slate-800 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 focus:border-red-300 dark:focus:border-red-700 outline-none transition"
+            className="w-full pl-10 pr-4 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-[var(--text-primary)] placeholder-slate-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800 focus:border-red-300 dark:focus:border-red-700 outline-none transition"
           />
         </div>
       )}
@@ -444,16 +472,16 @@ export const TrashPanelV2: React.FC = () => {
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500"></div>
         </div>
       ) : hasNoItems ? (
-        <Card className="bg-white dark:bg-slate-800">
-          <div className="text-center py-16 text-slate-500">
+        <Card className="bg-[var(--bg-elevated)]">
+          <div className="text-center py-16 text-[var(--text-secondary)]">
             <Archive className="w-16 h-16 mx-auto mb-4 opacity-20" />
             <p className="text-lg font-semibold mb-1">La corbeille est vide</p>
             <p className="text-sm">Les éléments supprimés (utilisateurs, contrats, tenants) apparaîtront ici</p>
           </div>
         </Card>
       ) : hasNoFilteredItems ? (
-        <Card className="bg-white dark:bg-slate-800">
-          <div className="text-center py-12 text-slate-500">
+        <Card className="bg-[var(--bg-elevated)]">
+          <div className="text-center py-12 text-[var(--text-secondary)]">
             <Search className="w-12 h-12 mx-auto mb-3 opacity-20" />
             <p className="text-base font-medium">Aucun résultat</p>
             <p className="text-sm">Aucun élément supprimé ne correspond à "{search}"</p>

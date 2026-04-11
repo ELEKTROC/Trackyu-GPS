@@ -100,7 +100,7 @@ export const WhiteLabelPanel: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-6 h-6 animate-spin text-[var(--primary)]" />
-        <span className="ml-2 text-slate-500">Chargement...</span>
+        <span className="ml-2 text-[var(--text-secondary)]">Chargement...</span>
       </div>
     );
   }
@@ -110,14 +110,11 @@ export const WhiteLabelPanel: React.FC = () => {
       {/* Header with save */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white">Personnalisation White Label</h3>
-          <p className="text-sm text-slate-500">Configurez l'apparence de votre plateforme</p>
+          <h3 className="text-lg font-bold text-[var(--text-primary)]">Personnalisation White Label</h3>
+          <p className="text-sm text-[var(--text-secondary)]">Configurez l'apparence de votre plateforme</p>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={loadConfig}
-            className="px-3 py-2 text-sm border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 dark:border-slate-700"
-          >
+          <button onClick={loadConfig} className="px-3 py-2 text-sm border rounded-lg tr-hover border-[var(--border)]">
             <RefreshCw className="w-4 h-4" />
           </button>
           <button
@@ -139,8 +136,10 @@ export const WhiteLabelPanel: React.FC = () => {
                 <Globe className="w-5 h-5 text-[var(--primary)]" />
               </div>
               <div>
-                <h4 className="font-bold text-slate-800 dark:text-white">Sélection du Revendeur</h4>
-                <p className="text-xs text-slate-500">Gérez la personnalisation d'un revendeur spécifique</p>
+                <h4 className="font-bold text-[var(--text-primary)]">Sélection du Revendeur</h4>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  Gérez la personnalisation d'un revendeur spécifique
+                </p>
               </div>
             </div>
             <div className="w-64">
@@ -162,7 +161,7 @@ export const WhiteLabelPanel: React.FC = () => {
         <Card title="Configuration Globale">
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                 <Globe className="w-3 h-3 inline mr-1" />
                 Nom de l'application
               </label>
@@ -171,21 +170,23 @@ export const WhiteLabelPanel: React.FC = () => {
                 value={config.app_name}
                 onChange={(e) => handleChange('app_name', e.target.value)}
                 placeholder="TrackYu GPS"
-                className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
+                className="w-full p-2 border rounded bg-[var(--bg-surface)] border-[var(--border)] text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Domaine Principal (CNAME)</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                Domaine Principal (CNAME)
+              </label>
               <input
                 type="text"
                 value={config.domain}
                 onChange={(e) => handleChange('domain', e.target.value)}
                 placeholder="app.mondomaine.com"
-                className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
+                className="w-full p-2 border rounded bg-[var(--bg-surface)] border-[var(--border)] text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                 <Mail className="w-3 h-3 inline mr-1" />
                 Email support
               </label>
@@ -194,11 +195,11 @@ export const WhiteLabelPanel: React.FC = () => {
                 value={config.support_email}
                 onChange={(e) => handleChange('support_email', e.target.value)}
                 placeholder="support@mondomaine.com"
-                className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
+                className="w-full p-2 border rounded bg-[var(--bg-surface)] border-[var(--border)] text-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                 <Phone className="w-3 h-3 inline mr-1" />
                 Téléphone support
               </label>
@@ -207,7 +208,7 @@ export const WhiteLabelPanel: React.FC = () => {
                 value={config.support_phone}
                 onChange={(e) => handleChange('support_phone', e.target.value)}
                 placeholder="+225 XX XX XX XX"
-                className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
+                className="w-full p-2 border rounded bg-[var(--bg-surface)] border-[var(--border)] text-sm"
               />
             </div>
           </div>
@@ -217,37 +218,43 @@ export const WhiteLabelPanel: React.FC = () => {
         <Card title="Personnalisation visuelle">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center border border-dashed border-slate-300 dark:border-slate-600 overflow-hidden">
+              <div className="w-16 h-16 bg-[var(--bg-elevated)] rounded-lg flex items-center justify-center border border-dashed border-[var(--border)] overflow-hidden">
                 {config.logo_url ? (
                   <img src={config.logo_url} alt="Logo" className="w-full h-full object-contain" />
                 ) : (
-                  <Palette className="w-6 h-6 text-slate-400" />
+                  <Palette className="w-6 h-6 text-[var(--text-muted)]" />
                 )}
               </div>
               <div className="flex-1">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">URL du Logo</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  URL du Logo
+                </label>
                 <input
                   type="text"
                   value={config.logo_url}
                   onChange={(e) => handleChange('logo_url', e.target.value)}
                   placeholder="https://..."
-                  className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
+                  className="w-full p-2 border rounded bg-[var(--bg-surface)] border-[var(--border)] text-sm"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">URL du Favicon</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                URL du Favicon
+              </label>
               <input
                 type="text"
                 value={config.favicon_url}
                 onChange={(e) => handleChange('favicon_url', e.target.value)}
                 placeholder="https://..."
-                className="w-full p-2 border rounded bg-white dark:bg-slate-900 dark:border-slate-700 text-sm"
+                className="w-full p-2 border rounded bg-[var(--bg-surface)] border-[var(--border)] text-sm"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Couleur Primaire</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Couleur Primaire
+                </label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -259,12 +266,14 @@ export const WhiteLabelPanel: React.FC = () => {
                     type="text"
                     value={config.primary_color}
                     onChange={(e) => handleChange('primary_color', e.target.value)}
-                    className="flex-1 p-2 border rounded text-sm bg-white dark:bg-slate-900 dark:border-slate-700"
+                    className="flex-1 p-2 border rounded text-sm bg-[var(--bg-surface)] border-[var(--border)]"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Couleur Secondaire</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Couleur Secondaire
+                </label>
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
@@ -276,7 +285,7 @@ export const WhiteLabelPanel: React.FC = () => {
                     type="text"
                     value={config.secondary_color}
                     onChange={(e) => handleChange('secondary_color', e.target.value)}
-                    className="flex-1 p-2 border rounded text-sm bg-white dark:bg-slate-900 dark:border-slate-700"
+                    className="flex-1 p-2 border rounded text-sm bg-[var(--bg-surface)] border-[var(--border)]"
                   />
                 </div>
               </div>
@@ -287,13 +296,15 @@ export const WhiteLabelPanel: React.FC = () => {
         {/* CSS Personnalisé */}
         <Card title="CSS Personnalisé" className="md:col-span-2">
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">CSS additionnel (optionnel)</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+              CSS additionnel (optionnel)
+            </label>
             <textarea
               value={config.custom_css}
               onChange={(e) => handleChange('custom_css', e.target.value)}
               placeholder={`/* Personnalisation CSS */\n.sidebar { background: #1a1a2e; }\n.header { border-bottom: 2px solid var(--primary); }`}
               rows={6}
-              className="w-full p-3 border rounded font-mono text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+              className="w-full p-3 border rounded font-mono text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
             />
           </div>
         </Card>

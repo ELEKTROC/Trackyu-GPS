@@ -46,7 +46,7 @@ const categoryLabels: Record<string, string> = {
 
 // Helper: status badge config
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  DRAFT: { label: 'Brouillon', color: 'bg-slate-100 text-slate-700 border-slate-300', icon: Clock },
+  DRAFT: { label: 'Brouillon', color: 'bg-slate-100 text-[var(--text-primary)] border-[var(--border)]', icon: Clock },
   SENT: {
     label: 'Envoyée',
     color: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]',
@@ -195,9 +195,9 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
   const total = storedTTC > 0 ? storedTTC : taxableAmount + vatAmount;
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900/50 p-4 md:p-8 rounded-lg text-slate-800 dark:text-slate-200 shadow-sm">
+    <div className="bg-[var(--bg-elevated)]/50 p-4 md:p-8 rounded-lg text-[var(--text-primary)] shadow-sm">
       {/* Header with Logo and Company Details */}
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6 md:mb-8 border-b border-slate-200 dark:border-slate-700 pb-4 md:pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6 md:mb-8 border-b border-[var(--border)] pb-4 md:pb-6">
         <div className="w-full md:w-1/2">
           {tenantInfo?.logo || doc.companyLogo ? (
             <img src={tenantInfo?.logo || doc.companyLogo} alt="Logo" className="h-12 md:h-16 object-contain mb-2" />
@@ -206,10 +206,10 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
               {(tenantInfo?.name || 'Logo').substring(0, 10)}
             </div>
           )}
-          <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400 whitespace-pre-line">
+          <div className="text-xs md:text-sm text-[var(--text-secondary)] whitespace-pre-line">
             {tenantInfo ? (
               <>
-                <p className="font-bold text-slate-800 dark:text-white">{tenantInfo.name}</p>
+                <p className="font-bold text-[var(--text-primary)]">{tenantInfo.name}</p>
                 {tenantInfo.address && <p>{tenantInfo.address}</p>}
                 {(tenantInfo.city || tenantInfo.country) && (
                   <p>{[tenantInfo.city, tenantInfo.country].filter(Boolean).join(', ')}</p>
@@ -224,7 +224,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
           </div>
         </div>
         <div className="text-left md:text-right w-full md:w-auto">
-          <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-1">
+          <h1 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-1">
             {isInvoice ? (item as Invoice).invoiceType || 'FACTURE' : 'DEVIS'}
           </h1>
           <p className="text-base md:text-lg font-mono text-[var(--primary)]">
@@ -235,7 +235,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
             (() => {
               const cfg = statusConfig[item.status] || {
                 label: item.status,
-                color: 'bg-slate-100 text-slate-600 border-slate-300',
+                color: 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]',
                 icon: Clock,
               };
               const Icon = cfg.icon;
@@ -249,9 +249,9 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
             })()}
           {/* Type d'Opération */}
           {doc.category && (
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-[var(--text-secondary)]">
               Type Op. :{' '}
-              <span className="font-medium text-slate-700 dark:text-slate-300">
+              <span className="font-medium text-[var(--text-primary)]">
                 {categoryLabels[doc.category] || doc.category}
               </span>
             </p>
@@ -262,13 +262,13 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       {/* Client & Dates Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8">
         <div>
-          <h3 className="text-xs font-bold uppercase text-slate-500 mb-2">
+          <h3 className="text-xs font-bold uppercase text-[var(--text-secondary)] mb-2">
             {isInvoice ? 'Facturé à' : 'Destinataire'}
           </h3>
-          <div className="bg-white dark:bg-slate-800 p-4 rounded border border-slate-200 dark:border-slate-700">
+          <div className="bg-[var(--bg-elevated)] p-4 rounded border border-[var(--border)]">
             <p className="font-bold text-base md:text-lg mb-1">{clientName}</p>
             {client && (
-              <div className="text-sm text-slate-500 mt-2 space-y-0.5">
+              <div className="text-sm text-[var(--text-secondary)] mt-2 space-y-0.5">
                 <p>{client.address}</p>
                 <p>{[client.city, client.country].filter(Boolean).join(', ')}</p>
                 <p>{client.email}</p>
@@ -278,15 +278,17 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
             {/* Revendeur masqué dans l'aperçu - les infos du revendeur sont dans l'en-tête */}
           </div>
         </div>
-        <div className="flex flex-col items-start md:items-end gap-2 md:gap-4 text-sm text-left md:text-right bg-white dark:bg-slate-800 p-3 md:p-0 md:bg-transparent rounded md:rounded-none border md:border-0 border-slate-200 dark:border-slate-700">
+        <div className="flex flex-col items-start md:items-end gap-2 md:gap-4 text-sm text-left md:text-right bg-[var(--bg-elevated)] p-3 md:p-0 md:bg-transparent rounded md:rounded-none border md:border-0 border-[var(--border)]">
           <div>
-            <p className="text-xs font-bold uppercase text-slate-500">
+            <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">
               {isInvoice ? 'Date de la facture' : 'Date du devis'}
             </p>
             <p className="font-medium">{fmtDate(isInvoice ? (item as Invoice).date : (item as Quote).createdAt)}</p>
           </div>
           <div>
-            <p className="text-xs font-bold uppercase text-slate-500">{isInvoice ? 'Échéance' : 'Validité'}</p>
+            <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">
+              {isInvoice ? 'Échéance' : 'Validité'}
+            </p>
             <p className="font-medium">
               {isInvoice
                 ? fmtDate((item as Invoice).dueDate)
@@ -306,33 +308,33 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
           {/* Installation date — only for INSTALLATION category */}
           {doc.category === 'INSTALLATION' && doc.installationDate && (
             <div>
-              <p className="text-xs font-bold uppercase text-slate-500">Date d'installation</p>
+              <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">Date d'installation</p>
               <p className="font-medium">{fmtDate(doc.installationDate)}</p>
             </div>
           )}
           {/* Plaque — only show if non-empty */}
           {(item as Quote).licensePlate && (
             <div>
-              <p className="text-xs font-bold uppercase text-slate-500">Plaque</p>
+              <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">Plaque</p>
               <p className="font-medium font-mono">{(item as Quote).licensePlate}</p>
             </div>
           )}
           {doc.contractId && (
             <div>
-              <p className="text-xs font-bold uppercase text-slate-500">N° Contrat</p>
+              <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">N° Contrat</p>
               <p className="font-medium">{doc.contractNumber || doc.contractId}</p>
             </div>
           )}
           {/* N° Commande — only show if different from licensePlate */}
           {doc.orderNumber && doc.orderNumber !== (item as Quote).licensePlate && (
             <div>
-              <p className="text-xs font-bold uppercase text-slate-500">N° Commande</p>
+              <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">N° Commande</p>
               <p className="font-medium">{doc.orderNumber}</p>
             </div>
           )}
           {doc.paymentMethod && (
             <div>
-              <p className="text-xs font-bold uppercase text-slate-500">Mode de paiement</p>
+              <p className="text-xs font-bold uppercase text-[var(--text-secondary)]">Mode de paiement</p>
               <p className="font-medium">{doc.paymentMethod}</p>
             </div>
           )}
@@ -342,8 +344,8 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       {/* Subject */}
       {((item as Quote).subject || (item as Invoice).subject) && (
         <div className="mb-6">
-          <h3 className="text-xs font-bold uppercase text-slate-500 mb-1">Objet</h3>
-          <p className="font-medium text-slate-800 dark:text-slate-200">
+          <h3 className="text-xs font-bold uppercase text-[var(--text-secondary)] mb-1">Objet</h3>
+          <p className="font-medium text-[var(--text-primary)]">
             {(item as Quote).subject || (item as Invoice).subject}
           </p>
         </div>
@@ -352,7 +354,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       {/* Items Table - Responsive */}
       <div className="overflow-x-auto -mx-4 md:mx-0">
         <table className="w-full text-xs md:text-sm mb-4 min-w-[400px]">
-          <thead className="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 uppercase text-xs">
+          <thead className="bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase text-xs">
             <tr>
               <th className="p-2 text-left">Description</th>
               <th className="p-2 w-12 md:w-20 text-center">Qté</th>
@@ -360,7 +362,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
               <th className="p-2 w-20 md:w-32 text-right">Total HT</th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
+          <tbody className="bg-[var(--bg-elevated)] divide-y divide-[var(--border)]">
             {hasItems ? (
               item.items.map((line, i) => (
                 <tr key={i}>
@@ -374,7 +376,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
               ))
             ) : (
               <tr>
-                <td className="p-2 font-medium text-slate-500 italic" colSpan={4}>
+                <td className="p-2 font-medium text-[var(--text-secondary)] italic" colSpan={4}>
                   Aucun détail d'articles disponible - Montant total: {formatPrice(subtotal)}
                 </td>
               </tr>
@@ -387,7 +389,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       <div className="flex justify-end mb-6">
         <div className="w-full md:w-64 space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-slate-500">Total HT:</span>
+            <span className="text-[var(--text-secondary)]">Total HT:</span>
             <span className="font-bold font-mono">{formatPrice(subtotal)}</span>
           </div>
           {discount > 0 && (
@@ -398,7 +400,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
           )}
           {effectiveVatRate > 0 && (
             <div className="flex justify-between">
-              <span className="text-slate-500">TVA ({effectiveVatRate}%)</span>
+              <span className="text-[var(--text-secondary)]">TVA ({effectiveVatRate}%)</span>
               <span className="font-bold font-mono">{formatPrice(vatAmount)}</span>
             </div>
           )}
@@ -436,19 +438,19 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       </div>
 
       {/* Bank Details & Notes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 text-xs mt-6 md:mt-8 pt-6 md:pt-8 border-t border-slate-200 dark:border-slate-700">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 text-xs mt-6 md:mt-8 pt-6 md:pt-8 border-t border-[var(--border)]">
         <div>
-          <h5 className="font-bold mb-1 uppercase text-slate-500">Coordonnées Bancaires</h5>
-          <p className="whitespace-pre-line text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-700">
+          <h5 className="font-bold mb-1 uppercase text-[var(--text-secondary)]">Coordonnées Bancaires</h5>
+          <p className="whitespace-pre-line text-[var(--text-secondary)] bg-[var(--bg-elevated)] p-3 rounded border border-[var(--border)]">
             {tenantInfo?.bankDetails || (item as Quote).bankDetails || 'Non renseigné'}
           </p>
         </div>
         <div>
-          <h5 className="font-bold mb-1 uppercase text-slate-500">Notes / Conditions</h5>
-          <div className="bg-white dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-700 space-y-2">
-            <p className="whitespace-pre-line text-slate-600 dark:text-slate-400">{item.notes || 'Aucune note.'}</p>
+          <h5 className="font-bold mb-1 uppercase text-[var(--text-secondary)]">Notes / Conditions</h5>
+          <div className="bg-[var(--bg-elevated)] p-3 rounded border border-[var(--border)] space-y-2">
+            <p className="whitespace-pre-line text-[var(--text-secondary)]">{item.notes || 'Aucune note.'}</p>
             {item.generalConditions && (
-              <p className="whitespace-pre-line text-slate-500 dark:text-slate-500 text-[10px] border-t pt-2">
+              <p className="whitespace-pre-line text-[var(--text-secondary)] dark:text-[var(--text-secondary)] text-[10px] border-t pt-2">
                 {item.generalConditions}
               </p>
             )}
@@ -457,22 +459,22 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       </div>
 
       {/* Actions Bottom - Responsive */}
-      <div className="flex flex-wrap justify-center md:justify-end gap-2 pt-6 border-t border-slate-200 dark:border-slate-700 mt-6 no-print">
+      <div className="flex flex-wrap justify-center md:justify-end gap-2 pt-6 border-t border-[var(--border)] mt-6 no-print">
         <button
           onClick={onEdit}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-white dark:bg-slate-700 border rounded hover:bg-slate-100 dark:hover:bg-slate-600"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
         >
           <Edit2 className="w-3 h-3" /> Modifier
         </button>
         <button
           onClick={() => onAction('download')}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-white dark:bg-slate-700 border rounded hover:bg-slate-100 dark:hover:bg-slate-600"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
         >
           <Download className="w-3 h-3" /> PDF
         </button>
         <button
           onClick={() => onAction('send')}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-white dark:bg-slate-700 border rounded hover:bg-slate-100 dark:hover:bg-slate-600"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
         >
           <Mail className="w-3 h-3" /> Envoyer
         </button>

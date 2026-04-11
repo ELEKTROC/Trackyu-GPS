@@ -309,7 +309,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
             )}
             <span className="text-sm font-semibold">{mode === 'ai' ? 'Assistant IA' : 'Support Humain'}</span>
             {mode === 'human' && (
-              <span className="flex items-center gap-1 text-[10px] text-slate-400">
+              <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
                 {isConnected ? (
                   <Wifi className="w-3 h-3 text-green-500" />
                 ) : (
@@ -321,11 +321,11 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
           </div>
           <button
             onClick={handleSwitchMode}
-            className="flex items-center gap-2 text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1 rounded-full transition-colors"
+            className="flex items-center gap-2 text-xs font-medium bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 px-3 py-1 rounded-full transition-colors"
           >
             {mode === 'ai' ? 'Parler à un humain' : "Retour à l'IA"}
             {mode === 'ai' ? (
-              <ToggleLeft className="w-4 h-4 text-slate-400" />
+              <ToggleLeft className="w-4 h-4 text-[var(--text-muted)]" />
             ) : (
               <ToggleRight className="w-4 h-4 text-green-600" />
             )}
@@ -333,7 +333,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
         </div>
       }
     >
-      <div className="flex-1 overflow-y-auto min-h-[300px] max-h-[400px] p-4 space-y-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg mb-4 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto min-h-[300px] max-h-[400px] p-4 space-y-4 bg-[var(--bg-elevated)] rounded-lg mb-4 custom-scrollbar">
         {messages.map((msg, idx) => {
           const isUser = msg.role === 'user';
           const isSupport = msg.role === 'support';
@@ -342,7 +342,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
           if (isSystem) {
             return (
               <div key={idx} className="flex justify-center">
-                <span className="text-[11px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">
+                <span className="text-[11px] text-[var(--text-muted)] bg-[var(--bg-elevated)] px-3 py-1 rounded-full">
                   {msg.text}
                 </span>
               </div>
@@ -354,7 +354,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   isUser
-                    ? 'bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-300'
+                    ? 'bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                     : isSupport
                       ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
                       : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
@@ -378,7 +378,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
                   className={`p-3 rounded-lg text-sm shadow-sm ${
                     isUser
                       ? 'bg-[var(--primary)] text-white rounded-tr-none'
-                      : 'bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 rounded-tl-none'
+                      : 'bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] rounded-tl-none'
                   }`}
                 >
                   {msg.role === 'ai' || msg.role === 'support' ? (
@@ -389,7 +389,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
                     msg.text
                   )}
                 </div>
-                <span className="text-[10px] text-slate-400 mt-1 px-1">
+                <span className="text-[10px] text-[var(--text-muted)] mt-1 px-1">
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -409,7 +409,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
             >
               {mode === 'human' ? <Headset className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
             </div>
-            <div className="p-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-sm rounded-tl-none">
+            <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-sm rounded-tl-none">
               <div className="flex gap-1">
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                 <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -428,7 +428,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           placeholder={mode === 'ai' ? "Posez une question à l'IA..." : 'Écrivez au support...'}
-          className="w-full pl-4 pr-12 py-3 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all shadow-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
+          className="w-full pl-4 pr-12 py-3 border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all shadow-sm bg-[var(--bg-elevated)] text-[var(--text-primary)]"
         />
         <button
           onClick={handleSend}

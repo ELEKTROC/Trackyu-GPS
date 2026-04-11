@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import { View } from '../types';
-import type {
-  LucideIcon
-} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
   Map,
@@ -22,7 +20,7 @@ import {
   ShieldCheck,
   LogOut,
   Briefcase,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -30,14 +28,25 @@ import {
   getSortedSidebarMenu,
   MOBILE_DEFAULT_TABS,
   getMobileProfileForRole,
-  type SidebarMenuItem
+  type SidebarMenuItem,
 } from '../features/admin/permissions/permissionStructure';
 
 // Mapping des noms d'icônes vers les composants Lucide (identique à Sidebar.tsx)
 const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard, Map, Truck, FileText, Settings, Activity,
-  Wrench, Package, ShieldCheck, Headset, Calculator, Briefcase,
-  ShoppingCart, Calendar
+  LayoutDashboard,
+  Map,
+  Truck,
+  FileText,
+  Settings,
+  Activity,
+  Wrench,
+  Package,
+  ShieldCheck,
+  Headset,
+  Calculator,
+  Briefcase,
+  ShoppingCart,
+  Calendar,
 };
 
 interface BottomNavigationProps {
@@ -45,41 +54,33 @@ interface BottomNavigationProps {
   onNavigate: (view: View) => void;
 }
 
-export const BottomNavigation: React.FC<BottomNavigationProps> = ({
-  currentView,
-  onNavigate
-}) => {
+export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavigate }) => {
   const { hasPermission, user, logout } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
   const [isMoreOpen, setIsMoreOpen] = React.useState(false);
 
   // Tous les items du menu depuis le registre central, triés
   const allMenuItems = useMemo(() => {
-    return getSortedSidebarMenu().flatMap(group =>
-      group.items.map(item => ({ ...item, groupTitle: group.title }))
-    );
+    return getSortedSidebarMenu().flatMap((group) => group.items.map((item) => ({ ...item, groupTitle: group.title })));
   }, []);
 
   // Profil mobile du rôle courant
-  const mobileProfile = useMemo(() =>
-    user?.role ? getMobileProfileForRole(user.role) : undefined,
-    [user?.role]
-  );
+  const mobileProfile = useMemo(() => (user?.role ? getMobileProfileForRole(user.role) : undefined), [user?.role]);
 
   // Items visibles selon permissions + masquage hiddenTabs du profil
   const visibleItems = useMemo(() => {
     const hidden = new Set(mobileProfile?.hiddenTabs ?? []);
-    return allMenuItems.filter(item =>
-      !hidden.has(item.id) &&
-      (item.alwaysVisible || !item.permission || hasPermission(item.permission as any))
+    return allMenuItems.filter(
+      (item) =>
+        !hidden.has(item.id) && (item.alwaysVisible || !item.permission || hasPermission(item.permission as any))
     );
   }, [allMenuItems, hasPermission, mobileProfile]);
 
   // Détermine les onglets principaux selon la config du rôle (DB) ou profil hardcodé
   const mainTabIds = useMemo(() => {
     const filterAccessible = (tabs: string[]) =>
-      tabs.filter(tabId => {
-        const item = allMenuItems.find(i => i.id === tabId);
+      tabs.filter((tabId) => {
+        const item = allMenuItems.find((i) => i.id === tabId);
         return item && (item.alwaysVisible || !item.permission || hasPermission(item.permission as any));
       });
 
@@ -102,27 +103,30 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
   // Onglets principaux (bottom bar)
   const mainTabs = useMemo(() => {
     return mainTabIds
-      .map(id => allMenuItems.find(item => item.id === id))
+      .map((id) => allMenuItems.find((item) => item.id === id))
       .filter((item): item is SidebarMenuItem & { groupTitle: string } => !!item);
   }, [mainTabIds, allMenuItems]);
 
   // Items secondaires (menu "Plus") = tous les visibles sauf les main tabs
   const moreItems = useMemo(() => {
-    return visibleItems.filter(item => !mainTabIds.includes(item.id));
+    return visibleItems.filter((item) => !mainTabIds.includes(item.id));
   }, [visibleItems, mainTabIds]);
 
   // Grouper les items "Plus" par catégorie
   const groupedMoreItems = useMemo(() => {
-    return moreItems.reduce((acc, item) => {
-      const category = item.groupTitle;
-      if (!acc[category]) acc[category] = [];
-      acc[category].push(item);
-      return acc;
-    }, {} as Record<string, typeof moreItems>);
+    return moreItems.reduce(
+      (acc, item) => {
+        const category = item.groupTitle;
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(item);
+        return acc;
+      },
+      {} as Record<string, typeof moreItems>
+    );
   }, [moreItems]);
 
   // Vérifie si la vue actuelle est dans le menu "Plus"
-  const isInMoreMenu = moreItems.some(item => View[item.id as keyof typeof View] === currentView);
+  const isInMoreMenu = moreItems.some((item) => View[item.id as keyof typeof View] === currentView);
 
   const handleNavigate = (view: View) => {
     onNavigate(view);
@@ -174,11 +178,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
             {/* Grouped Items - from central registry */}
             {Object.entries(groupedMoreItems).map(([category, items]) => (
               <div key={category} className="mb-4">
-                <h4 className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-2 px-1">
-                  {category}
-                </h4>
+                <h4 className="section-title tracking-wider mb-2 px-1">{category}</h4>
                 <div className="grid grid-cols-4 gap-3">
-                  {items.map(item => {
+                  {items.map((item) => {
                     const view = View[item.id as keyof typeof View];
                     const isActive = currentView === view;
                     const Icon = getIcon(item.icon);
@@ -195,7 +197,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
                         }}
                       >
                         <Icon className="w-6 h-6 mb-1" />
-                        <span className="text-xs font-medium text-center leading-tight">{item.mobileLabel || item.label}</span>
+                        <span className="text-xs font-medium text-center leading-tight">
+                          {item.mobileLabel || item.label}
+                        </span>
                       </button>
                     );
                   })}
@@ -211,12 +215,17 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
                     {user?.name?.charAt(0) || 'U'}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-[var(--text-primary)] truncate">{user?.name || 'Utilisateur'}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)] truncate">
+                      {user?.name || 'Utilisateur'}
+                    </p>
                     <p className="text-xs text-[var(--text-muted)] truncate">{user?.role || 'Rôle'}</p>
                   </div>
                 </div>
                 <button
-                  onClick={() => { setIsMoreOpen(false); logout(); }}
+                  onClick={() => {
+                    setIsMoreOpen(false);
+                    logout();
+                  }}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl border hover:bg-[var(--color-error)]/10 active:bg-[var(--color-error)]/20 transition-colors text-sm font-medium haptic-feedback"
                   style={{ borderColor: 'var(--color-error)', color: 'var(--color-error)' }}
                 >
@@ -231,7 +240,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
 
       {/* Bottom Navigation Bar */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[var(--bg-surface)] border-t border-[var(--border)] flex justify-around items-center z-50 safe-area-bottom shadow-lg">
-        {mainTabs.map(tab => {
+        {mainTabs.map((tab) => {
           const view = View[tab.id as keyof typeof View];
           const isActive = currentView === view;
           const Icon = getIcon(tab.icon);
@@ -257,12 +266,15 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
           <button
             onClick={() => setIsMoreOpen(!isMoreOpen)}
             className="flex flex-col items-center justify-center gap-0.5 flex-1 h-full min-w-[56px] transition-all no-select haptic-feedback"
-            style={{ color: (isMoreOpen || isInMoreMenu) ? 'var(--primary)' : 'var(--nav-inactive)' }}
+            style={{ color: isMoreOpen || isInMoreMenu ? 'var(--primary)' : 'var(--nav-inactive)' }}
           >
             <div className="relative active:scale-95">
               <Grid2X2 className="w-5 h-5" />
               {isInMoreMenu && !isMoreOpen && (
-                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full" style={{ backgroundColor: 'var(--primary)' }} />
+                <span
+                  className="absolute -top-1 -right-1 w-2 h-2 rounded-full"
+                  style={{ backgroundColor: 'var(--primary)' }}
+                />
               )}
             </div>
             <span className="text-[10px] font-medium leading-none">Modules</span>

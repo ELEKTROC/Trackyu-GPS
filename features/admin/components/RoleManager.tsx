@@ -282,9 +282,9 @@ export const RoleManager: React.FC = () => {
   return (
     <div className="flex h-[calc(100vh-200px)] gap-6">
       {/* LEFT: Role List */}
-      <div className="w-1/3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden">
-        <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
-          <h3 className="font-bold text-slate-700 dark:text-white">Rôles & Profils</h3>
+      <div className="w-1/3 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] flex flex-col overflow-hidden">
+        <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg-elevated)]">
+          <h3 className="font-bold text-[var(--text-primary)] text-[var(--text-primary)]">Rôles & Profils</h3>
           <button
             onClick={handleCreateRole}
             className="p-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors"
@@ -303,23 +303,23 @@ export const RoleManager: React.FC = () => {
               className={`p-3 rounded-lg cursor-pointer border transition-all ${
                 selectedRole?.id === role.id
                   ? 'bg-[var(--primary-dim)] border-[var(--border)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] shadow-sm'
-                  : 'bg-white dark:bg-slate-800 border-transparent hover:bg-slate-50 dark:hover:bg-slate-700'
+                  : 'bg-[var(--bg-elevated)] border-transparent hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'
               }`}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`p-2 rounded-full ${role.isSystem ? 'bg-purple-100 text-purple-600' : 'bg-slate-100 text-slate-600'}`}
+                    className={`p-2 rounded-full ${role.isSystem ? 'bg-purple-100 text-purple-600' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
                   >
                     {role.isSystem ? <Lock className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
                   </div>
                   <div>
                     <p
-                      className={`font-bold text-sm ${selectedRole?.id === role.id ? 'text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-700 dark:text-slate-300'}`}
+                      className={`font-bold text-sm ${selectedRole?.id === role.id ? 'text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
                     >
                       {role.name}
                     </p>
-                    <p className="text-xs text-slate-500">{role.permissions.length} permissions</p>
+                    <p className="text-xs text-[var(--text-secondary)]">{role.permissions.length} permissions</p>
                   </div>
                 </div>
                 {!role.isSystem && (
@@ -329,7 +329,7 @@ export const RoleManager: React.FC = () => {
                         e.stopPropagation();
                         handleEditRole(role);
                       }}
-                      className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
+                      className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
                     >
                       <Edit2 className="w-3 h-3" />
                     </button>
@@ -338,7 +338,7 @@ export const RoleManager: React.FC = () => {
                         e.stopPropagation();
                         handleDeleteRole(role.id);
                       }}
-                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
+                      className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>
@@ -351,10 +351,10 @@ export const RoleManager: React.FC = () => {
       </div>
 
       {/* RIGHT: Permissions Matrix */}
-      <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden">
+      <div className="flex-1 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] flex flex-col overflow-hidden">
         {selectedRole ? (
           <>
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 flex justify-between items-center shrink-0">
+            <div className="p-4 border-b border-[var(--border)] bg-[var(--bg-elevated)] flex justify-between items-center shrink-0">
               <div className="flex items-center gap-3">
                 {isEditing ? (
                   <div className="flex flex-col gap-1">
@@ -363,7 +363,7 @@ export const RoleManager: React.FC = () => {
                       value={editedRole?.name || ''}
                       onChange={(e) => setEditedRole((prev) => (prev ? { ...prev, name: e.target.value } : null))}
                       placeholder="Nom du rôle"
-                      className="text-lg font-bold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-3 py-1.5 text-slate-800 dark:text-white focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                      className="text-lg font-bold bg-[var(--bg-surface)] border border-[var(--border)] rounded px-3 py-1.5 text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] outline-none"
                     />
                     <input
                       type="text"
@@ -372,14 +372,14 @@ export const RoleManager: React.FC = () => {
                         setEditedRole((prev) => (prev ? { ...prev, description: e.target.value } : null))
                       }
                       placeholder="Description (optionnel)"
-                      className="text-sm bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded px-3 py-1 text-slate-600 dark:text-slate-400 focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                      className="text-sm bg-[var(--bg-surface)] border border-[var(--border)] rounded px-3 py-1 text-[var(--text-secondary)] focus:ring-2 focus:ring-[var(--primary)] outline-none"
                     />
                   </div>
                 ) : (
                   <div>
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-white">{selectedRole.name}</h3>
+                    <h3 className="text-lg font-bold text-[var(--text-primary)]">{selectedRole.name}</h3>
                     {selectedRole.description && (
-                      <p className="text-sm text-slate-500 dark:text-slate-400">{selectedRole.description}</p>
+                      <p className="text-sm text-[var(--text-secondary)]">{selectedRole.description}</p>
                     )}
                   </div>
                 )}
@@ -394,7 +394,7 @@ export const RoleManager: React.FC = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="px-3 py-1.5 text-slate-600 hover:bg-slate-100 rounded text-sm font-medium"
+                    className="px-3 py-1.5 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded text-sm font-medium"
                   >
                     Annuler
                   </button>
@@ -409,7 +409,7 @@ export const RoleManager: React.FC = () => {
                 !selectedRole.isSystem && (
                   <button
                     onClick={() => handleEditRole(selectedRole)}
-                    className="px-3 py-1.5 border border-slate-300 rounded text-slate-600 hover:bg-slate-50 text-sm font-medium flex items-center gap-2"
+                    className="px-3 py-1.5 border border-[var(--border)] rounded text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] text-sm font-medium flex items-center gap-2"
                   >
                     <Edit2 className="w-4 h-4" /> Modifier
                   </button>
@@ -420,12 +420,9 @@ export const RoleManager: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               <div className="space-y-8">
                 {PERMISSION_STRUCTURE.map((group) => (
-                  <div
-                    key={group.id}
-                    className="border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden"
-                  >
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-3 border-b border-slate-200 dark:border-slate-700">
-                      <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm">{group.label}</h4>
+                  <div key={group.id} className="border border-[var(--border)] rounded-lg overflow-hidden">
+                    <div className="bg-[var(--bg-elevated)] p-3 border-b border-[var(--border)]">
+                      <h4 className="font-bold text-[var(--text-primary)] text-sm">{group.label}</h4>
                     </div>
 
                     {group.isBoolean ? (
@@ -435,13 +432,13 @@ export const RoleManager: React.FC = () => {
                           return (
                             <label
                               key={perm.id}
-                              className={`flex items-center gap-3 p-2 rounded transition-colors ${isEditing ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800' : ''}`}
+                              className={`flex items-center gap-3 p-2 rounded transition-colors ${isEditing ? 'cursor-pointer tr-hover' : ''}`}
                             >
                               <div
                                 className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
                                   isChecked
                                     ? 'bg-[var(--primary)] border-[var(--primary)] text-white'
-                                    : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600'
+                                    : 'bg-[var(--bg-surface)] border-[var(--border)]'
                                 }`}
                               >
                                 {isChecked && <Check className="w-3 h-3" />}
@@ -453,9 +450,7 @@ export const RoleManager: React.FC = () => {
                                 onChange={() => isEditing && togglePermission(perm.id)}
                                 disabled={!isEditing}
                               />
-                              <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">
-                                {perm.label}
-                              </span>
+                              <span className="text-sm text-[var(--text-secondary)] font-medium">{perm.label}</span>
                             </label>
                           );
                         })}
@@ -463,7 +458,7 @@ export const RoleManager: React.FC = () => {
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm text-left">
-                          <thead className="bg-slate-50 dark:bg-slate-900 text-xs uppercase text-slate-500 font-semibold border-b border-slate-200 dark:border-slate-700">
+                          <thead className="bg-[var(--bg-elevated)] text-xs uppercase text-[var(--text-secondary)] font-semibold border-b border-[var(--border)]">
                             <tr>
                               <th className="px-4 py-3 w-1/3">Ressource</th>
                               <th className="px-4 py-3 text-center w-1/6">Voir</th>
@@ -472,15 +467,10 @@ export const RoleManager: React.FC = () => {
                               <th className="px-4 py-3 text-center w-1/6">Supprimer</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                          <tbody className="divide-y divide-[var(--border)]">
                             {group.resources?.map((res) => (
-                              <tr
-                                key={res.id}
-                                className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
-                              >
-                                <td className="px-4 py-3 font-medium text-slate-700 dark:text-slate-300">
-                                  {res.label}
-                                </td>
+                              <tr key={res.id} className="tr-hover/50 transition-colors">
+                                <td className="px-4 py-3 font-medium text-[var(--text-primary)]">{res.label}</td>
                                 {['VIEW', 'CREATE', 'EDIT', 'DELETE'].map((action) => {
                                   const permId = `${action}_${res.id}`;
                                   const isChecked = hasPerm(isEditing ? editedRole : selectedRole, permId);
@@ -491,7 +481,7 @@ export const RoleManager: React.FC = () => {
                                         className={`w-5 h-5 mx-auto rounded border flex items-center justify-center transition-colors ${
                                           isChecked
                                             ? 'bg-[var(--primary)] border-[var(--primary)] text-white'
-                                            : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600'
+                                            : 'bg-[var(--bg-surface)] border-[var(--border)]'
                                         } ${isEditing ? 'cursor-pointer hover:ring-2 ring-[var(--primary-dim)]' : 'cursor-default opacity-60'}`}
                                       >
                                         {isChecked && <Check className="w-3 h-3" />}
@@ -511,7 +501,7 @@ export const RoleManager: React.FC = () => {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
+          <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-muted)]">
             <Shield className="w-16 h-16 mb-4 opacity-20" />
             <p>Sélectionnez un rôle pour voir ses permissions</p>
           </div>

@@ -12,8 +12,8 @@ export const GlobalLoadingBar: React.FC = () => {
   if (!isLoading) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] h-1 bg-slate-200 dark:bg-slate-800 overflow-hidden">
-      <div 
+    <div className="fixed top-0 left-0 right-0 z-[9999] h-1 bg-slate-200 bg-[var(--bg-elevated)] overflow-hidden">
+      <div
         className="h-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 animate-loading-bar"
         style={{
           backgroundSize: '200% 100%',

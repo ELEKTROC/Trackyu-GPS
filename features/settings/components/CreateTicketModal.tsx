@@ -169,8 +169,8 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title="Créer une demande d'assistance" maxWidth="max-w-xl">
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
         {/* 1. Bloc d'informations Client pré-remplies (Read Only) */}
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
-          <h3 className="text-sm font-bold text-slate-500 uppercase flex items-center gap-2 mb-2">
+        <div className="bg-[var(--bg-elevated)] p-4 rounded-xl border border-[var(--border)] space-y-3">
+          <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2 mb-2">
             <UserIcon className="w-4 h-4" /> Vos informations
           </h3>
 
@@ -180,7 +180,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
                 required
                 value={clientId}
                 onChange={(e) => setClientId(e.target.value)}
-                className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-sm"
+                className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-sm"
               >
                 <option value="">-- Sélectionner un client --</option>
                 {clients.map((c) => (
@@ -195,16 +195,16 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
           {selectedClient && (
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="block text-xs text-slate-500 mb-1 flex items-center gap-1">
+                <span className="block text-xs text-[var(--text-secondary)] mb-1 flex items-center gap-1">
                   <Building className="w-3 h-3" /> Raison Sociale
                 </span>
-                <span className="font-medium text-slate-800 dark:text-white">{selectedClient.name}</span>
+                <span className="font-medium text-[var(--text-primary)]">{selectedClient.name}</span>
               </div>
               <div>
-                <span className="block text-xs text-slate-500 mb-1 flex items-center gap-1">
+                <span className="block text-xs text-[var(--text-secondary)] mb-1 flex items-center gap-1">
                   <Mail className="w-3 h-3" /> Email Contact
                 </span>
-                <span className="font-medium text-slate-800 dark:text-white truncate" title={selectedClient.email}>
+                <span className="font-medium text-[var(--text-primary)] truncate" title={selectedClient.email}>
                   {selectedClient.email || 'N/A'}
                 </span>
               </div>
@@ -221,7 +221,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Catégorie <span className="text-red-500">*</span>
             </label>
             <select
@@ -229,7 +229,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
               title="Sélectionner une catégorie"
               value={category}
               onChange={handleCategoryChange}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+              className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
             >
               <option value="">Sélectionner...</option>
               {ticketCategories?.map((c) => (
@@ -250,13 +250,13 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sous-catégorie</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Sous-catégorie</label>
             <select
               title="Sélectionner une sous-catégorie"
               value={subCategory}
               onChange={handleSubCategoryChange}
               disabled={!availableSubCategories.length}
-              className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all disabled:opacity-50"
+              className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all disabled:opacity-50"
             >
               <option value="">Préciser...</option>
               {availableSubCategories.map((sc) => (
@@ -269,8 +269,8 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-            <Car className="w-4 h-4 inline mr-1 text-slate-500" />
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
+            <Car className="w-4 h-4 inline mr-1 text-[var(--text-secondary)]" />
             Véhicule / Plaque (Optionnel)
           </label>
           <select
@@ -278,7 +278,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             value={vehicleId}
             onChange={handleVehicleChange}
             disabled={!clientVehicles.length}
-            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all disabled:opacity-50"
+            className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all disabled:opacity-50"
           >
             <option value="">-- Aucun véhicule sélectionné --</option>
             {clientVehicles.map((v) => (
@@ -290,7 +290,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Sujet <span className="text-red-500">*</span>
             {subject && (category || subCategory) && (
               <span className="ml-2 text-[10px] text-green-600 font-normal">Généré auto.</span>
@@ -301,13 +301,13 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             required
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all font-medium text-slate-800 dark:text-white"
+            className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all font-medium text-[var(--text-primary)]"
             placeholder="Ex: Problème de connexion GPS"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+          <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
             Description détaillée <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -315,16 +315,16 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all resize-none text-sm"
+            className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all resize-none text-sm"
             placeholder="Expliquez le problème rencontré..."
           />
         </div>
 
-        <div className="pt-4 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-700">
+        <div className="pt-4 flex justify-end gap-3 border-t border-[var(--border)] border-[var(--border)]">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors font-medium text-sm"
+            className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors font-medium text-sm"
           >
             Annuler
           </button>

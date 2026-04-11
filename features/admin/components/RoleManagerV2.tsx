@@ -162,9 +162,9 @@ const COLOR_CLASSES: Record<string, { dot: string; bg: string; text: string; bad
   },
   slate: {
     dot: 'bg-slate-500',
-    bg: 'bg-slate-100 dark:bg-slate-900/30',
-    text: 'text-slate-600',
-    badge: 'bg-slate-100 text-slate-700',
+    bg: 'bg-slate-100 bg-[var(--bg-surface)]/30',
+    text: 'text-[var(--text-secondary)]',
+    badge: 'bg-slate-100 text-[var(--text-primary)]',
   },
   indigo: {
     dot: 'bg-indigo-500',
@@ -614,27 +614,27 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
   const ACTION_COLOR_CLASSES: Record<PermissionAction, { checked: string; unchecked: string }> = {
     VIEW: {
       checked: 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)]',
-      unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700',
+      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     CREATE: {
       checked: 'bg-green-100 text-green-600 dark:bg-green-900/30',
-      unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700',
+      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     EDIT: {
       checked: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30',
-      unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700',
+      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     DELETE: {
       checked: 'bg-red-100 text-red-600 dark:bg-red-900/30',
-      unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700',
+      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     EXPORT: {
       checked: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30',
-      unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700',
+      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     IMPORT: {
       checked: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30',
-      unchecked: 'bg-slate-100 text-slate-400 dark:bg-slate-700',
+      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
   };
 
@@ -657,7 +657,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
     if (!isAvailable) {
       return (
         <div key={action} className="w-8 h-8 flex items-center justify-center">
-          <span className="text-slate-300 dark:text-slate-600">—</span>
+          <span className="text-slate-300 dark:text-[var(--text-secondary)]">—</span>
         </div>
       );
     }
@@ -689,7 +689,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
       <div className="flex items-center justify-center h-96">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
-          <p className="text-slate-500">Chargement des rôles...</p>
+          <p className="text-[var(--text-secondary)]">Chargement des rôles...</p>
         </div>
       </div>
     );
@@ -700,7 +700,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
       {/* Overlay de sauvegarde */}
       {isSaving && (
         <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-xl flex items-center gap-4">
+          <div className="bg-[var(--bg-elevated)] rounded-lg p-6 shadow-xl flex items-center gap-4">
             <Loader2 className="w-6 h-6 text-[var(--primary)] animate-spin" />
             <span>Sauvegarde en cours...</span>
           </div>
@@ -708,17 +708,17 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
       )}
 
       {/* Liste des rôles */}
-      <div className="w-80 shrink-0 flex flex-col bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors duration-300">
-        <div className="p-4 border-b dark:border-slate-700">
+      <div className="w-80 shrink-0 flex flex-col bg-[var(--bg-elevated)]/50 dark:backdrop-blur-sm rounded-xl shadow-sm border border-[var(--border)] overflow-hidden transition-colors duration-300">
+        <div className="p-4 border-b border-[var(--border)]">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Shield className="w-5 h-5 text-purple-600" />
               Rôles
             </h3>
             <div className="flex gap-2">
               <button
                 onClick={() => loadRoles()}
-                className="p-2 text-slate-500 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg"
+                className="p-2 text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded-lg"
                 title="Rafraîchir"
               >
                 <RefreshCw className="w-4 h-4" />
@@ -732,7 +732,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               </button>
             </div>
           </div>
-          <p className="text-xs text-slate-500">{roles.length} rôles configurés</p>
+          <p className="text-xs text-[var(--text-secondary)]">{roles.length} rôles configurés</p>
         </div>
 
         <div className="flex-1 overflow-y-auto p-2">
@@ -743,31 +743,33 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               className={`p-3 rounded-lg cursor-pointer mb-2 transition-all ${
                 selectedRole?.id === role.id
                   ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] ring-2 ring-[var(--primary-dim)]'
-                  : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'tr-hover'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${getColorClass(role.color, 'dot')}`}></div>
-                  <span className="font-bold text-sm text-slate-800 dark:text-white">{role.name}</span>
-                  {role.isSystem && <Lock className="w-3 h-3 text-slate-400" />}
+                  <span className="font-bold text-sm text-[var(--text-primary)]">{role.name}</span>
+                  {role.isSystem && <Lock className="w-3 h-3 text-[var(--text-muted)]" />}
                 </div>
-                <span className="text-xs text-slate-500">{countPermissions(role)} droits</span>
+                <span className="text-xs text-[var(--text-secondary)]">{countPermissions(role)} droits</span>
               </div>
-              {role.description && <p className="text-xs text-slate-500 mt-1 truncate">{role.description}</p>}
+              {role.description && (
+                <p className="text-xs text-[var(--text-secondary)] mt-1 truncate">{role.description}</p>
+              )}
 
               {/* Actions */}
               <div className="flex gap-1 mt-2" onClick={(e) => e.stopPropagation()}>
                 <button
                   onClick={() => handleEditRole(role)}
-                  className="p-1 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
+                  className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
                   title="Modifier"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => handleDuplicateRole(role)}
-                  className="p-1 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded"
+                  className="p-1 text-[var(--text-muted)] hover:text-purple-600 hover:bg-purple-50 rounded"
                   title="Dupliquer"
                 >
                   <Copy className="w-3.5 h-3.5" />
@@ -775,7 +777,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                 {!role.isSystem && (
                   <button
                     onClick={() => handleDeleteRole(role.id)}
-                    className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
+                    className="p-1 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 rounded"
                     title="Supprimer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -788,18 +790,18 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
       </div>
 
       {/* Matrice des permissions */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-slate-800/50 dark:backdrop-blur-sm rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors duration-300">
+      <div className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-elevated)]/50 dark:backdrop-blur-sm rounded-xl shadow-sm border border-[var(--border)] transition-colors duration-300">
         {selectedRole ? (
           <>
             {/* Header */}
-            <div className="p-4 border-b dark:border-slate-700 shrink-0">
+            <div className="p-4 border-b border-[var(--border)] shrink-0">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h3 className="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                  <h3 className="font-bold text-lg text-[var(--text-primary)] flex items-center gap-2">
                     <div className={`w-4 h-4 rounded-full ${getColorClass(selectedRole.color, 'dot')}`}></div>
                     {selectedRole.name}
                     {selectedRole.isSystem && (
-                      <span className="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded">Système</span>
+                      <span className="text-xs bg-[var(--bg-elevated)] px-2 py-0.5 rounded">Système</span>
                     )}
                     {isEditingPermissions && (
                       <span className="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 px-2 py-0.5 rounded animate-pulse">
@@ -807,7 +809,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                       </span>
                     )}
                   </h3>
-                  <p className="text-sm text-slate-500">{selectedRole.description}</p>
+                  <p className="text-sm text-[var(--text-secondary)]">{selectedRole.description}</p>
                 </div>
                 <div className="flex gap-2">
                   {isEditingPermissions ? (
@@ -817,7 +819,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                           setIsEditingPermissions(false);
                           setEditingPermissions(selectedRole.permissions);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 border rounded-lg text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+                        className="flex items-center gap-2 px-4 py-2 border rounded-lg text-sm tr-hover"
                       >
                         <X className="w-4 h-4" />
                         Annuler
@@ -875,20 +877,20 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               {/* Filtres et recherche */}
               <div className="flex gap-3 flex-wrap">
                 <div className="relative flex-1 min-w-[200px]">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     placeholder="Rechercher un module, onglet ou champ..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                   />
                 </div>
 
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                  className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                   title="Filtrer par catégorie"
                 >
                   <option value="all">Toutes les catégories</option>
@@ -902,14 +904,14 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                 <div className="flex gap-1">
                   <button
                     onClick={expandAll}
-                    className="px-3 py-2 border rounded-lg text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+                    className="px-3 py-2 border rounded-lg text-sm tr-hover"
                     title="Tout développer"
                   >
                     <ChevronDown className="w-4 h-4" />
                   </button>
                   <button
                     onClick={collapseAll}
-                    className="px-3 py-2 border rounded-lg text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+                    className="px-3 py-2 border rounded-lg text-sm tr-hover"
                     title="Tout réduire"
                   >
                     <ChevronRight className="w-4 h-4" />
@@ -918,7 +920,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               </div>
 
               {/* Légende */}
-              <div className="flex flex-wrap gap-4 mt-3 text-xs text-slate-500">
+              <div className="flex flex-wrap gap-4 mt-3 text-xs text-[var(--text-secondary)]">
                 <div className="flex items-center gap-1.5">
                   <div className="w-4 h-4 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center">
                     <Check className="w-3 h-3 text-[var(--primary)]" />
@@ -963,8 +965,8 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               {selectedRole.id === 'superadmin' ? (
                 <div className="flex flex-col items-center justify-center h-full text-center">
                   <Shield className="w-16 h-16 text-purple-500 mb-4" />
-                  <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Superadmin</h4>
-                  <p className="text-slate-500 max-w-md">
+                  <h4 className="text-lg font-bold text-[var(--text-primary)] mb-2">Superadmin</h4>
+                  <p className="text-[var(--text-secondary)] max-w-md">
                     Ce rôle système dispose automatiquement de toutes les permissions sur tous les modules, onglets et
                     champs. Il ne peut pas être modifié.
                   </p>
@@ -977,17 +979,17 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                     const category = PERMISSION_CATEGORIES.find((c) => c.id === module.category);
 
                     return (
-                      <div key={module.id} className="border rounded-lg dark:border-slate-700 overflow-hidden">
+                      <div key={module.id} className="border rounded-lg border-[var(--border)] overflow-hidden">
                         {/* Module Header */}
                         <div
-                          className={`flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700`}
+                          className={`flex items-center gap-3 p-3 bg-[var(--bg-elevated)] cursor-pointer hover:bg-[var(--bg-elevated)]`}
                           onClick={() => toggleModule(module.id)}
                         >
                           <button className="p-1">
                             {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-slate-500" />
+                              <ChevronDown className="w-4 h-4 text-[var(--text-secondary)]" />
                             ) : (
-                              <ChevronRight className="w-4 h-4 text-slate-500" />
+                              <ChevronRight className="w-4 h-4 text-[var(--text-secondary)]" />
                             )}
                           </button>
 
@@ -997,14 +999,14 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
 
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-slate-800 dark:text-white">{module.label}</span>
+                              <span className="font-bold text-[var(--text-primary)]">{module.label}</span>
                               <span
                                 className={`text-xs px-2 py-0.5 rounded-full ${getColorClass(category?.color, 'badge')}`}
                               >
                                 {category?.label}
                               </span>
                             </div>
-                            <p className="text-xs text-slate-500">{module.description}</p>
+                            <p className="text-xs text-[var(--text-secondary)]">{module.description}</p>
                           </div>
 
                           {/* Actions niveau module */}
@@ -1018,7 +1020,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
 
                         {/* Tabs */}
                         {isExpanded && (
-                          <div className="border-t dark:border-slate-700">
+                          <div className="border-t border-[var(--border)]">
                             {module.tabs.map((tab) => {
                               const isTabExpanded = expandedTabs.has(tab.id);
 
@@ -1026,18 +1028,18 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                                 <div key={tab.id}>
                                   {/* Tab Header */}
                                   <div
-                                    className="flex items-center gap-3 p-2 pl-10 bg-white dark:bg-slate-800/50 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50 border-b dark:border-slate-700"
+                                    className="flex items-center gap-3 p-2 pl-10 bg-[var(--bg-elevated)]/50 cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 border-b border-[var(--border)]"
                                     onClick={() => toggleTab(tab.id)}
                                   >
                                     <button className="p-1">
                                       {isTabExpanded ? (
-                                        <ChevronDown className="w-3 h-3 text-slate-400" />
+                                        <ChevronDown className="w-3 h-3 text-[var(--text-muted)]" />
                                       ) : (
-                                        <ChevronRight className="w-3 h-3 text-slate-400" />
+                                        <ChevronRight className="w-3 h-3 text-[var(--text-muted)]" />
                                       )}
                                     </button>
 
-                                    <span className="flex-1 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                    <span className="flex-1 text-sm font-medium text-[var(--text-primary)]">
                                       📑 {tab.label}
                                     </span>
 
@@ -1058,18 +1060,18 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
 
                                   {/* Fields */}
                                   {isTabExpanded && (
-                                    <div className="bg-slate-50/50 dark:bg-slate-900/30">
+                                    <div className="bg-slate-50/50 bg-[var(--bg-surface)]/30">
                                       {tab.fields.map((field) => (
                                         <div
                                           key={field.id}
-                                          className="flex items-center gap-3 p-2 pl-16 border-b dark:border-slate-700/50 last:border-b-0"
+                                          className="flex items-center gap-3 p-2 pl-16 border-b border-[var(--border)]/50 last:border-b-0"
                                         >
                                           <span
-                                            className={`flex-1 text-xs ${field.sensitive ? 'text-amber-600 font-medium' : 'text-slate-600 dark:text-slate-400'}`}
+                                            className={`flex-1 text-xs ${field.sensitive ? 'text-amber-600 font-medium' : 'text-[var(--text-secondary)]'}`}
                                           >
                                             {field.sensitive && '🔒 '}
                                             {field.label}
-                                            <span className="text-slate-400 ml-2">({field.type})</span>
+                                            <span className="text-[var(--text-muted)] ml-2">({field.type})</span>
                                           </span>
 
                                           {/* Actions niveau champ */}
@@ -1110,7 +1112,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
             </div>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-slate-500">
+          <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-secondary)]">
             <Shield className="w-16 h-16 text-slate-300 mb-4" />
             <p className="font-medium">Sélectionnez un rôle</p>
             <p className="text-sm">pour voir et modifier ses permissions</p>
@@ -1155,31 +1157,31 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
         {editingRole && (
           <div className="p-4 space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                 Nom du rôle <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={editingRole.name}
                 onChange={(e) => setEditingRole({ ...editingRole, name: e.target.value })}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 placeholder="Ex: Manager Commercial"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Description</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Description</label>
               <textarea
                 value={editingRole.description}
                 onChange={(e) => setEditingRole({ ...editingRole, description: e.target.value })}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 rows={2}
                 placeholder="Description du rôle et ses responsabilités"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Couleur</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Couleur</label>
               <div className="flex gap-2 flex-wrap">
                 {['slate', 'red', 'orange', 'amber', 'green', 'cyan', 'blue', 'purple', 'rose'].map((color) => (
                   <button
@@ -1195,12 +1197,12 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               </div>
             </div>
 
-            <div className="pt-4 border-t dark:border-slate-700">
-              <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase mb-2">
+            <div className="pt-4 border-t border-[var(--border)]">
+              <label className="flex items-center gap-2 text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
                 <Smartphone className="w-4 h-4" />
                 Onglets mobile (bottom nav)
               </label>
-              <p className="text-xs text-slate-400 mb-3">
+              <p className="text-xs text-[var(--text-muted)] mb-3">
                 Choisissez jusqu'à 4 onglets affichés dans la barre de navigation mobile. Les autres menus seront
                 accessibles via "Plus".
               </p>
@@ -1232,8 +1234,8 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                               isSelected
                                 ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] ring-1 ring-[var(--primary)]'
                                 : selected.length >= 4
-                                  ? 'border-slate-200 dark:border-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed'
-                                  : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/10'
+                                  ? 'border-[var(--border)] text-slate-300 dark:text-[var(--text-secondary)] cursor-not-allowed'
+                                  : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/10'
                             }`}
                           >
                             {isSelected && (
@@ -1250,7 +1252,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                       })}
                     </div>
                     {selected.length > 0 && (
-                      <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <div className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
                         <span>{selected.length}/4 sélectionnés :</span>
                         <span className="font-medium text-[var(--primary)] dark:text-[var(--primary)]">
                           {selected
@@ -1281,7 +1283,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
               })()}
             </div>
 
-            <div className="pt-4 border-t dark:border-slate-700">
+            <div className="pt-4 border-t border-[var(--border)]">
               <div className="flex items-start gap-3 p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
                 <Info className="w-5 h-5 text-[var(--primary)] shrink-0 mt-0.5" />
                 <div className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">

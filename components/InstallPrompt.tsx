@@ -24,13 +24,13 @@ export const InstallPrompt: React.FC = () => {
   useEffect(() => {
     // Debug log
     logger.debug('[PWA] InstallPrompt mounted');
-    
+
     // Check if already installed (standalone mode)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-      || (window.navigator as any).standalone === true;
-    
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+
     logger.debug('[PWA] isStandalone:', isStandalone);
-    
+
     if (isStandalone) {
       setIsInstalled(true);
       return;
@@ -113,11 +113,11 @@ export const InstallPrompt: React.FC = () => {
       try {
         await deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        
+
         if (outcome === 'accepted') {
           setIsInstalled(true);
         }
-        
+
         setDeferredPrompt(null);
         setShowPrompt(false);
       } catch (error) {
@@ -143,34 +143,44 @@ export const InstallPrompt: React.FC = () => {
   if (showIOSInstructions) {
     return (
       <div className="fixed inset-0 z-[200] flex items-end justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-        <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-t-2xl shadow-2xl p-6 animate-in slide-in-from-bottom duration-300 safe-area-bottom">
+        <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-t-2xl shadow-2xl p-6 animate-in slide-in-from-bottom duration-300 safe-area-bottom">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-white">
-              Installer Trackyu GPS
-            </h3>
-            <button 
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">Installer Trackyu GPS</h3>
+            <button
               onClick={handleDismiss}
-              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200 rounded-full hover:bg-[var(--bg-elevated)]"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
-          
-          <div className="space-y-4 text-slate-600 dark:text-slate-300">
+
+          <div className="space-y-4 text-[var(--text-secondary)]">
             <p className="text-sm">Pour installer l'application sur votre iPhone/iPad :</p>
-            
+
             <ol className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                <span>Appuyez sur le bouton <strong>Partager</strong> (icône carré avec flèche vers le haut)</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">
+                  1
+                </span>
+                <span>
+                  Appuyez sur le bouton <strong>Partager</strong> (icône carré avec flèche vers le haut)
+                </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                <span>Faites défiler et appuyez sur <strong>"Sur l'écran d'accueil"</strong></span>
+                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">
+                  2
+                </span>
+                <span>
+                  Faites défiler et appuyez sur <strong>"Sur l'écran d'accueil"</strong>
+                </span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                <span>Appuyez sur <strong>"Ajouter"</strong> en haut à droite</span>
+                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">
+                  3
+                </span>
+                <span>
+                  Appuyez sur <strong>"Ajouter"</strong> en haut à droite
+                </span>
               </li>
             </ol>
           </div>
@@ -189,7 +199,7 @@ export const InstallPrompt: React.FC = () => {
   // Install Banner
   return (
     <div className="fixed bottom-20 lg:bottom-6 left-4 right-4 z-[100] animate-in slide-in-from-bottom fade-in duration-300">
-      <div className="max-w-md mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 flex items-center gap-4">
+      <div className="max-w-md mx-auto bg-[var(--bg-elevated)] rounded-2xl shadow-2xl border border-[var(--border)] p-4 flex items-center gap-4">
         {/* App Icon */}
         <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
           <Smartphone className="w-7 h-7 text-white" />
@@ -197,19 +207,15 @@ export const InstallPrompt: React.FC = () => {
 
         {/* Text */}
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-800 dark:text-white text-sm">
-            Installer Trackyu GPS
-          </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Accès rapide depuis votre écran d'accueil
-          </p>
+          <h4 className="font-semibold text-[var(--text-primary)] text-sm">Installer Trackyu GPS</h4>
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">Accès rapide depuis votre écran d'accueil</p>
         </div>
 
         {/* Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={handleDismiss}
-            className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200 rounded-full hover:bg-[var(--bg-elevated)] transition-colors"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />

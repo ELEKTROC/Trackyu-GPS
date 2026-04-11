@@ -286,8 +286,8 @@ export function ResellerDrawerForm({
     if (isViewMode) {
       return (
         <div>
-          <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{label}</label>
-          <p className="text-slate-900 dark:text-white">
+          <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">{label}</label>
+          <p className="text-[var(--text-primary)]">
             {type === 'color' ? (
               <span className="flex items-center gap-2">
                 <span className="w-6 h-6 rounded border" style={{ backgroundColor: String(value) }} />
@@ -303,7 +303,7 @@ export function ResellerDrawerForm({
 
     return (
       <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{label}</label>
+        <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">{label}</label>
         {type === 'color' ? (
           <div className="flex items-center gap-2">
             <input type="color" {...form.register(name)} className="w-10 h-10 rounded cursor-pointer" />
@@ -311,7 +311,7 @@ export function ResellerDrawerForm({
               type="text"
               value={String(value)}
               onChange={(e) => form.setValue(name, e.target.value as ResellerFormData[keyof ResellerFormData])}
-              className="flex-1 px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600"
+              className="flex-1 px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
             />
           </div>
         ) : (
@@ -319,7 +319,7 @@ export function ResellerDrawerForm({
             type={type}
             {...form.register(name, { valueAsNumber: type === 'number' })}
             placeholder={placeholder}
-            className="w-full px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 
+            className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] 
                        focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
           />
         )}
@@ -339,24 +339,24 @@ export function ResellerDrawerForm({
     if (isViewMode) {
       return (
         <div className="flex items-center gap-2 py-1">
-          {Icon && <Icon className="w-4 h-4 text-slate-400" />}
-          <span className={value ? 'text-green-600' : 'text-slate-400'}>
+          {Icon && <Icon className="w-4 h-4 text-[var(--text-muted)]" />}
+          <span className={value ? 'text-green-600' : 'text-[var(--text-muted)]'}>
             {value ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />}
           </span>
-          <span className="text-sm text-slate-700 dark:text-slate-300">{label}</span>
+          <span className="text-sm text-[var(--text-primary)]">{label}</span>
         </div>
       );
     }
 
     return (
-      <label className="flex items-center gap-2 py-1 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 px-2 rounded">
-        {Icon && <Icon className="w-4 h-4 text-slate-400" />}
+      <label className="flex items-center gap-2 py-1 cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 px-2 rounded">
+        {Icon && <Icon className="w-4 h-4 text-[var(--text-muted)]" />}
         <input
           type="checkbox"
           {...form.register(path as Path<ResellerFormData>)}
           className="w-4 h-4 text-[var(--primary)] rounded focus:ring-[var(--primary)]"
         />
-        <span className="text-sm text-slate-700 dark:text-slate-300">{label}</span>
+        <span className="text-sm text-[var(--text-primary)]">{label}</span>
       </label>
     );
   };
@@ -367,19 +367,19 @@ export function ResellerDrawerForm({
   const renderIdentityTab = () => (
     <div className="space-y-6">
       {/* Société */}
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-        <h4 className="font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+        <h4 className="font-medium text-[var(--text-primary)] mb-4 flex items-center gap-2">
           <Building2 className="w-4 h-4" /> Société
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {renderField('Nom', 'name', 'text', 'Nom de la société')}
           {/* Slug - Non modifiable après création */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Slug (Code numérotation) <span className="text-red-500">*</span>
             </label>
             {isViewMode ? (
-              <p className="text-slate-900 dark:text-white font-mono bg-slate-100 dark:bg-slate-700 px-3 py-2 rounded">
+              <p className="text-[var(--text-primary)] font-mono bg-[var(--bg-elevated)] px-3 py-2 rounded">
                 {form.watch('slug') || '-'}
               </p>
             ) : (
@@ -390,8 +390,8 @@ export function ResellerDrawerForm({
                   placeholder="ABJ, DKR, SMART..."
                   maxLength={10}
                   disabled={!isCreateMode}
-                  className={`w-full px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600 font-mono uppercase ${
-                    !isCreateMode ? 'bg-slate-100 dark:bg-slate-600 cursor-not-allowed' : ''
+                  className={`w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] font-mono uppercase ${
+                    !isCreateMode ? 'bg-slate-100 bg-[var(--bg-elevated)] cursor-not-allowed' : ''
                   } ${form.formState.errors.slug ? 'border-red-500' : ''}`}
                   onChange={(e) => {
                     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -408,7 +408,7 @@ export function ResellerDrawerForm({
             {form.formState.errors.slug && (
               <p className="text-red-500 text-xs mt-1">{form.formState.errors.slug.message}</p>
             )}
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
               Ce code sera utilisé dans les numéros de documents (ex: FAC-<strong>{form.watch('slug') || 'XXX'}</strong>
               -00001)
             </p>
@@ -421,8 +421,8 @@ export function ResellerDrawerForm({
       </div>
 
       {/* Admin */}
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-        <h4 className="font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+        <h4 className="font-medium text-[var(--text-primary)] mb-4 flex items-center gap-2">
           <User className="w-4 h-4" /> Administrateur
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -431,20 +431,20 @@ export function ResellerDrawerForm({
           {renderField('Téléphone', 'adminPhone', 'text', '+225 05 XX XX XX XX')}
           {isCreateMode && (
             <div className="space-y-1">
-              <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+              <label className="text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider">
                 Mot de passe initial
               </label>
               <div className="relative group">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   {...form.register('password')}
-                  className="w-full pl-3 pr-10 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
+                  className="w-full pl-3 pr-10 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all"
                   placeholder="********"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200"
                 >
                   {showPassword ? <X className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
                 </button>
@@ -458,8 +458,8 @@ export function ResellerDrawerForm({
       </div>
 
       {/* Marque Blanche */}
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-        <h4 className="font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+        <h4 className="font-medium text-[var(--text-primary)] mb-4 flex items-center gap-2">
           <Palette className="w-4 h-4" /> Marque Blanche
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -476,14 +476,14 @@ export function ResellerDrawerForm({
     <div className="space-y-6">
       {/* Quotas */}
       {/* Status */}
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-        <h4 className="font-medium text-slate-900 dark:text-white mb-4">Statut</h4>
+      <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+        <h4 className="font-medium text-[var(--text-primary)] mb-4">Statut</h4>
         {renderCheckbox('Compte actif', 'isActive', UserCheck)}
       </div>
 
       {/* Modules */}
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-        <h4 className="font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+        <h4 className="font-medium text-[var(--text-primary)] mb-4 flex items-center gap-2">
           <Package className="w-4 h-4" /> Modules activés
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -499,8 +499,8 @@ export function ResellerDrawerForm({
       </div>
 
       {/* Permissions */}
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-        <h4 className="font-medium text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+        <h4 className="font-medium text-[var(--text-primary)] mb-4 flex items-center gap-2">
           <Shield className="w-4 h-4" /> Permissions
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -514,8 +514,8 @@ export function ResellerDrawerForm({
       </div>
 
       {/* Status */}
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-        <h4 className="font-medium text-slate-900 dark:text-white mb-4">Statut</h4>
+      <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+        <h4 className="font-medium text-[var(--text-primary)] mb-4">Statut</h4>
         {renderCheckbox('Compte actif', 'isActive', UserCheck)}
       </div>
     </div>
@@ -534,12 +534,12 @@ export function ResellerDrawerForm({
         ) : (
           <>
             <div className="flex items-center justify-between">
-              <h4 className="font-medium text-slate-900 dark:text-white">Clients gérés ({realClients.length})</h4>
+              <h4 className="font-medium text-[var(--text-primary)]">Clients gérés ({realClients.length})</h4>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 dark:bg-slate-800">
+                <thead className="bg-[var(--bg-elevated)]">
                   <tr>
                     <th className="px-4 py-2 text-left">Client</th>
                     <th className="px-4 py-2 text-center">Véhicules</th>
@@ -550,17 +550,17 @@ export function ResellerDrawerForm({
                 <tbody className="divide-y dark:divide-gray-700">
                   {paginatedClients.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="px-4 py-8 text-center text-slate-500">
+                      <td colSpan={4} className="px-4 py-8 text-center text-[var(--text-secondary)]">
                         Aucun client trouvé pour ce revendeur.
                       </td>
                     </tr>
                   ) : (
                     paginatedClients.map((client) => (
-                      <tr key={client.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <tr key={client.id} className="tr-hover">
                         <td className="px-4 py-3">
                           <div>
-                            <p className="font-medium text-slate-900 dark:text-white">{client.name}</p>
-                            <p className="text-xs text-slate-500">Depuis {client.createdAt}</p>
+                            <p className="font-medium text-[var(--text-primary)]">{client.name}</p>
+                            <p className="text-xs text-[var(--text-secondary)]">Depuis {client.createdAt}</p>
                           </div>
                         </td>
                         <td className="px-4 py-3 text-center">{client.vehicleCount}</td>
@@ -570,7 +570,7 @@ export function ResellerDrawerForm({
                             className={`px-2 py-1 rounded-full text-xs ${
                               client.status === 'active'
                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                : 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300'
+                                : 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                             }`}
                           >
                             {client.status === 'active' ? 'Actif' : 'Inactif'}
@@ -585,22 +585,22 @@ export function ResellerDrawerForm({
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-4 border-t dark:border-slate-700">
-                <span className="text-sm text-slate-500">
+              <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+                <span className="text-sm text-[var(--text-secondary)]">
                   Page {clientPage} sur {totalPages}
                 </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setClientPage((p) => Math.max(1, p - 1))}
                     disabled={clientPage === 1}
-                    className="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                    className="p-2 rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setClientPage((p) => Math.min(totalPages, p + 1))}
                     disabled={clientPage === totalPages}
-                    className="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                    className="p-2 rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -626,51 +626,51 @@ export function ResellerDrawerForm({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-[var(--primary)]">{mockClients.length}</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Clients</p>
+            <p className="text-sm text-[var(--text-secondary)]">Clients</p>
           </div>
           <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-green-600">{activeClients}</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Actifs</p>
+            <p className="text-sm text-[var(--text-secondary)]">Actifs</p>
           </div>
           <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-purple-600">{totalVehicles}</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Véhicules</p>
+            <p className="text-sm text-[var(--text-secondary)]">Véhicules</p>
           </div>
           <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-orange-600">{totalUsers}</p>
-            <p className="text-sm text-slate-600 dark:text-slate-400">Utilisateurs</p>
+            <p className="text-sm text-[var(--text-secondary)]">Utilisateurs</p>
           </div>
         </div>
 
         {/* MRR */}
-        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-          <h4 className="font-medium text-slate-900 dark:text-white mb-4">Revenus</h4>
+        <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+          <h4 className="font-medium text-[var(--text-primary)] mb-4">Revenus</h4>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-3xl font-bold text-slate-900 dark:text-white">{mrr}</p>
-              <p className="text-sm text-slate-500">Abonnement mensuel</p>
+              <p className="text-3xl font-bold text-[var(--text-primary)]">{mrr}</p>
+              <p className="text-sm text-[var(--text-secondary)]">Abonnement mensuel</p>
             </div>
             <div className="text-right">
               <p className="text-lg font-medium text-green-600">+12%</p>
-              <p className="text-sm text-slate-500">vs mois précédent</p>
+              <p className="text-sm text-[var(--text-secondary)]">vs mois précédent</p>
             </div>
           </div>
         </div>
 
         {/* Croissance */}
-        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-          <h4 className="font-medium text-slate-900 dark:text-white mb-4">Croissance</h4>
+        <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
+          <h4 className="font-medium text-[var(--text-primary)] mb-4">Croissance</h4>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-600 dark:text-slate-400">Nouveaux clients (30j)</span>
-              <span className="font-medium text-slate-900 dark:text-white">+2</span>
+              <span className="text-sm text-[var(--text-secondary)]">Nouveaux clients (30j)</span>
+              <span className="font-medium text-[var(--text-primary)]">+2</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-600 dark:text-slate-400">Nouveaux véhicules (30j)</span>
-              <span className="font-medium text-slate-900 dark:text-white">+18</span>
+              <span className="text-sm text-[var(--text-secondary)]">Nouveaux véhicules (30j)</span>
+              <span className="font-medium text-[var(--text-primary)]">+18</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-slate-600 dark:text-slate-400">Taux de rétention</span>
+              <span className="text-sm text-[var(--text-secondary)]">Taux de rétention</span>
               <span className="font-medium text-green-600">98%</span>
             </div>
           </div>
@@ -700,20 +700,20 @@ export function ResellerDrawerForm({
     return (
       <div className="space-y-4">
         {/* Résumé */}
-        <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+        <div className="bg-[var(--bg-elevated)] rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500">Montant dû</p>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalDue}</p>
+              <p className="text-sm text-[var(--text-secondary)]">Montant dû</p>
+              <p className="text-2xl font-bold text-[var(--text-primary)]">{totalDue}</p>
             </div>
-            <Receipt className="w-8 h-8 text-slate-400" />
+            <Receipt className="w-8 h-8 text-[var(--text-muted)]" />
           </div>
         </div>
 
         {/* Liste factures */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-800">
+            <thead className="bg-[var(--bg-elevated)]">
               <tr>
                 <th className="px-4 py-2 text-left">N° Facture</th>
                 <th className="px-4 py-2 text-left">Date</th>
@@ -724,10 +724,10 @@ export function ResellerDrawerForm({
             </thead>
             <tbody className="divide-y dark:divide-gray-700">
               {paginatedInvoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                <tr key={invoice.id} className="tr-hover">
                   <td className="px-4 py-3 font-medium text-[var(--primary)]">{invoice.number}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{invoice.date}</td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{invoice.dueDate}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{invoice.date}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{invoice.dueDate}</td>
                   <td className="px-4 py-3 text-right font-medium">{invoice.amount}</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`px-2 py-1 rounded-full text-xs ${statusColors[invoice.status]}`}>
@@ -742,22 +742,22 @@ export function ResellerDrawerForm({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t dark:border-slate-700">
-            <span className="text-sm text-slate-500">
+          <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+            <span className="text-sm text-[var(--text-secondary)]">
               Page {invoicePage} sur {totalPages}
             </span>
             <div className="flex gap-2">
               <button
                 onClick={() => setInvoicePage((p) => Math.max(1, p - 1))}
                 disabled={invoicePage === 1}
-                className="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                className="p-2 rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setInvoicePage((p) => Math.min(totalPages, p + 1))}
                 disabled={invoicePage === totalPages}
-                className="p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700 disabled:opacity-50"
+                className="p-2 rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -798,7 +798,7 @@ export function ResellerDrawerForm({
     <Drawer isOpen={isOpen} onClose={onClose} title={title} size="lg">
       <form onSubmit={form.handleSubmit(handleSubmit)} className="h-full flex flex-col">
         {/* Header Actions */}
-        <div className="flex items-center justify-between px-4 py-2 border-b dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--bg-elevated)]">
           <div className="flex items-center gap-2">
             {isViewMode && onModeChange && (
               <button
@@ -816,7 +816,7 @@ export function ResellerDrawerForm({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="px-3 py-1.5 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 Annuler
               </button>
@@ -833,7 +833,7 @@ export function ResellerDrawerForm({
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b dark:border-slate-700 overflow-x-auto">
+        <div className="flex border-b border-[var(--border)] overflow-x-auto">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -849,7 +849,7 @@ export function ResellerDrawerForm({
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   isActive
                     ? 'border-[var(--primary)] text-[var(--primary)]'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300'
                 }`}
               >
                 <Icon className="w-4 h-4" />

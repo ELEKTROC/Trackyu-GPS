@@ -48,7 +48,7 @@ export const SystemPanel = () => {
       <Card title="Configuration Système">
         <div className="p-4 space-y-4">
           <div>
-            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-bold text-[var(--text-primary)] mb-2">
               Clé API Google Maps (Backend)
             </label>
             <div className="flex gap-2">
@@ -57,7 +57,7 @@ export const SystemPanel = () => {
                 value={googleMapsKey}
                 onChange={(e) => setGoogleMapsKey(e.target.value)}
                 placeholder="AIza..."
-                className="flex-1 p-2 border rounded dark:bg-slate-900 dark:border-slate-700 dark:text-white"
+                className="flex-1 p-2 border rounded bg-[var(--bg-surface)] border-[var(--border)] text-[var(--text-primary)]"
               />
               <button
                 onClick={handleSaveKey}
@@ -67,7 +67,7 @@ export const SystemPanel = () => {
                 {updateSettingMutation.isPending ? '...' : 'Enregistrer'}
               </button>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-[var(--text-secondary)] mt-1">
               Cette clé est utilisée par le serveur pour le service "Snap-to-Road" (correction de tracé). Elle n'est pas
               exposée au navigateur.
             </p>

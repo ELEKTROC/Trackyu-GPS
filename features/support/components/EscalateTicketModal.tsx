@@ -17,7 +17,7 @@ interface EscalateTicketModalProps {
 }
 
 const PRIORITY_LEVELS = [
-  { value: 'LOW', label: 'Basse', color: 'text-slate-600' },
+  { value: 'LOW', label: 'Basse', color: 'text-[var(--text-secondary)]' },
   { value: 'MEDIUM', label: 'Moyenne', color: 'text-[var(--primary)]' },
   { value: 'HIGH', label: 'Haute', color: 'text-orange-600' },
   { value: 'CRITICAL', label: 'Critique', color: 'text-red-600' },
@@ -109,17 +109,14 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
 
         {/* Raison prédéfinie */}
         <div>
-          <label
-            htmlFor="escalate-reason"
-            className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2"
-          >
+          <label htmlFor="escalate-reason" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
             Raison de l'escalade *
           </label>
           <select
             id="escalate-reason"
             value={selectedReason}
             onChange={(e) => setSelectedReason(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
           >
             <option value="">-- Sélectionner une raison --</option>
             {ESCALATION_REASONS.map((r) => (
@@ -133,13 +130,11 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
         {/* Raison personnalisée */}
         {selectedReason === 'Autre (préciser ci-dessous)' && (
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Précisez la raison
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Précisez la raison</label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent resize-none"
               rows={3}
               placeholder="Décrivez la raison de l'escalade..."
             />
@@ -148,7 +143,7 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
 
         {/* Assignation (optionnel) */}
         <div>
-          <label htmlFor="assign-to" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+          <label htmlFor="assign-to" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
             <User className="w-4 h-4 inline mr-1" />
             Assigner à (optionnel)
           </label>
@@ -156,7 +151,7 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
             id="assign-to"
             value={assignTo}
             onChange={(e) => setAssignTo(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+            className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
           >
             <option value="">-- Aucune assignation --</option>
             {supportUsers.map((user) => (
@@ -165,15 +160,17 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
               </option>
             ))}
           </select>
-          <p className="text-xs text-slate-500 mt-1">Laisser vide pour conserver l'assignation actuelle</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-1">
+            Laisser vide pour conserver l'assignation actuelle
+          </p>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 justify-end pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="flex gap-3 justify-end pt-4 border-t border-[var(--border)]">
           <button
             onClick={handleClose}
             disabled={isSubmitting}
-            className="px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="px-4 py-2 text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
           >
             Annuler
           </button>

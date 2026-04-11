@@ -1,6 +1,6 @@
 /**
  * ResellerFormV2 - Formulaire de création/édition de revendeur amélioré
- * 
+ *
  * Onglets:
  * 1. Société - Infos de base, coordonnées, légal
  * 2. Administrateur - Compte admin principal du tenant
@@ -12,11 +12,24 @@ import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { 
-  Building2, User, Shield, Palette, 
-  Mail, Phone, MapPin, Globe, Lock, 
-  Upload, Check, AlertTriangle, Eye, EyeOff,
-  Image, Zap, Info
+import {
+  Building2,
+  User,
+  Shield,
+  Palette,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  Lock,
+  Upload,
+  Check,
+  AlertTriangle,
+  Eye,
+  EyeOff,
+  Image,
+  Zap,
+  Info,
 } from 'lucide-react';
 import type { Tier } from '../../../../types';
 import { useToast } from '../../../../contexts/ToastContext';
@@ -26,12 +39,12 @@ import { TOAST } from '../../../../constants/toastMessages';
 const ResellerSchemaV2 = z.object({
   // Tab 1: Société
   companyName: z.string().min(2, "Le nom de l'entreprise est requis (min 2 caractères)"),
-  email: z.string().email("Email invalide"),
+  email: z.string().email('Email invalide'),
   phone: z.string().optional(),
   address: z.string().optional(),
   city: z.string().optional(),
   country: z.string().default('Sénégal'),
-  website: z.string().url("URL invalide").optional().or(z.literal('')),
+  website: z.string().url('URL invalide').optional().or(z.literal('')),
   activity: z.string().optional(),
   rccm: z.string().optional(),
   ccNumber: z.string().optional(),
@@ -40,9 +53,9 @@ const ResellerSchemaV2 = z.object({
 
   // Tab 2: Administrateur
   adminName: z.string().min(2, "Le nom de l'administrateur est requis"),
-  adminEmail: z.string().email("Email administrateur invalide"),
+  adminEmail: z.string().email('Email administrateur invalide'),
   adminPhone: z.string().optional(),
-  password: z.string().min(8, "Le mot de passe doit faire au moins 8 caractères").optional(),
+  password: z.string().min(8, 'Le mot de passe doit faire au moins 8 caractères').optional(),
 
   // Tab 3: Configuration
   maxVehicles: z.number().min(1).default(100),
@@ -50,7 +63,7 @@ const ResellerSchemaV2 = z.object({
   maxClients: z.number().min(1).default(50),
   modules: z.array(z.string()).default(['fleet', 'reports', 'alerts']),
   apiAccess: z.boolean().default(false),
-  
+
   // Tab 4: Marque Blanche
   logo: z.string().optional(),
   primaryColor: z.string().default('#3B82F6'),
@@ -88,49 +101,51 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
     // Préparer les valeurs initiales depuis le Tier
     const rd = initialData?.resellerData as any;
-    const defaultValues: Partial<ResellerFormDataV2> = initialData ? {
-      companyName: initialData.name,
-      email: initialData.email,
-      phone: initialData.phone,
-      address: initialData.address,
-      city: initialData.city,
-      country: initialData.country || 'Sénégal',
-      website: rd?.domain,
-      activity: rd?.activity,
-      rccm: rd?.rccm,
-      ccNumber: rd?.ccNumber,
-      managerName: rd?.managerName,
-      fiscalYear: rd?.fiscalYear,
-      adminName: rd?.managerName || '',
-      adminEmail: initialData.email,
-      maxVehicles: rd?.maxVehicles ?? rd?.quotas?.maxVehicles ?? 100,
-      maxUsers: rd?.maxUsers ?? rd?.quotas?.maxUsers ?? 10,
-      maxClients: rd?.maxClients ?? rd?.quotas?.maxClients ?? 50,
-      modules: rd?.modules ?? ['fleet', 'reports', 'alerts'],
-      apiAccess: rd?.apiAccess ?? false,
-      primaryColor: rd?.whiteLabelConfig?.primaryColor ?? rd?.primaryColor ?? '#3B82F6',
-      secondaryColor: rd?.whiteLabelConfig?.secondaryColor ?? rd?.secondaryColor ?? '#1E40AF',
-      logo: rd?.logo,
-    } : {
-      country: 'Sénégal',
-      maxVehicles: 100,
-      maxUsers: 10,
-      maxClients: 50,
-      modules: ['fleet', 'reports', 'alerts'],
-      apiAccess: false,
-      primaryColor: '#3B82F6',
-      secondaryColor: '#1E40AF',
-    };
+    const defaultValues: Partial<ResellerFormDataV2> = initialData
+      ? {
+          companyName: initialData.name,
+          email: initialData.email,
+          phone: initialData.phone,
+          address: initialData.address,
+          city: initialData.city,
+          country: initialData.country || 'Sénégal',
+          website: rd?.domain,
+          activity: rd?.activity,
+          rccm: rd?.rccm,
+          ccNumber: rd?.ccNumber,
+          managerName: rd?.managerName,
+          fiscalYear: rd?.fiscalYear,
+          adminName: rd?.managerName || '',
+          adminEmail: initialData.email,
+          maxVehicles: rd?.maxVehicles ?? rd?.quotas?.maxVehicles ?? 100,
+          maxUsers: rd?.maxUsers ?? rd?.quotas?.maxUsers ?? 10,
+          maxClients: rd?.maxClients ?? rd?.quotas?.maxClients ?? 50,
+          modules: rd?.modules ?? ['fleet', 'reports', 'alerts'],
+          apiAccess: rd?.apiAccess ?? false,
+          primaryColor: rd?.whiteLabelConfig?.primaryColor ?? rd?.primaryColor ?? '#3B82F6',
+          secondaryColor: rd?.whiteLabelConfig?.secondaryColor ?? rd?.secondaryColor ?? '#1E40AF',
+          logo: rd?.logo,
+        }
+      : {
+          country: 'Sénégal',
+          maxVehicles: 100,
+          maxUsers: 10,
+          maxClients: 50,
+          modules: ['fleet', 'reports', 'alerts'],
+          apiAccess: false,
+          primaryColor: '#3B82F6',
+          secondaryColor: '#1E40AF',
+        };
 
-    const { 
-      register, 
-      handleSubmit, 
-      setValue, 
+    const {
+      register,
+      handleSubmit,
+      setValue,
       watch,
-      formState: { errors } 
+      formState: { errors },
     } = useForm<ResellerFormDataV2>({
       resolver: zodResolver(ResellerSchemaV2) as any,
-      defaultValues
+      defaultValues,
     });
 
     const selectedModules = watch('modules') || [];
@@ -145,7 +160,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
     const hasTabError = (tabIndex: number) => {
       const tab = tabs[tabIndex];
-      return tab.errorFields.some(field => errors[field as keyof typeof errors]);
+      return tab.errorFields.some((field) => errors[field as keyof typeof errors]);
     };
 
     const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,7 +170,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
           showToast('Le logo doit faire moins de 500KB', 'error');
           return;
         }
-        
+
         const reader = new FileReader();
         reader.onloadend = () => {
           const base64 = reader.result as string;
@@ -168,9 +183,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
     const toggleModule = (moduleId: string) => {
       const current = selectedModules;
-      const updated = current.includes(moduleId)
-        ? current.filter(m => m !== moduleId)
-        : [...current, moduleId];
+      const updated = current.includes(moduleId) ? current.filter((m) => m !== moduleId) : [...current, moduleId];
       setValue('modules', updated);
     };
 
@@ -192,7 +205,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
     return (
       <form ref={ref} onSubmit={handleSubmit(onSubmit, onError)} className="flex flex-col h-[550px]">
         {/* Tabs Header */}
-        <div className="flex border-b border-slate-200 dark:border-slate-700 mb-4">
+        <div className="flex border-b border-[var(--border)] mb-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -201,7 +214,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 relative ${
                 activeTab === tab.id
                   ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
+                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-slate-300'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -215,25 +228,24 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
         {/* Tab Content */}
         <div className="flex-1 overflow-y-auto custom-scrollbar px-1">
-          
           {/* TAB 1: SOCIÉTÉ */}
           {activeTab === 0 && (
             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Nom société */}
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Nom de la Société <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      {...register('companyName')} 
-                      type="text" 
-                      className={`w-full pl-9 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 ${
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                    <input
+                      {...register('companyName')}
+                      type="text"
+                      className={`w-full pl-9 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] ${
                         errors.companyName ? 'border-red-500' : ''
                       }`}
-                      placeholder="Ex: TrackYu Sénégal" 
+                      placeholder="Ex: TrackYu Sénégal"
                     />
                   </div>
                   {errors.companyName && (
@@ -246,18 +258,18 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
                 {/* Email */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Email Contact <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      {...register('email')} 
-                      type="email" 
-                      className={`w-full pl-9 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 ${
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                    <input
+                      {...register('email')}
+                      type="email"
+                      className={`w-full pl-9 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] ${
                         errors.email ? 'border-red-500' : ''
                       }`}
-                      placeholder="contact@entreprise.sn" 
+                      placeholder="contact@entreprise.sn"
                     />
                   </div>
                   {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
@@ -265,92 +277,100 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
                 {/* Téléphone */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Téléphone</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Téléphone
+                  </label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      {...register('phone')} 
-                      type="text" 
-                      className="w-full pl-9 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                      placeholder="+221 77 123 45 67" 
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                    <input
+                      {...register('phone')}
+                      type="text"
+                      className="w-full pl-9 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                      placeholder="+221 77 123 45 67"
                     />
                   </div>
                 </div>
 
                 {/* Activité */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Activité</label>
-                  <input 
-                    {...register('activity')} 
-                    type="text" 
-                    className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                    placeholder="Géolocalisation et tracking" 
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Activité
+                  </label>
+                  <input
+                    {...register('activity')}
+                    type="text"
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                    placeholder="Géolocalisation et tracking"
                   />
                 </div>
 
                 {/* Responsable */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nom du Responsable</label>
-                  <input 
-                    {...register('managerName')} 
-                    type="text" 
-                    className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                    placeholder="M. Diallo" 
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Nom du Responsable
+                  </label>
+                  <input
+                    {...register('managerName')}
+                    type="text"
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                    placeholder="M. Diallo"
                   />
                 </div>
 
                 {/* RCCM */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">RCCM</label>
-                  <input 
-                    {...register('rccm')} 
-                    type="text" 
-                    className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                    placeholder="SN-DKR-2024-B-12345" 
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">RCCM</label>
+                  <input
+                    {...register('rccm')}
+                    type="text"
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                    placeholder="SN-DKR-2024-B-12345"
                   />
                 </div>
 
                 {/* N° CC */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">N° Contribuable (CC)</label>
-                  <input 
-                    {...register('ccNumber')} 
-                    type="text" 
-                    className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                    placeholder="00012345B" 
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    N° Contribuable (CC)
+                  </label>
+                  <input
+                    {...register('ccNumber')}
+                    type="text"
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                    placeholder="00012345B"
                   />
                 </div>
 
                 {/* Adresse */}
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Adresse</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Adresse</label>
                   <div className="relative">
-                    <MapPin className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                    <textarea 
-                      {...register('address')} 
-                      className="w-full pl-9 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 min-h-[70px]"
-                      placeholder="123 Avenue Cheikh Anta Diop, Dakar" 
+                    <MapPin className="absolute left-3 top-3 w-4 h-4 text-[var(--text-muted)]" />
+                    <textarea
+                      {...register('address')}
+                      className="w-full pl-9 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] min-h-[70px]"
+                      placeholder="123 Avenue Cheikh Anta Diop, Dakar"
                     />
                   </div>
                 </div>
 
                 {/* Ville */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Ville</label>
-                  <input 
-                    {...register('city')} 
-                    type="text" 
-                    className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                    placeholder="Abidjan" 
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Ville</label>
+                  <input
+                    {...register('city')}
+                    type="text"
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                    placeholder="Abidjan"
                   />
                 </div>
 
                 {/* Pays */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pays</label>
-                  <select 
-                    {...register('country')} 
-                    className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Pays</label>
+                  <select
+                    {...register('country')}
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                   >
                     <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
                     <option value="Sénégal">🇸🇳 Sénégal</option>
@@ -366,14 +386,16 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
                 {/* Site Web */}
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Site Web</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Site Web
+                  </label>
                   <div className="relative">
-                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
-                      {...register('website')} 
-                      type="url" 
-                      className="w-full pl-9 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                      placeholder="https://www.entreprise.sn" 
+                    <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                    <input
+                      {...register('website')}
+                      type="url"
+                      className="w-full pl-9 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                      placeholder="https://www.entreprise.sn"
                     />
                   </div>
                 </div>
@@ -394,84 +416,86 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Nom Admin */}
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Nom Complet <span className="text-red-500">*</span>
                   </label>
-                  <input 
-                    {...register('adminName')} 
-                    type="text" 
-                    className={`w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 ${
+                  <input
+                    {...register('adminName')}
+                    type="text"
+                    className={`w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] ${
                       errors.adminName ? 'border-red-500' : ''
                     }`}
-                    placeholder="Prénom Nom" 
+                    placeholder="Prénom Nom"
                   />
                   {errors.adminName && <p className="text-red-500 text-xs mt-1">{errors.adminName.message}</p>}
                 </div>
 
                 {/* Email Admin */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Email de Connexion <span className="text-red-500">*</span>
                   </label>
-                  <input 
-                    {...register('adminEmail')} 
-                    type="email" 
-                    className={`w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 ${
+                  <input
+                    {...register('adminEmail')}
+                    type="email"
+                    className={`w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] ${
                       errors.adminEmail ? 'border-red-500' : ''
                     }`}
-                    placeholder="admin@entreprise.sn" 
+                    placeholder="admin@entreprise.sn"
                   />
                   {errors.adminEmail && <p className="text-red-500 text-xs mt-1">{errors.adminEmail.message}</p>}
                 </div>
 
                 {/* Téléphone Admin */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Téléphone Mobile</label>
-                  <input 
-                    {...register('adminPhone')} 
-                    type="text" 
-                    className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                    placeholder="+221 77 000 00 00" 
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Téléphone Mobile
+                  </label>
+                  <input
+                    {...register('adminPhone')}
+                    type="text"
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                    placeholder="+221 77 000 00 00"
                   />
                 </div>
 
                 {/* Rôle (fixe) */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Rôle</label>
-                  <input 
-                    type="text" 
-                    value="Administrateur Tenant" 
-                    disabled 
-                    className="w-full p-2 border rounded-lg bg-slate-100 dark:bg-slate-800 dark:border-slate-700 text-slate-500 cursor-not-allowed" 
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Rôle</label>
+                  <input
+                    type="text"
+                    value="Administrateur Tenant"
+                    disabled
+                    className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] cursor-not-allowed"
                   />
                 </div>
 
                 {/* Mot de passe */}
                 {!isEdit && (
                   <div className="col-span-2">
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                       Mot de passe initial <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <input 
-                        {...register('password')} 
+                      <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                      <input
+                        {...register('password')}
                         type={showPassword ? 'text' : 'password'}
-                        className={`w-full pl-9 pr-10 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 ${
+                        className={`w-full pl-9 pr-10 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] ${
                           errors.password ? 'border-red-500' : ''
                         }`}
-                        placeholder="Minimum 8 caractères" 
+                        placeholder="Minimum 8 caractères"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                       >
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
                     </div>
                     {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-[var(--text-secondary)] mt-1">
                       Un email de bienvenue sera envoyé avec les instructions de connexion.
                     </p>
                   </div>
@@ -485,36 +509,42 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               {/* Quotas */}
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                   <Zap className="w-4 h-4 text-amber-500" />
                   Quotas & Limites
                 </h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Max Véhicules</label>
-                    <input 
-                      {...register('maxVehicles', { valueAsNumber: true })} 
-                      type="number" 
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Max Véhicules
+                    </label>
+                    <input
+                      {...register('maxVehicles', { valueAsNumber: true })}
+                      type="number"
                       min={1}
-                      className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
+                      className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Max Utilisateurs</label>
-                    <input 
-                      {...register('maxUsers', { valueAsNumber: true })} 
-                      type="number" 
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Max Utilisateurs
+                    </label>
+                    <input
+                      {...register('maxUsers', { valueAsNumber: true })}
+                      type="number"
                       min={1}
-                      className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
+                      className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Max Clients</label>
-                    <input 
-                      {...register('maxClients', { valueAsNumber: true })} 
-                      type="number" 
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Max Clients
+                    </label>
+                    <input
+                      {...register('maxClients', { valueAsNumber: true })}
+                      type="number"
                       min={1}
-                      className="w-full p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
+                      className="w-full p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
                     />
                   </div>
                 </div>
@@ -522,26 +552,26 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
               {/* Modules */}
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-3">Modules Autorisés</h3>
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3">Modules Autorisés</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {AVAILABLE_MODULES.map((mod) => (
-                    <label 
-                      key={mod.id} 
+                    <label
+                      key={mod.id}
                       className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
                         selectedModules.includes(mod.id)
                           ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
-                          : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          : 'border-[var(--border)] tr-hover'
                       }`}
                     >
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         checked={selectedModules.includes(mod.id)}
                         onChange={() => toggleModule(mod.id)}
-                        className="mt-1 rounded text-[var(--primary)] focus:ring-[var(--primary)]" 
+                        className="mt-1 rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                       />
                       <div>
-                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{mod.label}</span>
-                        <p className="text-xs text-slate-500">{mod.description}</p>
+                        <span className="text-sm font-medium text-[var(--text-primary)]">{mod.label}</span>
+                        <p className="text-xs text-[var(--text-secondary)]">{mod.description}</p>
                       </div>
                     </label>
                   ))}
@@ -555,70 +585,76 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               {/* Logo */}
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                   <Image className="w-4 h-4 text-purple-500" />
                   Logo
                 </h3>
                 <div className="flex items-center gap-4">
-                  <div className={`w-24 h-24 rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden ${
-                    logoPreview ? 'border-transparent' : 'border-slate-300 dark:border-slate-600'
-                  }`}>
+                  <div
+                    className={`w-24 h-24 rounded-xl border-2 border-dashed flex items-center justify-center overflow-hidden ${
+                      logoPreview ? 'border-transparent' : 'border-[var(--border)]'
+                    }`}
+                  >
                     {logoPreview ? (
                       <img src={logoPreview} alt="Logo preview" className="w-full h-full object-contain" />
                     ) : (
-                      <Upload className="w-8 h-8 text-slate-400" />
+                      <Upload className="w-8 h-8 text-[var(--text-muted)]" />
                     )}
                   </div>
                   <div>
                     <label className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white text-sm font-medium rounded-lg hover:bg-[var(--primary-light)] cursor-pointer">
                       <Upload className="w-4 h-4" />
                       Choisir un logo
-                      <input 
-                        type="file" 
+                      <input
+                        type="file"
                         accept="image/png,image/jpeg,image/svg+xml"
                         onChange={handleLogoUpload}
-                        className="hidden" 
+                        className="hidden"
                       />
                     </label>
-                    <p className="text-xs text-slate-500 mt-2">PNG, JPG ou SVG. Max 500KB.</p>
+                    <p className="text-xs text-[var(--text-secondary)] mt-2">PNG, JPG ou SVG. Max 500KB.</p>
                   </div>
                 </div>
               </div>
 
               {/* Couleurs */}
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                   <Palette className="w-4 h-4 text-pink-500" />
                   Couleurs de marque
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Couleur Principale</label>
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Couleur Principale
+                    </label>
                     <div className="flex items-center gap-2">
-                      <input 
-                        {...register('primaryColor')} 
-                        type="color" 
-                        className="w-10 h-10 rounded-lg border-2 border-slate-200 cursor-pointer"
+                      <input
+                        {...register('primaryColor')}
+                        type="color"
+                        className="w-10 h-10 rounded-lg border-2 border-[var(--border)] cursor-pointer"
                       />
-                      <input 
-                        {...register('primaryColor')} 
-                        type="text" 
-                        className="flex-1 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 font-mono text-sm"
+                      <input
+                        {...register('primaryColor')}
+                        type="text"
+                        className="flex-1 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] font-mono text-sm"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Couleur Secondaire</label>
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Couleur Secondaire
+                    </label>
                     <div className="flex items-center gap-2">
-                      <input 
-                        {...register('secondaryColor')} 
-                        type="color" 
-                        className="w-10 h-10 rounded-lg border-2 border-slate-200 cursor-pointer"
+                      <input
+                        {...register('secondaryColor')}
+                        type="color"
+                        className="w-10 h-10 rounded-lg border-2 border-[var(--border)] cursor-pointer"
                       />
-                      <input 
-                        {...register('secondaryColor')} 
-                        type="text" 
-                        className="flex-1 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700 font-mono text-sm"
+                      <input
+                        {...register('secondaryColor')}
+                        type="text"
+                        className="flex-1 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] font-mono text-sm"
                       />
                     </div>
                   </div>
@@ -627,8 +663,8 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
               {/* Preview */}
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-3">Aperçu</h3>
-                <div 
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3">Aperçu</h3>
+                <div
                   className="p-4 rounded-xl text-white"
                   style={{ background: `linear-gradient(135deg, ${primaryColor}, ${watch('secondaryColor')})` }}
                 >
@@ -650,20 +686,20 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
 
               {/* Domaine personnalisé */}
               <div>
-                <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 flex items-center gap-2">
                   <Globe className="w-4 h-4 text-green-500" />
                   Domaine Personnalisé
                 </h3>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input 
-                    {...register('customDomain')} 
-                    type="text" 
-                    className="w-full pl-9 p-2 border rounded-lg bg-slate-50 dark:bg-slate-800 dark:border-slate-700"
-                    placeholder="tracking.votredomaine.sn" 
+                  <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                  <input
+                    {...register('customDomain')}
+                    type="text"
+                    className="w-full pl-9 p-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)]"
+                    placeholder="tracking.votredomaine.sn"
                   />
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-[var(--text-secondary)] mt-1">
                   Optionnel. Configurez un sous-domaine pour accéder à la plateforme.
                 </p>
               </div>

@@ -339,7 +339,7 @@ export const OfflineTrackerList: React.FC = () => {
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex gap-2 flex-wrap">
           {[
-            { key: 'ALL' as const, label: 'Tous', active: 'bg-slate-800 text-white', inactive: 'bg-slate-100 text-slate-600 hover:bg-slate-200' },
+            { key: 'ALL' as const, label: 'Tous', active: 'bg-slate-800 text-white', inactive: 'bg-slate-100 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]' },
             { key: '24H' as const, label: '1h - 24h', active: 'bg-yellow-500 text-white', inactive: 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100' },
             { key: '48H' as const, label: '24h - 48h', active: 'bg-orange-500 text-white', inactive: 'bg-orange-50 text-orange-700 hover:bg-orange-100' },
             { key: '7D' as const, label: '48h - 7j', active: 'bg-red-400 text-white', inactive: 'bg-red-50 text-red-600 hover:bg-red-100' },
@@ -357,18 +357,18 @@ export const OfflineTrackerList: React.FC = () => {
 
         <div className="flex items-center gap-2 flex-wrap">
           <div className="relative flex-1 min-w-[160px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher un véhicule..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full pl-9 pr-4 py-1.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
             />
           </div>
           <button
             onClick={handleExport}
-            className="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 hover:text-[var(--primary)] transition-colors"
+            className="p-2 bg-white border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] transition-colors"
             title={selectedIds.size > 0 ? `Exporter ${selectedIds.size} sélectionné(s)` : 'Exporter tout en CSV'}
           >
             <Download className="w-4 h-4" />
@@ -395,7 +395,7 @@ export const OfflineTrackerList: React.FC = () => {
             </button>
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="px-3 py-1 bg-white text-slate-600 border border-slate-200 rounded text-xs font-medium hover:bg-slate-50"
+              className="px-3 py-1 bg-white text-[var(--text-secondary)] border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-elevated)]"
             >
               Tout désélectionner
             </button>
@@ -407,7 +407,7 @@ export const OfflineTrackerList: React.FC = () => {
       {isMobile ? (
         <MobileCardList>
           {paginatedVehicles.length === 0 ? (
-            <div className="p-8 text-center text-slate-400">
+            <div className="p-8 text-center text-[var(--text-muted)]">
               <WifiOff className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p className="font-medium">Aucun tracker hors-ligne</p>
             </div>
@@ -422,17 +422,17 @@ export const OfflineTrackerList: React.FC = () => {
               <MobileCard key={vehicle.id} borderColor={borderColor}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{vehicle.name}</p>
-                    <p className="text-xs text-slate-500 truncate">{vehicle.client} · <span className="font-mono">{vehicle.imei || '--'}</span></p>
+                    <p className="text-sm font-bold text-[var(--text-primary)] truncate">{vehicle.name}</p>
+                    <p className="text-xs text-[var(--text-secondary)] truncate">{vehicle.client} · <span className="font-mono">{vehicle.imei || '--'}</span></p>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className="font-bold font-mono text-sm text-slate-700 dark:text-slate-200">{getOfflineDuration(vehicle.lastUpdated)}</p>
+                    <p className="font-bold font-mono text-sm text-[var(--text-primary)]">{getOfflineDuration(vehicle.lastUpdated)}</p>
                     {getStatusBadge(vehicle.lastUpdated)}
                   </div>
                 </div>
                 {lastComment && (
-                  <p className="mt-1 text-[10px] text-slate-400 truncate">
-                    <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded mr-1">{commentCount}</span>
+                  <p className="mt-1 text-[10px] text-[var(--text-muted)] truncate">
+                    <span className="bg-[var(--bg-elevated)] px-1.5 py-0.5 rounded mr-1">{commentCount}</span>
                     {lastComment.text}
                   </p>
                 )}
@@ -448,10 +448,10 @@ export const OfflineTrackerList: React.FC = () => {
       ) : (
       <div className="flex-1 overflow-auto custom-scrollbar pb-16 lg:pb-0">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-slate-500 uppercase font-bold text-xs sticky top-0 z-10">
+          <thead className="bg-slate-50 text-[var(--text-secondary)] uppercase font-bold text-xs sticky top-0 z-10">
             <tr>
               <th className="px-3 py-3 w-10">
-                <button onClick={toggleSelectAll} className="text-slate-400 hover:text-slate-600" title="Sélectionner tout">
+                <button onClick={toggleSelectAll} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]" title="Sélectionner tout">
                   {allPageSelected ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" /> : somePageSelected ? <Minus className="w-4 h-4 text-[var(--primary)]" /> : <Square className="w-4 h-4" />}
                 </button>
               </th>
@@ -472,13 +472,13 @@ export const OfflineTrackerList: React.FC = () => {
               const lastComment = getLastComment(vehicle.id);
               const commentCount = getVehicleComments(vehicle.id).length;
               return (
-                <tr key={vehicle.id} className={`hover:bg-slate-50 transition-colors group ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)]/50' : ''}`}>
+                <tr key={vehicle.id} className={`hover:bg-[var(--bg-elevated)] transition-colors group ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)]/50' : ''}`}>
                   <td className="px-3 py-3">
-                    <button onClick={() => toggleSelect(vehicle.id)} className="text-slate-400 hover:text-slate-600">
+                    <button onClick={() => toggleSelect(vehicle.id)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
                       {selectedIds.has(vehicle.id) ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" /> : <Square className="w-4 h-4" />}
                     </button>
                   </td>
-                  <td className="px-4 py-3 font-medium text-slate-800">
+                  <td className="px-4 py-3 font-medium text-[var(--text-primary)]">
                     <button
                       onClick={() => setInactivityModal({ vehicle })}
                       className="hover:text-[var(--primary)] hover:underline text-left"
@@ -487,21 +487,21 @@ export const OfflineTrackerList: React.FC = () => {
                       {vehicle.name}
                     </button>
                   </td>
-                  <td className="px-4 py-3 text-xs font-mono text-slate-500 select-all">{vehicle.imei || '--'}</td>
-                  <td className="px-4 py-3 text-xs font-mono text-slate-500 select-all">{vehicle.sim || '--'}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">{vehicle.deviceModel || '--'}</td>
-                  <td className="px-4 py-3 text-slate-600">{vehicle.client}</td>
-                  <td className="px-4 py-3 text-slate-500 text-xs">{new Date(vehicle.lastUpdated).toLocaleString()}</td>
-                  <td className="px-4 py-3 font-mono text-slate-700">{getOfflineDuration(vehicle.lastUpdated)}</td>
+                  <td className="px-4 py-3 text-xs font-mono text-[var(--text-secondary)] select-all">{vehicle.imei || '--'}</td>
+                  <td className="px-4 py-3 text-xs font-mono text-[var(--text-secondary)] select-all">{vehicle.sim || '--'}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">{vehicle.deviceModel || '--'}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">{vehicle.client}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)] text-xs">{new Date(vehicle.lastUpdated).toLocaleString()}</td>
+                  <td className="px-4 py-3 font-mono text-[var(--text-primary)]">{getOfflineDuration(vehicle.lastUpdated)}</td>
                   <td className="px-4 py-3">{getStatusBadge(vehicle.lastUpdated)}</td>
                   <td className="px-4 py-3 max-w-[200px]">
                     {lastComment ? (
                       <button
                         onClick={() => { setCommentModal({ vehicle }); setCommentText(''); }}
-                        className="text-left text-xs text-slate-600 hover:text-[var(--primary)] truncate block w-full"
+                        className="text-left text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] truncate block w-full"
                         title={lastComment.text}
                       >
-                        <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 mr-1">{commentCount}</span>
+                        <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[var(--text-secondary)] mr-1">{commentCount}</span>
                         {lastComment.text}
                       </button>
                     ) : (
@@ -535,7 +535,7 @@ export const OfflineTrackerList: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleAction('TICKET', vehicle)}
-                        className="p-1.5 bg-slate-100 text-slate-600 rounded hover:bg-slate-200 disabled:opacity-50"
+                        className="p-1.5 bg-slate-100 text-[var(--text-secondary)] rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50"
                         title="Créer Ticket Support"
                         disabled={loadingAction === `TICKET-${vehicle.id}`}
                       >
@@ -555,7 +555,7 @@ export const OfflineTrackerList: React.FC = () => {
             })}
             {offlineVehicles.length === 0 && (
               <tr>
-                <td colSpan={11} className="px-4 py-8 text-center text-slate-400">
+                <td colSpan={11} className="px-4 py-8 text-center text-[var(--text-muted)]">
                   <WifiOff className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   Aucun véhicule hors ligne correspondant aux critères.
                 </td>
@@ -568,13 +568,13 @@ export const OfflineTrackerList: React.FC = () => {
 
       {/* ── Pagination ──────────────────────────────── */}
       {sortedOfflineVehicles.length > 0 && (
-        <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-sm text-slate-600">
+        <div className="flex items-center justify-between border-t border-[var(--border)] pt-3 text-sm text-[var(--text-secondary)]">
           <div className="flex items-center gap-2">
             <span>Afficher</span>
             <select
               value={itemsPerPage}
               onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-              className="bg-white border border-slate-200 rounded px-2 py-1 text-xs"
+              className="bg-white border border-[var(--border)] rounded px-2 py-1 text-xs"
               aria-label="Nombre d'éléments par page"
             >
               {ITEMS_PER_PAGE_OPTIONS.map(n => (
@@ -582,7 +582,7 @@ export const OfflineTrackerList: React.FC = () => {
               ))}
             </select>
             <span>par page</span>
-            <span className="text-slate-400 ml-2">
+            <span className="text-[var(--text-muted)] ml-2">
               ({sortedOfflineVehicles.length} total)
             </span>
           </div>
@@ -602,11 +602,11 @@ export const OfflineTrackerList: React.FC = () => {
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setCommentModal(null)}>
           <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4 border-b">
-              <h3 className="font-semibold text-slate-800">
+              <h3 className="font-semibold text-[var(--text-primary)]">
                 <PenLine className="w-4 h-4 inline mr-2 text-emerald-600" />
                 Commentaires - {commentModal.vehicle.name}
               </h3>
-              <button onClick={() => setCommentModal(null)} className="text-slate-400 hover:text-slate-600" aria-label="Fermer">
+              <button onClick={() => setCommentModal(null)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]" aria-label="Fermer">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -614,15 +614,15 @@ export const OfflineTrackerList: React.FC = () => {
             {/* Existing comments */}
             <div className="flex-1 overflow-auto px-5 py-3 space-y-2 min-h-[100px] max-h-[300px]">
               {getVehicleComments(commentModal.vehicle.id).length === 0 ? (
-                <p className="text-slate-400 text-sm text-center py-4">Aucun commentaire pour ce véhicule.</p>
+                <p className="text-[var(--text-muted)] text-sm text-center py-4">Aucun commentaire pour ce véhicule.</p>
               ) : (
                 getVehicleComments(commentModal.vehicle.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(c => (
                   <div key={c.id} className="bg-slate-50 rounded-lg px-3 py-2">
-                    <div className="flex justify-between text-xs text-slate-400 mb-1">
-                      <span className="font-medium text-slate-600">{c.author}</span>
+                    <div className="flex justify-between text-xs text-[var(--text-muted)] mb-1">
+                      <span className="font-medium text-[var(--text-secondary)]">{c.author}</span>
                       <span>{new Date(c.createdAt).toLocaleString()}</span>
                     </div>
-                    <p className="text-sm text-slate-700">{c.text}</p>
+                    <p className="text-sm text-[var(--text-primary)]">{c.text}</p>
                   </div>
                 ))
               )}
@@ -637,7 +637,7 @@ export const OfflineTrackerList: React.FC = () => {
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(); }}
-                  className="flex-1 px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                   autoFocus
                 />
                 <button
@@ -666,32 +666,32 @@ export const OfflineTrackerList: React.FC = () => {
           <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setInactivityModal(null)}>
             <div className="bg-white rounded-xl shadow-xl w-full max-w-xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4 border-b">
-                <h3 className="font-semibold text-slate-800">
+                <h3 className="font-semibold text-[var(--text-primary)]">
                   <Clock className="w-4 h-4 inline mr-2 text-purple-600" />
                   Historique d'inactivité - {vehicle.name}
                 </h3>
-                <button onClick={() => setInactivityModal(null)} className="text-slate-400 hover:text-slate-600" aria-label="Fermer">
+                <button onClick={() => setInactivityModal(null)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]" aria-label="Fermer">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Vehicle summary */}
               <div className="px-5 py-3 bg-slate-50 border-b grid grid-cols-2 gap-3 text-sm">
-                <div><span className="text-slate-500">IMEI :</span> <span className="font-mono">{vehicle.imei || '--'}</span></div>
-                <div><span className="text-slate-500">Client :</span> <span>{vehicle.client}</span></div>
-                <div><span className="text-slate-500">Durée offline :</span> <span className="font-bold text-red-600">{offlineDuration}</span></div>
-                <div><span className="text-slate-500">Statut :</span> {getStatusBadge(vehicle.lastUpdated)}</div>
-                <div><span className="text-slate-500">SIM :</span> <span className="font-mono">{vehicle.sim || '--'}</span></div>
-                <div><span className="text-slate-500">Modèle :</span> <span>{vehicle.deviceModel || '--'}</span></div>
+                <div><span className="text-[var(--text-secondary)]">IMEI :</span> <span className="font-mono">{vehicle.imei || '--'}</span></div>
+                <div><span className="text-[var(--text-secondary)]">Client :</span> <span>{vehicle.client}</span></div>
+                <div><span className="text-[var(--text-secondary)]">Durée offline :</span> <span className="font-bold text-red-600">{offlineDuration}</span></div>
+                <div><span className="text-[var(--text-secondary)]">Statut :</span> {getStatusBadge(vehicle.lastUpdated)}</div>
+                <div><span className="text-[var(--text-secondary)]">SIM :</span> <span className="font-mono">{vehicle.sim || '--'}</span></div>
+                <div><span className="text-[var(--text-secondary)]">Modèle :</span> <span>{vehicle.deviceModel || '--'}</span></div>
               </div>
 
               {/* Timeline */}
               <div className="flex-1 overflow-auto px-5 py-4 space-y-0">
-                <h4 className="text-xs font-bold text-slate-500 uppercase mb-3">Chronologie</h4>
+                <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-3">Chronologie</h4>
                 {history.length === 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-4">Aucun événement enregistré.</p>
+                  <p className="text-sm text-[var(--text-muted)] text-center py-4">Aucun événement enregistré.</p>
                 ) : (
-                  <div className="relative border-l-2 border-slate-200 ml-2 space-y-4">
+                  <div className="relative border-l-2 border-[var(--border)] ml-2 space-y-4">
                     {history.map((entry, i) => {
                       const colors: Record<string, string> = {
                         offline_start: 'bg-red-500',
@@ -702,8 +702,8 @@ export const OfflineTrackerList: React.FC = () => {
                       return (
                         <div key={i} className="relative pl-6">
                           <div className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${colors[entry.type] || 'bg-slate-400'}`} />
-                          <div className="text-xs text-slate-400">{new Date(entry.date).toLocaleString()}</div>
-                          <div className="text-sm text-slate-700">{entry.description}</div>
+                          <div className="text-xs text-[var(--text-muted)]">{new Date(entry.date).toLocaleString()}</div>
+                          <div className="text-sm text-[var(--text-primary)]">{entry.description}</div>
                         </div>
                       );
                     })}

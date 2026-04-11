@@ -155,7 +155,7 @@ const ACTION_CONFIG: Record<
   LOGOUT: {
     label: 'Déconnexion',
     icon: LogOut,
-    color: 'text-slate-600',
+    color: 'text-[var(--text-secondary)]',
     bgColor: 'bg-slate-100',
     barColor: 'bg-slate-500',
   },
@@ -170,7 +170,7 @@ const ACTION_CONFIG: Record<
   VIEW: {
     label: 'Consultation',
     icon: Eye,
-    color: 'text-slate-600',
+    color: 'text-[var(--text-secondary)]',
     bgColor: 'bg-slate-100',
     barColor: 'bg-slate-500',
   },
@@ -600,18 +600,18 @@ export const AuditLogsPanelV2: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between shrink-0">
         <div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
             <Activity className="w-6 h-6 text-purple-600" />
             Journal d'Audit
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--text-secondary)]">
             {filteredLogs.length} événements • {stats.today} aujourd'hui
           </p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => handleExport('csv')}
-            className="flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-slate-50 text-sm"
+            className="flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-[var(--bg-elevated)] text-sm"
           >
             <Download className="w-4 h-4" />
             Exporter
@@ -636,8 +636,8 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <Activity className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.total}</p>
-                <p className="text-xs text-slate-500">Total</p>
+                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</p>
+                <p className="text-xs text-[var(--text-secondary)]">Total</p>
               </div>
             </div>
           </Card>
@@ -647,8 +647,8 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <Clock className="w-5 h-5 text-[var(--primary)]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.today}</p>
-                <p className="text-xs text-slate-500">Aujourd'hui</p>
+                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.today}</p>
+                <p className="text-xs text-[var(--text-secondary)]">Aujourd'hui</p>
               </div>
             </div>
           </Card>
@@ -658,8 +658,8 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <Users className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.uniqueUsers}</p>
-                <p className="text-xs text-slate-500">Utilisateurs</p>
+                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.uniqueUsers}</p>
+                <p className="text-xs text-[var(--text-secondary)]">Utilisateurs</p>
               </div>
             </div>
           </Card>
@@ -669,8 +669,8 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.warnings}</p>
-                <p className="text-xs text-slate-500">Avertissements</p>
+                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.warnings}</p>
+                <p className="text-xs text-[var(--text-secondary)]">Avertissements</p>
               </div>
             </div>
           </Card>
@@ -680,8 +680,8 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <X className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.failures}</p>
-                <p className="text-xs text-slate-500">Échecs</p>
+                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.failures}</p>
+                <p className="text-xs text-[var(--text-secondary)]">Échecs</p>
               </div>
             </div>
           </Card>
@@ -689,7 +689,7 @@ export const AuditLogsPanelV2: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
+      <div className="flex gap-4 border-b border-[var(--border)] shrink-0">
         {[
           { id: 'timeline', label: 'Timeline', icon: Clock },
           { id: 'table', label: 'Tableau', icon: FileText },
@@ -701,7 +701,7 @@ export const AuditLogsPanelV2: React.FC = () => {
             className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === tab.id
                 ? 'border-purple-600 text-purple-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -714,13 +714,13 @@ export const AuditLogsPanelV2: React.FC = () => {
       <Card className="p-4 shrink-0">
         <div className="flex flex-wrap gap-4 items-center">
           <div className="relative flex-1 min-w-[250px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher utilisateur, entité..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
             />
           </div>
 
@@ -728,7 +728,7 @@ export const AuditLogsPanelV2: React.FC = () => {
             <select
               value={filters.tenantId}
               onChange={(e) => setFilters({ ...filters, tenantId: e.target.value })}
-              className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+              className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
               title="Revendeur"
             >
               <option value="all">Tous les revendeurs</option>
@@ -745,7 +745,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           <select
             value={filters.action}
             onChange={(e) => setFilters({ ...filters, action: e.target.value })}
-            className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+            className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
             title="Action"
           >
             <option value="all">Toutes les actions</option>
@@ -759,7 +759,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           <select
             value={filters.entityType}
             onChange={(e) => setFilters({ ...filters, entityType: e.target.value })}
-            className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+            className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
             title="Type d'entité"
           >
             <option value="all">Toutes les entités</option>
@@ -773,7 +773,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           <select
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+            className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
             title="Statut"
           >
             <option value="all">Tous les statuts</option>
@@ -802,23 +802,23 @@ export const AuditLogsPanelV2: React.FC = () => {
         </div>
 
         {showFilters && (
-          <div className="flex gap-4 mt-4 pt-4 border-t dark:border-slate-700">
+          <div className="flex gap-4 mt-4 pt-4 border-t border-[var(--border)]">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date début</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Date début</label>
               <input
                 type="date"
                 value={filters.dateFrom}
                 onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                className="px-3 py-2 border rounded-lg text-sm dark:bg-slate-900 dark:border-slate-700"
+                className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-surface)] border-[var(--border)]"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date fin</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Date fin</label>
               <input
                 type="date"
                 value={filters.dateTo}
                 onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                className="px-3 py-2 border rounded-lg text-sm dark:bg-slate-900 dark:border-slate-700"
+                className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-surface)] border-[var(--border)]"
               />
             </div>
           </div>
@@ -830,10 +830,10 @@ export const AuditLogsPanelV2: React.FC = () => {
         {activeTab === 'timeline' && (
           <div className="relative pl-8">
             {/* Timeline line */}
-            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700"></div>
+            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200 bg-[var(--bg-elevated)]"></div>
 
             {filteredLogs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+              <div className="flex flex-col items-center justify-center h-64 text-[var(--text-secondary)]">
                 <Activity className="w-12 h-12 text-slate-300 mb-4" />
                 <p className="font-medium">Aucun log trouvé</p>
                 <p className="text-sm">Modifiez vos filtres</p>
@@ -873,7 +873,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                               >
                                 {actionConfig.label}
                               </span>
-                              <span className="flex items-center gap-1 text-xs text-slate-500">
+                              <span className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
                                 <EntityIcon className="w-3 h-3" />
                                 {entityConfig.label}
                               </span>
@@ -888,7 +888,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                               )}
                             </div>
 
-                            <p className="text-sm text-slate-800 dark:text-white">
+                            <p className="text-sm text-[var(--text-primary)]">
                               <strong>{log.userName}</strong>
                               {' a '}
                               {actionConfig.label.toLowerCase()}
@@ -906,7 +906,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                               )}
                             </p>
 
-                            <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                            <div className="flex items-center gap-4 mt-2 text-xs text-[var(--text-secondary)]">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {formatRelativeTime(log.timestamp)}
@@ -920,8 +920,8 @@ export const AuditLogsPanelV2: React.FC = () => {
                             </div>
                           </div>
 
-                          <button className="p-2 hover:bg-slate-100 rounded-lg">
-                            <ChevronRight className="w-4 h-4 text-slate-400" />
+                          <button className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg">
+                            <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
                           </button>
                         </div>
                       </Card>
@@ -937,7 +937,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 dark:bg-slate-800">
+                <thead className="bg-[var(--bg-elevated)]">
                   <tr>
                     <SortableHeader
                       label="Date"
@@ -945,7 +945,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                       currentSortKey={auditSortConfig.key}
                       currentDirection={auditSortConfig.direction}
                       onSort={handleAuditSort}
-                      className="text-xs font-bold text-slate-500 uppercase"
+                      className="section-title"
                     />
                     <SortableHeader
                       label="Utilisateur"
@@ -953,7 +953,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                       currentSortKey={auditSortConfig.key}
                       currentDirection={auditSortConfig.direction}
                       onSort={handleAuditSort}
-                      className="text-xs font-bold text-slate-500 uppercase"
+                      className="section-title"
                     />
                     <SortableHeader
                       label="Action"
@@ -961,7 +961,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                       currentSortKey={auditSortConfig.key}
                       currentDirection={auditSortConfig.direction}
                       onSort={handleAuditSort}
-                      className="text-xs font-bold text-slate-500 uppercase"
+                      className="section-title"
                     />
                     <SortableHeader
                       label="Entité"
@@ -969,7 +969,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                       currentSortKey={auditSortConfig.key}
                       currentDirection={auditSortConfig.direction}
                       onSort={handleAuditSort}
-                      className="text-xs font-bold text-slate-500 uppercase"
+                      className="section-title"
                     />
                     <SortableHeader
                       label="Statut"
@@ -977,7 +977,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                       currentSortKey={auditSortConfig.key}
                       currentDirection={auditSortConfig.direction}
                       onSort={handleAuditSort}
-                      className="text-xs font-bold text-slate-500 uppercase"
+                      className="section-title"
                     />
                     <SortableHeader
                       label="IP"
@@ -985,23 +985,25 @@ export const AuditLogsPanelV2: React.FC = () => {
                       currentSortKey={auditSortConfig.key}
                       currentDirection={auditSortConfig.direction}
                       onSort={handleAuditSort}
-                      className="text-xs font-bold text-slate-500 uppercase"
+                      className="section-title"
                     />
-                    <th className="px-4 py-3 text-right text-xs font-bold text-slate-500 uppercase">Détails</th>
+                    <th className="px-4 py-3 text-right text-xs font-bold text-[var(--text-secondary)] uppercase">
+                      Détails
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                <tbody className="divide-y divide-[var(--border)]">
                   {sortedLogs.map((log) => {
                     const actionConfig = getActionConfig(log.action);
                     return (
-                      <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                        <td className="px-4 py-3 text-sm text-slate-500">
+                      <tr key={log.id} className="tr-hover">
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)]">
                           {new Date(log.timestamp).toLocaleString('fr-FR')}
                         </td>
                         <td className="px-4 py-3">
                           <div>
-                            <p className="text-sm font-medium text-slate-800 dark:text-white">{log.userName}</p>
-                            <p className="text-xs text-slate-500">{log.userEmail}</p>
+                            <p className="text-sm font-medium text-[var(--text-primary)]">{log.userName}</p>
+                            <p className="text-xs text-[var(--text-secondary)]">{log.userEmail}</p>
                           </div>
                         </td>
                         <td className="px-4 py-3">
@@ -1012,18 +1014,21 @@ export const AuditLogsPanelV2: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          <p className="text-slate-800 dark:text-white">{getEntityConfig(log.entityType).label}</p>
-                          {log.entityName && <p className="text-xs text-slate-500">{log.entityName}</p>}
+                          <p className="text-[var(--text-primary)]">{getEntityConfig(log.entityType).label}</p>
+                          {log.entityName && <p className="text-xs text-[var(--text-secondary)]">{log.entityName}</p>}
                         </td>
                         <td className="px-4 py-3">
                           {log.status === 'success' && <Check className="w-4 h-4 text-green-600" />}
                           {log.status === 'warning' && <AlertTriangle className="w-4 h-4 text-amber-600" />}
                           {log.status === 'failure' && <X className="w-4 h-4 text-red-600" />}
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-500 font-mono">{log.ipAddress}</td>
+                        <td className="px-4 py-3 text-sm text-[var(--text-secondary)] font-mono">{log.ipAddress}</td>
                         <td className="px-4 py-3 text-right">
-                          <button onClick={() => handleViewDetails(log)} className="p-1.5 hover:bg-slate-100 rounded">
-                            <Eye className="w-4 h-4 text-slate-500" />
+                          <button
+                            onClick={() => handleViewDetails(log)}
+                            className="p-1.5 hover:bg-[var(--bg-elevated)] rounded"
+                          >
+                            <Eye className="w-4 h-4 text-[var(--text-secondary)]" />
                           </button>
                         </td>
                       </tr>
@@ -1039,7 +1044,7 @@ export const AuditLogsPanelV2: React.FC = () => {
           <div className="grid grid-cols-2 gap-6">
             {/* Par action */}
             <Card className="p-4">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4">Par Action</h3>
+              <h3 className="font-bold text-[var(--text-primary)] mb-4">Par Action</h3>
               <div className="space-y-3">
                 {stats.byAction
                   .filter((a) => a.count > 0)
@@ -1052,9 +1057,9 @@ export const AuditLogsPanelV2: React.FC = () => {
                       <div className="flex-1">
                         <div className="flex justify-between mb-1">
                           <span className="text-sm font-medium">{item.label}</span>
-                          <span className="text-sm text-slate-500">{item.count}</span>
+                          <span className="text-sm text-[var(--text-secondary)]">{item.count}</span>
                         </div>
-                        <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
                           <div
                             className={`h-full ${item.barColor}`}
                             style={{ width: `${(item.count / stats.total) * 100}%` }}
@@ -1068,22 +1073,22 @@ export const AuditLogsPanelV2: React.FC = () => {
 
             {/* Par entité */}
             <Card className="p-4">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4">Par Entité</h3>
+              <h3 className="font-bold text-[var(--text-primary)] mb-4">Par Entité</h3>
               <div className="space-y-3">
                 {stats.byEntity
                   .filter((e) => e.count > 0)
                   .sort((a, b) => b.count - a.count)
                   .map((item) => (
                     <div key={item.entity} className="flex items-center gap-3">
-                      <div className="p-2 rounded bg-slate-100 dark:bg-slate-700">
-                        <item.icon className="w-4 h-4 text-slate-600" />
+                      <div className="p-2 rounded bg-[var(--bg-elevated)]">
+                        <item.icon className="w-4 h-4 text-[var(--text-secondary)]" />
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between mb-1">
                           <span className="text-sm font-medium">{item.label}</span>
-                          <span className="text-sm text-slate-500">{item.count}</span>
+                          <span className="text-sm text-[var(--text-secondary)]">{item.count}</span>
                         </div>
-                        <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
                           <div
                             className="h-full bg-purple-500"
                             style={{ width: `${(item.count / stats.total) * 100}%` }}
@@ -1108,17 +1113,19 @@ export const AuditLogsPanelV2: React.FC = () => {
         {selectedLog && (
           <div className="p-4 space-y-4">
             {/* Header */}
-            <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+            <div className="flex items-center gap-4 p-4 bg-[var(--bg-elevated)] rounded-lg">
               <div className={`p-3 rounded-lg ${getActionConfig(selectedLog.action).bgColor}`}>
                 {React.createElement(getActionConfig(selectedLog.action).icon, {
                   className: `w-6 h-6 ${getActionConfig(selectedLog.action).color}`,
                 })}
               </div>
               <div>
-                <h3 className="font-bold text-lg text-slate-800 dark:text-white">
+                <h3 className="font-bold text-lg text-[var(--text-primary)]">
                   {getActionConfig(selectedLog.action).label} - {getEntityConfig(selectedLog.entityType).label}
                 </h3>
-                <p className="text-sm text-slate-500">{new Date(selectedLog.timestamp).toLocaleString('fr-FR')}</p>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {new Date(selectedLog.timestamp).toLocaleString('fr-FR')}
+                </p>
               </div>
               <span
                 className={`ml-auto px-3 py-1 rounded-full text-sm font-medium ${
@@ -1140,36 +1147,44 @@ export const AuditLogsPanelV2: React.FC = () => {
             {/* User info */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Utilisateur</label>
-                <p className="font-medium text-slate-800 dark:text-white">{selectedLog.userName}</p>
-                <p className="text-sm text-slate-500">{selectedLog.userEmail}</p>
-                <p className="text-xs text-slate-400">{selectedLog.userRole}</p>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Utilisateur
+                </label>
+                <p className="font-medium text-[var(--text-primary)]">{selectedLog.userName}</p>
+                <p className="text-sm text-[var(--text-secondary)]">{selectedLog.userEmail}</p>
+                <p className="text-xs text-[var(--text-muted)]">{selectedLog.userRole}</p>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Connexion</label>
-                <p className="font-mono text-sm text-slate-800 dark:text-white">{selectedLog.ipAddress}</p>
-                <p className="text-xs text-slate-500 truncate">{selectedLog.userAgent}</p>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Connexion</label>
+                <p className="font-mono text-sm text-[var(--text-primary)]">{selectedLog.ipAddress}</p>
+                <p className="text-xs text-[var(--text-secondary)] truncate">{selectedLog.userAgent}</p>
               </div>
             </div>
 
             {/* Entity */}
             {selectedLog.entityName && (
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Entité concernée</label>
-                <p className="font-medium text-slate-800 dark:text-white">{selectedLog.entityName}</p>
-                {selectedLog.entityId && <p className="text-xs text-slate-500 font-mono">ID: {selectedLog.entityId}</p>}
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Entité concernée
+                </label>
+                <p className="font-medium text-[var(--text-primary)]">{selectedLog.entityName}</p>
+                {selectedLog.entityId && (
+                  <p className="text-xs text-[var(--text-secondary)] font-mono">ID: {selectedLog.entityId}</p>
+                )}
               </div>
             )}
 
             {/* Changes */}
             {(selectedLog.oldValues || selectedLog.newValues) && (
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Modifications</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                  Modifications
+                </label>
                 <div className="grid grid-cols-2 gap-4">
                   {selectedLog.oldValues && (
                     <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                       <p className="text-xs font-bold text-red-600 mb-2">Avant</p>
-                      <pre className="text-xs text-slate-700 dark:text-slate-300 overflow-x-auto">
+                      <pre className="text-xs text-[var(--text-primary)] overflow-x-auto">
                         {JSON.stringify(selectedLog.oldValues, null, 2)}
                       </pre>
                     </div>
@@ -1177,7 +1192,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                   {selectedLog.newValues && (
                     <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                       <p className="text-xs font-bold text-green-600 mb-2">Après</p>
-                      <pre className="text-xs text-slate-700 dark:text-slate-300 overflow-x-auto">
+                      <pre className="text-xs text-[var(--text-primary)] overflow-x-auto">
                         {JSON.stringify(selectedLog.newValues, null, 2)}
                       </pre>
                     </div>
@@ -1188,14 +1203,16 @@ export const AuditLogsPanelV2: React.FC = () => {
 
             {/* Details */}
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Détails bruts</label>
-              <pre className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg text-xs overflow-x-auto">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2">
+                Détails bruts
+              </label>
+              <pre className="p-3 bg-[var(--bg-elevated)] rounded-lg text-xs overflow-x-auto">
                 {JSON.stringify(selectedLog.details, null, 2)}
               </pre>
             </div>
 
             {selectedLog.duration && (
-              <p className="text-xs text-slate-500">Durée de l'opération: {selectedLog.duration}ms</p>
+              <p className="text-xs text-[var(--text-secondary)]">Durée de l'opération: {selectedLog.duration}ms</p>
             )}
           </div>
         )}

@@ -65,7 +65,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
     const isIgnitionOn = vehicle.status === VehicleStatus.MOVING || vehicle.status === VehicleStatus.IDLE;
 
     let statusText = 'Hors ligne';
-    let statusColorClass = 'text-slate-500';
+    let statusColorClass = 'text-[var(--text-secondary)]';
     if (vehicle.status === VehicleStatus.MOVING) {
       statusText = 'En mouvement';
       statusColorClass = 'text-green-600';
@@ -151,23 +151,23 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
         onClick={() => onFocus(vehicle)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`relative px-4 py-3 border-l-4 border-b border-slate-50 dark:border-slate-700 transition-all cursor-pointer flex gap-3 hover:bg-slate-50 dark:hover:bg-slate-700/50 ${isFocused ? 'border-l-blue-500 bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'border-l-transparent'}`}
+        className={`relative px-4 py-3 border-l-4 border-b border-slate-50 border-[var(--border)] transition-all cursor-pointer flex gap-3 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 ${isFocused ? 'border-l-blue-500 bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'border-l-transparent'}`}
       >
         <div className="flex items-start pt-1" onClick={(e) => onToggleSelection(vehicle.id, e)}>
           {isSelected ? (
             <CheckSquare className="w-4 h-4 text-[var(--primary)] cursor-pointer" />
           ) : (
-            <Square className="w-4 h-4 text-slate-300 dark:text-slate-600 hover:text-slate-400 cursor-pointer" />
+            <Square className="w-4 h-4 text-slate-300 dark:text-[var(--text-secondary)] hover:text-[var(--text-muted)] cursor-pointer" />
           )}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2 min-w-0">
-              {React.createElement(VehicleIcon, { className: 'w-3.5 h-3.5 text-slate-400' })}
+              {React.createElement(VehicleIcon, { className: 'w-3.5 h-3.5 text-[var(--text-muted)]' })}
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-2">
                   <span
-                    className={`font-bold text-sm truncate leading-tight ${isFocused ? 'text-[var(--primary)] dark:text-[var(--primary)]' : 'text-slate-700 dark:text-slate-200'}`}
+                    className={`font-bold text-sm truncate leading-tight ${isFocused ? 'text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
                   >
                     {getDisplayName()}
                   </span>
@@ -177,7 +177,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
                         e.stopPropagation();
                         onEdit(vehicle);
                       }}
-                      className="p-1 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded transition-colors"
+                      className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded transition-colors"
                       title="Modifier le véhicule"
                     >
                       <Pencil className="w-3 h-3" />
@@ -185,7 +185,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
                   )}
                 </div>
                 {config.showDriver && vehicle.driver && (
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-1 text-[10px] text-[var(--text-secondary)]">
                     <User className="w-2.5 h-2.5" />
                     <span className="truncate">{vehicle.driver}</span>
                   </div>
@@ -196,7 +196,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
           </div>
 
           <div className="flex items-center justify-between mt-2">
-            <div className="text-xs font-mono text-slate-500 dark:text-slate-400 w-16">
+            <div className="text-xs font-mono text-[var(--text-secondary)] w-16">
               {config.showSpeed
                 ? vehicle.status === VehicleStatus.MOVING
                   ? `${Math.round(vehicle.speed)} km/h`
@@ -205,12 +205,16 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
             </div>
 
             <div className="flex items-center gap-3">
-              <Signal className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-slate-300 dark:text-slate-600'}`} />
+              <Signal
+                className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-slate-300 dark:text-[var(--text-secondary)]'}`}
+              />
 
               {config.showFuel && <Battery className={`w-3 h-3 ${batteryColor}`} />}
 
               {config.showIgnition && (
-                <Key className={`w-3 h-3 ${isIgnitionOn ? 'text-orange-400' : 'text-slate-200 dark:text-slate-600'}`} />
+                <Key
+                  className={`w-3 h-3 ${isIgnitionOn ? 'text-orange-400' : 'text-slate-200 dark:text-[var(--text-secondary)]'}`}
+                />
               )}
 
               {/* Immobilization Icon */}
@@ -222,10 +226,10 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
 
             {config.showTime && (
               <div className="flex flex-col items-end ml-auto">
-                <span className="text-[9px] text-slate-400 font-medium leading-tight">
+                <span className="text-[9px] text-[var(--text-muted)] font-medium leading-tight">
                   {getRelativeTime(vehicle.lastUpdated)}
                 </span>
-                <span className="text-[9px] text-slate-500 font-mono leading-tight">
+                <span className="text-[9px] text-[var(--text-secondary)] font-mono leading-tight">
                   {formatSyncDate(vehicle.lastUpdated)}
                 </span>
               </div>

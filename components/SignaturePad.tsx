@@ -33,8 +33,8 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ width = 400, height 
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = ('touches' in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
-    const y = ('touches' in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
+    const x = 'touches' in e ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
+    const y = 'touches' in e ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -48,8 +48,8 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ width = 400, height 
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = ('touches' in e) ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
-    const y = ('touches' in e) ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
+    const x = 'touches' in e ? e.touches[0].clientX - rect.left : (e as React.MouseEvent).clientX - rect.left;
+    const y = 'touches' in e ? e.touches[0].clientY - rect.top : (e as React.MouseEvent).clientY - rect.top;
 
     ctx.lineTo(x, y);
     ctx.stroke();
@@ -59,7 +59,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ width = 400, height 
   const stopDrawing = () => {
     setIsDrawing(false);
     if (hasSignature && canvasRef.current) {
-        onSave(canvasRef.current.toDataURL());
+      onSave(canvasRef.current.toDataURL());
     }
   };
 
@@ -75,8 +75,8 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ width = 400, height 
 
   return (
     <div className="flex flex-col gap-2">
-      {label && <label className="text-xs font-bold text-slate-500 uppercase">{label}</label>}
-      <div className="relative border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 overflow-hidden touch-none">
+      {label && <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">{label}</label>}
+      <div className="relative border-2 border-dashed border-[var(--border)] rounded-lg bg-[var(--bg-surface)] overflow-hidden touch-none">
         <canvas
           ref={canvasRef}
           width={width}
@@ -91,18 +91,18 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ width = 400, height 
           onTouchEnd={stopDrawing}
         />
         {!hasSignature && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span className="text-slate-300 text-sm">Signez ici</span>
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span className="text-slate-300 text-sm">Signez ici</span>
+          </div>
         )}
       </div>
       <div className="flex justify-end gap-2">
-        <button 
-            type="button"
-            onClick={clear} 
-            className="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 flex items-center gap-1"
+        <button
+          type="button"
+          onClick={clear}
+          className="px-3 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded border border-red-200 flex items-center gap-1"
         >
-            <Eraser className="w-3 h-3" /> Effacer
+          <Eraser className="w-3 h-3" /> Effacer
         </button>
       </div>
     </div>

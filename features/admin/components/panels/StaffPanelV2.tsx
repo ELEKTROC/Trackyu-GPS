@@ -226,12 +226,12 @@ const COLOR_CLASSES: Record<
   slate: {
     bg50: 'bg-slate-50',
     bg100: 'bg-slate-100',
-    text600: 'text-slate-600',
-    text700: 'text-slate-700',
+    text600: 'text-[var(--text-secondary)]',
+    text700: 'text-[var(--text-primary)]',
     ring400: 'ring-slate-400',
-    hoverBg100: 'hover:bg-slate-100',
+    hoverBg100: 'hover:bg-[var(--bg-elevated)]',
     darkBg: 'dark:bg-slate-900/30',
-    darkText: 'dark:text-slate-400',
+    darkText: 'dark:text-[var(--text-muted)]',
   },
   red: {
     bg50: 'bg-red-50',
@@ -614,7 +614,7 @@ export const StaffPanelV2: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const config: Record<string, { bg: string; text: string; icon: typeof CheckCircle }> = {
       Actif: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: CheckCircle },
-      Inactif: { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-600 dark:text-slate-400', icon: XCircle },
+      Inactif: { bg: 'bg-[var(--bg-elevated)]', text: 'text-[var(--text-secondary)]', icon: XCircle },
       Suspendu: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', icon: AlertTriangle },
     };
     const c = config[status] || config['Inactif'];
@@ -652,25 +652,25 @@ export const StaffPanelV2: React.FC = () => {
   return (
     <div className="space-y-6 h-full flex flex-col">
       {/* Tabs */}
-      <div className="flex gap-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
+      <div className="flex gap-4 border-b border-[var(--border)] shrink-0">
         <button
           onClick={() => setActiveTab('users')}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'users'
               ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
+              : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
           <Users className="w-4 h-4" />
           Utilisateurs
-          <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 rounded-full text-xs">{users.length}</span>
+          <span className="px-2 py-0.5 bg-[var(--bg-elevated)] rounded-full text-xs">{users.length}</span>
         </button>
         <button
           onClick={() => setActiveTab('roles')}
           className={`pb-3 px-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
             activeTab === 'roles'
               ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
-              : 'border-transparent text-slate-500 hover:text-slate-700'
+              : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
           }`}
         >
           <Shield className="w-4 h-4" />
@@ -682,11 +682,11 @@ export const StaffPanelV2: React.FC = () => {
         <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
           {/* KPI Cards - Hidden on mobile */}
           <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-4 shrink-0">
-            <Card className="bg-white dark:bg-slate-800">
+            <Card className="bg-[var(--bg-elevated)]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-500 uppercase font-bold">Total Équipe</p>
-                  <p className="text-2xl font-bold text-slate-800 dark:text-white">{stats.total}</p>
+                  <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Total Équipe</p>
+                  <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</p>
                 </div>
                 <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
                   <Users className="w-6 h-6 text-[var(--primary)]" />
@@ -694,12 +694,12 @@ export const StaffPanelV2: React.FC = () => {
               </div>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-800">
+            <Card className="bg-[var(--bg-elevated)]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-500 uppercase font-bold">Actifs</p>
+                  <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Actifs</p>
                   <p className="text-2xl font-bold text-green-600">{stats.active}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-[var(--text-secondary)]">
                     {stats.total > 0 ? ((stats.active / stats.total) * 100).toFixed(0) : 0}% du total
                   </p>
                 </div>
@@ -709,10 +709,10 @@ export const StaffPanelV2: React.FC = () => {
               </div>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-800">
+            <Card className="bg-[var(--bg-elevated)]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-500 uppercase font-bold">Connectés (24h)</p>
+                  <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Connectés (24h)</p>
                   <p className="text-2xl font-bold text-purple-600">{stats.recentLogins}</p>
                 </div>
                 <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -721,14 +721,14 @@ export const StaffPanelV2: React.FC = () => {
               </div>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-800">
+            <Card className="bg-[var(--bg-elevated)]">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-slate-500 uppercase font-bold">Inactifs</p>
-                  <p className="text-2xl font-bold text-slate-600">{stats.total - stats.active}</p>
+                  <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Inactifs</p>
+                  <p className="text-2xl font-bold text-[var(--text-secondary)]">{stats.total - stats.active}</p>
                 </div>
-                <div className="p-3 bg-slate-100 dark:bg-slate-700 rounded-lg">
-                  <UserX className="w-6 h-6 text-slate-500" />
+                <div className="p-3 bg-[var(--bg-elevated)] rounded-lg">
+                  <UserX className="w-6 h-6 text-[var(--text-secondary)]" />
                 </div>
               </div>
             </Card>
@@ -761,13 +761,13 @@ export const StaffPanelV2: React.FC = () => {
               <div className="flex flex-wrap gap-3 flex-1">
                 {/* Search */}
                 <div className="relative flex-1 min-w-[200px]">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                   <input
                     type="text"
                     placeholder="Rechercher un utilisateur..."
                     value={filters.search}
                     onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                   />
                 </div>
 
@@ -775,7 +775,7 @@ export const StaffPanelV2: React.FC = () => {
                 <select
                   value={filters.status}
                   onChange={(e) => setFilters({ ...filters, status: e.target.value as StaffFilter['status'] })}
-                  className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                  className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                   title="Filtrer par statut"
                 >
                   <option value="ALL">Tous les statuts</option>
@@ -794,7 +794,7 @@ export const StaffPanelV2: React.FC = () => {
                     ];
                     setFilters({ ...filters, sortBy, sortOrder });
                   }}
-                  className="px-3 py-2 border rounded-lg text-sm bg-slate-50 dark:bg-slate-900 dark:border-slate-700"
+                  className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
                   title="Trier par"
                 >
                   <option value="name-asc">Nom A-Z</option>
@@ -808,7 +808,7 @@ export const StaffPanelV2: React.FC = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => setIsInviteModalOpen(true)}
-                  className="flex items-center gap-2 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800"
+                  className="flex items-center gap-2 px-3 py-2 border border-[var(--border)] rounded-lg text-sm font-medium tr-hover"
                 >
                   <Send className="w-4 h-4" />
                   Inviter
@@ -829,7 +829,7 @@ export const StaffPanelV2: React.FC = () => {
             {isMobile ? (
               <MobileCardList bordered={false}>
                 {paginatedUsers.length === 0 ? (
-                  <div className="px-6 py-12 text-center text-slate-500">
+                  <div className="px-6 py-12 text-center text-[var(--text-secondary)]">
                     <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                     <p className="font-medium">Aucun utilisateur trouvé</p>
                   </div>
@@ -847,15 +847,15 @@ export const StaffPanelV2: React.FC = () => {
                             <img
                               src={user.avatar}
                               alt={user.name}
-                              className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
+                              className="w-10 h-10 rounded-full object-cover border-2 border-[var(--border)]"
                             />
                             {user.status === 'Actif' && (
-                              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full" />
+                              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white border-[var(--border)] rounded-full" />
                             )}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-slate-800 dark:text-white text-sm truncate">{user.name}</p>
-                            <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                            <p className="font-bold text-[var(--text-primary)] text-sm truncate">{user.name}</p>
+                            <p className="text-xs text-[var(--text-secondary)] truncate">{user.email}</p>
                             <div className="mt-0.5 flex items-center gap-1.5 flex-wrap">
                               <span
                                 className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700}`}
@@ -863,7 +863,9 @@ export const StaffPanelV2: React.FC = () => {
                                 <roleConfig.icon className="w-2.5 h-2.5" />
                                 {roleConfig.label}
                               </span>
-                              <span className="text-[10px] text-slate-400">{formatLastLogin(user.lastLogin)}</span>
+                              <span className="text-[10px] text-[var(--text-muted)]">
+                                {formatLastLogin(user.lastLogin)}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -871,7 +873,7 @@ export const StaffPanelV2: React.FC = () => {
                           {getStatusBadge(user.status)}
                           <button
                             onClick={() => handleEditClick(user)}
-                            className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded"
+                            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -884,7 +886,7 @@ export const StaffPanelV2: React.FC = () => {
             ) : (
               <div className="flex-1 overflow-auto pb-16 lg:pb-0">
                 <table className="w-full text-left">
-                  <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+                  <thead className="bg-[var(--bg-elevated)] border-b border-[var(--border)] sticky top-0 z-10">
                     <tr>
                       <SortableHeader
                         label="Utilisateur"
@@ -892,7 +894,7 @@ export const StaffPanelV2: React.FC = () => {
                         currentSortKey={staffSortConfig.key}
                         currentDirection={staffSortConfig.direction}
                         onSort={handleStaffSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       <SortableHeader
                         label="Rôle"
@@ -900,7 +902,7 @@ export const StaffPanelV2: React.FC = () => {
                         currentSortKey={staffSortConfig.key}
                         currentDirection={staffSortConfig.direction}
                         onSort={handleStaffSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       <SortableHeader
                         label="Dernière Connexion"
@@ -908,7 +910,7 @@ export const StaffPanelV2: React.FC = () => {
                         currentSortKey={staffSortConfig.key}
                         currentDirection={staffSortConfig.direction}
                         onSort={handleStaffSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       <SortableHeader
                         label="Statut"
@@ -916,18 +918,25 @@ export const StaffPanelV2: React.FC = () => {
                         currentSortKey={staffSortConfig.key}
                         currentDirection={staffSortConfig.direction}
                         onSort={handleStaffSort}
-                        className="text-xs font-bold text-slate-500 uppercase"
+                        className="section-title"
                       />
                       {isSuperAdmin && (
-                        <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase">Mot de passe</th>
+                        <th className="px-6 py-3 text-xs font-bold text-[var(--text-secondary)] uppercase">
+                          Mot de passe
+                        </th>
                       )}
-                      <th className="px-6 py-3 text-xs font-bold text-slate-500 uppercase text-right">Actions</th>
+                      <th className="px-6 py-3 text-xs font-bold text-[var(--text-secondary)] uppercase text-right">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+                  <tbody className="divide-y divide-[var(--border)]">
                     {paginatedUsers.length === 0 ? (
                       <tr>
-                        <td colSpan={isSuperAdmin ? 7 : 6} className="px-6 py-12 text-center text-slate-500">
+                        <td
+                          colSpan={isSuperAdmin ? 7 : 6}
+                          className="px-6 py-12 text-center text-[var(--text-secondary)]"
+                        >
                           <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
                           <p className="font-medium">Aucun utilisateur trouvé</p>
                           <p className="text-sm">Modifiez vos filtres ou créez un nouvel utilisateur</p>
@@ -939,7 +948,7 @@ export const StaffPanelV2: React.FC = () => {
                         return (
                           <tr
                             key={user.id}
-                            className="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer"
+                            className="tr-hover/50 cursor-pointer"
                             onClick={() => handleViewDetails(user)}
                           >
                             <td className="px-6 py-4">
@@ -948,15 +957,15 @@ export const StaffPanelV2: React.FC = () => {
                                   <img
                                     src={user.avatar}
                                     alt={user.name}
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700"
+                                    className="w-10 h-10 rounded-full object-cover border-2 border-[var(--border)]"
                                   />
                                   {user.status === 'Actif' && (
-                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
+                                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white border-[var(--border)] rounded-full"></span>
                                   )}
                                 </div>
                                 <div>
-                                  <p className="font-bold text-slate-800 dark:text-white">{user.name}</p>
-                                  <p className="text-xs text-slate-500">{user.email}</p>
+                                  <p className="font-bold text-[var(--text-primary)]">{user.name}</p>
+                                  <p className="text-xs text-[var(--text-secondary)]">{user.email}</p>
                                 </div>
                               </div>
                             </td>
@@ -969,7 +978,7 @@ export const StaffPanelV2: React.FC = () => {
                               </span>
                             </td>
                             <td className="px-6 py-4">
-                              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                              <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                                 <Clock className="w-4 h-4" />
                                 {formatLastLogin(user.lastLogin)}
                               </div>
@@ -980,14 +989,14 @@ export const StaffPanelV2: React.FC = () => {
                                 <div className="flex items-center gap-1">
                                   {(user as StaffUser).plainPassword ? (
                                     <>
-                                      <code className="text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded select-all">
+                                      <code className="text-xs font-mono bg-[var(--bg-elevated)] px-2 py-1 rounded select-all">
                                         {visiblePasswords[user.id] ? (user as StaffUser).plainPassword : '••••••••'}
                                       </code>
                                       <button
                                         onClick={() =>
                                           setVisiblePasswords((prev) => ({ ...prev, [user.id]: !prev[user.id] }))
                                         }
-                                        className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
+                                        className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
                                         title={visiblePasswords[user.id] ? 'Masquer' : 'Afficher'}
                                       >
                                         {visiblePasswords[user.id] ? (
@@ -1001,14 +1010,14 @@ export const StaffPanelV2: React.FC = () => {
                                           navigator.clipboard.writeText((user as StaffUser).plainPassword);
                                           showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success');
                                         }}
-                                        className="p-1 text-slate-400 hover:text-[var(--primary)] rounded"
+                                        className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
                                         title="Copier"
                                       >
                                         <Copy className="w-3.5 h-3.5" />
                                       </button>
                                     </>
                                   ) : (
-                                    <span className="text-xs text-slate-400 italic">Non disponible</span>
+                                    <span className="text-xs text-[var(--text-muted)] italic">Non disponible</span>
                                   )}
                                 </div>
                               </td>
@@ -1017,14 +1026,14 @@ export const StaffPanelV2: React.FC = () => {
                               <div className="flex items-center justify-end gap-1">
                                 <button
                                   onClick={() => handleEditClick(user)}
-                                  className="p-1.5 text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded"
+                                  className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded"
                                   title="Modifier"
                                 >
                                   <Edit2 className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleResetPassword(user)}
-                                  className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded"
+                                  className="p-1.5 text-[var(--text-muted)] hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded"
                                   title="Réinitialiser mot de passe"
                                 >
                                   <Key className="w-4 h-4" />
@@ -1036,8 +1045,8 @@ export const StaffPanelV2: React.FC = () => {
                                     }
                                     className={`p-1.5 rounded ${
                                       user.status === 'Actif'
-                                        ? 'text-slate-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20'
-                                        : 'text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                        ? 'text-[var(--text-muted)] hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20'
+                                        : 'text-[var(--text-muted)] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
                                     }`}
                                     title={user.status === 'Actif' ? 'Désactiver' : 'Activer'}
                                   >
@@ -1051,7 +1060,7 @@ export const StaffPanelV2: React.FC = () => {
                                 {user.role !== 'SUPERADMIN' && (
                                   <button
                                     onClick={() => handleDelete(user.id)}
-                                    className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                    className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                                     title="Supprimer"
                                   >
                                     <Trash2 className="w-4 h-4" />
@@ -1075,7 +1084,7 @@ export const StaffPanelV2: React.FC = () => {
               onPageChange={setCurrentPage}
               totalItems={sortedUsers.length}
               itemLabel="utilisateur"
-              className="px-6 py-3 border-t border-slate-200 dark:border-slate-700 shrink-0"
+              className="px-6 py-3 border-t border-[var(--border)] shrink-0"
             />
           </Card>
         </div>
@@ -1093,13 +1102,13 @@ export const StaffPanelV2: React.FC = () => {
         maxWidth="max-w-lg"
         footer={
           <div className="flex items-center justify-between w-full">
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[var(--text-muted)]">
               <span className="text-red-500">*</span> Champs obligatoires
             </p>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50"
+                className="px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)]"
               >
                 Annuler
               </button>
@@ -1119,28 +1128,28 @@ export const StaffPanelV2: React.FC = () => {
           {/* Infos de base */}
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                 Nom Complet <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={`w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700 ${!formData.name ? 'border-red-300' : ''}`}
+                className={`w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)] ${!formData.name ? 'border-red-300' : ''}`}
                 placeholder="Prénom Nom"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                 Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={`w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700 ${!formData.email ? 'border-red-300' : formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? 'border-red-500' : ''}`}
+                className={`w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)] ${!formData.email ? 'border-red-300' : formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) ? 'border-red-500' : ''}`}
                 placeholder="email@entreprise.com"
                 required
               />
@@ -1150,12 +1159,12 @@ export const StaffPanelV2: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Téléphone</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Téléphone</label>
               <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className={`w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700 ${formData.phone && !/^[\d\s+\-()]{6,20}$/.test(formData.phone) ? 'border-red-500' : ''}`}
+                className={`w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)] ${formData.phone && !/^[\d\s+\-()]{6,20}$/.test(formData.phone) ? 'border-red-500' : ''}`}
                 placeholder="+225 07 00 00 00 00"
               />
               {formData.phone && !/^[\d\s+\-()]{6,20}$/.test(formData.phone) && (
@@ -1165,79 +1174,87 @@ export const StaffPanelV2: React.FC = () => {
 
             {/* Mot de passe - Toujours visible, obligatoire à la création si pas d'invitation */}
             <div className="col-span-2">
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                 Mot de passe {!editingUser && !formData.sendInvite && <span className="text-red-500">*</span>}
               </label>
               <input
                 type="password"
                 value={formData.password || ''}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 placeholder={editingUser ? 'Laisser vide pour ne pas modifier' : 'Minimum 6 caractères'}
               />
               {editingUser && (
-                <p className="text-xs text-slate-500 mt-1">Laisser vide pour conserver le mot de passe actuel</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">
+                  Laisser vide pour conserver le mot de passe actuel
+                </p>
               )}
             </div>
           </div>
 
           {/* Identification RH */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-            <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+          <div className="pt-4 border-t border-[var(--border)] space-y-4">
+            <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
               <Users className="w-4 h-4" />
               Identification RH
             </h4>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Matricule</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Matricule</label>
                 <input
                   type="text"
                   value={formData.matricule || ''}
                   onChange={(e) => setFormData({ ...formData, matricule: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="EMP-001"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">CIN / CNI</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">CIN / CNI</label>
                 <input
                   type="text"
                   value={formData.cin || ''}
                   onChange={(e) => setFormData({ ...formData, cin: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="Numéro pièce d'identité"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date de naissance</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Date de naissance
+                </label>
                 <input
                   type="date"
                   value={formData.dateNaissance || ''}
                   onChange={(e) => setFormData({ ...formData, dateNaissance: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Lieu de naissance</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Lieu de naissance
+                </label>
                 <input
                   type="text"
                   value={formData.lieuNaissance || ''}
                   onChange={(e) => setFormData({ ...formData, lieuNaissance: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="Ville, Pays"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nationalité</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Nationalité
+                </label>
                 <select
                   value={formData.nationalite || ''}
                   onChange={(e) => setFormData({ ...formData, nationalite: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 >
                   <option value="">Sélectionner...</option>
                   <option value="Ivoirienne">🇨🇮 Ivoirienne</option>
@@ -1254,11 +1271,11 @@ export const StaffPanelV2: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Sexe</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Sexe</label>
                 <select
                   value={formData.sexe || ''}
                   onChange={(e) => setFormData({ ...formData, sexe: e.target.value as UserFormData['sexe'] })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 >
                   <option value="">Sélectionner...</option>
                   <option value="M">Masculin</option>
@@ -1268,7 +1285,9 @@ export const StaffPanelV2: React.FC = () => {
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Situation familiale</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Situation familiale
+                </label>
                 <select
                   value={formData.situationFamiliale || ''}
                   onChange={(e) =>
@@ -1277,7 +1296,7 @@ export const StaffPanelV2: React.FC = () => {
                       situationFamiliale: e.target.value as UserFormData['situationFamiliale'],
                     })
                   }
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 >
                   <option value="">Sélectionner...</option>
                   <option value="Célibataire">Célibataire</option>
@@ -1291,44 +1310,48 @@ export const StaffPanelV2: React.FC = () => {
             {/* Adresse */}
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Adresse complète</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Adresse complète
+                </label>
                 <input
                   type="text"
                   value={formData.adresse || ''}
                   onChange={(e) => setFormData({ ...formData, adresse: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="Numéro, rue, quartier"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Ville</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Ville</label>
                 <input
                   type="text"
                   value={formData.ville || ''}
                   onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="Abidjan, Dakar..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Code postal</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Code postal
+                </label>
                 <input
                   type="text"
                   value={formData.codePostal || ''}
                   onChange={(e) => setFormData({ ...formData, codePostal: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="BP 01"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Pays</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Pays</label>
                 <select
                   value={formData.pays || "Côte d'Ivoire"}
                   onChange={(e) => setFormData({ ...formData, pays: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 >
                   <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
                   <option value="Sénégal">🇸🇳 Sénégal</option>
@@ -1345,31 +1368,35 @@ export const StaffPanelV2: React.FC = () => {
           </div>
 
           {/* Contrat de travail */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-            <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+          <div className="pt-4 border-t border-[var(--border)] space-y-4">
+            <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
               <Calendar className="w-4 h-4" />
               Contrat de Travail
             </h4>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date d'embauche</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Date d'embauche
+                </label>
                 <input
                   type="date"
                   value={formData.dateEmbauche || ''}
                   onChange={(e) => setFormData({ ...formData, dateEmbauche: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Type de contrat</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Type de contrat
+                </label>
                 <select
                   value={formData.typeContrat || ''}
                   onChange={(e) =>
                     setFormData({ ...formData, typeContrat: e.target.value as UserFormData['typeContrat'] })
                   }
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 >
                   <option value="">Sélectionner...</option>
                   <option value="CDI">CDI - Contrat à Durée Indéterminée</option>
@@ -1381,23 +1408,27 @@ export const StaffPanelV2: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Département</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Département
+                </label>
                 <input
                   type="text"
                   value={formData.departement || ''}
                   onChange={(e) => setFormData({ ...formData, departement: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="Technique, Commercial, Support..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Intitulé du poste</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Intitulé du poste
+                </label>
                 <input
                   type="text"
                   value={formData.poste || ''}
                   onChange={(e) => setFormData({ ...formData, poste: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="Technicien GPS Senior, Chef de projet..."
                 />
               </div>
@@ -1405,41 +1436,45 @@ export const StaffPanelV2: React.FC = () => {
           </div>
 
           {/* Contact d'urgence */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-            <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+          <div className="pt-4 border-t border-[var(--border)] space-y-4">
+            <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
               <Phone className="w-4 h-4" />
               Contact d'Urgence
             </h4>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nom & Prénom</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Nom & Prénom
+                </label>
                 <input
                   type="text"
                   value={formData.contactUrgenceNom || ''}
                   onChange={(e) => setFormData({ ...formData, contactUrgenceNom: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="Personne à contacter"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Téléphone</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Téléphone</label>
                 <input
                   type="tel"
                   value={formData.contactUrgenceTel || ''}
                   onChange={(e) => setFormData({ ...formData, contactUrgenceTel: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   placeholder="+225 XX XX XX XX"
                 />
               </div>
 
               <div className="col-span-2">
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Lien de parenté</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                  Lien de parenté
+                </label>
                 <select
                   value={formData.contactUrgenceLien || ''}
                   onChange={(e) => setFormData({ ...formData, contactUrgenceLien: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 >
                   <option value="">Sélectionner...</option>
                   <option value="Conjoint(e)">Conjoint(e)</option>
@@ -1456,7 +1491,7 @@ export const StaffPanelV2: React.FC = () => {
           {/* Rôle & Statut */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Rôle</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Rôle</label>
               {editingUser?.role === 'SUPERADMIN' ? (
                 <div className="p-2 bg-purple-50 border border-purple-200 rounded-lg flex items-center gap-2 text-purple-700 text-sm">
                   <Shield className="w-4 h-4" />
@@ -1466,7 +1501,7 @@ export const StaffPanelV2: React.FC = () => {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                  className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                   title="Rôle de l'utilisateur"
                 >
                   {AVAILABLE_ROLES.filter((r) => !r.system).map((role) => (
@@ -1479,7 +1514,7 @@ export const StaffPanelV2: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Statut</label>
+              <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Statut</label>
               {editingUser ? (
                 <div
                   className={`p-2 rounded-lg flex items-center gap-2 text-sm font-medium ${
@@ -1487,12 +1522,12 @@ export const StaffPanelV2: React.FC = () => {
                       ? 'bg-green-50 text-green-700 border border-green-200'
                       : formData.status === 'Suspendu'
                         ? 'bg-red-50 text-red-700 border border-red-200'
-                        : 'bg-slate-100 text-slate-600 border border-slate-200'
+                        : 'bg-slate-100 text-[var(--text-secondary)] border border-[var(--border)]'
                   }`}
                 >
                   {formData.status === 'Actif' ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
                   {formData.status}
-                  <span className="text-xs text-slate-500 ml-auto">(via Actions)</span>
+                  <span className="text-xs text-[var(--text-secondary)] ml-auto">(via Actions)</span>
                 </div>
               ) : (
                 <div className="p-2 bg-green-50 text-green-700 border border-green-200 rounded-lg flex items-center gap-2 text-sm font-medium">
@@ -1504,20 +1539,20 @@ export const StaffPanelV2: React.FC = () => {
           </div>
 
           {/* Options */}
-          <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="space-y-3 pt-4 border-t border-[var(--border)]">
             {!editingUser && (
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.sendInvite}
                   onChange={(e) => setFormData({ ...formData, sendInvite: e.target.checked })}
-                  className="rounded border-slate-300 text-[var(--primary)]"
+                  className="rounded border-[var(--border)] text-[var(--primary)]"
                 />
                 <div>
-                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Envoyer une invitation par email
+                  <p className="text-sm font-medium text-[var(--text-primary)]">Envoyer une invitation par email</p>
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    L'utilisateur recevra un lien pour définir son mot de passe
                   </p>
-                  <p className="text-xs text-slate-500">L'utilisateur recevra un lien pour définir son mot de passe</p>
                 </div>
               </label>
             )}
@@ -1527,29 +1562,31 @@ export const StaffPanelV2: React.FC = () => {
                 type="checkbox"
                 checked={formData.require2FA}
                 onChange={(e) => setFormData({ ...formData, require2FA: e.target.checked })}
-                className="rounded border-slate-300 text-[var(--primary)]"
+                className="rounded border-[var(--border)] text-[var(--primary)]"
               />
               <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <p className="text-sm font-medium text-[var(--text-primary)]">
                   Exiger l'authentification à deux facteurs
                 </p>
-                <p className="text-xs text-slate-500">L'utilisateur devra configurer 2FA à sa prochaine connexion</p>
+                <p className="text-xs text-[var(--text-secondary)]">
+                  L'utilisateur devra configurer 2FA à sa prochaine connexion
+                </p>
               </div>
             </label>
           </div>
 
           {/* Organisations / Accès Multi-Tenant */}
           {organizations.length > 0 && (
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
-              <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+            <div className="pt-4 border-t border-[var(--border)] space-y-3">
+              <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
                 <Building2 className="w-4 h-4" />
                 Organisations Accessibles
               </h4>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[var(--text-secondary)]">
                 Sélectionnez les organisations auxquelles cet utilisateur aura accès. Si aucune n'est sélectionnée, il
                 aura accès à toutes les organisations.
               </p>
-              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 dark:bg-slate-800 rounded-lg">
+              <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-[var(--bg-elevated)] rounded-lg">
                 {organizations.map((org) => (
                   <label
                     key={org.id}
@@ -1572,9 +1609,9 @@ export const StaffPanelV2: React.FC = () => {
                           });
                         }
                       }}
-                      className="rounded border-slate-300 text-[var(--primary)]"
+                      className="rounded border-[var(--border)] text-[var(--primary)]"
                     />
-                    <span className="text-sm text-slate-700 dark:text-slate-300">{org.name}</span>
+                    <span className="text-sm text-[var(--text-primary)]">{org.name}</span>
                   </label>
                 ))}
               </div>
@@ -1583,15 +1620,15 @@ export const StaffPanelV2: React.FC = () => {
 
           {/* Sélecteur tenant — obligatoire pour rôle CLIENT */}
           {formData.role === 'CLIENT' && !editingUser && (
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-3">
-              <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+            <div className="pt-4 border-t border-[var(--border)] space-y-3">
+              <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
                 <Building2 className="w-4 h-4" />
                 Organisation Client <span className="text-red-500">*</span>
               </h4>
               <select
                 value={formData.tenantId || ''}
                 onChange={(e) => setFormData({ ...formData, tenantId: e.target.value })}
-                className={`w-full px-3 py-2.5 border rounded-lg dark:bg-slate-900 dark:border-slate-700 ${!formData.tenantId ? 'border-red-300' : 'border-slate-200'}`}
+                className={`w-full px-3 py-2.5 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)] ${!formData.tenantId ? 'border-red-300' : 'border-[var(--border)]'}`}
                 title="Organisation à laquelle appartient cet utilisateur client"
               >
                 <option value="">Sélectionner l'organisation...</option>
@@ -1601,7 +1638,7 @@ export const StaffPanelV2: React.FC = () => {
                   </option>
                 ))}
               </select>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[var(--text-secondary)]">
                 L'utilisateur CLIENT doit être rattaché à une organisation spécifique (pas le tenant par défaut).
               </p>
             </div>
@@ -1610,19 +1647,21 @@ export const StaffPanelV2: React.FC = () => {
           {/* Champs spécifiques Technicien */}
           {formData.role === 'TECH' && (
             <>
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-                <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+              <div className="pt-4 border-t border-[var(--border)] space-y-4">
+                <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
                   <Settings className="w-4 h-4" />
                   Informations Technicien
                 </h4>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Spécialité *</label>
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Spécialité *
+                    </label>
                     <select
                       value={formData.specialite || ''}
                       onChange={(e) => setFormData({ ...formData, specialite: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                      className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                       title="Spécialité du technicien"
                     >
                       <option value="">Sélectionner...</option>
@@ -1637,11 +1676,13 @@ export const StaffPanelV2: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Niveau</label>
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Niveau
+                    </label>
                     <select
                       value={formData.niveau || 'Confirmé'}
                       onChange={(e) => setFormData({ ...formData, niveau: e.target.value as UserFormData['niveau'] })}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                      className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                       title="Niveau de certification"
                     >
                       <option value="Junior">🟢 Junior</option>
@@ -1653,28 +1694,30 @@ export const StaffPanelV2: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Zone d'intervention</label>
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                      Zone d'intervention
+                    </label>
                     <input
                       type="text"
                       value={formData.zone || ''}
                       onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                      className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                       placeholder="Ex: Abidjan, Dakar, National..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                    <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                       Société (si externe)
                     </label>
                     <input
                       type="text"
                       value={formData.societe || ''}
                       onChange={(e) => setFormData({ ...formData, societe: e.target.value })}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                      className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                       placeholder="Nom du prestataire"
                     />
-                    <p className="text-xs text-slate-400 mt-1">Laisser vide si technicien interne</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-1">Laisser vide si technicien interne</p>
                   </div>
                 </div>
               </div>
@@ -1682,17 +1725,17 @@ export const StaffPanelV2: React.FC = () => {
           )}
 
           {/* Signature — visible pour tous les rôles */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-2 flex items-center gap-2">
+          <div className="pt-4 border-t border-[var(--border)]">
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-2 flex items-center gap-2">
               <PenTool className="w-4 h-4" />
               Signature
             </label>
-            <p className="text-xs text-slate-500 mb-3">
+            <p className="text-xs text-[var(--text-secondary)] mb-3">
               Cette signature sera automatiquement utilisée sur les documents et rapports.
             </p>
             {formData.signature ? (
               <div className="space-y-2">
-                <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                <div className="p-3 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)]">
                   <img src={formData.signature} alt="Signature" className="max-h-24 mx-auto" />
                 </div>
                 <button
@@ -1710,19 +1753,19 @@ export const StaffPanelV2: React.FC = () => {
 
           {/* Section Commercial */}
           {formData.role === 'COMMERCIAL' && (
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-              <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+            <div className="pt-4 border-t border-[var(--border)] space-y-4">
+              <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
                 Informations Commercial
               </h4>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Secteur</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Secteur</label>
                   <select
                     value={formData.secteur || ''}
                     onChange={(e) => setFormData({ ...formData, secteur: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Secteur commercial"
                   >
                     <option value="">Sélectionner...</option>
@@ -1736,12 +1779,12 @@ export const StaffPanelV2: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Région</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Région</label>
                   <input
                     type="text"
                     value={formData.region || ''}
                     onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="Ex: Abidjan Nord, Dakar, National..."
                   />
                 </div>
@@ -1749,25 +1792,27 @@ export const StaffPanelV2: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Objectif mensuel ({currency})
                   </label>
                   <input
                     type="number"
                     value={formData.objectifMensuel || ''}
                     onChange={(e) => setFormData({ ...formData, objectifMensuel: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="5000000"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Commission (%)</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Commission (%)
+                  </label>
                   <input
                     type="number"
                     value={formData.commission || ''}
                     onChange={(e) => setFormData({ ...formData, commission: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="5"
                     min="0"
                     max="100"
@@ -1779,19 +1824,21 @@ export const StaffPanelV2: React.FC = () => {
 
           {/* Section Support Client */}
           {formData.role === 'SUPPORT_AGENT' && (
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-              <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+            <div className="pt-4 border-t border-[var(--border)] space-y-4">
+              <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 Informations Support
               </h4>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Niveau support</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Niveau support
+                  </label>
                   <select
                     value={formData.niveauSupport || ''}
                     onChange={(e) => setFormData({ ...formData, niveauSupport: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Niveau de support"
                   >
                     <option value="">Sélectionner...</option>
@@ -1802,12 +1849,12 @@ export const StaffPanelV2: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Langues</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Langues</label>
                   <input
                     type="text"
                     value={formData.langues || ''}
                     onChange={(e) => setFormData({ ...formData, langues: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="Français, Anglais, Arabe..."
                   />
                 </div>
@@ -1815,12 +1862,12 @@ export const StaffPanelV2: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Canaux</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Canaux</label>
                   <div className="flex flex-wrap gap-2 mt-1">
                     {['Téléphone', 'Email', 'Chat', 'WhatsApp'].map((canal) => (
                       <label
                         key={canal}
-                        className="flex items-center gap-1.5 px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded cursor-pointer text-sm"
+                        className="flex items-center gap-1.5 px-2 py-1 bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                       >
                         <input
                           type="checkbox"
@@ -1832,7 +1879,7 @@ export const StaffPanelV2: React.FC = () => {
                               : current.filter((c: string) => c !== canal);
                             setFormData({ ...formData, canaux: updated });
                           }}
-                          className="rounded border-slate-300 text-[var(--primary)]"
+                          className="rounded border-[var(--border)] text-[var(--primary)]"
                         />
                         {canal}
                       </label>
@@ -1841,11 +1888,13 @@ export const StaffPanelV2: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Horaires</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Horaires
+                  </label>
                   <select
                     value={formData.horaires || ''}
                     onChange={(e) => setFormData({ ...formData, horaires: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Horaires de travail"
                   >
                     <option value="">Sélectionner...</option>
@@ -1862,19 +1911,21 @@ export const StaffPanelV2: React.FC = () => {
 
           {/* Section Manager */}
           {formData.role === 'MANAGER' && (
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-700 space-y-4">
-              <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+            <div className="pt-4 border-t border-[var(--border)] space-y-4">
+              <h4 className="text-xs font-bold text-[var(--text-secondary)] uppercase flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 Informations Manager
               </h4>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Département</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Département
+                  </label>
                   <select
                     value={formData.departement || ''}
                     onChange={(e) => setFormData({ ...formData, departement: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     title="Département géré"
                   >
                     <option value="">Sélectionner...</option>
@@ -1888,12 +1939,12 @@ export const StaffPanelV2: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Équipe</label>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Équipe</label>
                   <input
                     type="text"
                     value={formData.equipe || ''}
                     onChange={(e) => setFormData({ ...formData, equipe: e.target.value })}
-                    className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                    className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                     placeholder="Nom de l'équipe gérée"
                   />
                 </div>
@@ -1925,16 +1976,16 @@ export const StaffPanelV2: React.FC = () => {
         }
       >
         <div className="p-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+          <p className="text-sm text-[var(--text-secondary)] mb-4">
             Entrez l'adresse email de la personne à inviter. Elle recevra un lien pour créer son compte.
           </p>
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Email</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Email</label>
             <input
               type="email"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
-              className="w-full px-3 py-2.5 border border-slate-200 rounded-lg dark:bg-slate-900 dark:border-slate-700"
+              className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
               placeholder="email@entreprise.com"
             />
           </div>
@@ -1963,29 +2014,31 @@ export const StaffPanelV2: React.FC = () => {
         }
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-[var(--text-secondary)]">
             Réinitialiser le mot de passe de <strong>{resetPasswordUser?.name}</strong> ({resetPasswordUser?.email})
           </p>
           <div>
-            <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nouveau mot de passe</label>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+              Nouveau mot de passe
+            </label>
             <div className="relative">
               <input
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPasswordInput}
                 onChange={(e) => setNewPasswordInput(e.target.value)}
-                className="w-full p-2 pr-10 border rounded-lg dark:bg-slate-900 dark:border-slate-700"
+                className="w-full p-2 pr-10 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
                 placeholder="Laisser vide pour générer automatiquement"
                 minLength={4}
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               >
                 {showNewPassword ? <XCircle className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               {newPasswordInput
                 ? `Le mot de passe "${newPasswordInput}" sera défini directement.`
                 : 'Un mot de passe aléatoire sera généré et affiché.'}
@@ -2044,9 +2097,9 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b dark:border-slate-700">
-        <h3 className="font-bold text-lg text-slate-800 dark:text-white">Détails Utilisateur</h3>
-        <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
+        <h3 className="font-bold text-lg text-[var(--text-primary)]">Détails Utilisateur</h3>
+        <button onClick={onClose} className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg">
           <X className="w-5 h-5" />
         </button>
       </div>
@@ -2059,14 +2112,14 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
             <img
               src={user.avatar}
               alt={user.name}
-              className="w-24 h-24 rounded-full object-cover border-4 border-slate-200 dark:border-slate-700"
+              className="w-24 h-24 rounded-full object-cover border-4 border-[var(--border)]"
             />
             {user.status === 'Actif' && (
               <span className="absolute bottom-2 right-2 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
             )}
           </div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white mt-4">{user.name}</h2>
-          <p className="text-slate-500">{user.email}</p>
+          <h2 className="text-xl font-bold text-[var(--text-primary)] mt-4">{user.name}</h2>
+          <p className="text-[var(--text-secondary)]">{user.email}</p>
           <div className="flex items-center justify-center gap-2 mt-2">
             <span
               className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold ${getColorClasses(roleConfig.color).bg100} ${getColorClasses(roleConfig.color).text700}`}
@@ -2080,39 +2133,39 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
 
         {/* Infos */}
         <div className="space-y-4">
-          <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-            <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">Informations</h4>
+          <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
+            <h4 className="font-bold text-sm text-[var(--text-primary)] mb-3">Informations</h4>
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-slate-400" />
+                <Mail className="w-4 h-4 text-[var(--text-muted)]" />
                 <span>{user.email}</span>
               </div>
               {user.phone && (
                 <div className="flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-slate-400" />
+                  <Phone className="w-4 h-4 text-[var(--text-muted)]" />
                   <span>{user.phone}</span>
                 </div>
               )}
               <div className="flex items-center gap-3">
-                <Clock className="w-4 h-4 text-slate-400" />
+                <Clock className="w-4 h-4 text-[var(--text-muted)]" />
                 <span>Dernière connexion: {formatLastLogin(user.lastLogin)}</span>
               </div>
               <div className="flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-slate-400" />
+                <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
                 <span>Créé le: {new Date(user.createdAt || Date.now()).toLocaleDateString('fr-FR')}</span>
               </div>
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-            <h4 className="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">Sécurité</h4>
+          <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
+            <h4 className="font-bold text-sm text-[var(--text-primary)] mb-3">Sécurité</h4>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
                 <span>Authentification 2FA</span>
                 {user.require2FA ? (
                   <span className="text-green-600 font-medium">Activée</span>
                 ) : (
-                  <span className="text-slate-400">Non configurée</span>
+                  <span className="text-[var(--text-muted)]">Non configurée</span>
                 )}
               </div>
               <div className="flex items-center justify-between">
@@ -2131,42 +2184,40 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
               </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Spécialité</span>
-                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                  <span className="text-[var(--text-secondary)]">Spécialité</span>
+                  <span className="font-medium text-[var(--text-primary)]">
                     {(user as StaffUser).specialite || 'Non définie'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Niveau</span>
+                  <span className="text-[var(--text-secondary)]">Niveau</span>
                   <span
                     className={`font-medium px-2 py-0.5 rounded-full text-xs ${
                       (user as StaffUser).niveau === 'Expert'
                         ? 'bg-purple-100 text-purple-700'
                         : (user as StaffUser).niveau === 'Confirmé'
                           ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
-                          : 'bg-slate-100 text-slate-700'
+                          : 'bg-slate-100 text-[var(--text-primary)]'
                     }`}
                   >
                     {(user as StaffUser).niveau || 'Junior'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-600 dark:text-slate-400">Zone d'intervention</span>
-                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                  <span className="text-[var(--text-secondary)]">Zone d'intervention</span>
+                  <span className="font-medium text-[var(--text-primary)]">
                     {(user as StaffUser).zone || 'Toutes zones'}
                   </span>
                 </div>
                 {(user as StaffUser).societe && (
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Société prestataire</span>
-                    <span className="font-medium text-slate-800 dark:text-slate-200">
-                      {(user as StaffUser).societe}
-                    </span>
+                    <span className="text-[var(--text-secondary)]">Société prestataire</span>
+                    <span className="font-medium text-[var(--text-primary)]">{(user as StaffUser).societe}</span>
                   </div>
                 )}
                 {user.signature && (
                   <div className="pt-2 border-t border-orange-200 dark:border-orange-700">
-                    <span className="text-slate-600 dark:text-slate-400 block mb-2">Signature</span>
+                    <span className="text-[var(--text-secondary)] block mb-2">Signature</span>
                     <img src={user.signature} alt="Signature" className="max-h-16 bg-white rounded p-1" />
                   </div>
                 )}
@@ -2177,7 +2228,7 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="p-4 border-t dark:border-slate-700 space-y-2">
+      <div className="p-4 border-t border-[var(--border)] space-y-2">
         <button
           onClick={onEdit}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg font-medium hover:bg-[var(--primary-light)]"
@@ -2187,7 +2238,7 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
         </button>
         <button
           onClick={onResetPassword}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg font-medium hover:bg-slate-50 dark:hover:bg-slate-800"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-[var(--border)] rounded-lg font-medium tr-hover"
         >
           <Key className="w-4 h-4" />
           Réinitialiser le mot de passe

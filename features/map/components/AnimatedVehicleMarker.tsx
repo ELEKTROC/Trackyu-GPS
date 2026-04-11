@@ -10,13 +10,9 @@ interface AnimatedVehicleMarkerProps {
   onClick: () => void;
 }
 
-export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
-  vehicle,
-  icon,
-  onClick
-}) => {
+export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({ vehicle, icon, onClick }) => {
   const markerRef = useRef<L.Marker | null>(null);
-  
+
   // Animate position changes
   const animatedPosition = useAnimatedPosition(
     vehicle.location,
@@ -29,7 +25,7 @@ export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
 
     const marker = markerRef.current;
     const newLatLng = L.latLng(animatedPosition.lat, animatedPosition.lng);
-    
+
     // Use Leaflet's built-in smooth panning
     marker.setLatLng(newLatLng);
   }, [animatedPosition]);
@@ -42,16 +38,18 @@ export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
       position={[animatedPosition.lat, animatedPosition.lng]}
       icon={icon}
       eventHandlers={{
-        click: onClick
+        click: onClick,
       }}
     >
       <Popup>
         <div className="p-2 min-w-[160px]">
           <h3 className="font-bold text-sm">{vehicle.name}</h3>
-          {vehicle.plate && <p className="text-xs text-slate-500">{vehicle.plate}</p>}
-          {vehicle.id?.startsWith('ABO-') && <p className="text-[10px] font-mono text-[var(--primary)]">{vehicle.id}</p>}
+          {vehicle.plate && <p className="text-xs text-[var(--text-secondary)]">{vehicle.plate}</p>}
+          {vehicle.id?.startsWith('ABO-') && (
+            <p className="text-[10px] font-mono text-[var(--primary)]">{vehicle.id}</p>
+          )}
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-slate-500">{vehicle.status}</span>
+            <span className="text-xs text-[var(--text-secondary)]">{vehicle.status}</span>
             <span className="text-xs font-medium">{vehicle.speed} km/h</span>
           </div>
         </div>

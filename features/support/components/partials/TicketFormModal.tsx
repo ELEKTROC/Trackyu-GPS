@@ -264,7 +264,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
         <>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
           >
             Annuler
           </button>
@@ -284,18 +284,18 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* COL 1: CONTEXTE CLIENT */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-slate-400 uppercase border-b border-slate-100 pb-2 mb-4">
+          <h3 className="text-sm font-bold text-[var(--text-muted)] uppercase border-b border-[var(--border)] pb-2 mb-4">
             Contexte Client
           </h3>
 
           <div ref={clientSearchRef} className="relative">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Client <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <input
                 type="text"
-                className={`w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white ${formErrors.clientId ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'}`}
+                className={`w-full px-3 py-2 bg-[var(--bg-elevated)] border rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)] ${formErrors.clientId ? 'border-red-500' : 'border-[var(--border)]'}`}
                 placeholder="Rechercher un client..."
                 value={isClientDropdownOpen ? clientSearch : selectedClient?.name || ''}
                 onChange={(e) => {
@@ -307,7 +307,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
                   setIsClientDropdownOpen(true);
                 }}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -325,12 +325,12 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
             </div>
 
             {isClientDropdownOpen && (
-              <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute z-50 w-full mt-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-lg max-h-60 overflow-y-auto">
                 {filteredClients.length > 0 ? (
                   filteredClients.map((c) => (
                     <div
                       key={c.id}
-                      className="px-3 py-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 cursor-pointer text-sm text-slate-700 dark:text-slate-200 border-b border-slate-100 dark:border-slate-700 last:border-0"
+                      className="px-3 py-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 cursor-pointer text-sm text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)] last:border-0"
                       onClick={() => {
                         setTicketForm({ ...ticketForm, clientId: c.id, vehicleId: '' });
                         setClientSearch('');
@@ -338,11 +338,11 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
                       }}
                     >
                       <div className="font-medium">{c.name}</div>
-                      {c.contactName && <div className="text-[10px] text-slate-400">{c.contactName}</div>}
+                      {c.contactName && <div className="text-[10px] text-[var(--text-muted)]">{c.contactName}</div>}
                     </div>
                   ))
                 ) : (
-                  <div className="px-3 py-2 text-sm text-slate-400 italic">Aucun client trouvé</div>
+                  <div className="px-3 py-2 text-sm text-[var(--text-muted)] italic">Aucun client trouvé</div>
                 )}
               </div>
             )}
@@ -352,15 +352,17 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           {/* Revendeur (lecture seule) */}
           {selectedClient && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Revendeur</label>
-              <div className="w-full px-3 py-2 bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-300">
-                {clientReseller || <span className="italic text-slate-400">Client direct (pas de revendeur)</span>}
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Revendeur</label>
+              <div className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)]">
+                {clientReseller || (
+                  <span className="italic text-[var(--text-muted)]">Client direct (pas de revendeur)</span>
+                )}
               </div>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Véhicule Concerné
               {selectedClient && clientVehicles.length > 0 && (
                 <span className="ml-2 text-xs font-normal text-[var(--primary)]">
@@ -370,7 +372,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
             </label>
             <select
               title="Sélectionner un véhicule"
-              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white"
+              className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)]"
               value={ticketForm.vehicleId}
               onChange={(e) => {
                 const vehicleId = e.target.value;
@@ -434,32 +436,28 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           {selectedVehicle && (
             <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg border border-[var(--primary)] dark:border-[var(--primary)] text-sm space-y-2">
               <div className="flex justify-between">
-                <span className="text-slate-500">Modèle Boîtier:</span>
-                <span className="font-medium text-slate-800 dark:text-white">
-                  {selectedVehicle.deviceModel || 'N/A'}
-                </span>
+                <span className="text-[var(--text-secondary)]">Modèle Boîtier:</span>
+                <span className="font-medium text-[var(--text-primary)]">{selectedVehicle.deviceModel || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">IMEI:</span>
-                <span className="font-medium text-slate-800 dark:text-white font-mono">
+                <span className="text-[var(--text-secondary)]">IMEI:</span>
+                <span className="font-medium text-[var(--text-primary)] font-mono">
                   {selectedVehicle.imei || 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">SIM:</span>
-                <span className="font-medium text-slate-800 dark:text-white font-mono">
-                  {selectedVehicle.sim || 'N/A'}
-                </span>
+                <span className="text-[var(--text-secondary)]">SIM:</span>
+                <span className="font-medium text-[var(--text-primary)] font-mono">{selectedVehicle.sim || 'N/A'}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-slate-500">Statut:</span>
+                <span className="text-[var(--text-secondary)]">Statut:</span>
                 <span
                   className={`font-medium px-2 py-0.5 rounded text-xs ${
                     selectedVehicle.status === 'MOVING'
                       ? 'bg-green-100 text-green-700'
                       : selectedVehicle.status === 'OFFLINE'
                         ? 'bg-red-100 text-red-700'
-                        : 'bg-slate-100 text-slate-700'
+                        : 'bg-slate-100 text-[var(--text-primary)]'
                   }`}
                 >
                   {selectedVehicle.status}
@@ -467,7 +465,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
               </div>
               {/* GPS Status (from vehicle data) */}
               <div className="flex justify-between items-center pt-2 border-t border-[var(--primary)] dark:border-[var(--primary)]/50 mt-2">
-                <span className="text-slate-500">Statut GPS:</span>
+                <span className="text-[var(--text-secondary)]">Statut GPS:</span>
                 <span
                   className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${selectedVehicle.status === 'OFFLINE' ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'}`}
                 >
@@ -480,16 +478,16 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
 
         {/* COL 2: DÉTAILS TICKET */}
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-slate-400 uppercase border-b border-slate-100 pb-2 mb-4">
+          <h3 className="text-sm font-bold text-[var(--text-muted)] uppercase border-b border-[var(--border)] pb-2 mb-4">
             Détails du Problème
           </h3>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Catégorie</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Catégorie</label>
               <select
                 title="Sélectionner une catégorie"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white"
+                className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)]"
                 value={ticketForm.category}
                 onChange={(e) => {
                   const catName = e.target.value;
@@ -524,10 +522,10 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Priorité</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Priorité</label>
               <select
                 title="Sélectionner une priorité"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white"
+                className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)]"
                 value={ticketForm.priority}
                 onChange={(e) => setTicketForm({ ...ticketForm, priority: e.target.value })}
               >
@@ -543,10 +541,10 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           {ticketForm.category === "Demande d'intervention" ? (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Type</label>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Type</label>
                 <select
                   title="Sélectionner un type"
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white"
+                  className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)]"
                   value={ticketForm.interventionType || ''}
                   onChange={(e) => {
                     const newType = e.target.value;
@@ -571,10 +569,10 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nature</label>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Nature</label>
                 <select
                   title="Sélectionner une nature"
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white"
+                  className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)]"
                   value={ticketForm.subCategory || ''}
                   onChange={(e) => {
                     const natureName = e.target.value;
@@ -606,12 +604,10 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           ) : (
             /* Sous-catégorie pour les autres catégories */
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Sous-Catégorie
-              </label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Sous-Catégorie</label>
               <select
                 title="Sélectionner une sous-catégorie"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white"
+                className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)]"
                 value={ticketForm.subCategory}
                 onChange={(e) => {
                   const subCatName = e.target.value;
@@ -651,10 +647,10 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           {/* --- Ligne : Canal / Date réception / Assigné à --- */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Canal</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Canal</label>
               <select
                 title="Canal de réception de la demande"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)] text-sm"
                 value={ticketForm.source || 'TrackYu'}
                 onChange={(e) => setTicketForm({ ...ticketForm, source: e.target.value })}
               >
@@ -666,13 +662,11 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Date réception
-              </label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Date réception</label>
               <input
                 type="datetime-local"
                 title="Date et heure de réception de la demande"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)] text-sm"
                 value={
                   ticketForm.receivedAt
                     ? new Date(
@@ -689,10 +683,10 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assigné à</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Assigné à</label>
               <select
                 title="Assigner à un agent support"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white text-sm"
+                className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)] text-sm"
                 value={ticketForm.assignedTo}
                 onChange={(e) => setTicketForm({ ...ticketForm, assignedTo: e.target.value })}
               >
@@ -707,7 +701,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Sujet <span className="text-red-500">*</span>
               {ticketForm.subject && (
                 <span className="ml-2 text-xs font-normal text-green-600 dark:text-green-400">
@@ -717,7 +711,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
             </label>
             <input
               type="text"
-              className={`w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none dark:text-white ${formErrors.subject ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'}`}
+              className={`w-full px-3 py-2 bg-[var(--bg-elevated)] border rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none text-[var(--text-primary)] ${formErrors.subject ? 'border-red-500' : 'border-[var(--border)]'}`}
               value={ticketForm.subject}
               onChange={(e) => setTicketForm({ ...ticketForm, subject: e.target.value })}
               placeholder="Le sujet sera généré automatiquement..."
@@ -726,14 +720,14 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Description <span className="text-red-500">*</span>
               {ticketForm.description && (
                 <span className="ml-2 text-xs font-normal text-green-600 dark:text-green-400">✓ Pré-remplie</span>
               )}
             </label>
             <textarea
-              className={`w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none h-32 resize-none dark:text-white ${formErrors.description ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'}`}
+              className={`w-full px-3 py-2 bg-[var(--bg-elevated)] border rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none h-32 resize-none text-[var(--text-primary)] ${formErrors.description ? 'border-red-500' : 'border-[var(--border)]'}`}
               value={ticketForm.description}
               onChange={(e) => setTicketForm({ ...ticketForm, description: e.target.value })}
               placeholder="La description sera pré-remplie en fonction de la catégorie..."
@@ -744,12 +738,12 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
           {/* Pièces jointes (staging) */}
           {!isEditMode && onStagedFilesChange && (
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 <Paperclip className="w-4 h-4 inline mr-1" />
                 Pièces jointes
               </label>
               <div
-                className="w-full px-3 py-4 bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-center cursor-pointer hover:border-[var(--primary)] dark:hover:border-[var(--primary)] transition-colors"
+                className="w-full px-3 py-4 bg-[var(--bg-elevated)] border-2 border-dashed border-[var(--border)] rounded-lg text-center cursor-pointer hover:border-[var(--primary)] dark:hover:border-[var(--primary)] transition-colors"
                 onClick={() => {
                   const input = document.createElement('input');
                   input.type = 'file';
@@ -770,7 +764,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
                   input.click();
                 }}
               >
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-[var(--text-secondary)]">
                   Cliquez pour ajouter des fichiers (max 10 Mo chacun)
                 </p>
               </div>
@@ -779,15 +773,15 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
                   {stagedFiles.map((file, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs"
+                      className="flex items-center gap-2 p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-xs"
                     >
                       {file.type.startsWith('image/') ? (
                         <Image className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
                       ) : (
-                        <FileText className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                        <FileText className="w-4 h-4 text-[var(--text-muted)] flex-shrink-0" />
                       )}
-                      <span className="truncate flex-1 text-slate-700 dark:text-slate-300">{file.name}</span>
-                      <span className="text-slate-400 flex-shrink-0">{(file.size / 1024).toFixed(0)} Ko</span>
+                      <span className="truncate flex-1 text-[var(--text-primary)]">{file.name}</span>
+                      <span className="text-[var(--text-muted)] flex-shrink-0">{(file.size / 1024).toFixed(0)} Ko</span>
                       <button
                         type="button"
                         onClick={(e) => {

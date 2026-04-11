@@ -1,9 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  CheckCircle, XCircle, ExternalLink, Send, Mail, 
-  MessageCircle, Bell, Wifi, WifiOff, RefreshCw, Plus, Trash2,
-  AlertTriangle, TestTube, Users, Copy, Check, Eye, EyeOff,
-  Wallet, QrCode, Link2, DollarSign, Smartphone, Phone, Server
+import {
+  CheckCircle,
+  XCircle,
+  ExternalLink,
+  Send,
+  Mail,
+  MessageCircle,
+  Bell,
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Plus,
+  Trash2,
+  AlertTriangle,
+  TestTube,
+  Users,
+  Copy,
+  Check,
+  Eye,
+  EyeOff,
+  Wallet,
+  QrCode,
+  Link2,
+  DollarSign,
+  Smartphone,
+  Phone,
+  Server,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { Modal } from '../../../components/Modal';
@@ -19,8 +41,11 @@ import type { WhatsAppConfig } from '../../../services/whatsappService';
 import { whatsappService } from '../../../services/whatsappService';
 import type { OrangeSmsConfig } from '../../../services/orangeSmsService';
 import { orangeSmsService } from '../../../services/orangeSmsService';
-import type { IntegrationStatusDetail} from '../../../services/integrationService';
-import { integrationService, type IntegrationProvider as IntegrationProviderId } from '../../../services/integrationService';
+import type { IntegrationStatusDetail } from '../../../services/integrationService';
+import {
+  integrationService,
+  type IntegrationProvider as IntegrationProviderId,
+} from '../../../services/integrationService';
 import { useCurrency } from '../../../hooks/useCurrency';
 import { logger } from '../../../utils/logger';
 import { TOAST } from '../../../constants/toastMessages';
@@ -78,7 +103,7 @@ const PROVIDERS: IntegrationProvider[] = [
       return {
         success: result.success,
         error: result.error,
-        info: result.botInfo
+        info: result.botInfo,
       };
     },
     disconnect: () => telegramService.disconnect(),
@@ -89,7 +114,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'password',
         placeholder: '123456789:ABCdefGHIjklMNOpqrsTUVwxyz',
         required: true,
-        helpText: 'Créez un bot via @BotFather sur Telegram pour obtenir le token'
+        helpText: 'Créez un bot via @BotFather sur Telegram pour obtenir le token',
       },
       {
         key: 'defaultChatId',
@@ -97,9 +122,9 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: '-1001234567890',
         required: false,
-        helpText: 'ID du groupe/canal pour les notifications par défaut'
-      }
-    ]
+        helpText: 'ID du groupe/canal pour les notifications par défaut',
+      },
+    ],
   },
   {
     id: 'resend',
@@ -126,7 +151,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'password',
         placeholder: 're_xxxxxxxxxxxx',
         required: true,
-        helpText: 'Clé API disponible dans le dashboard Resend'
+        helpText: 'Clé API disponible dans le dashboard Resend',
       },
       {
         key: 'defaultFrom',
@@ -134,9 +159,9 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: 'TrackYu GPS <noreply@votredomaine.com>',
         required: true,
-        helpText: 'Format: Nom <email@domain.com>'
-      }
-    ]
+        helpText: 'Format: Nom <email@domain.com>',
+      },
+    ],
   },
   {
     id: 'wave',
@@ -162,7 +187,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: 'TrackYu GPS / Votre Entreprise',
         required: true,
-        helpText: 'Nom affiché aux clients lors du paiement'
+        helpText: 'Nom affiché aux clients lors du paiement',
       },
       {
         key: 'merchantId',
@@ -170,7 +195,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: 'WAVE-XXXXXX',
         required: false,
-        helpText: 'Votre identifiant marchand Wave'
+        helpText: 'Votre identifiant marchand Wave',
       },
       {
         key: 'paymentLinkBase',
@@ -178,7 +203,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: 'https://pay.wave.com/m/xxxxxx',
         required: true,
-        helpText: 'Votre lien de paiement marchand Wave'
+        helpText: 'Votre lien de paiement marchand Wave',
       },
       {
         key: 'notificationPhone',
@@ -186,9 +211,9 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: '+225 07 XX XX XX XX',
         required: false,
-        helpText: 'Numéro pour recevoir les confirmations'
-      }
-    ]
+        helpText: 'Numéro pour recevoir les confirmations',
+      },
+    ],
   },
   {
     id: 'whatsapp',
@@ -214,7 +239,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: '1234567890123456',
         required: true,
-        helpText: 'ID du numéro WhatsApp Business (Meta Business Suite)'
+        helpText: 'ID du numéro WhatsApp Business (Meta Business Suite)',
       },
       {
         key: 'accessToken',
@@ -222,7 +247,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'password',
         placeholder: 'EAAxxxxxxx...',
         required: true,
-        helpText: 'Token d\'accès permanent (System User Token recommandé)'
+        helpText: "Token d'accès permanent (System User Token recommandé)",
       },
       {
         key: 'businessAccountId',
@@ -230,14 +255,14 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: '1234567890123456',
         required: false,
-        helpText: 'ID du compte WhatsApp Business'
-      }
-    ]
+        helpText: 'ID du compte WhatsApp Business',
+      },
+    ],
   },
   {
     id: 'orange_sms',
     name: 'Orange SMS CI',
-    description: 'Envoyez des SMS via Orange API (Côte d\'Ivoire)',
+    description: "Envoyez des SMS via Orange API (Côte d'Ivoire)",
     icon: <Smartphone className="w-6 h-6" />,
     category: 'sms',
     color: 'text-orange-500',
@@ -259,7 +284,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: 'votre-client-id',
         required: true,
-        helpText: 'Client ID de votre application Orange Developer'
+        helpText: 'Client ID de votre application Orange Developer',
       },
       {
         key: 'clientSecret',
@@ -267,7 +292,7 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'password',
         placeholder: 'votre-client-secret',
         required: true,
-        helpText: 'Client Secret de votre application'
+        helpText: 'Client Secret de votre application',
       },
       {
         key: 'senderName',
@@ -275,10 +300,10 @@ const PROVIDERS: IntegrationProvider[] = [
         type: 'text',
         placeholder: 'TrackYu',
         required: false,
-        helpText: 'Nom affiché à la place du numéro (si autorisé par Orange)'
-      }
-    ]
-  }
+        helpText: 'Nom affiché à la place du numéro (si autorisé par Orange)',
+      },
+    ],
+  },
 ];
 
 // Composant principal
@@ -323,7 +348,7 @@ export const IntegrationsPanelV2: React.FC = () => {
   const [orangeBalance, setOrangeBalance] = useState<number | null>(null);
   const [orangeSenderAddress, setOrangeSenderAddress] = useState<string | null>(null);
 
-  const refresh = () => setRefreshKey(k => k + 1);
+  const refresh = () => setRefreshKey((k) => k + 1);
 
   // Charger le statut backend au montage
   useEffect(() => {
@@ -343,7 +368,7 @@ export const IntegrationsPanelV2: React.FC = () => {
 
   // Helper: obtenir le statut backend pour un provider
   const getBackendStatusFor = (providerId: string): IntegrationStatusDetail | undefined => {
-    return backendStatus.find(s => s.provider === providerId);
+    return backendStatus.find((s) => s.provider === providerId);
   };
 
   // Open config modal
@@ -351,7 +376,7 @@ export const IntegrationsPanelV2: React.FC = () => {
     setSelectedProvider(provider);
     const existingConfig = provider.getConfig() || {};
     const initialData: Record<string, string> = {};
-    provider.configFields.forEach(field => {
+    provider.configFields.forEach((field) => {
       initialData[field.key] = existingConfig[field.key] || '';
     });
     setConfigData(initialData);
@@ -362,12 +387,12 @@ export const IntegrationsPanelV2: React.FC = () => {
   // Save configuration
   const handleSaveConfig = async () => {
     if (!selectedProvider) return;
-    
+
     // Validate required fields
     const missingFields = selectedProvider.configFields
-      .filter(f => f.required && !configData[f.key])
-      .map(f => f.label);
-    
+      .filter((f) => f.required && !configData[f.key])
+      .map((f) => f.label);
+
     if (missingFields.length > 0) {
       showToast(TOAST.VALIDATION.REQUIRED_FIELDS, 'error');
       return;
@@ -377,16 +402,16 @@ export const IntegrationsPanelV2: React.FC = () => {
     try {
       // 1. Configurer le service local
       selectedProvider.configure(configData);
-      
+
       // 2. Persister les credentials dans le backend (chiffré en DB)
       const saveResult = await integrationService.save(selectedProvider.id as IntegrationProviderId, configData);
       if (!saveResult.success) {
         logger.warn(`[Integrations] Backend save warning: ${saveResult.error}`);
       }
-      
+
       // 3. Test connection after saving
       const result = await selectedProvider.testConnection();
-      
+
       if (result.success) {
         showToast(TOAST.ADMIN.CONFIG_SAVED, 'success');
         if (selectedProvider.id === 'telegram' && result.info) {
@@ -417,14 +442,14 @@ export const IntegrationsPanelV2: React.FC = () => {
     try {
       const result = await provider.testConnection();
       setTestResult(result);
-      
+
       if (result.success && provider.id === 'telegram') {
         setBotInfo(result.info);
         // Fetch recent chats
         const chats = await telegramService.getRecentChats();
         setTelegramChats(chats);
       }
-      
+
       if (result.success && provider.id === 'wave') {
         // Fetch Wave stats and transactions
         setWaveStats(waveService.getStats());
@@ -525,7 +550,6 @@ export const IntegrationsPanelV2: React.FC = () => {
     }
   };
 
-
   // Send test email (Resend)
   const sendResendTest = async () => {
     if (!testEmail) {
@@ -545,7 +569,7 @@ export const IntegrationsPanelV2: React.FC = () => {
             <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;" />
             <p style="color: #666; font-size: 14px;">TrackYu GPS Tracking System</p>
           </div>
-        `
+        `,
       });
 
       if (result.id) {
@@ -563,7 +587,14 @@ export const IntegrationsPanelV2: React.FC = () => {
 
   // Disconnect provider
   const handleDisconnect = async (provider: IntegrationProvider) => {
-    if (await confirm({ message: `Déconnecter ${provider.name}? La configuration sera supprimée.`, title: 'Déconnecter', variant: 'warning', confirmLabel: 'Déconnecter' })) {
+    if (
+      await confirm({
+        message: `Déconnecter ${provider.name}? La configuration sera supprimée.`,
+        title: 'Déconnecter',
+        variant: 'warning',
+        confirmLabel: 'Déconnecter',
+      })
+    ) {
       provider.disconnect();
       showToast(TOAST.CRUD.DELETED(provider.name), 'success');
       refresh();
@@ -580,10 +611,10 @@ export const IntegrationsPanelV2: React.FC = () => {
   const renderProviderCard = (provider: IntegrationProvider) => {
     // Priorité au statut backend, sinon fallback sur localStorage
     const backendProviderStatus = getBackendStatusFor(provider.id);
-    const isConfigured = backendProviderStatus 
-      ? (backendProviderStatus.configured && backendProviderStatus.active)
+    const isConfigured = backendProviderStatus
+      ? backendProviderStatus.configured && backendProviderStatus.active
       : provider.isConfigured();
-    
+
     return (
       <Card key={provider.id} className="p-6 flex flex-col h-full hover:shadow-lg transition-shadow">
         {/* Header */}
@@ -598,7 +629,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                 Connecté
               </span>
             ) : (
-              <span className="flex items-center gap-1 text-sm text-slate-400">
+              <span className="flex items-center gap-1 text-sm text-[var(--text-muted)]">
                 <WifiOff className="w-4 h-4" />
                 Non configuré
               </span>
@@ -607,24 +638,29 @@ export const IntegrationsPanelV2: React.FC = () => {
         </div>
 
         {/* Info */}
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-          {provider.name}
-        </h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 flex-grow">
-          {provider.description}
-        </p>
+        <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">{provider.name}</h3>
+        <p className="text-sm text-[var(--text-secondary)] mb-4 flex-grow">{provider.description}</p>
 
         {/* Category badge */}
         <div className="mb-4">
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            provider.category === 'messaging' ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300' :
-            provider.category === 'email' ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300' :
-            provider.category === 'sms' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
-            'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-          }`}>
-            {provider.category === 'messaging' ? '💬 Messagerie' :
-             provider.category === 'email' ? '📧 Email' :
-             provider.category === 'sms' ? '📱 SMS' : '💳 Paiement'}
+          <span
+            className={`px-2 py-1 rounded-full text-xs font-medium ${
+              provider.category === 'messaging'
+                ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+                : provider.category === 'email'
+                  ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300'
+                  : provider.category === 'sms'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                    : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+            }`}
+          >
+            {provider.category === 'messaging'
+              ? '💬 Messagerie'
+              : provider.category === 'email'
+                ? '📧 Email'
+                : provider.category === 'sms'
+                  ? '📱 SMS'
+                  : '💳 Paiement'}
           </span>
         </div>
 
@@ -641,7 +677,7 @@ export const IntegrationsPanelV2: React.FC = () => {
               </button>
               <button
                 onClick={() => openConfigModal(provider)}
-                className="flex-1 py-2 px-3 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="flex-1 py-2 px-3 border border-[var(--border)] rounded-lg text-sm font-medium text-[var(--text-primary)] tr-hover transition-colors"
               >
                 Modifier
               </button>
@@ -666,7 +702,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                 href={provider.docsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
                 title="Documentation"
               >
                 <ExternalLink className="w-4 h-4" />
@@ -681,12 +717,12 @@ export const IntegrationsPanelV2: React.FC = () => {
   // Afficher le statut backend pour Resend
   const renderBackendStatusBanner = () => {
     const resendStatus = getBackendStatusFor('resend');
-    
+
     if (loadingBackendStatus) {
       return (
-        <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 flex items-center gap-3">
-          <RefreshCw className="w-5 h-5 text-slate-400 animate-spin" />
-          <span className="text-sm text-slate-500">Chargement du statut serveur...</span>
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-4 flex items-center gap-3">
+          <RefreshCw className="w-5 h-5 text-[var(--text-muted)] animate-spin" />
+          <span className="text-sm text-[var(--text-secondary)]">Chargement du statut serveur...</span>
         </div>
       );
     }
@@ -695,56 +731,56 @@ export const IntegrationsPanelV2: React.FC = () => {
       <div className="bg-gradient-to-r from-violet-50 to-blue-50 dark:from-violet-900/20 dark:to-blue-900/20 rounded-xl p-4 border border-violet-200 dark:border-violet-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
+            <div className="p-2 bg-[var(--bg-elevated)] rounded-lg shadow-sm">
               <Server className="w-5 h-5 text-violet-600 dark:text-violet-400" />
             </div>
             <div>
-              <h3 className="font-medium text-slate-900 dark:text-white">Configuration Serveur</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Statut des intégrations côté backend
-              </p>
+              <h3 className="font-medium text-[var(--text-primary)]">Configuration Serveur</h3>
+              <p className="text-sm text-[var(--text-secondary)]">Statut des intégrations côté backend</p>
             </div>
           </div>
           <button
             onClick={refresh}
             className="p-2 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
           >
-            <RefreshCw className={`w-4 h-4 text-slate-500 ${loadingBackendStatus ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`w-4 h-4 text-[var(--text-secondary)] ${loadingBackendStatus ? 'animate-spin' : ''}`}
+            />
           </button>
         </div>
-        
+
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          {backendStatus.map(status => (
-            <div 
+          {backendStatus.map((status) => (
+            <div
               key={status.provider}
               className={`p-3 rounded-lg ${
-                status.configured && status.active 
-                  ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800' 
-                  : status.configured 
+                status.configured && status.active
+                  ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+                  : status.configured
                     ? 'bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800'
-                    : 'bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
+                    : 'bg-[var(--bg-elevated)] border border-[var(--border)]'
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-medium text-sm capitalize text-slate-900 dark:text-white">
-                  {status.provider}
-                </span>
+                <span className="font-medium text-sm capitalize text-[var(--text-primary)]">{status.provider}</span>
                 {status.configured && status.active ? (
                   <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                 ) : status.configured ? (
                   <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
                 ) : (
-                  <XCircle className="w-4 h-4 text-slate-400" />
+                  <XCircle className="w-4 h-4 text-[var(--text-muted)]" />
                 )}
               </div>
-              <div className="text-xs text-slate-500 dark:text-slate-400">
-                {status.source === 'env' && '📦 Variable d\'env'}
+              <div className="text-xs text-[var(--text-secondary)]">
+                {status.source === 'env' && "📦 Variable d'env"}
                 {status.source === 'database' && '🗄️ Base de données'}
                 {status.source === 'none' && '⚪ Non configuré'}
               </div>
               {status.configSummary && Object.keys(status.configSummary).length > 0 && (
-                <div className="mt-1 text-xs font-mono text-slate-400 truncate">
-                  {Object.entries(status.configSummary).map(([k, v]) => `${k}: ${v}`).join(', ')}
+                <div className="mt-1 text-xs font-mono text-[var(--text-muted)] truncate">
+                  {Object.entries(status.configSummary)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(', ')}
                 </div>
               )}
             </div>
@@ -762,16 +798,14 @@ export const IntegrationsPanelV2: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-            Intégrations
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Intégrations</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
             Connectez vos services de notification et communication
           </p>
         </div>
         <button
           onClick={refresh}
-          className="p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+          className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
           title="Rafraîchir"
         >
           <RefreshCw className="w-5 h-5" />
@@ -780,50 +814,47 @@ export const IntegrationsPanelV2: React.FC = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">
-            {backendStatus.filter(s => s.configured && s.active).length || PROVIDERS.filter(p => p.isConfigured()).length}
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+          <div className="text-2xl font-bold text-[var(--text-primary)]">
+            {backendStatus.filter((s) => s.configured && s.active).length ||
+              PROVIDERS.filter((p) => p.isConfigured()).length}
           </div>
-          <div className="text-sm text-slate-500">Actives</div>
+          <div className="text-sm text-[var(--text-secondary)]">Actives</div>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">
-            {PROVIDERS.filter(p => p.category === 'messaging').length}
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+          <div className="text-2xl font-bold text-[var(--text-primary)]">
+            {PROVIDERS.filter((p) => p.category === 'messaging').length}
           </div>
-          <div className="text-sm text-slate-500">Messagerie</div>
+          <div className="text-sm text-[var(--text-secondary)]">Messagerie</div>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">
-            {PROVIDERS.filter(p => p.category === 'email').length}
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+          <div className="text-2xl font-bold text-[var(--text-primary)]">
+            {PROVIDERS.filter((p) => p.category === 'email').length}
           </div>
-          <div className="text-sm text-slate-500">Email</div>
+          <div className="text-sm text-[var(--text-secondary)]">Email</div>
         </div>
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
-          <div className="text-2xl font-bold text-slate-900 dark:text-white">
-            {PROVIDERS.length}
-          </div>
-          <div className="text-sm text-slate-500">Total Disponibles</div>
+        <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
+          <div className="text-2xl font-bold text-[var(--text-primary)]">{PROVIDERS.length}</div>
+          <div className="text-sm text-[var(--text-secondary)]">Total Disponibles</div>
         </div>
       </div>
 
       {/* Providers Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {PROVIDERS.map(renderProviderCard)}
-        
+
         {/* Coming Soon Card */}
         <Card className="p-6 flex flex-col h-full border-dashed border-2 opacity-60">
           <div className="flex justify-between items-start mb-4">
-            <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl">
-              <Bell className="w-6 h-6 text-slate-400" />
+            <div className="p-3 bg-[var(--bg-elevated)] rounded-xl">
+              <Bell className="w-6 h-6 text-[var(--text-muted)]" />
             </div>
           </div>
-          <h3 className="text-lg font-semibold text-slate-500 mb-2">
-            Plus d'intégrations à venir...
-          </h3>
-          <p className="text-sm text-slate-400 mb-4 flex-grow">
+          <h3 className="text-lg font-semibold text-[var(--text-secondary)] mb-2">Plus d'intégrations à venir...</h3>
+          <p className="text-sm text-[var(--text-muted)] mb-4 flex-grow">
             Orange Money, MTN Mobile Money, Twilio, SendGrid
           </p>
-          <span className="text-xs text-slate-400 italic">Bientôt disponible</span>
+          <span className="text-xs text-[var(--text-muted)] italic">Bientôt disponible</span>
         </Card>
       </div>
 
@@ -850,7 +881,7 @@ export const IntegrationsPanelV2: React.FC = () => {
           {/* Fields */}
           {selectedProvider?.configFields.map((field) => (
             <div key={field.key}>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                 {field.label} {field.required && <span className="text-red-500">*</span>}
               </label>
               <div className="relative">
@@ -860,7 +891,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                     onChange={(e) => setConfigData({ ...configData, [field.key]: e.target.value })}
                     placeholder={field.placeholder}
                     rows={3}
-                    className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                   />
                 ) : (
                   <div className="relative">
@@ -869,13 +900,13 @@ export const IntegrationsPanelV2: React.FC = () => {
                       value={configData[field.key] || ''}
                       onChange={(e) => setConfigData({ ...configData, [field.key]: e.target.value })}
                       placeholder={field.placeholder}
-                      className="w-full px-3 py-2 pr-10 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
+                      className="w-full px-3 py-2 pr-10 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent"
                     />
                     {field.type === 'password' && (
                       <button
                         type="button"
                         onClick={() => setShowSecrets({ ...showSecrets, [field.key]: !showSecrets[field.key] })}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                       >
                         {showSecrets[field.key] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -883,17 +914,15 @@ export const IntegrationsPanelV2: React.FC = () => {
                   </div>
                 )}
               </div>
-              {field.helpText && (
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{field.helpText}</p>
-              )}
+              {field.helpText && <p className="mt-1 text-xs text-[var(--text-secondary)]">{field.helpText}</p>}
             </div>
           ))}
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsConfigModalOpen(false)}
-              className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
             >
               Annuler
             </button>
@@ -931,7 +960,9 @@ export const IntegrationsPanelV2: React.FC = () => {
               <RefreshCw className="w-8 h-8 animate-spin text-[var(--primary)]" />
             </div>
           ) : testResult ? (
-            <div className={`p-4 rounded-lg ${testResult.success ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}>
+            <div
+              className={`p-4 rounded-lg ${testResult.success ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}
+            >
               <div className="flex items-center gap-3">
                 {testResult.success ? (
                   <CheckCircle className="w-6 h-6 text-green-500" />
@@ -939,7 +970,9 @@ export const IntegrationsPanelV2: React.FC = () => {
                   <AlertTriangle className="w-6 h-6 text-red-500" />
                 )}
                 <div>
-                  <p className={`font-medium ${testResult.success ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>
+                  <p
+                    className={`font-medium ${testResult.success ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}
+                  >
                     {testResult.success ? 'Connexion réussie!' : 'Échec de connexion'}
                   </p>
                   {testResult.error && (
@@ -962,8 +995,8 @@ export const IntegrationsPanelV2: React.FC = () => {
                       {botInfo.first_name.charAt(0)}
                     </div>
                     <div>
-                      <p className="font-medium text-slate-900 dark:text-white">{botInfo.first_name}</p>
-                      <p className="text-sm text-slate-500">@{botInfo.username}</p>
+                      <p className="font-medium text-[var(--text-primary)]">{botInfo.first_name}</p>
+                      <p className="text-sm text-[var(--text-secondary)]">@{botInfo.username}</p>
                     </div>
                   </div>
                 </div>
@@ -971,7 +1004,7 @@ export const IntegrationsPanelV2: React.FC = () => {
 
               {/* Available Chats */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
                   <Users className="w-4 h-4 inline mr-1" />
                   Chats disponibles
                 </label>
@@ -984,20 +1017,20 @@ export const IntegrationsPanelV2: React.FC = () => {
                         className={`w-full p-3 text-left rounded-lg border transition-colors ${
                           selectedChatId === String(chat.id)
                             ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
-                            : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            : 'border-[var(--border)] tr-hover'
                         }`}
                       >
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-slate-900 dark:text-white">{chat.name}</p>
-                            <p className="text-xs text-slate-500">{chat.type}</p>
+                            <p className="font-medium text-[var(--text-primary)]">{chat.name}</p>
+                            <p className="text-xs text-[var(--text-secondary)]">{chat.type}</p>
                           </div>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               copyToClipboard(String(chat.id));
                             }}
-                            className="p-1 text-slate-400 hover:text-slate-600"
+                            className="p-1 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                             title="Copier l'ID"
                           >
                             <Copy className="w-4 h-4" />
@@ -1016,7 +1049,7 @@ export const IntegrationsPanelV2: React.FC = () => {
 
               {/* Manual Chat ID */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                   Ou entrez un Chat ID manuellement
                 </label>
                 <input
@@ -1024,21 +1057,19 @@ export const IntegrationsPanelV2: React.FC = () => {
                   value={selectedChatId}
                   onChange={(e) => setSelectedChatId(e.target.value)}
                   placeholder="-1001234567890"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)]"
                 />
               </div>
 
               {/* Test Message */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Message de test
-                </label>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Message de test</label>
                 <textarea
                   value={testMessage}
                   onChange={(e) => setTestMessage(e.target.value)}
                   placeholder="🧪 Test TrackYu GPS - Intégration Telegram fonctionnelle!"
                   rows={3}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)]"
                 />
               </div>
 
@@ -1057,15 +1088,13 @@ export const IntegrationsPanelV2: React.FC = () => {
           {selectedProvider?.id === 'resend' && testResult?.success && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Email de test
-                </label>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Email de test</label>
                 <input
                   type="email"
                   value={testEmail}
                   onChange={(e) => setTestEmail(e.target.value)}
                   placeholder="votre@email.com"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)]"
                 />
               </div>
 
@@ -1085,25 +1114,19 @@ export const IntegrationsPanelV2: React.FC = () => {
             <div className="space-y-4">
               {/* QR Code */}
               <div className="text-center">
-                <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-3">
+                <h4 className="font-medium text-[var(--text-primary)] mb-3">
                   <QrCode className="w-4 h-4 inline mr-1" />
                   QR Code de paiement
                 </h4>
                 <div className="inline-block p-4 bg-white rounded-xl shadow-sm">
-                  <img 
-                    src={waveService.getQRCodeUrl(180)} 
-                    alt="Wave QR Code"
-                    className="w-[180px] h-[180px]"
-                  />
+                  <img src={waveService.getQRCodeUrl(180)} alt="Wave QR Code" className="w-[180px] h-[180px]" />
                 </div>
-                <p className="text-sm text-slate-500 mt-2">
-                  Scannez avec l'app Wave pour tester
-                </p>
+                <p className="text-sm text-[var(--text-secondary)] mt-2">Scannez avec l'app Wave pour tester</p>
               </div>
 
               {/* Payment Link */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                   <Link2 className="w-4 h-4 inline mr-1" />
                   Lien de paiement
                 </label>
@@ -1112,7 +1135,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                     type="text"
                     value={waveService.getConfig()?.paymentLinkBase || ''}
                     readOnly
-                    className="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                    className="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
                   />
                   <button
                     onClick={() => copyToClipboard(waveService.getConfig()?.paymentLinkBase || '')}
@@ -1130,13 +1153,13 @@ export const IntegrationsPanelV2: React.FC = () => {
                     <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
                       {waveStats.totalTransactions}
                     </div>
-                    <div className="text-xs text-slate-500">Transactions</div>
+                    <div className="text-xs text-[var(--text-secondary)]">Transactions</div>
                   </div>
                   <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
                     <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                       {waveStats.completedAmount.toLocaleString()}
                     </div>
-                    <div className="text-xs text-slate-500">{currency} reçus</div>
+                    <div className="text-xs text-[var(--text-secondary)]">{currency} reçus</div>
                   </div>
                 </div>
               )}
@@ -1144,29 +1167,30 @@ export const IntegrationsPanelV2: React.FC = () => {
               {/* Recent Transactions */}
               {waveTransactions.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                  <h4 className="text-sm font-medium text-[var(--text-primary)] mb-2">
                     <DollarSign className="w-4 h-4 inline mr-1" />
                     Dernières transactions
                   </h4>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
                     {waveTransactions.map((tx) => (
-                      <div 
+                      <div
                         key={tx.id}
-                        className="p-3 bg-slate-50 dark:bg-slate-800 rounded-lg flex justify-between items-center"
+                        className="p-3 bg-[var(--bg-elevated)] rounded-lg flex justify-between items-center"
                       >
                         <div>
-                          <p className="text-sm font-medium text-slate-900 dark:text-white">
-                            {formatPrice(tx.amount)}
-                          </p>
-                          <p className="text-xs text-slate-500">{tx.reference}</p>
+                          <p className="text-sm font-medium text-[var(--text-primary)]">{formatPrice(tx.amount)}</p>
+                          <p className="text-xs text-[var(--text-secondary)]">{tx.reference}</p>
                         </div>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          tx.status === 'completed' ? 'bg-green-100 text-green-700' :
-                          tx.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                          'bg-red-100 text-red-700'
-                        }`}>
-                          {tx.status === 'completed' ? 'Payé' : 
-                           tx.status === 'pending' ? 'En attente' : 'Échoué'}
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            tx.status === 'completed'
+                              ? 'bg-green-100 text-green-700'
+                              : tx.status === 'pending'
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-red-100 text-red-700'
+                          }`}
+                        >
+                          {tx.status === 'completed' ? 'Payé' : tx.status === 'pending' ? 'En attente' : 'Échoué'}
                         </span>
                       </div>
                     ))}
@@ -1199,8 +1223,8 @@ export const IntegrationsPanelV2: React.FC = () => {
                       <MessageCircle className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="font-medium text-slate-900 dark:text-white">{whatsappPhoneNumber}</p>
-                      <p className="text-sm text-slate-500">WhatsApp Business</p>
+                      <p className="font-medium text-[var(--text-primary)]">{whatsappPhoneNumber}</p>
+                      <p className="text-sm text-[var(--text-secondary)]">WhatsApp Business</p>
                     </div>
                   </div>
                 </div>
@@ -1208,30 +1232,26 @@ export const IntegrationsPanelV2: React.FC = () => {
 
               {/* Test Phone */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Numéro destinataire
-                </label>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Numéro destinataire</label>
                 <input
                   type="tel"
                   value={whatsappPhone}
                   onChange={(e) => setWhatsappPhone(e.target.value)}
                   placeholder="+2250700000000"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)]"
                 />
-                <p className="text-xs text-slate-500 mt-1">Format international sans espaces</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">Format international sans espaces</p>
               </div>
 
               {/* Test Message */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Message de test
-                </label>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Message de test</label>
                 <textarea
                   value={whatsappTestMessage}
                   onChange={(e) => setWhatsappTestMessage(e.target.value)}
                   placeholder="🧪 Test TrackYu GPS - Intégration WhatsApp fonctionnelle!"
                   rows={3}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)]"
                 />
               </div>
 
@@ -1246,7 +1266,8 @@ export const IntegrationsPanelV2: React.FC = () => {
 
               <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-sm text-amber-700 dark:text-amber-300">
                 <AlertTriangle className="w-4 h-4 inline mr-1" />
-                <strong>Note:</strong> Le destinataire doit avoir accepté les messages de votre numéro WhatsApp Business (conversation initiée dans les 24h).
+                <strong>Note:</strong> Le destinataire doit avoir accepté les messages de votre numéro WhatsApp Business
+                (conversation initiée dans les 24h).
               </div>
             </div>
           )}
@@ -1278,30 +1299,32 @@ export const IntegrationsPanelV2: React.FC = () => {
                     <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
                   </button>
                 </div>
-                
+
                 {/* Sender Address (auto-retrieved from API) */}
                 {orangeSenderAddress && (
                   <div className="flex items-center justify-between mb-3 pb-3 border-b border-orange-200 dark:border-orange-800">
-                    <span className="text-slate-600 dark:text-slate-400">Nom expéditeur:</span>
+                    <span className="text-[var(--text-secondary)]">Nom expéditeur:</span>
                     <span className="font-mono font-medium text-orange-600 dark:text-orange-400">
                       {orangeSenderAddress}
                     </span>
                   </div>
                 )}
-                
+
                 {/* Balance Info */}
                 {orangeBalance !== null && (
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-600 dark:text-slate-400">Solde SMS disponible:</span>
+                    <span className="text-[var(--text-secondary)]">Solde SMS disponible:</span>
                     <div className="text-right">
-                      <span className={`text-2xl font-bold ${orangeBalance < 100 ? 'text-red-600 dark:text-red-400' : orangeBalance < 500 ? 'text-amber-600 dark:text-amber-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                      <span
+                        className={`text-2xl font-bold ${orangeBalance < 100 ? 'text-red-600 dark:text-red-400' : orangeBalance < 500 ? 'text-amber-600 dark:text-amber-400' : 'text-orange-600 dark:text-orange-400'}`}
+                      >
                         {orangeBalance.toLocaleString()}
                       </span>
-                      <span className="text-sm text-slate-500 ml-1">SMS</span>
+                      <span className="text-sm text-[var(--text-secondary)] ml-1">SMS</span>
                     </div>
                   </div>
                 )}
-                
+
                 {/* Low balance warning */}
                 {orangeBalance !== null && orangeBalance < 100 && (
                   <div className="mt-3 p-2 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center gap-2 text-red-700 dark:text-red-300 text-sm">
@@ -1309,7 +1332,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                     <span>Solde faible ! Pensez à recharger votre forfait SMS Orange.</span>
                   </div>
                 )}
-                
+
                 {orangeBalance !== null && orangeBalance >= 100 && orangeBalance < 500 && (
                   <div className="mt-3 p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center gap-2 text-amber-700 dark:text-amber-300 text-sm">
                     <AlertTriangle className="w-4 h-4 flex-shrink-0" />
@@ -1320,22 +1343,20 @@ export const IntegrationsPanelV2: React.FC = () => {
 
               {/* Test Phone */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                  Numéro destinataire
-                </label>
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Numéro destinataire</label>
                 <input
                   type="tel"
                   value={orangePhone}
                   onChange={(e) => setOrangePhone(e.target.value)}
                   placeholder="0700000000 ou +2250700000000"
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)]"
                 />
-                <p className="text-xs text-slate-500 mt-1">Numéro Orange CI</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">Numéro Orange CI</p>
               </div>
 
               {/* Test Message */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                   Message SMS (max 160 caractères)
                 </label>
                 <textarea
@@ -1344,9 +1365,9 @@ export const IntegrationsPanelV2: React.FC = () => {
                   placeholder="Test TrackYu GPS - SMS Orange fonctionnel!"
                   rows={2}
                   maxLength={160}
-                  className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)]"
                 />
-                <p className="text-xs text-slate-500 mt-1">{orangeTestMessage.length}/160 caractères</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">{orangeTestMessage.length}/160 caractères</p>
               </div>
 
               <button
@@ -1361,10 +1382,10 @@ export const IntegrationsPanelV2: React.FC = () => {
           )}
 
           {/* Close */}
-          <div className="flex justify-end pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex justify-end pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsTestModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
             >
               Fermer
             </button>

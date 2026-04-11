@@ -261,8 +261,8 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                 <ArrowUpRight className="w-6 h-6 text-[var(--primary)] dark:text-[var(--primary)]" />
               </div>
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Entrées (Mois)</p>
-                <h3 className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                <p className="text-sm text-[var(--text-secondary)] font-medium">Total Entrées (Mois)</p>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)]">
                   {formatPrice(
                     cashEntries
                       .filter((e) => e.debit > 0 && e.date.startsWith(new Date().toISOString().slice(0, 7)))
@@ -279,8 +279,8 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                 <ArrowDownLeft className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Total Sorties (Mois)</p>
-                <h3 className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                <p className="text-sm text-[var(--text-secondary)] font-medium">Total Sorties (Mois)</p>
+                <h3 className="text-2xl font-bold text-[var(--text-primary)]">
                   {formatPrice(
                     cashEntries
                       .filter((e) => e.credit > 0 && e.date.startsWith(new Date().toISOString().slice(0, 7)))
@@ -295,18 +295,18 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
 
       {/* Actions & List */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-        <h2 className="text-xl font-bold text-slate-800 dark:text-white">Journal de Caisse</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)]">Journal de Caisse</h2>
         <div className="flex gap-2 flex-wrap sm:flex-nowrap">
           <button
             onClick={() => setIsHistoryModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
           >
             <History className="w-4 h-4" />
             Historique
           </button>
           <button
             onClick={() => setIsClosingModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-slate-800 bg-[var(--bg-elevated)] text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors"
           >
             <Lock className="w-4 h-4" />
             Arrêté Journalier
@@ -321,9 +321,9 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-x-auto">
-        <table className="w-full text-sm text-left text-slate-500 dark:text-slate-400 min-w-[600px]">
-          <thead className="text-xs text-slate-700 uppercase bg-slate-50 dark:bg-slate-700 dark:text-slate-400">
+      <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-x-auto">
+        <table className="w-full text-sm text-left text-[var(--text-secondary)] min-w-[600px]">
+          <thead className="text-xs text-[var(--text-primary)] uppercase bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
             <tr>
               <SortableHeader
                 label="Date"
@@ -369,7 +369,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
           <tbody>
             {sortedCashEntries.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
+                <td colSpan={6} className="px-6 py-8 text-center text-[var(--text-secondary)]">
                   Aucune opération de caisse enregistrée.
                 </td>
               </tr>
@@ -385,18 +385,18 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                   return (
                     <tr
                       key={entry.id}
-                      className="bg-white border-b dark:bg-slate-800 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                      className="bg-white border-b bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50"
                     >
                       <td className="px-6 py-4">{entry.date}</td>
                       <td className="px-6 py-4 font-mono text-xs">{entry.ref}</td>
-                      <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">{entry.label}</td>
+                      <td className="px-6 py-4 font-medium text-[var(--text-primary)]">{entry.label}</td>
                       {isSuperAdmin && (
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <div className="w-5 h-5 rounded bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-center text-[10px] font-bold text-[var(--primary)]">
                               {(resellers?.find((r) => r.tenantId === entry.tenantId)?.slug || '??').substring(0, 2)}
                             </div>
-                            <span className="text-xs text-slate-600 dark:text-slate-300">
+                            <span className="text-xs text-[var(--text-secondary)]">
                               {resellers?.find((r) => r.tenantId === entry.tenantId)?.name || entry.tenantId || '-'}
                             </span>
                           </div>
@@ -408,7 +408,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                       <td className="px-6 py-4 text-right text-red-600 font-medium">
                         {entry.credit > 0 ? `-${formatPrice(entry.credit)}` : '-'}
                       </td>
-                      <td className="px-6 py-4 text-right font-bold text-slate-700 dark:text-slate-300">
+                      <td className="px-6 py-4 text-right font-bold text-[var(--text-primary)]">
                         {formatPrice(currentBalance)}
                       </td>
                     </tr>
@@ -426,24 +426,24 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
             className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm transition-opacity"
             onClick={() => setIsModalOpen(false)}
           />
-          <div className="relative bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-slate-200 dark:border-slate-700">
+          <div className="relative bg-[var(--bg-surface)] rounded-xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-[var(--border)]">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
-              <h3 className="font-bold text-xl text-slate-800 dark:text-white">Nouvelle Opération de Caisse</h3>
+            <div className="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg-elevated)]">
+              <h3 className="font-bold text-xl text-[var(--text-primary)]">Nouvelle Opération de Caisse</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors"
+                className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full transition-colors"
               >
-                <X className="w-5 h-5 text-slate-500" />
+                <X className="w-5 h-5 text-[var(--text-secondary)]" />
               </button>
             </div>
 
             {/* Scrollable Body */}
             <div className="flex-1 overflow-y-auto p-6 custom-scrollbar">
               <div className="space-y-6 max-w-3xl mx-auto">
-                <div className="flex gap-4 p-1 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <div className="flex gap-4 p-1 bg-[var(--bg-elevated)] rounded-lg">
                   <button
-                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'WITHDRAWAL' ? 'bg-white dark:bg-slate-600 shadow text-red-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'WITHDRAWAL' ? 'bg-white bg-[var(--bg-elevated)] shadow text-red-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                     onClick={() => {
                       setTransactionType('WITHDRAWAL');
                       setCounterpartAccount('606000');
@@ -452,7 +452,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                     Sortie (Dépense)
                   </button>
                   <button
-                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'DEPOSIT' ? 'bg-white dark:bg-slate-600 shadow text-emerald-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'DEPOSIT' ? 'bg-white bg-[var(--bg-elevated)] shadow text-emerald-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                     onClick={() => {
                       setTransactionType('DEPOSIT');
                       setCounterpartAccount('411100');
@@ -464,50 +464,50 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Date</label>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Date</label>
                     <input
                       type="date"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700"
+                      className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Montant</label>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Montant</label>
                     <div className="relative">
                       <input
                         type="number"
                         step="0.01"
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
-                        className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 pl-10"
+                        className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] pl-10"
                         placeholder="0.00"
                       />
-                      <DollarSign className="w-4 h-4 absolute left-3 top-3.5 text-slate-400" />
+                      <DollarSign className="w-4 h-4 absolute left-3 top-3.5 text-[var(--text-muted)]" />
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Libellé</label>
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Libellé</label>
                   <input
                     type="text"
                     value={label}
                     onChange={(e) => setLabel(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700"
+                    className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)]"
                     placeholder="Ex: Achat fournitures bureau"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                     Compte de contrepartie
                   </label>
                   <select
                     value={counterpartAccount}
                     onChange={(e) => setCounterpartAccount(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700"
+                    className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)]"
                   >
                     {counterpartOptions.map((a) => (
                       <option key={a.code} value={a.code}>
@@ -518,14 +518,14 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
                     Référence (Optionnel)
                   </label>
                   <input
                     type="text"
                     value={reference}
                     onChange={(e) => setReference(e.target.value)}
-                    className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700"
+                    className="w-full p-2.5 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)]"
                     placeholder="Ex: TICKET-123"
                   />
                 </div>
@@ -533,10 +533,10 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
             </div>
 
             {/* Footer Actions */}
-            <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex justify-end items-center shrink-0 gap-3">
+            <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-elevated)] flex justify-end items-center shrink-0 gap-3">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-bold tr-hover transition-colors"
               >
                 Annuler
               </button>
@@ -578,42 +578,40 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
           )}
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Date de l'arrêté
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Date de l'arrêté</label>
             <input
               type="date"
               value={closingDate}
               onChange={(e) => setClosingDate(e.target.value)}
-              className="w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-700"
+              className="w-full rounded-lg border-[var(--border)] bg-[var(--bg-elevated)]"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div className="grid grid-cols-2 gap-4 p-4 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)]">
             <div>
-              <p className="text-xs text-slate-500 uppercase font-bold">Solde Ouverture</p>
-              <p className="text-lg font-mono font-bold text-slate-700 dark:text-slate-300">
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Solde Ouverture</p>
+              <p className="text-lg font-mono font-bold text-[var(--text-primary)]">
                 {formatPrice(dailyStats.openingBalance)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase font-bold">Solde Théorique</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Solde Théorique</p>
               <p className="text-lg font-mono font-bold text-[var(--primary)] dark:text-[var(--primary)]">
                 {formatPrice(dailyStats.theoreticalClosing)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase font-bold">Total Entrées</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Total Entrées</p>
               <p className="text-lg font-mono font-bold text-emerald-600">+{formatPrice(dailyStats.totalIn)}</p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 uppercase font-bold">Total Sorties</p>
+              <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Total Sorties</p>
               <p className="text-lg font-mono font-bold text-red-600">-{formatPrice(dailyStats.totalOut)}</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Solde Réel Constaté (Espèces)
             </label>
             <div className="relative">
@@ -622,10 +620,10 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                 step="0.01"
                 value={actualClosingBalance}
                 onChange={(e) => setActualClosingBalance(e.target.value)}
-                className="w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-700 pl-8 font-bold"
+                className="w-full rounded-lg border-[var(--border)] bg-[var(--bg-elevated)] pl-8 font-bold"
                 placeholder="0.00"
               />
-              <DollarSign className="w-4 h-4 absolute left-2.5 top-3 text-slate-400" />
+              <DollarSign className="w-4 h-4 absolute left-2.5 top-3 text-[var(--text-muted)]" />
             </div>
             {actualClosingBalance && (
               <p
@@ -637,13 +635,11 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Notes / Observations
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Notes / Observations</label>
             <textarea
               value={closingNotes}
               onChange={(e) => setClosingNotes(e.target.value)}
-              className="w-full rounded-lg border-slate-300 dark:border-slate-600 dark:bg-slate-700 h-20 resize-none"
+              className="w-full rounded-lg border-[var(--border)] bg-[var(--bg-elevated)] h-20 resize-none"
               placeholder="Justification d'écart, coupures, etc..."
             />
           </div>
@@ -651,7 +647,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
           <div className="pt-4 flex justify-end gap-2">
             <button
               onClick={() => setIsClosingModalOpen(false)}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               Annuler
             </button>
@@ -676,7 +672,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
           {cashClosings.length === 0 ? (
             <div className="text-center py-8">
               <History className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-              <p className="text-slate-500">Aucune clôture enregistrée</p>
+              <p className="text-[var(--text-secondary)]">Aucune clôture enregistrée</p>
             </div>
           ) : (
             <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -698,7 +694,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                         ) : (
                           <AlertTriangle className="w-5 h-5 text-orange-600" />
                         )}
-                        <span className="font-bold text-slate-800 dark:text-white">
+                        <span className="font-bold text-[var(--text-primary)]">
                           {new Date(closing.date).toLocaleDateString('fr-FR', {
                             weekday: 'long',
                             year: 'numeric',
@@ -707,7 +703,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                           })}
                         </span>
                       </div>
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-[var(--text-secondary)]">
                         Clôturé à{' '}
                         {new Date(closing.closedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                       </span>
@@ -715,19 +711,19 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
 
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
                       <div>
-                        <p className="text-xs text-slate-500">Ouverture</p>
+                        <p className="text-xs text-[var(--text-secondary)]">Ouverture</p>
                         <p className="font-mono font-bold">{formatPrice(closing.openingBalance)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">Entrées</p>
+                        <p className="text-xs text-[var(--text-secondary)]">Entrées</p>
                         <p className="font-mono font-bold text-green-600">+{formatPrice(closing.totalIn)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">Sorties</p>
+                        <p className="text-xs text-[var(--text-secondary)]">Sorties</p>
                         <p className="font-mono font-bold text-red-600">-{formatPrice(closing.totalOut)}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">Clôture</p>
+                        <p className="text-xs text-[var(--text-secondary)]">Clôture</p>
                         <p className="font-mono font-bold">{formatPrice(closing.closingBalance)}</p>
                       </div>
                     </div>
@@ -738,7 +734,9 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                           <span className="text-orange-700 dark:text-orange-400 font-bold">
                             Écart: {formatPrice(closing.gap)}
                           </span>
-                          {closing.notes && <span className="text-slate-500 ml-2">— {closing.notes}</span>}
+                          {closing.notes && (
+                            <span className="text-[var(--text-secondary)] ml-2">— {closing.notes}</span>
+                          )}
                         </p>
                       </div>
                     )}
@@ -761,10 +759,10 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
             </div>
           )}
 
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+          <div className="pt-4 border-t border-[var(--border)] flex justify-end">
             <button
               onClick={() => setIsHistoryModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-bold text-sm"
+              className="px-4 py-2 bg-slate-100 text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold text-sm"
             >
               Fermer
             </button>

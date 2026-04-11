@@ -49,7 +49,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
   },
   CLOSED: {
     label: 'Clôturé',
-    color: 'bg-slate-100 text-slate-500 border-slate-300 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-600',
+    color:
+      'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] border-[var(--border)]',
     icon: <CheckCircle className="w-3 h-3" />,
   },
 };
@@ -70,14 +71,13 @@ const SENDER_CONFIG: Record<string, { label: string; color: string; icon: React.
   },
   SUPPORT: {
     label: 'Support',
-    color: 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-600',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border)]',
     icon: <Headset className="w-3.5 h-3.5" />,
     align: 'justify-start',
   },
   SYSTEM: {
     label: 'Système',
-    color:
-      'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)]',
     icon: <Bot className="w-3.5 h-3.5" />,
     align: 'justify-center',
   },
@@ -165,7 +165,7 @@ export const MyTicketsView: React.FC = () => {
   // ======== EMPTY STATE ========
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+      <div className="flex flex-col items-center justify-center h-64 text-[var(--text-muted)]">
         <Loader2 className="w-8 h-8 animate-spin mb-3" />
         <p>Chargement de vos tickets...</p>
       </div>
@@ -174,7 +174,7 @@ export const MyTicketsView: React.FC = () => {
 
   if (tickets.length === 0 && !selectedTicketId) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-slate-400">
+      <div className="flex flex-col items-center justify-center h-64 text-[var(--text-muted)]">
         <MessageSquare className="w-16 h-16 mb-4 opacity-20" />
         <p className="text-lg font-medium mb-1">Aucun ticket</p>
         <p className="text-sm">Vous n'avez aucun ticket support pour le moment.</p>
@@ -191,16 +191,16 @@ export const MyTicketsView: React.FC = () => {
     return (
       <div className="flex flex-col h-full">
         {/* Header */}
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex items-center gap-3 pb-4 border-b border-[var(--border)]">
           <button
             onClick={() => setSelectedTicketId(null)}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <span className="font-mono text-xs text-slate-400">{selectedTicket.id}</span>
+              <span className="font-mono text-xs text-[var(--text-muted)]">{selectedTicket.id}</span>
               <span
                 className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase border ${status.color}`}
               >
@@ -214,13 +214,13 @@ export const MyTicketsView: React.FC = () => {
                 </span>
               )}
             </div>
-            <h3 className="font-semibold text-slate-800 dark:text-white truncate">{selectedTicket.subject}</h3>
+            <h3 className="font-semibold text-[var(--text-primary)] truncate">{selectedTicket.subject}</h3>
           </div>
         </div>
 
         {/* Description */}
         {selectedTicket.description && (
-          <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+          <div className="mt-3 p-3 bg-[var(--bg-elevated)] rounded-lg text-sm text-[var(--text-secondary)] border border-[var(--border)]">
             {selectedTicket.description}
           </div>
         )}
@@ -228,7 +228,7 @@ export const MyTicketsView: React.FC = () => {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto mt-4 space-y-3 pr-1">
           {(selectedTicket.messages || []).length === 0 ? (
-            <div className="text-center text-slate-400 py-10">
+            <div className="text-center text-[var(--text-muted)] py-10">
               <MessageSquare className="w-10 h-10 mx-auto mb-2 opacity-30" />
               <p className="text-sm">Aucun message dans ce ticket.</p>
               <p className="text-xs mt-1">Envoyez un message pour commencer la conversation.</p>
@@ -242,7 +242,7 @@ export const MyTicketsView: React.FC = () => {
               if (isSystem) {
                 return (
                   <div key={msg.id} className="flex justify-center">
-                    <div className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-full text-[11px] text-slate-500 dark:text-slate-400 italic max-w-[80%] text-center">
+                    <div className="px-3 py-1.5 bg-[var(--bg-elevated)] rounded-full text-[11px] text-[var(--text-secondary)] italic max-w-[80%] text-center">
                       {msg.text}
                     </div>
                   </div>
@@ -253,11 +253,11 @@ export const MyTicketsView: React.FC = () => {
                 <div key={msg.id} className={`flex ${isClient ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[75%] ${isClient ? 'order-1' : 'order-1'}`}>
                     <div className={`flex items-center gap-1.5 mb-1 ${isClient ? 'justify-end' : 'justify-start'}`}>
-                      <span className="flex items-center gap-1 text-xs text-slate-500">
+                      <span className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
                         {senderConf.icon}
                         {senderConf.label}
                       </span>
-                      <span className="text-xs text-slate-400">{formatDate(msg.date)}</span>
+                      <span className="text-xs text-[var(--text-muted)]">{formatDate(msg.date)}</span>
                     </div>
                     <div
                       className={`px-4 py-2.5 rounded-2xl text-sm whitespace-pre-wrap ${senderConf.color} ${
@@ -276,7 +276,7 @@ export const MyTicketsView: React.FC = () => {
 
         {/* Reply Box */}
         {!isClosed ? (
-          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+          <div className="mt-3 pt-3 border-t border-[var(--border)]">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -284,7 +284,7 @@ export const MyTicketsView: React.FC = () => {
                 onChange={(e) => setReplyText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendReply()}
                 placeholder="Écrivez votre réponse..."
-                className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
+                className="flex-1 px-4 py-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl text-sm focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent outline-none"
                 disabled={sending}
               />
               <button
@@ -304,8 +304,8 @@ export const MyTicketsView: React.FC = () => {
             )}
           </div>
         ) : (
-          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-            <p className="text-sm text-slate-500 text-center py-2">
+          <div className="mt-3 pt-3 border-t border-[var(--border)]">
+            <p className="text-sm text-[var(--text-secondary)] text-center py-2">
               Ce ticket est clôturé. Si le problème persiste, veuillez contacter votre revendeur.
             </p>
           </div>
@@ -319,12 +319,12 @@ export const MyTicketsView: React.FC = () => {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-bold text-slate-800 dark:text-white">Mes tickets support</h2>
-          <p className="text-sm text-slate-500">{tickets.length} ticket(s)</p>
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Mes tickets support</h2>
+          <p className="text-sm text-[var(--text-secondary)]">{tickets.length} ticket(s)</p>
         </div>
         <button
           onClick={loadTickets}
-          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-500"
+          className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors text-[var(--text-secondary)]"
           title="Actualiser"
         >
           <RefreshCw className="w-4 h-4" />
@@ -341,11 +341,11 @@ export const MyTicketsView: React.FC = () => {
             <div
               key={ticket.id}
               onClick={() => setSelectedTicketId(ticket.id)}
-              className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:border-[var(--primary)] dark:hover:border-[var(--primary)] hover:shadow-sm transition-all"
+              className="p-4 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl cursor-pointer hover:border-[var(--primary)] dark:hover:border-[var(--primary)] hover:shadow-sm transition-all"
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-mono text-xs text-slate-400">{ticket.id}</span>
+                  <span className="font-mono text-xs text-[var(--text-muted)]">{ticket.id}</span>
                   <span
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold uppercase border ${status.color}`}
                   >
@@ -359,34 +359,32 @@ export const MyTicketsView: React.FC = () => {
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-slate-400 whitespace-nowrap ml-2">
+                <span className="text-xs text-[var(--text-muted)] whitespace-nowrap ml-2">
                   {formatDateShort(ticket.updatedAt || ticket.createdAt)}
                 </span>
               </div>
 
-              <p className="font-medium text-sm text-slate-800 dark:text-white mb-1 line-clamp-1">{ticket.subject}</p>
+              <p className="font-medium text-sm text-[var(--text-primary)] mb-1 line-clamp-1">{ticket.subject}</p>
 
               {lastMessage && (
-                <p className="text-xs text-slate-500 line-clamp-1 flex items-center gap-1">
+                <p className="text-xs text-[var(--text-secondary)] line-clamp-1 flex items-center gap-1">
                   {lastMessage.sender === 'SUPPORT' ? (
                     <Headset className="w-3 h-3 text-[var(--primary)] shrink-0" />
                   ) : lastMessage.sender === 'CLIENT' ? (
-                    <User className="w-3 h-3 text-slate-400 shrink-0" />
+                    <User className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
                   ) : (
-                    <Bot className="w-3 h-3 text-slate-400 shrink-0" />
+                    <Bot className="w-3 h-3 text-[var(--text-muted)] shrink-0" />
                   )}
                   {lastMessage.text}
                 </p>
               )}
 
-              <div className="flex items-center gap-3 mt-2 text-xs text-slate-400">
+              <div className="flex items-center gap-3 mt-2 text-xs text-[var(--text-muted)]">
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3" /> Créé le {new Date(ticket.createdAt).toLocaleDateString('fr-FR')}
                 </span>
                 {ticket.category && (
-                  <span className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs">
-                    {ticket.category}
-                  </span>
+                  <span className="px-1.5 py-0.5 bg-[var(--bg-elevated)] rounded text-xs">{ticket.category}</span>
                 )}
                 <span className="flex items-center gap-1">
                   <MessageSquare className="w-3 h-3" /> {(ticket.messages || []).length}

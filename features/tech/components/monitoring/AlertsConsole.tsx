@@ -175,7 +175,7 @@ export const AlertsConsole: React.FC = () => {
       case 'MEDIUM': return 'border-l-yellow-500 bg-yellow-50/50 dark:bg-yellow-900/10';
       case 'LOW': return 'border-l-blue-500 bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]';
       case 'WARNING': return 'border-l-orange-500 bg-orange-50/50 dark:bg-orange-900/10';
-      default: return 'border-l-slate-400 bg-slate-50/50 dark:bg-slate-800/10';
+      default: return 'border-l-slate-400 bg-slate-50/50 bg-[var(--bg-elevated)]/10';
     }
   };
 
@@ -186,7 +186,7 @@ export const AlertsConsole: React.FC = () => {
       'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200',
       'LOW': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]',
     };
-    return <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${styles[severity] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>{severity}</span>;
+    return <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${styles[severity] || 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>{severity}</span>;
   };
 
   const getAlertIcon = (type: string) => {
@@ -198,8 +198,8 @@ export const AlertsConsole: React.FC = () => {
   const getAlertIconBgColor = (type: string, severity: string) => {
     if (severity === 'CRITICAL') return 'bg-red-100 text-red-600 dark:bg-red-900/30';
     const config = ALERT_TYPE_CONFIG[type as AlertType];
-    const colorMap: Record<string, string> = { 'red': 'bg-red-100 text-red-600 dark:bg-red-900/30', 'orange': 'bg-orange-100 text-orange-600 dark:bg-orange-900/30', 'yellow': 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30', 'blue': 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)]', 'green': 'bg-green-100 text-green-600 dark:bg-green-900/30', 'purple': 'bg-purple-100 text-purple-600 dark:bg-purple-900/30', 'slate': 'bg-slate-100 text-slate-600 dark:bg-slate-800/30' };
-    return colorMap[config?.color] || 'bg-slate-100 text-slate-600';
+    const colorMap: Record<string, string> = { 'red': 'bg-red-100 text-red-600 dark:bg-red-900/30', 'orange': 'bg-orange-100 text-orange-600 dark:bg-orange-900/30', 'yellow': 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30', 'blue': 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)]', 'green': 'bg-green-100 text-green-600 dark:bg-green-900/30', 'purple': 'bg-purple-100 text-purple-600 dark:bg-purple-900/30', 'slate': 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)]/30' };
+    return colorMap[config?.color] || 'bg-slate-100 text-[var(--text-secondary)]';
   };
 
   const getAlertTypeLabel = (type: string) => ALERT_TYPE_CONFIG[type as AlertType]?.label || type;
@@ -314,23 +314,23 @@ export const AlertsConsole: React.FC = () => {
     catch { showToast(TOAST.CRUD.ERROR_DELETE('règle'), 'error'); }
   };
 
-  const selectClass = "px-2 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-xs";
+  const selectClass = "px-2 py-1.5 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-xs";
 
   return (
     <div className="h-full flex flex-col gap-3">
       {/* Main Tabs */}
       <div className="flex items-center gap-2 flex-wrap">
-        <button onClick={() => setMainTab('alerts')} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${mainTab === 'alerts' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}>
+        <button onClick={() => setMainTab('alerts')} className={`filter-chip flex items-center gap-2 ${mainTab === 'alerts' ? 'active' : ''}`}>
           <Bell className="w-4 h-4" /> Alertes
           {alerts.filter(a => !(a.isRead || a.read)).length > 0 && <span className="px-1.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full">{alerts.filter(a => !(a.isRead || a.read)).length}</span>}
         </button>
-        <button onClick={() => setMainTab('autoAlerts')} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${mainTab === 'autoAlerts' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}>
+        <button onClick={() => setMainTab('autoAlerts')} className={`filter-chip flex items-center gap-2 ${mainTab === 'autoAlerts' ? 'active' : ''}`}>
           <Settings className="w-4 h-4" /> Règles automatiques
-          <span className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-200 text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
+          <span className="px-1.5 py-0.5 bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-primary)] text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
         </button>
-        <button onClick={() => setMainTab('createdAlerts')} className={`px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${mainTab === 'createdAlerts' ? 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`}>
+        <button onClick={() => setMainTab('createdAlerts')} className={`filter-chip flex items-center gap-2 ${mainTab === 'createdAlerts' ? 'active' : ''}`}>
           <Plus className="w-4 h-4" /> Alertes créées
-          <span className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-200 text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
+          <span className="px-1.5 py-0.5 bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-primary)] text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
         </button>
       </div>
 
@@ -339,7 +339,7 @@ export const AlertsConsole: React.FC = () => {
         <DateRangeSelector periodPreset={periodPreset} setPeriodPreset={setPeriodPreset} customDateRange={customDateRange} setCustomDateRange={setCustomDateRange} />
         <div className="flex gap-2 items-center flex-wrap">
           {mainTab === 'alerts' && unreadCount > 0 && (
-            <button onClick={handleMarkAllAsRead} disabled={markingAll} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-medium flex items-center gap-1.5 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors disabled:opacity-50">
+            <button onClick={handleMarkAllAsRead} disabled={markingAll} className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-xs font-medium flex items-center gap-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors disabled:opacity-50">
               <CheckCheck className="w-3.5 h-3.5" /> Tout lu
             </button>
           )}
@@ -354,13 +354,13 @@ export const AlertsConsole: React.FC = () => {
             </button>
           )}
           <div className="relative">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--text-muted)]" />
             <input type="text" value={searchInput} onChange={(e) => {
               setSearchInput(e.target.value);
               if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
               searchDebounceRef.current = setTimeout(() => setSearchTerm(e.target.value), 300);
-            }} placeholder="Rechercher..." className="pl-8 pr-8 py-1.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded-lg text-xs w-44" />
-            {searchInput && <button onClick={() => { setSearchInput(''); setSearchTerm(''); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" title="Effacer la recherche"><X className="w-3 h-3" /></button>}
+            }} placeholder="Rechercher..." className="pl-8 pr-8 py-1.5 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-xs w-44" />
+            {searchInput && <button onClick={() => { setSearchInput(''); setSearchTerm(''); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]" title="Effacer la recherche"><X className="w-3 h-3" /></button>}
           </div>
         </div>
       </div>
@@ -369,28 +369,28 @@ export const AlertsConsole: React.FC = () => {
       <Card className="p-2 overflow-x-auto">
         <div className="flex flex-nowrap gap-3 items-center text-xs min-w-max">
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Revendeur</span>
+            <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Revendeur</span>
             <select value={filterReseller} onChange={e => setFilterReseller(e.target.value)} className={selectClass} title="Filtrer par revendeur">
               <option value="ALL">Tous</option>
               {resellers.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Client</span>
+            <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Client</span>
             <select value={filterClient} onChange={e => setFilterClient(e.target.value)} className={selectClass} title="Filtrer par client">
               <option value="ALL">Tous</option>
               {uniqueClients.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Type</span>
+            <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Type</span>
             <select value={filterType} onChange={e => setFilterType(e.target.value as FilterType)} className={selectClass} title="Filtrer par type">
               <option value="ALL">Tous</option>
               {Object.entries(ALERT_TYPE_CONFIG).map(([key, config]) => <option key={key} value={key}>{config.label}</option>)}
             </select>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Priorité</span>
+            <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Priorité</span>
             <select value={filterSeverity} onChange={e => setFilterSeverity(e.target.value as FilterSeverity)} className={selectClass} title="Filtrer par priorité">
               <option value="ALL">Toutes</option>
               <option value="CRITICAL">Critique</option>
@@ -400,7 +400,7 @@ export const AlertsConsole: React.FC = () => {
             </select>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Véhicule</span>
+            <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Véhicule</span>
             <select value={filterVehicle} onChange={e => setFilterVehicle(e.target.value)} className={selectClass + " max-w-[160px]"} title="Filtrer par véhicule">
               <option value="ALL">Tous</option>
               {uniqueVehicles.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
@@ -408,7 +408,7 @@ export const AlertsConsole: React.FC = () => {
           </div>
           {mainTab === 'alerts' && <>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Statut</span>
+              <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Statut</span>
               <select value={filterReadStatus} onChange={e => setFilterReadStatus(e.target.value as FilterReadStatus)} className={selectClass} title="Filtrer par statut de lecture">
                 <option value="ALL">Tous</option>
                 <option value="UNREAD">Non lu</option>
@@ -416,7 +416,7 @@ export const AlertsConsole: React.FC = () => {
               </select>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Traitement</span>
+              <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Traitement</span>
               <select value={filterTreatedStatus} onChange={e => setFilterTreatedStatus(e.target.value as FilterTreatedStatus)} className={selectClass} title="Filtrer par traitement">
                 <option value="ALL">Tous</option>
                 <option value="TREATED">Traité</option>
@@ -424,7 +424,7 @@ export const AlertsConsole: React.FC = () => {
               </select>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase whitespace-nowrap">Commentaire</span>
+              <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Commentaire</span>
               <select value={filterCommentStatus} onChange={e => setFilterCommentStatus(e.target.value as FilterCommentStatus)} className={selectClass} title="Filtrer par commentaire">
                 <option value="ALL">Tous</option>
                 <option value="COMMENTED">Commenté</option>
@@ -434,7 +434,7 @@ export const AlertsConsole: React.FC = () => {
           </>}
           <div className="flex items-center gap-2 ml-auto">
             {hasActiveFilters && <button onClick={resetFilters} className="px-2 py-1 text-[10px] text-red-600 hover:text-red-800 flex items-center gap-1 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"><X className="w-3 h-3" /> Réinitialiser</button>}
-            <span className="text-[10px] text-slate-400 whitespace-nowrap">{totalCount} alerte{totalCount !== 1 ? 's' : ''} · {unreadCount} non lue{unreadCount !== 1 ? 's' : ''} · {treatedCount} traitée{treatedCount !== 1 ? 's' : ''}</span>
+            <span className="text-[10px] text-[var(--text-muted)] whitespace-nowrap">{totalCount} alerte{totalCount !== 1 ? 's' : ''} · {unreadCount} non lue{unreadCount !== 1 ? 's' : ''} · {treatedCount} traitée{treatedCount !== 1 ? 's' : ''}</span>
           </div>
         </div>
       </Card>
@@ -444,7 +444,7 @@ export const AlertsConsole: React.FC = () => {
         {/* Alerts list */}
         <div className="flex-1 overflow-auto custom-scrollbar space-y-2 pb-16 lg:pb-0">
           {filteredAlerts.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 py-16">
+            <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] py-16">
               <CheckCircle className="w-12 h-12 mb-3 opacity-20" />
               <p className="text-lg font-medium">Aucune alerte trouvée</p>
               <p className="text-sm mt-1">{hasActiveFilters || searchTerm ? 'Essayez de modifier vos filtres ou la période' : 'Les alertes seront générées automatiquement par le système GPS'}</p>
@@ -454,39 +454,39 @@ export const AlertsConsole: React.FC = () => {
               const isRead = !!(alert.isRead || alert.read);
               const alertDate = alert.createdAt || alert.timestamp;
               return (
-                <div key={alert.id} className={`p-3 rounded-lg border border-slate-200 dark:border-slate-700 border-l-4 shadow-sm flex justify-between items-start transition-all hover:shadow-md ${getSeverityColor(alert.severity)} ${isRead ? 'opacity-60' : ''}`}>
+                <div key={alert.id} className={`p-3 rounded-lg border border-[var(--border)] border-l-4 shadow-sm flex justify-between items-start transition-all hover:shadow-md ${getSeverityColor(alert.severity)} ${isRead ? 'opacity-60' : ''}`}>
                   <div className="flex gap-3 flex-1 min-w-0">
                     <div className={`mt-0.5 p-1.5 rounded-full flex-shrink-0 ${getAlertIconBgColor(alert.type, alert.severity)}`}>{getAlertIcon(alert.type)}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-bold text-slate-800 dark:text-white text-sm truncate">{alert.vehicleName || 'Véhicule inconnu'}</h4>
+                        <h4 className="font-bold text-[var(--text-primary)] text-sm truncate">{alert.vehicleName || 'Véhicule inconnu'}</h4>
                         {getSeverityBadge(alert.severity)}
-                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">{getAlertTypeLabel(alert.type)}</span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)]">{getAlertTypeLabel(alert.type)}</span>
                         {alert.clientName && <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">{alert.clientName}</span>}
                         {alert.treated && <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 border border-green-200 flex items-center gap-0.5"><CheckSquare className="w-3 h-3" /> Traité</span>}
                       </div>
-                      <p className="text-slate-700 dark:text-slate-300 mt-1 text-sm">{alert.message}</p>
+                      <p className="text-[var(--text-primary)] mt-1 text-sm">{alert.message}</p>
                       {alert.comment && (
                         <div className="mt-1.5 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded text-xs text-amber-800 dark:text-amber-200 flex items-start gap-1.5">
                           <MessageCircle className="w-3 h-3 mt-0.5 shrink-0" /><span>{alert.comment}</span>
                         </div>
                       )}
-                      <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-[var(--text-secondary)]">
                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{formatDate(alertDate)}</span>
-                        <span className="text-slate-400">{getTimeAgo(alertDate)}</span>
+                        <span className="text-[var(--text-muted)]">{getTimeAgo(alertDate)}</span>
                         {isRead && <span className="flex items-center gap-1 text-green-600"><Eye className="w-3 h-3" /> Lu</span>}
                       </div>
                     </div>
                   </div>
                   {/* Actions */}
                   <div className="flex gap-0.5 flex-shrink-0 ml-2">
-                    {!isRead && <button onClick={() => markAlertAsRead(alert.id)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-slate-500 hover:text-[var(--primary)] transition-colors" title="Marquer comme lu"><CheckCircle className="w-4 h-4" /></button>}
-                    <button onClick={() => handleTreat(alert)} className={`p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors ${alert.treated ? 'text-green-600' : 'text-slate-500 hover:text-green-600'}`} title={alert.treated ? 'Marquer non traité' : 'Marquer traité'}>
+                    {!isRead && <button onClick={() => markAlertAsRead(alert.id)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Marquer comme lu"><CheckCircle className="w-4 h-4" /></button>}
+                    <button onClick={() => handleTreat(alert)} className={`p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors ${alert.treated ? 'text-green-600' : 'text-[var(--text-secondary)] hover:text-green-600'}`} title={alert.treated ? 'Marquer non traité' : 'Marquer traité'}>
                       {alert.treated ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                     </button>
-                    <button onClick={() => { setCommentingAlert(alert); setCommentText(alert.comment || ''); }} className={`p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors ${alert.comment ? 'text-amber-500' : 'text-slate-500 hover:text-amber-500'}`} title="Commenter"><MessageCircle className="w-4 h-4" /></button>
-                    <button onClick={() => handleCreateTicket(alert)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-slate-500 hover:text-purple-600 transition-colors" title="Créer un ticket"><MessageSquare className="w-4 h-4" /></button>
-                    <button onClick={() => handleIntervention(alert)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-slate-500 hover:text-orange-600 transition-colors" title="Planifier intervention"><Wrench className="w-4 h-4" /></button>
+                    <button onClick={() => { setCommentingAlert(alert); setCommentText(alert.comment || ''); }} className={`p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors ${alert.comment ? 'text-amber-500' : 'text-[var(--text-secondary)] hover:text-amber-500'}`} title="Commenter"><MessageCircle className="w-4 h-4" /></button>
+                    <button onClick={() => handleCreateTicket(alert)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-[var(--text-secondary)] hover:text-purple-600 transition-colors" title="Créer un ticket"><MessageSquare className="w-4 h-4" /></button>
+                    <button onClick={() => handleIntervention(alert)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-[var(--text-secondary)] hover:text-orange-600 transition-colors" title="Planifier intervention"><Wrench className="w-4 h-4" /></button>
                   </div>
                 </div>
               );
@@ -497,11 +497,11 @@ export const AlertsConsole: React.FC = () => {
 
       {/* ══════ TAB 2: RÈGLES AUTOMATIQUES ══════ */}
       {mainTab === 'autoAlerts' && (<>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Gérez les règles d'alertes automatiques déclenchées par le système GPS.</p>
+        <p className="text-sm text-[var(--text-secondary)]">Gérez les règles d'alertes automatiques déclenchées par le système GPS.</p>
 
         <div className="flex-1 overflow-auto custom-scrollbar space-y-2 pb-16 lg:pb-0">
           {filteredAlertConfigs.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 py-16">
+              <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] py-16">
                 <Settings className="w-12 h-12 mb-3 opacity-20" />
                 <p className="text-lg font-medium">Aucune règle configurée</p>
                 <p className="text-sm mt-1">Créez votre première règle d'alerte automatique</p>
@@ -510,21 +510,21 @@ export const AlertsConsole: React.FC = () => {
             filteredAlertConfigs.map(config => (
               <Card key={config.id} className="p-4 flex items-center justify-between hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className={`p-2 rounded-lg ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                  <div className={`p-2 rounded-lg ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-[var(--text-muted)]'}`}>
                     <Bell className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-semibold text-slate-800 dark:text-white text-sm truncate">{config.name}</h4>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                      <h4 className="font-semibold text-[var(--text-primary)] text-sm truncate">{config.name}</h4>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
                         {config.isActive !== false && config.status !== 'INACTIVE' ? 'Actif' : 'Inactif'}
                       </span>
                       <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--primary-dim)] text-[var(--primary)] border border-[var(--border)]">{config.type}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${{ 'critical': 'bg-red-100 text-red-800 border-red-200', 'CRITICAL': 'bg-red-100 text-red-800 border-red-200', 'high': 'bg-orange-100 text-orange-800 border-orange-200', 'HIGH': 'bg-orange-100 text-orange-800 border-orange-200', 'medium': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'low': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]', 'LOW': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' }[config.priority] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${{ 'critical': 'bg-red-100 text-red-800 border-red-200', 'CRITICAL': 'bg-red-100 text-red-800 border-red-200', 'high': 'bg-orange-100 text-orange-800 border-orange-200', 'HIGH': 'bg-orange-100 text-orange-800 border-orange-200', 'medium': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'low': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]', 'LOW': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' }[config.priority] || 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
                         {config.priority}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-slate-500">
+                    <div className="flex items-center gap-3 mt-1 text-xs text-[var(--text-secondary)]">
                       {config.allVehicles ? <span>Tous les véhicules</span> : <span>{config.vehicleIds?.length || 0} véhicule(s)</span>}
                       {config.conditionValue && <span>Seuil: {config.conditionValue}</span>}
                       {config.isScheduled && <span>Planifié</span>}
@@ -537,8 +537,8 @@ export const AlertsConsole: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex gap-1 shrink-0 ml-2">
-                  <button onClick={() => { setEditingConfig(config); setShowAlertConfigModal(true); }} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg text-slate-500 hover:text-[var(--primary)] transition-colors" title="Modifier"><Edit className="w-4 h-4" /></button>
-                  <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-slate-500 hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => { setEditingConfig(config); setShowAlertConfigModal(true); }} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Modifier"><Edit className="w-4 h-4" /></button>
+                  <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-secondary)] hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </Card>
             ))
@@ -548,17 +548,17 @@ export const AlertsConsole: React.FC = () => {
 
       {/* ══════ TAB 3: ALERTES CRÉÉES ══════ */}
       {mainTab === 'createdAlerts' && (<>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Alertes créées depuis <span className="font-medium text-slate-700 dark:text-slate-300">Paramètres &gt; Alertes</span>. Modifiez ou supprimez-les ici.</p>
+        <p className="text-sm text-[var(--text-secondary)]">Alertes créées depuis <span className="font-medium text-[var(--text-primary)]">Paramètres &gt; Alertes</span>. Modifiez ou supprimez-les ici.</p>
 
         <div className="flex-1 overflow-auto custom-scrollbar space-y-2 pb-16 lg:pb-0">
           {alertConfigs.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 py-16">
+            <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] py-16">
               <Bell className="w-12 h-12 mb-3 opacity-20" />
               <p className="text-lg font-medium">Aucune alerte créée</p>
               <p className="text-sm mt-1">Créez des alertes depuis Paramètres ou via le bouton ci-dessus</p>
             </div>
           ) : filteredAlertConfigs.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 py-16">
+            <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] py-16">
               <Search className="w-12 h-12 mb-3 opacity-20" />
               <p className="text-lg font-medium">Aucune alerte ne correspond aux filtres</p>
               <p className="text-sm mt-1">Essayez de modifier vos critères de recherche</p>
@@ -580,57 +580,57 @@ export const AlertsConsole: React.FC = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-2">
-                        <h4 className="font-semibold text-slate-800 dark:text-white text-sm">{config.name}</h4>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${isActive ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-slate-500 border-slate-200'}`}>
+                        <h4 className="font-semibold text-[var(--text-primary)] text-sm">{config.name}</h4>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${isActive ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
                           {isActive ? 'Actif' : 'Inactif'}
                         </span>
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--primary-dim)] text-[var(--primary)] border border-[var(--border)]">{typeLabel}</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${priorityStyle[config.priority] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${priorityStyle[config.priority] || 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
                           {config.priority?.toUpperCase()}
                         </span>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-slate-600 dark:text-slate-400">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-xs text-[var(--text-secondary)]">
                         <div className="flex items-center gap-1.5">
-                          <Truck className="w-3 h-3 text-slate-400" />
+                          <Truck className="w-3 h-3 text-[var(--text-muted)]" />
                           <span className="truncate" title={vehicleNames}>{vehicleNames}</span>
                         </div>
                         {config.conditionValue && (
                           <div className="flex items-center gap-1.5">
-                            <Gauge className="w-3 h-3 text-slate-400" />
+                            <Gauge className="w-3 h-3 text-[var(--text-muted)]" />
                             <span>Seuil : {config.conditionValue}{config.type === 'SPEED' || config.type === 'SPEEDING' ? ' km/h' : ''}</span>
                           </div>
                         )}
                         {config.conditionDuration && (
                           <div className="flex items-center gap-1.5">
-                            <Clock className="w-3 h-3 text-slate-400" />
+                            <Clock className="w-3 h-3 text-[var(--text-muted)]" />
                             <span>Durée : {config.conditionDuration} min</span>
                           </div>
                         )}
                         <div className="flex items-center gap-1.5">
-                          <Send className="w-3 h-3 text-slate-400" />
+                          <Send className="w-3 h-3 text-[var(--text-muted)]" />
                           <span className="flex gap-1">
-                            {config.notifyWeb && <span className="px-1 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-[9px]">Web</span>}
+                            {config.notifyWeb && <span className="px-1 py-0.5 bg-[var(--bg-elevated)] rounded text-[9px]">Web</span>}
                             {config.notifyEmail && <span className="px-1 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded text-[9px] text-[var(--primary)]">Email</span>}
                             {config.notifySms && <span className="px-1 py-0.5 bg-green-50 dark:bg-green-900/20 rounded text-[9px] text-green-600">SMS</span>}
-                            {!config.notifyWeb && !config.notifyEmail && !config.notifySms && <span className="text-slate-400">Aucune notification</span>}
+                            {!config.notifyWeb && !config.notifyEmail && !config.notifySms && <span className="text-[var(--text-muted)]">Aucune notification</span>}
                           </span>
                         </div>
                         {config.isScheduled && (
                           <div className="flex items-center gap-1.5">
-                            <Clock className="w-3 h-3 text-slate-400" />
+                            <Clock className="w-3 h-3 text-[var(--text-muted)]" />
                             <span>Planifié : {config.scheduleTimeStart || '00:00'} - {config.scheduleTimeEnd || '23:59'}</span>
                           </div>
                         )}
                         {config.createdAt && (
-                          <div className="flex items-center gap-1.5 text-slate-400">
+                          <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
                             <span>Créé le {new Date(config.createdAt).toLocaleDateString('fr-FR')}</span>
                           </div>
                         )}
                       </div>
                     </div>
                     <div className="flex gap-1 shrink-0">
-                      <button onClick={() => { setEditingConfig(config); setShowAlertConfigModal(true); }} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg text-slate-500 hover:text-[var(--primary)] transition-colors" title="Modifier"><Edit className="w-4 h-4" /></button>
-                      <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-slate-500 hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => { setEditingConfig(config); setShowAlertConfigModal(true); }} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Modifier"><Edit className="w-4 h-4" /></button>
+                      <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-secondary)] hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
                 </Card>
@@ -646,18 +646,18 @@ export const AlertsConsole: React.FC = () => {
       {/* Comment Modal */}
       {commentingAlert && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setCommentingAlert(null)}>
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2"><MessageCircle className="w-4 h-4 text-amber-500" /> Commenter l'alerte</h2>
-              <button onClick={() => setCommentingAlert(null)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded" title="Fermer"><X className="w-4 h-4 text-slate-500" /></button>
+          <div className="bg-[var(--bg-elevated)] rounded-xl shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
+              <h2 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2"><MessageCircle className="w-4 h-4 text-amber-500" /> Commenter l'alerte</h2>
+              <button onClick={() => setCommentingAlert(null)} className="p-1 hover:bg-[var(--bg-elevated)] rounded" title="Fermer"><X className="w-4 h-4 text-[var(--text-secondary)]" /></button>
             </div>
             <div className="p-4">
-              <p className="text-xs text-slate-500 mb-2">{commentingAlert.vehicleName} — {getAlertTypeLabel(commentingAlert.type)}</p>
-              <textarea value={commentText} onChange={e => setCommentText(e.target.value)} maxLength={500} className="w-full p-3 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-lg text-sm resize-none h-24" placeholder="Ajouter un commentaire..." autoFocus />
-              <p className="text-right text-xs text-slate-400 mt-1">{commentText.length}/500</p>
+              <p className="text-xs text-[var(--text-secondary)] mb-2">{commentingAlert.vehicleName} — {getAlertTypeLabel(commentingAlert.type)}</p>
+              <textarea value={commentText} onChange={e => setCommentText(e.target.value)} maxLength={500} className="w-full p-3 border border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-lg text-sm resize-none h-24" placeholder="Ajouter un commentaire..." autoFocus />
+              <p className="text-right text-xs text-[var(--text-muted)] mt-1">{commentText.length}/500</p>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-slate-200 dark:border-slate-700">
-              <button onClick={() => setCommentingAlert(null)} className="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg">Annuler</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-[var(--border)]">
+              <button onClick={() => setCommentingAlert(null)} className="px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] bg-slate-100 hover:bg-[var(--bg-elevated)] rounded-lg">Annuler</button>
               <button onClick={handleComment} className="px-3 py-1.5 text-xs font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg">Enregistrer</button>
             </div>
           </div>
@@ -667,13 +667,13 @@ export const AlertsConsole: React.FC = () => {
       {/* Alert Config Modal (Create / Edit) */}
       {showAlertConfigModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }}>
-          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
-              <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <div className="bg-[var(--bg-elevated)] rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-[var(--border)] shrink-0">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
                 {editingConfig ? <Edit className="w-5 h-5 text-[var(--primary)]" /> : <Plus className="w-5 h-5 text-emerald-600" />}
                 {editingConfig ? 'Modifier la règle d\'alerte' : 'Créer une règle d\'alerte'}
               </h2>
-              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors" title="Fermer"><X className="w-5 h-5 text-slate-500" /></button>
+              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors" title="Fermer"><X className="w-5 h-5 text-[var(--text-secondary)]" /></button>
             </div>
             <div className="p-4 overflow-y-auto flex-1 min-h-0">
               <AlertForm 
@@ -693,8 +693,8 @@ export const AlertsConsole: React.FC = () => {
                 resellers={resellers} vehicles={vehicles} clients={clients as unknown as Tier[]} users={users} zones={zones}
               />
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-slate-200 dark:border-slate-700 shrink-0">
-              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">Annuler</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-[var(--border)] shrink-0">
+              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg transition-colors">Annuler</button>
               <button onClick={() => alertFormRef.current?.requestSubmit()} className="px-4 py-2 text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--primary-light)] rounded-lg transition-colors">{editingConfig ? 'Enregistrer' : 'Créer la règle'}</button>
             </div>
           </div>

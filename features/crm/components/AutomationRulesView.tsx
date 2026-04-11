@@ -254,11 +254,11 @@ export const AutomationRulesView: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+          <h2 className="page-title flex items-center gap-2">
             <Zap className="w-8 h-8 text-amber-500" />
             Automatisations
           </h2>
-          <p className="text-slate-500 dark:text-slate-400">
+          <p className="text-[var(--text-secondary)]">
             {automationRules.length} règle{automationRules.length !== 1 ? 's' : ''} •{' '}
             {automationRules.filter((r) => r.isActive).length} active
             {automationRules.filter((r) => r.isActive).length !== 1 ? 's' : ''}
@@ -268,7 +268,7 @@ export const AutomationRulesView: React.FC = () => {
           <select
             value={filterTrigger}
             onChange={(e) => setFilterTrigger(e.target.value)}
-            className="px-3 py-2 border rounded-lg text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300"
+            className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)]"
           >
             <option value="ALL">Tous les déclencheurs</option>
             {Object.entries(triggerGroups).map(([group, items]) => (
@@ -294,8 +294,8 @@ export const AutomationRulesView: React.FC = () => {
       {filteredRules.length === 0 && (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
-            <Zap className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto" />
-            <p className="text-slate-500 dark:text-slate-400 text-lg">Aucune règle d'automatisation</p>
+            <Zap className="w-16 h-16 text-slate-300 dark:text-[var(--text-secondary)] mx-auto" />
+            <p className="text-[var(--text-secondary)] text-lg">Aucune règle d'automatisation</p>
             <button onClick={openCreate} className="text-[var(--primary)] hover:text-[var(--primary)] font-medium">
               Créer votre première règle →
             </button>
@@ -313,38 +313,38 @@ export const AutomationRulesView: React.FC = () => {
           return (
             <div
               key={rule.id}
-              className={`bg-white dark:bg-slate-800 rounded-xl p-5 border-l-4 shadow-sm transition-all hover:shadow-md ${
+              className={`bg-[var(--bg-elevated)] rounded-xl p-5 border-l-4 shadow-sm transition-all hover:shadow-md ${
                 rule.isActive ? 'border-l-green-500' : 'border-l-slate-300 dark:border-l-slate-600 opacity-60'
               }`}
             >
               {/* Header */}
               <div className="flex justify-between items-start mb-3">
-                <h3 className="font-bold text-slate-800 dark:text-white text-lg leading-tight pr-2">{rule.name}</h3>
+                <h3 className="font-bold text-[var(--text-primary)] text-lg leading-tight pr-2">{rule.name}</h3>
                 <div className="flex gap-1 shrink-0">
                   <button
                     onClick={() => openEdit(rule)}
-                    className="p-1.5 text-slate-400 hover:text-[var(--primary)] rounded hover:bg-slate-100 dark:hover:bg-slate-700"
+                    className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] rounded hover:bg-[var(--bg-elevated)]"
                     title="Modifier"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDuplicate(rule)}
-                    className="p-1.5 text-slate-400 hover:text-purple-500 rounded hover:bg-slate-100 dark:hover:bg-slate-700"
+                    className="p-1.5 text-[var(--text-muted)] hover:text-purple-500 rounded hover:bg-[var(--bg-elevated)]"
                     title="Dupliquer"
                   >
                     <Copy className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => toggleAutomationRule(rule.id)}
-                    className={`p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-700 ${rule.isActive ? 'text-green-500' : 'text-slate-400'}`}
+                    className={`p-1.5 rounded hover:bg-[var(--bg-elevated)] ${rule.isActive ? 'text-green-500' : 'text-[var(--text-muted)]'}`}
                     title={rule.isActive ? 'Désactiver' : 'Activer'}
                   >
                     {rule.isActive ? <PauseCircle className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
                   </button>
                   <button
                     onClick={() => handleDelete(rule)}
-                    className="p-1.5 text-slate-400 hover:text-red-500 rounded hover:bg-slate-100 dark:hover:bg-slate-700"
+                    className="p-1.5 text-[var(--text-muted)] hover:text-red-500 rounded hover:bg-[var(--bg-elevated)]"
                     title="Supprimer"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -359,7 +359,7 @@ export const AutomationRulesView: React.FC = () => {
                     <AlertTriangle className="w-3 h-3" />
                     QUAND
                   </span>
-                  <span className="text-slate-600 dark:text-slate-400">{trigger?.label || rule.triggerType}</span>
+                  <span className="text-[var(--text-secondary)]">{trigger?.label || rule.triggerType}</span>
                 </div>
 
                 {rule.condition?.field && (
@@ -368,7 +368,7 @@ export const AutomationRulesView: React.FC = () => {
                       <Filter className="w-3 h-3" />
                       SI
                     </span>
-                    <span className="text-slate-500 dark:text-slate-400 text-xs">
+                    <span className="text-[var(--text-secondary)] text-xs">
                       {rule.condition.field} {rule.condition.operator?.toLowerCase()}{' '}
                       {String(rule.condition.value || '')}
                     </span>
@@ -380,7 +380,7 @@ export const AutomationRulesView: React.FC = () => {
                     <ActionIcon className="w-3 h-3" />
                     ALORS
                   </span>
-                  <span className="text-slate-600 dark:text-slate-400">
+                  <span className="text-[var(--text-secondary)]">
                     {action?.label || rule.action?.type}
                     {rule.action?.type === 'CREATE_TASK' && rule.action.taskTemplate?.title && (
                       <> : "{rule.action.taskTemplate.title}"</>
@@ -397,7 +397,7 @@ export const AutomationRulesView: React.FC = () => {
                 </div>
 
                 {/* Footer */}
-                <div className="flex items-center justify-between text-xs text-slate-400 mt-2 pt-2 border-t dark:border-slate-700">
+                <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mt-2 pt-2 border-t border-[var(--border)]">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {rule.action?.type === 'CREATE_TASK'
@@ -429,12 +429,10 @@ export const AutomationRulesView: React.FC = () => {
         <div className="space-y-5 max-h-[70vh] overflow-y-auto pr-1">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-              Nom de la règle *
-            </label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Nom de la règle *</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
               value={form.name}
               onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="Ex: Relance Devis J+3"
@@ -443,12 +441,12 @@ export const AutomationRulesView: React.FC = () => {
 
           {/* Trigger */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               <AlertTriangle className="w-4 h-4 inline mr-1 text-amber-500" />
               Déclencheur *
             </label>
             <select
-              className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+              className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
               value={form.triggerType}
               onChange={(e) => setForm((prev) => ({ ...prev, triggerType: e.target.value as AutomationTriggerType }))}
             >
@@ -465,9 +463,9 @@ export const AutomationRulesView: React.FC = () => {
           </div>
 
           {/* Condition (optional) */}
-          <div className="border rounded-lg dark:border-slate-700 p-3">
+          <div className="border rounded-lg border-[var(--border)] p-3">
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1">
+              <label className="text-sm font-medium text-[var(--text-primary)] flex items-center gap-1">
                 <Filter className="w-4 h-4 text-amber-500" />
                 Condition (optionnel)
               </label>
@@ -487,14 +485,14 @@ export const AutomationRulesView: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Champ (ex: status)"
-                  className="px-2 py-1.5 border rounded text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  className="px-2 py-1.5 border rounded text-sm bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                   value={form.condition?.field || ''}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, condition: { ...prev.condition, field: e.target.value } }))
                   }
                 />
                 <select
-                  className="px-2 py-1.5 border rounded text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  className="px-2 py-1.5 border rounded text-sm bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                   value={form.condition?.operator || 'EQUALS'}
                   onChange={(e) =>
                     setForm((prev) => ({
@@ -515,7 +513,7 @@ export const AutomationRulesView: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Valeur"
-                  className="px-2 py-1.5 border rounded text-sm dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                  className="px-2 py-1.5 border rounded text-sm bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                   value={form.condition?.value || ''}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, condition: { ...prev.condition, value: e.target.value } }))
@@ -527,7 +525,7 @@ export const AutomationRulesView: React.FC = () => {
 
           {/* Action Type selector */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
               <Zap className="w-4 h-4 inline mr-1 text-[var(--primary)]" />
               Action *
             </label>
@@ -545,7 +543,7 @@ export const AutomationRulesView: React.FC = () => {
                     className={`p-2 rounded-lg border text-xs font-medium flex flex-col items-center gap-1 transition-all ${
                       isSelected
                         ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)] dark:border-[var(--primary)]'
-                        : 'border-slate-200 dark:border-slate-700 text-slate-500 hover:border-slate-300 dark:text-slate-400'
+                        : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border)] dark:text-[var(--text-muted)]'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -557,16 +555,16 @@ export const AutomationRulesView: React.FC = () => {
           </div>
 
           {/* Action Details */}
-          <div className="border-t pt-4 dark:border-slate-700 space-y-3">
+          <div className="border-t pt-4 border-[var(--border)] space-y-3">
             {/* ── CREATE_TASK ────────────────────── */}
             {form.action.type === 'CREATE_TASK' && (
               <>
-                <h4 className="font-bold text-slate-800 dark:text-white text-sm">Configuration de la tâche</h4>
+                <h4 className="font-bold text-[var(--text-primary)] text-sm">Configuration de la tâche</h4>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Titre *</label>
+                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Titre *</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     value={form.action.taskTemplate?.title || ''}
                     onChange={(e) =>
                       setForm((prev) => ({
@@ -582,14 +580,12 @@ export const AutomationRulesView: React.FC = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                      Délai (jours)
-                    </label>
+                    <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Délai (jours)</label>
                     <input
                       type="number"
                       min="0"
                       max="365"
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                       value={form.action.taskTemplate?.dueInDays ?? 1}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -601,14 +597,12 @@ export const AutomationRulesView: React.FC = () => {
                         }))
                       }
                     />
-                    <p className="text-xs text-slate-400 mt-0.5">0 = le jour même</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">0 = le jour même</p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                      Priorité
-                    </label>
+                    <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Priorité</label>
                     <select
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                       value={form.action.taskTemplate?.priority || 'MEDIUM'}
                       onChange={(e) =>
                         setForm((prev) => ({
@@ -628,11 +622,9 @@ export const AutomationRulesView: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                    Description
-                  </label>
+                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Description</label>
                   <textarea
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     rows={2}
                     value={form.action.taskTemplate?.description || ''}
                     onChange={(e) =>
@@ -653,17 +645,17 @@ export const AutomationRulesView: React.FC = () => {
             {/* ── SEND_EMAIL ────────────────────── */}
             {form.action.type === 'SEND_EMAIL' && (
               <>
-                <h4 className="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
+                <h4 className="font-bold text-[var(--text-primary)] text-sm flex items-center gap-2">
                   <Mail className="w-4 h-4 text-sky-500" /> Configuration email
                 </h4>
                 {relevantTemplates.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
                       <LayoutTemplate className="w-3.5 h-3.5 inline mr-1 text-purple-500" />
                       Modèle de message (Administration)
                     </label>
                     <select
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white border-purple-200 dark:border-purple-800"
+                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] border-purple-200 dark:border-purple-800"
                       value={form.action.messageTemplateId || ''}
                       onChange={(e) => {
                         if (e.target.value) applyMessageTemplate(e.target.value);
@@ -680,10 +672,10 @@ export const AutomationRulesView: React.FC = () => {
                   </div>
                 )}
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Sujet *</label>
+                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Sujet *</label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     value={form.action.emailTemplate?.subject || ''}
                     onChange={(e) =>
                       setForm((prev) => ({
@@ -698,11 +690,9 @@ export const AutomationRulesView: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
-                    Contenu HTML
-                  </label>
+                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Contenu HTML</label>
                   <textarea
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono text-xs"
+                    className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] font-mono text-xs"
                     rows={4}
                     value={form.action.emailTemplate?.html || ''}
                     onChange={(e) =>
@@ -716,7 +706,7 @@ export const AutomationRulesView: React.FC = () => {
                     }
                     placeholder="<p>Bonjour {{client.name}},</p>"
                   />
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">
                     Variables : {'{{client.name}}'}, {'{{invoice.number}}'}, etc.
                   </p>
                 </div>
@@ -726,7 +716,7 @@ export const AutomationRulesView: React.FC = () => {
             {/* ── SEND_SMS / SEND_TELEGRAM ────────── */}
             {(form.action.type === 'SEND_SMS' || form.action.type === 'SEND_TELEGRAM') && (
               <>
-                <h4 className="font-bold text-slate-800 dark:text-white text-sm flex items-center gap-2">
+                <h4 className="font-bold text-[var(--text-primary)] text-sm flex items-center gap-2">
                   {form.action.type === 'SEND_SMS' ? (
                     <>
                       <MessageSquare className="w-4 h-4 text-green-500" /> Configuration SMS
@@ -739,12 +729,12 @@ export const AutomationRulesView: React.FC = () => {
                 </h4>
                 {relevantTemplates.length > 0 && (
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
                       <LayoutTemplate className="w-3.5 h-3.5 inline mr-1 text-purple-500" />
                       Modèle de message (Administration)
                     </label>
                     <select
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white border-purple-200 dark:border-purple-800"
+                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] border-purple-200 dark:border-purple-800"
                       value={form.action.messageTemplateId || ''}
                       onChange={(e) => {
                         if (e.target.value) applyMessageTemplate(e.target.value);
@@ -761,9 +751,9 @@ export const AutomationRulesView: React.FC = () => {
                   </div>
                 )}
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Message *</label>
+                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">Message *</label>
                   <textarea
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     rows={3}
                     value={form.action.smsTemplate?.message || ''}
                     onChange={(e) =>
@@ -777,7 +767,7 @@ export const AutomationRulesView: React.FC = () => {
                     }
                   />
                   {form.action.type === 'SEND_SMS' && (
-                    <p className="text-xs text-slate-400 mt-0.5">
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
                       {(form.action.smsTemplate?.message || '').length}/160 caractères
                     </p>
                   )}
@@ -788,14 +778,14 @@ export const AutomationRulesView: React.FC = () => {
             {/* ── UPDATE_STATUS ──────────────────── */}
             {form.action.type === 'UPDATE_STATUS' && (
               <>
-                <h4 className="font-bold text-slate-800 dark:text-white text-sm">Changement de statut</h4>
+                <h4 className="font-bold text-[var(--text-primary)] text-sm">Changement de statut</h4>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">
                     Nouveau statut *
                   </label>
                   <input
                     type="text"
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
                     value={form.action.statusUpdate?.newStatus || ''}
                     onChange={(e) =>
                       setForm((prev) => ({
@@ -812,12 +802,12 @@ export const AutomationRulesView: React.FC = () => {
             {/* ── WEBHOOK ────────────────────────── */}
             {form.action.type === 'WEBHOOK' && (
               <>
-                <h4 className="font-bold text-slate-800 dark:text-white text-sm">Webhook</h4>
+                <h4 className="font-bold text-[var(--text-primary)] text-sm">Webhook</h4>
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">URL *</label>
+                  <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1">URL *</label>
                   <input
                     type="url"
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 dark:text-white font-mono text-sm"
+                    className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] font-mono text-sm"
                     value={form.action.webhookUrl || ''}
                     onChange={(e) =>
                       setForm((prev) => ({
@@ -833,7 +823,7 @@ export const AutomationRulesView: React.FC = () => {
 
             {/* ── CREATE_DUNNING / ASSIGN_TO_USER ── */}
             {(form.action.type === 'CREATE_DUNNING' || form.action.type === 'ASSIGN_TO_USER') && (
-              <div className="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3 text-sm text-slate-500 dark:text-slate-400">
+              <div className="bg-[var(--bg-elevated)]/50 rounded-lg p-3 text-sm text-[var(--text-secondary)]">
                 <p>
                   {form.action.type === 'CREATE_DUNNING'
                     ? 'Une action de relance sera automatiquement créée pour la facture concernée.'
@@ -844,10 +834,10 @@ export const AutomationRulesView: React.FC = () => {
           </div>
 
           {/* Buttons */}
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t dark:border-slate-700">
+          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg dark:text-slate-300 dark:hover:bg-slate-700"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg text-[var(--text-secondary)] dark:hover:bg-slate-700"
             >
               Annuler
             </button>

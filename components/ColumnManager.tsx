@@ -67,20 +67,18 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
   }, [isOpen]);
 
   const toggleColumn = (colId: string) => {
-    const col = columns.find(c => c.id === colId);
+    const col = columns.find((c) => c.id === colId);
     if (col?.locked) return;
 
     if (visible.includes(colId)) {
-      onChange(visible.filter(id => id !== colId));
+      onChange(visible.filter((id) => id !== colId));
     } else {
       onChange([...visible, colId]);
     }
   };
 
   const handleReset = () => {
-    const defaultVisible = columns
-      .filter(col => col.defaultVisible !== false)
-      .map(col => col.id);
+    const defaultVisible = columns.filter((col) => col.defaultVisible !== false).map((col) => col.id);
     onChange(defaultVisible);
   };
 
@@ -88,7 +86,7 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
     onChange(preset.columns);
   };
 
-  const hiddenCount = columns.filter(c => !visible.includes(c.id) && !c.locked).length;
+  const hiddenCount = columns.filter((c) => !visible.includes(c.id) && !c.locked).length;
   const hasChanges = hiddenCount > 0;
   const isActive = isOpen || hasChanges;
 
@@ -96,11 +94,12 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={buttonClassName || (
-          variant === 'icon'
+        className={
+          buttonClassName ||
+          (variant === 'icon'
             ? `p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors ${isOpen ? 'ring-2' : ''}`
-            : `px-3 py-1.5 text-sm border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] flex items-center gap-2 transition-colors`
-        )}
+            : `px-3 py-1.5 text-sm border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] flex items-center gap-2 transition-colors`)
+        }
         style={{
           color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
           backgroundColor: isOpen ? 'var(--bg-elevated)' : undefined,
@@ -125,7 +124,7 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
         >
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-[var(--border)] bg-[var(--bg-elevated)]">
-            <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{title}</span>
+            <span className="section-title tracking-wider">{title}</span>
             <div className="flex items-center gap-1">
               <button
                 onClick={handleReset}
@@ -148,9 +147,11 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
           {presets.length > 0 && (
             <div className="p-2 border-b border-[var(--border)] bg-[var(--bg-elevated)]/50">
               <div className="flex flex-wrap gap-1">
-                {presets.map(preset => {
-                  const isPresetActive = preset.columns.every(c => visible.includes(c)) &&
-                    visible.filter(v => !columns.find(col => col.id === v)?.locked).length === preset.columns.filter(c => !columns.find(col => col.id === c)?.locked).length;
+                {presets.map((preset) => {
+                  const isPresetActive =
+                    preset.columns.every((c) => visible.includes(c)) &&
+                    visible.filter((v) => !columns.find((col) => col.id === v)?.locked).length ===
+                      preset.columns.filter((c) => !columns.find((col) => col.id === c)?.locked).length;
                   return (
                     <button
                       key={preset.id}
@@ -172,7 +173,7 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
 
           {/* Columns List */}
           <div className="max-h-72 overflow-y-auto p-1 custom-scrollbar">
-            {columns.map(col => {
+            {columns.map((col) => {
               const isVisible = visible.includes(col.id);
               const isLocked = col.locked;
 

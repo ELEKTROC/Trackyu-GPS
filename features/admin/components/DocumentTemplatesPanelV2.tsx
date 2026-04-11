@@ -485,8 +485,10 @@ export const DocumentTemplatesPanelV2 = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">Modèles de documents</h2>
-          <p className="text-sm text-slate-500">Créez et personnalisez vos templates de factures, devis et rapports</p>
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Modèles de documents</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Créez et personnalisez vos templates de factures, devis et rapports
+          </p>
         </div>
         <button
           onClick={() => openNewModal()}
@@ -514,8 +516,8 @@ export const DocumentTemplatesPanelV2 = () => {
               <Icon
                 className={`w-8 h-8 mx-auto mb-2 text-${type.color}-500 group-hover:scale-110 transition-transform`}
               />
-              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{type.label}</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm font-medium text-[var(--text-primary)]">{type.label}</p>
+              <p className="text-xs text-[var(--text-secondary)]">
                 {count} modèle{count > 1 ? 's' : ''}
               </p>
             </button>
@@ -528,8 +530,10 @@ export const DocumentTemplatesPanelV2 = () => {
         {templates.length === 0 ? (
           <Card className="col-span-full p-8 text-center">
             <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <h3 className="text-lg font-medium text-slate-700 dark:text-slate-300 mb-2">Aucun modèle créé</h3>
-            <p className="text-sm text-slate-500 mb-4">Commencez par créer votre premier template de document</p>
+            <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">Aucun modèle créé</h3>
+            <p className="text-sm text-[var(--text-secondary)] mb-4">
+              Commencez par créer votre premier template de document
+            </p>
           </Card>
         ) : (
           templates.map((template) => {
@@ -545,24 +549,24 @@ export const DocumentTemplatesPanelV2 = () => {
                   <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => openPreview(template)}
-                      className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                      className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                       title="Prévisualiser"
                     >
-                      <Eye className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                      <Eye className="w-4 h-4 text-[var(--text-secondary)]" />
                     </button>
                     <button
                       onClick={() => handleDuplicate(template)}
-                      className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                      className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                       title="Dupliquer"
                     >
-                      <Copy className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                      <Copy className="w-4 h-4 text-[var(--text-secondary)]" />
                     </button>
                     <button
                       onClick={() => openEditModal(template)}
-                      className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                      className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                       title="Modifier"
                     >
-                      <Edit2 className="w-4 h-4 text-slate-600 dark:text-slate-400" />
+                      <Edit2 className="w-4 h-4 text-[var(--text-secondary)]" />
                     </button>
                     {!template.is_system && (
                       <button
@@ -584,22 +588,22 @@ export const DocumentTemplatesPanelV2 = () => {
                   {typeConfig.label}
                 </span>
 
-                <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">
+                <h3 className="text-base font-semibold text-[var(--text-primary)] mb-2">
                   {template.name}
-                  {template.is_system && <span className="ml-2 text-xs text-slate-400">(système)</span>}
+                  {template.is_system && <span className="ml-2 text-xs text-[var(--text-muted)]">(système)</span>}
                 </h3>
 
                 <div className="flex flex-wrap gap-1.5">
                   {template.variables?.slice(0, 4).map((variable, index) => (
                     <span
                       key={index}
-                      className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-xs rounded text-slate-600 dark:text-slate-400 font-mono"
+                      className="px-2 py-0.5 bg-[var(--bg-elevated)] text-xs rounded text-[var(--text-secondary)] font-mono"
                     >
                       {variable}
                     </span>
                   ))}
                   {(template.variables?.length || 0) > 4 && (
-                    <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-xs rounded text-slate-500">
+                    <span className="px-2 py-0.5 bg-[var(--bg-elevated)] text-xs rounded text-[var(--text-secondary)]">
                       +{template.variables!.length - 4}
                     </span>
                   )}
@@ -619,20 +623,18 @@ export const DocumentTemplatesPanelV2 = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom du modèle</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Nom du modèle</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] focus:ring-2 focus:ring-[var(--primary)]"
                 placeholder="Ex: Facture standard"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                Type de document
-              </label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">Type de document</label>
               <select
                 value={formData.type}
                 onChange={(e) =>
@@ -642,7 +644,7 @@ export const DocumentTemplatesPanelV2 = () => {
                     content: formData.content || DEFAULT_TEMPLATES[e.target.value] || '',
                   })
                 }
-                className="w-full px-3 py-2 border rounded-lg dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
+                className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] focus:ring-2 focus:ring-[var(--primary)]"
               >
                 {DOCUMENT_TYPES.map((type) => (
                   <option key={type.id} value={type.id}>
@@ -655,24 +657,24 @@ export const DocumentTemplatesPanelV2 = () => {
 
           {/* Variables Panel */}
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Variables disponibles <span className="text-slate-400">(cliquez pour insérer)</span>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+              Variables disponibles <span className="text-[var(--text-muted)]">(cliquez pour insérer)</span>
             </label>
-            <div className="border rounded-lg dark:border-slate-700 overflow-hidden">
+            <div className="border rounded-lg border-[var(--border)] overflow-hidden">
               {availableVariables.map((category, idx) => (
-                <div key={category.category} className={idx > 0 ? 'border-t dark:border-slate-700' : ''}>
+                <div key={category.category} className={idx > 0 ? 'border-t border-[var(--border)]' : ''}>
                   <button
                     type="button"
                     onClick={() =>
                       setActiveVariableCategory(activeVariableCategory === category.category ? null : category.category)
                     }
-                    className="w-full px-3 py-2 flex items-center justify-between bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
+                    className="w-full px-3 py-2 flex items-center justify-between bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                   >
-                    <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{category.category}</span>
+                    <span className="text-sm font-medium text-[var(--text-primary)]">{category.category}</span>
                     {activeVariableCategory === category.category ? (
-                      <ChevronUp className="w-4 h-4 text-slate-400" />
+                      <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" />
                     ) : (
-                      <ChevronDown className="w-4 h-4 text-slate-400" />
+                      <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
                     )}
                   </button>
                   {activeVariableCategory === category.category && (
@@ -689,7 +691,7 @@ export const DocumentTemplatesPanelV2 = () => {
                             <p className="text-xs font-mono text-[var(--primary)] dark:text-[var(--primary)] truncate">
                               {v.key}
                             </p>
-                            <p className="text-xs text-slate-500 truncate">{v.label}</p>
+                            <p className="text-xs text-[var(--text-secondary)] truncate">{v.label}</p>
                           </div>
                         </button>
                       ))}
@@ -703,7 +705,7 @@ export const DocumentTemplatesPanelV2 = () => {
           {/* Content Editor */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contenu HTML</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)]">Contenu HTML</label>
               <button
                 type="button"
                 onClick={() => {
@@ -721,20 +723,20 @@ export const DocumentTemplatesPanelV2 = () => {
               ref={contentRef}
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full h-64 px-3 py-2 border rounded-lg font-mono text-xs dark:bg-slate-800 dark:border-slate-700 focus:ring-2 focus:ring-[var(--primary)]"
+              className="w-full h-64 px-3 py-2 border rounded-lg font-mono text-xs bg-[var(--bg-elevated)] border-[var(--border)] focus:ring-2 focus:ring-[var(--primary)]"
               placeholder="<!DOCTYPE html>..."
             />
           </div>
 
           {/* Actions */}
-          <div className="flex justify-between pt-4 border-t dark:border-slate-700">
+          <div className="flex justify-between pt-4 border-t border-[var(--border)]">
             <button
               type="button"
               onClick={() => {
                 setPreviewTemplate({ ...formData, id: 'preview' } as DocumentTemplate);
                 setIsPreviewModalOpen(true);
               }}
-              className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              className="flex items-center gap-2 px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               <Eye className="w-4 h-4" />
               Prévisualiser
@@ -743,7 +745,7 @@ export const DocumentTemplatesPanelV2 = () => {
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 Annuler
               </button>
@@ -768,10 +770,10 @@ export const DocumentTemplatesPanelV2 = () => {
       >
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <p className="text-sm text-slate-500">Les variables sont remplacées par des exemples</p>
+            <p className="text-sm text-[var(--text-secondary)]">Les variables sont remplacées par des exemples</p>
             <button
               onClick={() => setIsFullscreen(!isFullscreen)}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+              className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>
@@ -784,7 +786,7 @@ export const DocumentTemplatesPanelV2 = () => {
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setIsPreviewModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg"
+              className="px-4 py-2 bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
             >
               Fermer
             </button>

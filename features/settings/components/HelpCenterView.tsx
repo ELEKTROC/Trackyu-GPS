@@ -229,13 +229,13 @@ export const HelpCenterView: React.FC = () => {
         <div className="relative z-10 max-w-2xl mx-auto text-center space-y-6">
           <h1 className="text-3xl md:text-4xl font-bold">Comment pouvons-nous vous aider ?</h1>
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher une réponse, un article..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all"
+              className="w-full pl-12 pr-4 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all"
             />
           </div>
         </div>
@@ -244,20 +244,20 @@ export const HelpCenterView: React.FC = () => {
       <div className="px-6 pb-6 space-y-8">
         {/* Quick Categories */}
         <section>
-          <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Thématiques fréquentes</h2>
+          <h2 className="text-lg font-bold text-[var(--text-primary)] mb-4">Thématiques fréquentes</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
-                className="p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:shadow-md transition-all text-left group"
+                className="p-4 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl hover:shadow-md transition-all text-left group"
               >
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${cat.color}`}>
                   <cat.icon className="w-5 h-5" />
                 </div>
-                <h3 className="font-bold text-slate-800 dark:text-white group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary)] transition-colors">
+                <h3 className="font-bold text-[var(--text-primary)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary)] transition-colors">
                   {cat.title}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Voir les articles</p>
+                <p className="text-xs text-[var(--text-secondary)] mt-1">Voir les articles</p>
               </button>
             ))}
           </div>
@@ -266,7 +266,7 @@ export const HelpCenterView: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* FAQ Section */}
           <div className="lg:col-span-2 space-y-6">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Book className="w-5 h-5 text-[var(--primary)]" />
               Questions Fréquentes
             </h2>
@@ -276,31 +276,31 @@ export const HelpCenterView: React.FC = () => {
                 filteredFaqs.map((faq, idx) => (
                   <div
                     key={idx}
-                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden"
+                    className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl overflow-hidden"
                   >
                     <button
                       onClick={() => setExpandedFaq(expandedFaq === idx.toString() ? null : idx.toString())}
-                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 transition-colors"
                     >
-                      <span className="font-medium text-slate-800 dark:text-white">{faq.question}</span>
+                      <span className="font-medium text-[var(--text-primary)]">{faq.question}</span>
                       {expandedFaq === idx.toString() ? (
-                        <ChevronDown className="w-5 h-5 text-slate-400" />
+                        <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
                       ) : (
-                        <ChevronRight className="w-5 h-5 text-slate-400" />
+                        <ChevronRight className="w-5 h-5 text-[var(--text-muted)]" />
                       )}
                     </button>
                     {expandedFaq === idx.toString() && (
-                      <div className="px-6 pb-4 pt-0 text-slate-600 dark:text-slate-300 text-sm animate-in slide-in-from-top-2 duration-200">
-                        <div className="h-px w-full bg-slate-100 dark:bg-slate-700 mb-4"></div>
+                      <div className="px-6 pb-4 pt-0 text-[var(--text-secondary)] text-sm animate-in slide-in-from-top-2 duration-200">
+                        <div className="h-px w-full bg-[var(--bg-elevated)] mb-4"></div>
                         {faq.answer}
                       </div>
                     )}
                   </div>
                 ))
               ) : (
-                <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+                <div className="text-center py-12 bg-[var(--bg-elevated)] rounded-xl border border-dashed border-[var(--border)]">
                   <HelpCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500">Aucun résultat trouvé pour "{searchTerm}"</p>
+                  <p className="text-[var(--text-secondary)]">Aucun résultat trouvé pour "{searchTerm}"</p>
                 </div>
               )}
             </div>
@@ -323,21 +323,21 @@ export const HelpCenterView: React.FC = () => {
                 </button>
                 <button
                   onClick={openChat}
-                  className="w-full flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]/50 text-slate-700 dark:text-slate-300 hover:shadow-sm transition-all text-sm font-medium"
+                  className="w-full flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] dark:border-[var(--primary)]/50 text-[var(--text-primary)] hover:shadow-sm transition-all text-sm font-medium"
                 >
                   <MessageCircle className="w-4 h-4 text-[var(--primary)]" />
                   Chatter avec le support
                 </button>
                 <a
                   href={`mailto:${tenantContact?.email || 'support@trackyu.com'}`}
-                  className="w-full flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]/50 text-slate-700 dark:text-slate-300 hover:shadow-sm transition-all text-sm font-medium"
+                  className="w-full flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] dark:border-[var(--primary)]/50 text-[var(--text-primary)] hover:shadow-sm transition-all text-sm font-medium"
                 >
                   <Mail className="w-4 h-4 text-[var(--primary)]" />
                   Envoyer un email
                 </a>
                 <a
                   href={`tel:${tenantContact?.phone?.replace(/\s+/g, '') || '+33123456789'}`}
-                  className="w-full flex items-center gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-[var(--border)] dark:border-[var(--primary)]/50 text-slate-700 dark:text-slate-300 hover:shadow-sm transition-all text-sm font-medium"
+                  className="w-full flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] dark:border-[var(--primary)]/50 text-[var(--text-primary)] hover:shadow-sm transition-all text-sm font-medium"
                 >
                   <Phone className="w-4 h-4 text-[var(--primary)]" />
                   {tenantContact?.phone || '+33 1 23 45 67 89'}
@@ -345,8 +345,8 @@ export const HelpCenterView: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4">Documentation</h3>
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-6">
+              <h3 className="font-bold text-[var(--text-primary)] mb-4">Documentation</h3>
               <ul className="space-y-3">
                 <li>
                   <a
@@ -354,7 +354,7 @@ export const HelpCenterView: React.FC = () => {
                     onClick={(e) => handleDocClick(e, tenantContact?.legalDocuments?.guide)}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
+                    className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
                   >
                     <FileText className="w-4 h-4" />
                     Guide de l'utilisateur (PDF)
@@ -365,7 +365,7 @@ export const HelpCenterView: React.FC = () => {
                     href="/api/docs"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
+                    className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
                   >
                     <FileText className="w-4 h-4" />
                     Documentation API
@@ -374,7 +374,7 @@ export const HelpCenterView: React.FC = () => {
                 <li>
                   <a
                     href="#"
-                    className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors"
+                    className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors"
                   >
                     <PlayCircle className="w-4 h-4" />
                     Tutoriels Vidéo
@@ -384,8 +384,8 @@ export const HelpCenterView: React.FC = () => {
             </div>
 
             {/* Documents Juridiques */}
-            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6">
-              <h3 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-6">
+              <h3 className="font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
                 <Scale className="w-4 h-4 text-purple-600" />
                 Documents Juridiques
               </h3>
@@ -396,7 +396,7 @@ export const HelpCenterView: React.FC = () => {
                     onClick={(e) => handleDocClick(e, tenantContact?.legalDocuments?.contract)}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
+                    className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
                   >
                     <Shield className="w-4 h-4 text-green-500" />
                     Contrat de service (PDF)
@@ -408,7 +408,7 @@ export const HelpCenterView: React.FC = () => {
                     onClick={(e) => handleDocClick(e, tenantContact?.legalDocuments?.cgv)}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
+                    className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
                   >
                     <Scale className="w-4 h-4 text-purple-500" />
                     Conditions Générales de Vente
@@ -420,7 +420,7 @@ export const HelpCenterView: React.FC = () => {
                     onClick={(e) => handleDocClick(e, tenantContact?.legalDocuments?.policy)}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
+                    className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition-colors w-full text-left"
                   >
                     <Shield className="w-4 h-4 text-[var(--primary)]" />
                     Politique de confidentialité
@@ -436,7 +436,7 @@ export const HelpCenterView: React.FC = () => {
 
       {/* Chat Support Modal */}
       {isChatOpen && (
-        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50 animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
           <div className="bg-[var(--primary)] p-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
@@ -462,18 +462,20 @@ export const HelpCenterView: React.FC = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-50 dark:bg-slate-900">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[var(--bg-elevated)]">
             {chatMessages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`max-w-[80%] px-4 py-2.5 rounded-2xl ${
                     msg.from === 'user'
                       ? 'bg-[var(--primary)] text-white rounded-br-sm'
-                      : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-bl-sm'
+                      : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border)] rounded-bl-sm'
                   }`}
                 >
                   <p className="text-sm">{msg.text}</p>
-                  <p className={`text-xs mt-1 ${msg.from === 'user' ? 'text-[var(--primary)]' : 'text-slate-400'}`}>
+                  <p
+                    className={`text-xs mt-1 ${msg.from === 'user' ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
+                  >
                     {msg.time}
                   </p>
                 </div>
@@ -482,7 +484,7 @@ export const HelpCenterView: React.FC = () => {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0">
+          <div className="p-4 border-t border-[var(--border)] bg-[var(--bg-elevated)] shrink-0">
             <div className="flex gap-2">
               <input
                 type="text"
@@ -490,7 +492,7 @@ export const HelpCenterView: React.FC = () => {
                 onChange={(e) => setChatInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendChatMessage()}
                 placeholder="Tapez votre message..."
-                className="flex-1 px-4 py-2.5 bg-slate-100 dark:bg-slate-700 border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className="flex-1 px-4 py-2.5 bg-[var(--bg-elevated)] border-none rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
               />
               <button
                 onClick={sendChatMessage}

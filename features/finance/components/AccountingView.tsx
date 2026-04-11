@@ -912,23 +912,21 @@ export const AccountingView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2 bg-slate-800 dark:bg-slate-700 text-white rounded-lg shadow-md shrink-0">
+          <div className="p-2 bg-slate-800 bg-[var(--bg-elevated)] text-white rounded-lg shadow-md shrink-0">
             <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate">
+            <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] truncate">
               Gestion Financière & Comptable
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
-              Pilotage, Trésorerie et Comptabilité
-            </p>
+            <p className="text-xs text-[var(--text-secondary)] hidden sm:block">Pilotage, Trésorerie et Comptabilité</p>
           </div>
         </div>
         {isSuperAdmin && (
           <div className="flex items-center gap-2 shrink-0">
             <Building2 className="w-3 h-3 text-[var(--primary)]" />
             <select
-              className="text-[10px] uppercase font-bold bg-slate-100 dark:bg-slate-800 border-none rounded py-0.5 pl-1 pr-6 focus:ring-0 text-slate-600 dark:text-slate-300"
+              className="text-[10px] uppercase font-bold bg-[var(--bg-elevated)] border-none rounded py-0.5 pl-1 pr-6 focus:ring-0 text-[var(--text-secondary)]"
               value={selectedResellerId}
               onChange={(e) => setSelectedResellerId(e.target.value)}
             >
@@ -964,7 +962,7 @@ export const AccountingView: React.FC = () => {
         <div className="flex-1 min-h-0">
           {activeTab === 'STATS' &&
             (journalEntries.length === 0 && invoices.length === 0 && payments.length === 0 ? (
-              <div className="flex-1 flex items-center justify-center bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
+              <div className="flex-1 flex items-center justify-center bg-[var(--bg-surface)] rounded-2xl shadow-sm">
                 <EmptyState
                   icon={BarChartIcon}
                   title="Aucune donnée financière"
@@ -986,10 +984,10 @@ export const AccountingView: React.FC = () => {
             ))}
           {activeTab === 'FINANCE' &&
             (payments.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
-                <DollarSign className="w-16 h-16 text-slate-200 dark:text-slate-700 mb-4" />
-                <p className="text-lg font-semibold text-slate-500">Aucun paiement enregistré</p>
-                <p className="text-sm text-slate-400 mt-1">Les paiements reçus apparaîtront ici</p>
+              <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[var(--bg-surface)] rounded-2xl shadow-sm">
+                <DollarSign className="w-16 h-16 text-slate-200 dark:text-[var(--text-primary)] mb-4" />
+                <p className="text-lg font-semibold text-[var(--text-secondary)]">Aucun paiement enregistré</p>
+                <p className="text-sm text-[var(--text-muted)] mt-1">Les paiements reçus apparaîtront ici</p>
               </div>
             ) : (
               <FinanceTabPartial

@@ -69,7 +69,7 @@ export const MobileTabLayout: React.FC<MobileTabLayoutProps> = ({
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-colors active:scale-[0.98] ${
                   isActive
                     ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]'
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50'
                 }`}
               >
                 {Icon && (
@@ -84,22 +84,18 @@ export const MobileTabLayout: React.FC<MobileTabLayoutProps> = ({
                 <div className="flex-1 min-w-0">
                   <p
                     className={`text-sm font-semibold truncate ${
-                      isActive
-                        ? 'text-[var(--primary)] dark:text-[var(--primary)]'
-                        : 'text-slate-800 dark:text-white'
+                      isActive ? 'text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-primary)]'
                     }`}
                   >
                     {tab.label}
                   </p>
                   {tab.description && (
-                    <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">
-                      {tab.description}
-                    </p>
+                    <p className="text-xs text-[var(--text-muted)] truncate mt-0.5">{tab.description}</p>
                   )}
                 </div>
                 <ChevronRight
                   className={`w-4 h-4 shrink-0 ${
-                    isActive ? 'text-[var(--primary)]' : 'text-slate-300 dark:text-slate-600'
+                    isActive ? 'text-[var(--primary)]' : 'text-slate-300 dark:text-[var(--text-secondary)]'
                   }`}
                 />
               </button>

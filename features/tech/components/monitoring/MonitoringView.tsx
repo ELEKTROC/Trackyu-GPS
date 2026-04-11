@@ -82,14 +82,14 @@ function PipelineGpsTab() {
     return (
       <div className="flex items-center justify-center py-16">
         <RefreshCw className="h-6 w-6 animate-spin text-[var(--primary)]" />
-        <span className="ml-2 text-gray-500">Chargement des métriques pipeline…</span>
+        <span className="ml-2 text-[var(--text-secondary)]">Chargement des métriques pipeline…</span>
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="text-center py-16 text-gray-500">
+      <div className="text-center py-16 text-[var(--text-secondary)]">
         <Server className="h-12 w-12 mx-auto mb-3 opacity-30" />
         <p>Données pipeline GPS non disponibles</p>
         <p className="text-sm mt-1">Vérifiez que le serveur GPS est en cours d'exécution</p>
@@ -104,11 +104,11 @@ function PipelineGpsTab() {
     <div className="space-y-4">
       {/* Refresh info */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
           <Server className="h-4 w-4 text-[var(--primary)]" />
           Pipeline GPS — Données en temps réel
         </h3>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
           {lastRefresh && <span>Mis à jour {lastRefresh.toLocaleTimeString('fr-FR')}</span>}
           <button onClick={fetchStats} className="p-1 hover:bg-gray-100 rounded">
             <RefreshCw className="h-3.5 w-3.5" />
@@ -123,7 +123,7 @@ function PipelineGpsTab() {
             label: 'Boîtiers connectés',
             value: stats.pipeline.activeConnections,
             icon: Wifi,
-            color: stats.pipeline.activeConnections > 0 ? 'text-green-600' : 'text-gray-400',
+            color: stats.pipeline.activeConnections > 0 ? 'text-green-600' : 'text-[var(--text-muted)]',
             bg: stats.pipeline.activeConnections > 0 ? 'bg-green-50' : 'bg-gray-50',
           },
           {
@@ -144,14 +144,14 @@ function PipelineGpsTab() {
             label: 'IMEI inconnus',
             value: stats.unknownImeis.length,
             icon: AlertTriangle,
-            color: stats.unknownImeis.length > 0 ? 'text-orange-600' : 'text-gray-400',
+            color: stats.unknownImeis.length > 0 ? 'text-orange-600' : 'text-[var(--text-muted)]',
             bg: stats.unknownImeis.length > 0 ? 'bg-orange-50' : 'bg-gray-50',
           },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className={`${bg} border border-gray-200 rounded-lg p-3`}>
             <div className="flex items-center gap-1.5 mb-1">
               <Icon className={`h-4 w-4 ${color}`} />
-              <span className="text-xs text-gray-600">{label}</span>
+              <span className="text-xs text-[var(--text-secondary)]">{label}</span>
             </div>
             <div className={`text-xl font-bold ${color}`}>{value}</div>
           </div>
@@ -161,12 +161,12 @@ function PipelineGpsTab() {
       {/* Barre progression globale */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
         <div className="flex justify-between text-sm mb-2">
-          <span className="text-gray-600">
+          <span className="text-[var(--text-secondary)]">
             {stats.totals.valid.toLocaleString('fr-FR')} valides ·{' '}
             {stats.totals.rejected.toLocaleString('fr-FR')} rejetés ·{' '}
             {stats.totals.crcErrors.toLocaleString('fr-FR')} erreurs CRC
           </span>
-          <span className="font-bold text-gray-800">{successRate}%</span>
+          <span className="font-bold text-[var(--text-primary)]">{successRate}%</span>
         </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden flex">
           <div
@@ -178,7 +178,7 @@ function PipelineGpsTab() {
             style={{ width: `${stats.totals.packets > 0 ? Math.round(stats.totals.crcErrors / stats.totals.packets * 100) : 0}%` }}
           />
         </div>
-        <div className="flex gap-4 mt-1.5 text-xs text-gray-500">
+        <div className="flex gap-4 mt-1.5 text-xs text-[var(--text-secondary)]">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" />Valides</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" />Erreurs CRC</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300" />Rejetés (bornes)</span>
@@ -188,10 +188,10 @@ function PipelineGpsTab() {
       {/* Par protocole */}
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-50 border-b">
-          <h4 className="text-sm font-semibold text-gray-700">Statistiques par protocole</h4>
+          <h4 className="text-sm font-semibold text-[var(--text-primary)]">Statistiques par protocole</h4>
         </div>
         {stats.parsers.length === 0 ? (
-          <div className="px-4 py-8 text-center text-sm text-gray-500">
+          <div className="px-4 py-8 text-center text-sm text-[var(--text-secondary)]">
             Aucun paquet reçu depuis le démarrage du serveur
           </div>
         ) : (
@@ -199,7 +199,7 @@ function PipelineGpsTab() {
             <thead className="bg-gray-50">
               <tr>
                 {['Protocole', 'Total', 'Valides', 'Rejetés', 'CRC err.', 'Succès', 'Dernier fix'].map(h => (
-                  <th key={h} className="px-3 py-2 text-left text-xs font-medium text-gray-500">{h}</th>
+                  <th key={h} className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -211,7 +211,7 @@ function PipelineGpsTab() {
                       {p.name}
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 font-mono text-gray-800">{p.totalPackets.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 font-mono text-[var(--text-primary)]">{p.totalPackets.toLocaleString()}</td>
                   <td className="px-3 py-2.5 font-mono text-green-700">{p.validPackets.toLocaleString()}</td>
                   <td className="px-3 py-2.5 font-mono text-red-600">{p.rejectedPackets.toLocaleString()}</td>
                   <td className="px-3 py-2.5 font-mono text-orange-600">{p.crcErrors.toLocaleString()}</td>
@@ -220,7 +220,7 @@ function PipelineGpsTab() {
                       {p.successRate}%
                     </span>
                   </td>
-                  <td className="px-3 py-2.5 text-xs text-gray-500">{timeAgo(p.lastSeen)}</td>
+                  <td className="px-3 py-2.5 text-xs text-[var(--text-secondary)]">{timeAgo(p.lastSeen)}</td>
                 </tr>
               ))}
             </tbody>
@@ -256,11 +256,11 @@ function PipelineGpsTab() {
 
       {/* Rate limiting */}
       <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <h4 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+        <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
           <Shield className="h-4 w-4 text-[var(--primary)]" />
           Rate Limiting IMEI
         </h4>
-        <div className="flex gap-6 text-sm text-gray-600">
+        <div className="flex gap-6 text-sm text-[var(--text-secondary)]">
           <span>Max: <strong>{stats.pipeline.rateLimit.maxPerSec} paquets/sec</strong> par IMEI</span>
           <span>IMEI suivis: <strong>{stats.pipeline.rateLimit.trackedImeis}</strong></span>
         </div>
@@ -297,24 +297,24 @@ function OverviewTab() {
     return () => clearInterval(i);
   }, []);
 
-  if (loading) return <div className="text-center py-8 text-gray-500">Chargement…</div>;
-  if (!fleet) return <div className="text-center py-8 text-gray-400">Données non disponibles</div>;
+  if (loading) return <div className="text-center py-8 text-[var(--text-secondary)]">Chargement…</div>;
+  if (!fleet) return <div className="text-center py-8 text-[var(--text-muted)]">Données non disponibles</div>;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {[
-          { label: 'Véhicules total', value: fleet.total, icon: Cpu, color: 'text-gray-700' },
+          { label: 'Véhicules total', value: fleet.total, icon: Cpu, color: 'text-[var(--text-primary)]' },
           { label: 'En ligne', value: fleet.online, icon: Wifi, color: 'text-green-600' },
           { label: 'Hors ligne', value: fleet.offline, icon: WifiOff, color: 'text-red-600' },
           { label: 'Score santé', value: `${fleet.healthScore}%`, icon: Zap, color: fleet.healthScore >= 80 ? 'text-green-600' : 'text-yellow-600' },
           { label: 'Alertes aujourd\'hui', value: fleet.alertsToday, icon: AlertTriangle, color: 'text-orange-600' },
-          { label: 'Alertes non lues', value: fleet.unreadAlerts, icon: AlertTriangle, color: fleet.unreadAlerts > 0 ? 'text-red-600' : 'text-gray-400' },
+          { label: 'Alertes non lues', value: fleet.unreadAlerts, icon: AlertTriangle, color: fleet.unreadAlerts > 0 ? 'text-red-600' : 'text-[var(--text-muted)]' },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="bg-white border border-gray-200 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-1">
               <Icon className={`h-4 w-4 ${color}`} />
-              <span className="text-xs text-gray-500">{label}</span>
+              <span className="text-xs text-[var(--text-secondary)]">{label}</span>
             </div>
             <div className={`text-2xl font-bold ${color}`}>{value}</div>
           </div>
@@ -342,8 +342,8 @@ export function MonitoringView() {
     <div className="h-full flex flex-col bg-gray-50">
       {/* Header */}
       <div className="px-4 py-3 border-b bg-white">
-        <h2 className="text-base font-semibold text-gray-800">Monitoring Technique</h2>
-        <p className="text-xs text-gray-500 mt-0.5">Surveillance temps réel du pipeline GPS et de la flotte</p>
+        <h2 className="text-base font-semibold text-[var(--text-primary)]">Monitoring Technique</h2>
+        <p className="text-xs text-[var(--text-secondary)] mt-0.5">Surveillance temps réel du pipeline GPS et de la flotte</p>
       </div>
 
       {/* Onglets */}
@@ -355,7 +355,7 @@ export function MonitoringView() {
             className={`flex items-center gap-1.5 px-3 py-2.5 text-sm border-b-2 whitespace-nowrap transition-colors ${
               activeTab === id
                 ? 'border-[var(--primary)] text-[var(--primary)] font-medium'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             <Icon className="h-4 w-4" />

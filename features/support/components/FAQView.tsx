@@ -312,8 +312,10 @@ export const FAQView: React.FC = () => {
         <div className="flex items-center gap-3">
           <BookOpen className="w-8 h-8 text-[var(--primary)]" />
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Base de Connaissances (FAQ)</h1>
-            <p className="text-sm text-slate-500">{articles.filter((a) => a.is_published).length} articles publiés</p>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Base de Connaissances (FAQ)</h1>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {articles.filter((a) => a.is_published).length} articles publiés
+            </p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -336,11 +338,11 @@ export const FAQView: React.FC = () => {
       <Card className="p-4">
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher dans la base de connaissances..."
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg"
+              className="w-full pl-10 pr-4 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && performSearch()}
@@ -358,8 +360,8 @@ export const FAQView: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 flex gap-4 overflow-hidden">
         {/* Sidebar - Categories */}
-        <div className="w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 overflow-y-auto">
-          <h3 className="text-sm font-bold text-slate-500 uppercase mb-3">Catégories</h3>
+        <div className="w-80 bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 overflow-y-auto">
+          <h3 className="text-sm font-bold text-[var(--text-secondary)] uppercase mb-3">Catégories</h3>
           <div className="space-y-1">
             <button
               onClick={() => {
@@ -369,13 +371,15 @@ export const FAQView: React.FC = () => {
               className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors ${
                 !selectedCategory
                   ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)]'
-                  : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'tr-hover'
               }`}
             >
               <span className="flex items-center gap-2 font-medium">
                 <BookOpen className="w-4 h-4" /> Tous les articles
               </span>
-              <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full">{articles.length}</span>
+              <span className="text-xs bg-slate-200 bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full">
+                {articles.length}
+              </span>
             </button>
             {categories.map((cat) => (
               <div key={cat.id} className="flex items-center gap-1">
@@ -384,7 +388,7 @@ export const FAQView: React.FC = () => {
                   className={`flex-1 flex items-center justify-between p-3 rounded-lg transition-colors ${
                     selectedCategory === cat.id
                       ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)]'
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                      : 'tr-hover'
                   }`}
                   style={selectedCategory === cat.id ? { borderLeft: `4px solid ${cat.color}` } : {}}
                 >
@@ -392,16 +396,16 @@ export const FAQView: React.FC = () => {
                     <span className="text-lg">{cat.icon}</span>
                     {cat.name}
                   </span>
-                  <span className="text-xs bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full">
+                  <span className="text-xs bg-slate-200 bg-[var(--bg-elevated)] px-2 py-0.5 rounded-full">
                     {cat.published_count || 0}
                   </span>
                 </button>
                 <button
                   onClick={() => openCategoryModal(cat)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded"
+                  className="p-2 hover:bg-[var(--bg-elevated)] rounded"
                   title="Modifier"
                 >
-                  <Edit2 className="w-3.5 h-3.5 text-slate-400" />
+                  <Edit2 className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                 </button>
                 <button
                   onClick={() => deleteCategoryHandler(cat.id)}
@@ -416,11 +420,11 @@ export const FAQView: React.FC = () => {
         </div>
 
         {/* Articles List */}
-        <div className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-y-auto">
+        <div className="flex-1 bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl overflow-y-auto">
           {isLoading ? (
-            <div className="flex items-center justify-center h-full text-slate-400">Chargement...</div>
+            <div className="flex items-center justify-center h-full text-[var(--text-muted)]">Chargement...</div>
           ) : filteredArticles.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-400">
+            <div className="flex flex-col items-center justify-center h-full text-[var(--text-muted)]">
               <FileText className="w-16 h-16 mb-4 opacity-20" />
               <p>Aucun article trouvé</p>
             </div>
@@ -442,9 +446,9 @@ export const FAQView: React.FC = () => {
                               {isExpanded ? (
                                 <ChevronDown className="w-5 h-5 text-[var(--primary)]" />
                               ) : (
-                                <ChevronRight className="w-5 h-5 text-slate-400 group-hover:text-[var(--primary)]" />
+                                <ChevronRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)]" />
                               )}
-                              <h3 className="text-lg font-bold text-slate-800 dark:text-white group-hover:text-[var(--primary)]">
+                              <h3 className="text-lg font-bold text-[var(--text-primary)] group-hover:text-[var(--primary)]">
                                 {article.title}
                               </h3>
                             </button>
@@ -453,14 +457,14 @@ export const FAQView: React.FC = () => {
                                 article.status === 'PUBLISHED'
                                   ? 'bg-green-100 text-green-700'
                                   : article.status === 'DRAFT'
-                                    ? 'bg-slate-100 text-slate-600'
+                                    ? 'bg-slate-100 text-[var(--text-secondary)]'
                                     : 'bg-orange-100 text-orange-700'
                               }`}
                             >
                               {article.status}
                             </span>
                           </div>
-                          <div className="flex items-center gap-4 text-xs text-slate-500">
+                          <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)]">
                             <span className="flex items-center gap-1">
                               <Eye className="w-3 h-3" /> {article.views_count} vues
                             </span>
@@ -497,10 +501,10 @@ export const FAQView: React.FC = () => {
                           )}
                           <button
                             onClick={() => openArticleModal(article)}
-                            className="p-2 hover:bg-slate-100 rounded"
+                            className="p-2 hover:bg-[var(--bg-elevated)] rounded"
                             title="Modifier"
                           >
-                            <Edit2 className="w-4 h-4 text-slate-600" />
+                            <Edit2 className="w-4 h-4 text-[var(--text-secondary)]" />
                           </button>
                           <button
                             onClick={() => deleteArticleHandler(article.id)}
@@ -515,7 +519,7 @@ export const FAQView: React.FC = () => {
                       {/* Article Content (Expanded) */}
                       {isExpanded && (
                         <>
-                          <div className="prose dark:prose-invert max-w-none mt-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                          <div className="prose dark:prose-invert max-w-none mt-4 p-4 bg-[var(--bg-elevated)] rounded-lg">
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(article.content.replace(/\n/g, '<br/>')),
@@ -526,7 +530,7 @@ export const FAQView: React.FC = () => {
                           {/* Tags */}
                           {article.tags && article.tags.length > 0 && (
                             <div className="flex items-center gap-2 mt-4">
-                              <Tag className="w-4 h-4 text-slate-400" />
+                              <Tag className="w-4 h-4 text-[var(--text-muted)]" />
                               {article.tags.map((tag, idx) => (
                                 <span
                                   key={idx}
@@ -540,7 +544,9 @@ export const FAQView: React.FC = () => {
 
                           {/* Feedback Buttons */}
                           <div className="flex items-center gap-4 mt-4 pt-4 border-t">
-                            <span className="text-sm text-slate-600">Cet article vous a-t-il été utile ?</span>
+                            <span className="text-sm text-[var(--text-secondary)]">
+                              Cet article vous a-t-il été utile ?
+                            </span>
                             <button
                               onClick={() => submitFeedback(article.id, true)}
                               className="flex items-center gap-1 px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-sm"
@@ -574,7 +580,7 @@ export const FAQView: React.FC = () => {
           <>
             <button
               onClick={() => setIsCategoryModalOpen(false)}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               Annuler
             </button>
@@ -589,18 +595,18 @@ export const FAQView: React.FC = () => {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nom</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Nom</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg"
               value={categoryForm.name}
               onChange={(e) => setCategoryForm({ ...categoryForm, name: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Description</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Description</label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg"
               rows={3}
               value={categoryForm.description}
               onChange={(e) => setCategoryForm({ ...categoryForm, description: e.target.value })}
@@ -608,20 +614,20 @@ export const FAQView: React.FC = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Icône (emoji)</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Icône (emoji)</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-2xl text-center"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-lg text-2xl text-center"
                 value={categoryForm.icon}
                 onChange={(e) => setCategoryForm({ ...categoryForm, icon: e.target.value })}
                 maxLength={2}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Couleur</label>
+              <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Couleur</label>
               <input
                 type="color"
-                className="w-full h-10 border border-slate-300 rounded-lg cursor-pointer"
+                className="w-full h-10 border border-[var(--border)] rounded-lg cursor-pointer"
                 value={categoryForm.color}
                 onChange={(e) => setCategoryForm({ ...categoryForm, color: e.target.value })}
               />
@@ -639,7 +645,7 @@ export const FAQView: React.FC = () => {
           <>
             <button
               onClick={() => setIsArticleModalOpen(false)}
-              className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               Annuler
             </button>
@@ -654,9 +660,9 @@ export const FAQView: React.FC = () => {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Catégorie</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Catégorie</label>
             <select
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg"
               value={articleForm.category_id}
               onChange={(e) => setArticleForm({ ...articleForm, category_id: e.target.value })}
             >
@@ -669,39 +675,39 @@ export const FAQView: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Titre</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Titre</label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg"
               value={articleForm.title}
               onChange={(e) => setArticleForm({ ...articleForm, title: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Contenu</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Contenu</label>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg font-mono text-sm"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg font-mono text-sm"
               rows={12}
               value={articleForm.content}
               onChange={(e) => setArticleForm({ ...articleForm, content: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">
               Tags (séparés par des virgules)
             </label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg"
               placeholder="gps, installation, dépannage"
               value={articleForm.tags}
               onChange={(e) => setArticleForm({ ...articleForm, tags: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Statut</label>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Statut</label>
             <select
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-lg"
               value={articleForm.status}
               onChange={(e) => setArticleForm({ ...articleForm, status: e.target.value as any })}
             >

@@ -41,12 +41,12 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
       reader.onload = (event) => {
         const dataUrl = event.target?.result as string;
         setPreviewUrl(dataUrl);
-        
+
         // Save to localStorage for demo (in production: upload to server)
         const photos = JSON.parse(localStorage.getItem('vehicle_photos') || '{}');
         photos[vehicle.id] = dataUrl;
         localStorage.setItem('vehicle_photos', JSON.stringify(photos));
-        
+
         onPhotoChange?.(vehicle.id, dataUrl);
         setIsUploading(false);
       };
@@ -81,30 +81,25 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
 
   return (
     <>
-      <CollapsibleSection 
-        title="Photo Véhicule" 
-        icon={Camera} 
-        defaultOpen={true}
-        badge={previewUrl ? '1' : undefined}
-      >
+      <CollapsibleSection title="Photo Véhicule" icon={Camera} defaultOpen={true} badge={previewUrl ? '1' : undefined}>
         <div className="p-3">
           {previewUrl ? (
             <div className="relative group">
-              <img 
-                src={previewUrl} 
+              <img
+                src={previewUrl}
                 alt={vehicle.name}
                 className="w-full h-40 object-cover rounded-lg cursor-pointer transition-transform hover:scale-[1.02]"
                 onClick={() => setShowFullscreen(true)}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <button 
+                <button
                   onClick={() => setShowFullscreen(true)}
                   className="p-2 bg-white/90 rounded-full mr-2 hover:bg-white transition-colors"
                 >
-                  <Maximize2 className="w-4 h-4 text-slate-700" />
+                  <Maximize2 className="w-4 h-4 text-[var(--text-primary)]" />
                 </button>
                 {!configMode && (
-                  <button 
+                  <button
                     onClick={handleRemovePhoto}
                     className="p-2 bg-red-500/90 rounded-full hover:bg-red-500 transition-colors"
                   >
@@ -117,34 +112,28 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
               </div>
             </div>
           ) : (
-            <div 
+            <div
               onClick={() => fileInputRef.current?.click()}
-              className="w-full h-40 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/20 transition-colors"
+              className="w-full h-40 border-2 border-dashed border-[var(--border)] rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/20 transition-colors"
             >
               {isUploading ? (
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
               ) : (
                 <>
-                  <div className="p-3 bg-slate-100 dark:bg-slate-700 rounded-full mb-2">
-                    <Image className="w-6 h-6 text-slate-400" />
+                  <div className="p-3 bg-[var(--bg-elevated)] rounded-full mb-2">
+                    <Image className="w-6 h-6 text-[var(--text-muted)]" />
                   </div>
-                  <span className="text-sm text-slate-500 dark:text-slate-400">Ajouter une photo</span>
-                  <span className="text-xs text-slate-400 mt-1">JPG, PNG (max 5 Mo)</span>
+                  <span className="text-sm text-[var(--text-secondary)]">Ajouter une photo</span>
+                  <span className="text-xs text-[var(--text-muted)] mt-1">JPG, PNG (max 5 Mo)</span>
                 </>
               )}
             </div>
           )}
-          
-          <input 
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
-          
+
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
+
           {previewUrl && (
-            <button 
+            <button
               onClick={() => fileInputRef.current?.click()}
               className="mt-2 w-full py-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg transition-colors flex items-center justify-center gap-1"
             >
@@ -156,18 +145,18 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
 
       {/* Fullscreen Modal */}
       {showFullscreen && previewUrl && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
           onClick={() => setShowFullscreen(false)}
         >
-          <button 
+          <button
             onClick={() => setShowFullscreen(false)}
             className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
           >
             <X className="w-6 h-6 text-white" />
           </button>
-          <img 
-            src={previewUrl} 
+          <img
+            src={previewUrl}
             alt={vehicle.name}
             className="max-w-full max-h-full object-contain rounded-lg"
             onClick={(e) => e.stopPropagation()}

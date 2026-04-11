@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import { EmptyState } from '../../../components/EmptyState';
 import { Card } from '../../../components/Card';
+import { SearchBar } from '../../../components/SearchBar';
 import { Pagination } from '../../../components/Pagination';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
@@ -605,7 +606,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
       case 'client':
         return (
           <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
-            <Briefcase className="w-3 h-3 text-slate-400" />
+            <Briefcase className="w-3 h-3 text-[var(--text-muted)]" />
             <span className="truncate text-sm" title={vehicle.client}>
               {vehicle.client}
             </span>
@@ -884,7 +885,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 type="checkbox"
                 checked={selectedIds.has(vehicle.id)}
                 onChange={() => toggleSelection(vehicle.id)}
-                className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
               />
             </div>
             {activeColumns.map((col) => (
@@ -1035,15 +1036,11 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         {/* Simplified toolbar for mobile */}
         <div className="mb-4 flex gap-2 justify-between flex-wrap">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder={isMobileView ? 'Rechercher...' : 'Rechercher globalement (ID, Client, Nom)...'}
-                className="w-full pl-10 pr-4 py-2 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
+            <div className="flex-1">
+              <SearchBar
                 value={globalSearch}
-                onChange={(e) => setGlobalSearch(e.target.value)}
+                onChange={setGlobalSearch}
+                placeholder={isMobileView ? 'Rechercher...' : 'Rechercher globalement (ID, Client, Nom)...'}
               />
             </div>
 
@@ -1064,7 +1061,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
             </div>
 
             {/* Vehicle Filter Toolbar - Hidden on mobile */}
@@ -1084,7 +1081,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   </option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
             </div>
 
             {/* Status Filter - Hidden on mobile */}
@@ -1123,7 +1120,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                           prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
                         );
                       }}
-                      className="rounded border-slate-300 text-[var(--primary)]"
+                      className="rounded border-[var(--border)] text-[var(--primary)]"
                     />
                     <StatusBadge status={status} />
                   </label>
@@ -1212,8 +1209,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 key: 'STANDARD',
                 label: 'Vue Standard',
                 icon: null,
-                activeClass:
-                  'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 border-slate-800 dark:border-slate-200',
+                activeClass: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]',
                 inactiveClass: 'border-[var(--border)] hover:bg-[var(--bg-elevated)]',
               },
               {
@@ -1276,7 +1272,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               <div className="flex gap-2">
                 <button
                   onClick={handleExport}
-                  className="text-xs bg-white dark:bg-slate-800 border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
+                  className="text-xs bg-[var(--bg-elevated)] border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
                 >
                   Exporter
                 </button>
@@ -1304,14 +1300,14 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={handleSelectAll}
-                  className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                  className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                 />
               </div>
 
               {activeColumns.map((col) => (
                 <div
                   key={col.id}
-                  className={`px-4 py-3 text-xs font-bold text-[var(--text-muted)] uppercase shrink-0 flex items-center gap-1 group cursor-pointer hover:bg-[var(--bg-elevated)] transition-colors select-none ${col.id === 'score' ? 'justify-end ml-auto' : ''}`}
+                  className={`px-4 py-3 section-title shrink-0 flex items-center gap-1 group cursor-pointer hover:bg-[var(--bg-elevated)] transition-colors select-none ${col.id === 'score' ? 'justify-end ml-auto' : ''}`}
                   style={{ width: col.minWidth, flex: col.id === 'vehicle' ? '1 0 auto' : '0 0 auto' }}
                   onClick={() => handleSort(col.id)}
                 >
@@ -1338,7 +1334,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                           (col.id === 'group' && activeFilters.group && activeFilters.group.length > 0) ||
                           (col.id === 'geofence' && activeFilters.geofence && activeFilters.geofence.length > 0)
                             ? 'text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
-                            : 'text-slate-400'
+                            : 'text-[var(--text-muted)]'
                         }`}
                       >
                         <Filter className="w-3 h-3" />
@@ -1548,7 +1544,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     title="Hors ligne"
                   >
                     <span className="w-2 h-2 rounded-full bg-slate-400"></span>
-                    <span className="text-slate-500">{stats.offline}</span>
+                    <span className="text-[var(--text-secondary)]">{stats.offline}</span>
                   </button>
                   {statusFilter.length > 0 && (
                     <button
@@ -1638,11 +1634,11 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                           vehicle.type === 'TRUCK' ||
                           vehicle.vehicleType === 'VAN' ? (
                             <Truck
-                              className={`w-7 h-7 ${isMoving ? 'text-green-600' : isIdle ? 'text-amber-500' : 'text-slate-400'}`}
+                              className={`w-7 h-7 ${isMoving ? 'text-green-600' : isIdle ? 'text-amber-500' : 'text-[var(--text-muted)]'}`}
                             />
                           ) : (
                             <Car
-                              className={`w-7 h-7 ${isMoving ? 'text-green-600' : isIdle ? 'text-amber-500' : 'text-slate-400'}`}
+                              className={`w-7 h-7 ${isMoving ? 'text-green-600' : isIdle ? 'text-amber-500' : 'text-[var(--text-muted)]'}`}
                             />
                           )}
                         </div>
@@ -1821,7 +1817,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                             type="checkbox"
                             checked={selectedIds.has(vehicle.id)}
                             onChange={() => toggleSelection(vehicle.id)}
-                            className="rounded border-slate-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                            className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                           />
                         </div>
 
@@ -1954,7 +1950,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               activeCount: activeFilters.branch?.length ?? 0,
               content:
                 uniqueBranches.length === 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-8">Aucune branche disponible</p>
+                  <p className="text-sm text-[var(--text-muted)] text-center py-8">Aucune branche disponible</p>
                 ) : (
                   uniqueBranches.map((b) => (
                     <FilterCheckRow
