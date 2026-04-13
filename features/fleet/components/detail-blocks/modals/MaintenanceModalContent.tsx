@@ -83,7 +83,7 @@ export const MaintenanceModalContent: React.FC = () => {
         </h3>
         <div className="border border-[var(--border)] rounded-lg overflow-hidden">
           <table className="w-full text-sm text-left">
-            <thead className="bg-slate-50 text-[var(--text-secondary)] font-medium border-b border-[var(--border)]">
+            <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] font-medium border-b border-[var(--border)]">
               <tr>
                 <th className="px-4 py-3">Date</th>
                 <th className="px-4 py-3">Intervention</th>
@@ -93,7 +93,7 @@ export const MaintenanceModalContent: React.FC = () => {
                 <th className="px-4 py-3"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[var(--border)]">
               {maintenanceHistory.map((item) => (
                 <tr key={item.id} className="hover:bg-[var(--bg-elevated)] transition-colors">
                   <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">{item.date}</td>

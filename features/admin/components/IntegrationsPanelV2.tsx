@@ -741,7 +741,7 @@ export const IntegrationsPanelV2: React.FC = () => {
           </div>
           <button
             onClick={refresh}
-            className="p-2 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg transition-colors"
           >
             <RefreshCw
               className={`w-4 h-4 text-[var(--text-secondary)] ${loadingBackendStatus ? 'animate-spin' : ''}`}
@@ -1385,7 +1385,7 @@ export const IntegrationsPanelV2: React.FC = () => {
           <div className="flex justify-end pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsTestModalOpen(false)}
-              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Fermer
             </button>

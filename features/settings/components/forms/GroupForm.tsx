@@ -213,7 +213,7 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
       {/* Critère de groupement */}
       <div className="border border-[var(--border)] rounded-xl p-5 bg-[var(--bg-elevated)]">
         <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg">
+          <div className="p-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg">
             <Filter className="w-4 h-4 text-[var(--text-secondary)]" />
           </div>
           <div>
@@ -261,7 +261,7 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
         <button
           type="button"
           onClick={() => setIsVehicleListOpen(!isVehicleListOpen)}
-          className="w-full p-4 bg-[var(--bg-elevated)] flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+          className="w-full p-4 bg-[var(--bg-elevated)] flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
         >
           <span className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
             <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
@@ -334,7 +334,7 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
                           ? 'bg-green-100 text-green-700'
                           : vehicle.status === VehicleStatus.STOPPED
                             ? 'bg-amber-100 text-amber-700'
-                            : 'bg-slate-100 text-[var(--text-secondary)]'
+                            : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                       }`}
                     >
                       {vehicle.type || 'N/A'}

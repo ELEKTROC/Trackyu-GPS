@@ -301,7 +301,7 @@ export const SupplierInvoicesView: React.FC<SupplierInvoicesViewProps> = ({
               {sortedInvoices.map((invoice) => (
                 <tr
                   key={invoice.id}
-                  className="hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 transition-colors"
+                  className="hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 transition-colors"
                 >
                   <td className="px-4 py-3 font-mono">{new Date(invoice.date).toLocaleDateString('fr-FR')}</td>
                   <td className="px-4 py-3 font-bold text-[var(--text-primary)]">{invoice.reference}</td>
@@ -497,7 +497,7 @@ export const SupplierInvoicesView: React.FC<SupplierInvoicesViewProps> = ({
               <h3 className="font-bold text-xl text-[var(--text-primary)]">Nouvelle Dépense Fournisseur</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full transition-colors"
+                className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-[var(--text-secondary)]" />
               </button>
@@ -640,7 +640,7 @@ export const SupplierInvoicesView: React.FC<SupplierInvoicesViewProps> = ({
                           setNewCatCode('');
                           setIsNewCategoryOpen(true);
                         }}
-                        className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors shrink-0"
+                        className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors shrink-0"
                         title="Nouvelle catégorie"
                       >
                         <Plus className="w-5 h-5" />
@@ -729,7 +729,7 @@ export const SupplierInvoicesView: React.FC<SupplierInvoicesViewProps> = ({
                     Justificatif (PDF/Image)
                   </label>
                   <div className="flex items-center gap-3">
-                    <label className="cursor-pointer bg-[var(--bg-elevated)] border border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 px-4 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors shadow-sm">
+                    <label className="cursor-pointer bg-[var(--bg-elevated)] border border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-4 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors shadow-sm">
                       <Upload className="w-4 h-4" />
                       Choisir un fichier
                       <input type="file" className="hidden" accept=".pdf,image/*" onChange={handleFileUpload} />

@@ -927,7 +927,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                   activeTab === tab.id
                     ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
-                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] dark:hover:bg-slate-800'
+                    : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -944,7 +944,7 @@ export const OrganizationPanelV2: React.FC = () => {
           className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-bold transition-all ${
             hasChanges
               ? 'bg-[var(--primary)] text-white hover:bg-[var(--primary-light)]'
-              : 'bg-slate-200 text-[var(--text-muted)] bg-[var(--bg-elevated)] dark:text-[var(--text-secondary)] cursor-not-allowed'
+              : 'bg-[var(--bg-elevated)] text-[var(--text-muted)] bg-[var(--bg-elevated)] dark:text-[var(--text-secondary)] cursor-not-allowed'
           } disabled:opacity-50`}
         >
           {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
@@ -1763,7 +1763,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       <th className="px-3 py-2 text-center font-medium text-[var(--text-secondary)]">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y dark:divide-slate-700">
+                  <tbody className="divide-y divide-[var(--border)]">
                     {DEFAULT_NUMBERING_SERIES.map((defaultSeries) => {
                       const apiCounter = apiCounters?.find((c) => c.module === defaultSeries.module);
                       const counter =
@@ -2003,7 +2003,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         type="button"
                         onClick={() => document.getElementById(`doc-upload-${docKey}`)?.click()}
                         disabled={docUploading !== null}
-                        className="px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                        className="px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                       >
                         {docUploading === docKey ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -2063,7 +2063,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       <img src={settings.logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
                     ) : (
                       <div className="text-center">
-                        <Upload className="w-6 h-6 text-slate-300 mx-auto" />
+                        <Upload className="w-6 h-6 text-[var(--text-muted)] mx-auto" />
                         <span className="text-[10px] text-[var(--text-muted)] mt-1">Cliquer ou glisser</span>
                       </div>
                     )}
@@ -2345,7 +2345,7 @@ export const OrganizationPanelV2: React.FC = () => {
                       <div className={`flex flex-col ${opt.gap} mb-2 px-2`}>
                         {opt.rows.map((_, i) => (
                           <div key={i} className="flex gap-1">
-                            <div className="h-1.5 w-8 rounded-full bg-slate-200 bg-[var(--bg-elevated)]" />
+                            <div className="h-1.5 w-8 rounded-full bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]" />
                             <div className="h-1.5 flex-1 rounded-full bg-[var(--bg-elevated)]" />
                           </div>
                         ))}
@@ -2466,7 +2466,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-orange-100 text-orange-700">
                           ALERTE
                         </span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]">
                           ARRÊTÉ
                         </span>
                       </div>

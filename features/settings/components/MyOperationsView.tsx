@@ -164,12 +164,12 @@ export const MyOperationsView: React.FC = () => {
   };
 
   const renderStatusBadge = (status: string, type: 'contract' | 'intervention' | 'ticket') => {
-    let colorClass = 'bg-slate-100 text-[var(--text-secondary)]';
+    let colorClass = 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
 
     if (type === 'contract') {
       if (status === 'ACTIVE') colorClass = 'bg-green-100 text-green-700';
       if (status === 'EXPIRED') colorClass = 'bg-red-100 text-red-700';
-      if (status === 'TERMINATED') colorClass = 'bg-slate-100 text-[var(--text-primary)]';
+      if (status === 'TERMINATED') colorClass = 'bg-[var(--bg-elevated)] text-[var(--text-primary)]';
     } else if (type === 'intervention') {
       if (status === 'COMPLETED') colorClass = 'bg-green-100 text-green-700';
       if (status === 'SCHEDULED') colorClass = 'bg-[var(--primary-dim)] text-[var(--primary)]';
@@ -191,7 +191,7 @@ export const MyOperationsView: React.FC = () => {
         <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-full">
           <AlertCircle className="w-12 h-12 text-orange-600 dark:text-orange-400" />
         </div>
-        <h3 className="text-xl font-bold text-[var(--text-primary)]">Espace réservé aux clients</h3>
+        <h3 className="page-title">Espace réservé aux clients</h3>
         <p className="text-[var(--text-secondary)] max-w-md">
           Cette section est dédiée au suivi des opérations personnelles des clients. En tant que gestionnaire, vous
           pouvez accéder à toutes les données centralisées dans les modules respectifs (CRM, Ventes, Support).
@@ -271,7 +271,7 @@ export const MyOperationsView: React.FC = () => {
               document.body.removeChild(link);
               showToast(TOAST.IO.EXPORT_SUCCESS('CSV'), 'success');
             }}
-            className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors flex items-center gap-2 text-sm font-medium"
+            className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors flex items-center gap-2 text-sm font-medium"
           >
             <Download className="w-4 h-4" /> Exporter
           </button>
@@ -336,12 +336,12 @@ export const MyOperationsView: React.FC = () => {
       <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm overflow-hidden">
         {/* Tabs & Toolbar */}
         <div className="border-b border-[var(--border)] p-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex p-1 bg-slate-100 bg-[var(--bg-surface)] rounded-lg w-full sm:w-auto overflow-x-auto">
+          <div className="flex p-1 bg-[var(--bg-elevated)] bg-[var(--bg-surface)] rounded-lg w-full sm:w-auto overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as OperationTab)}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === tab.id ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'}`}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === tab.id ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
               >
                 {tab.label}
               </button>
@@ -395,7 +395,7 @@ export const MyOperationsView: React.FC = () => {
 
         {/* Table Content */}
         {/* Cards Content */}
-        <div className="p-4 sm:p-6 bg-slate-50/50 bg-[var(--bg-surface)]/50">
+        <div className="p-4 sm:p-6 bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/50">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Subscriptions Cards */}
             {activeTab === 'subscriptions' &&
@@ -555,7 +555,7 @@ export const MyOperationsView: React.FC = () => {
                               ? 'bg-orange-500'
                               : ticket.priority === 'MEDIUM'
                                 ? 'bg-[var(--primary-dim)]0'
-                                : 'bg-slate-300'
+                                : 'bg-[var(--border)]'
                         }`}
                       />
                       <div className="min-w-0 flex-1">
@@ -644,7 +644,7 @@ export const MyOperationsView: React.FC = () => {
                       </button>
                       <button
                         onClick={() => window.print()}
-                        className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200 hover:bg-[var(--bg-elevated)]/50 rounded-lg transition-all"
+                        className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]/50 rounded-lg transition-all"
                       >
                         <Printer className="w-4 h-4" />
                       </button>
@@ -692,28 +692,28 @@ export const MyOperationsView: React.FC = () => {
             {/* Empty States */}
             {activeTab === 'subscriptions' && clientSubscriptions.length === 0 && !loadingSubs && (
               <div className="text-center py-12">
-                <FileText className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                <FileText className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
                 <h3 className="text-lg font-bold text-[var(--text-primary)]">Aucun abonnement trouvé</h3>
                 <p className="text-[var(--text-secondary)]">Vos abonnements actifs apparaîtront ici.</p>
               </div>
             )}
             {activeTab === 'interventions' && filteredInterventions.length === 0 && (
               <div className="text-center py-12">
-                <Wrench className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                <Wrench className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
                 <h3 className="text-lg font-bold text-[var(--text-primary)]">Aucune intervention</h3>
                 <p className="text-[var(--text-secondary)]">Vous n'avez pas d'intervention planifiée ou passée.</p>
               </div>
             )}
             {activeTab === 'tickets' && filteredTickets.length === 0 && (
               <div className="text-center py-12">
-                <Ticket className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                <Ticket className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
                 <h3 className="text-lg font-bold text-[var(--text-primary)]">Zéro ticket support</h3>
                 <p className="text-[var(--text-secondary)]">Besoin d'aide ? Créez un nouveau ticket.</p>
               </div>
             )}
             {activeTab === 'payments' && sortedReceipts.length === 0 && (
               <div className="text-center py-12">
-                <Receipt className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                <Receipt className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
                 <h3 className="text-lg font-bold text-[var(--text-primary)]">Aucun paiement</h3>
                 <p className="text-[var(--text-secondary)]">Vos reçus de paiement seront listés ici.</p>
               </div>

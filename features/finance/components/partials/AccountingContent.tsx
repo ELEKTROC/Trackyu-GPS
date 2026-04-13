@@ -131,7 +131,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
               className={`flex items-center justify-between p-3 rounded-lg border transition-all cursor-pointer ${
                 selectedClassFilter === cl.id
                   ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] ring-2 ring-[var(--primary-dim)]'
-                  : 'bg-[var(--bg-elevated)] border-[var(--border)] border-[var(--border)] hover:bg-[var(--primary-dim)] dark:hover:bg-slate-800'
+                  : 'bg-[var(--bg-elevated)] border-[var(--border)] border-[var(--border)] hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)]'
               }`}
             >
               <div className="flex items-center gap-3">
@@ -194,7 +194,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
               onClick={() =>
                 generateFEC(journalEntries || [], `FEC_EXPORT_${new Date().toISOString().slice(0, 10)}.csv`)
               }
-              className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               <Download className="w-4 h-4" /> <span className="hidden sm:inline">Export FEC</span>
             </button>
@@ -227,7 +227,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
             <div className="relative" ref={columnMenuRef}>
               <button
                 onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
+                className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
                 title="Gérer les colonnes"
               >
                 <LayoutTemplate className="w-4 h-4" />
@@ -241,7 +241,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                     {JOURNAL_COLUMNS.map((col) => (
                       <label
                         key={col.id}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer text-sm"
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                       >
                         <input
                           type="checkbox"
@@ -261,7 +261,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
 
         <div className="flex-1 overflow-auto custom-scrollbar">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-slate-100 bg-[var(--bg-surface)] sticky top-0 z-10 shadow-sm">
+            <thead className="bg-[var(--bg-elevated)] bg-[var(--bg-surface)] sticky top-0 z-10 shadow-sm">
               <tr>
                 {visibleColumns.includes('date') && (
                   <SortableHeader
@@ -335,7 +335,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+            <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
               {sortedEntries.length === 0 && (
                 <tr>
                   <td

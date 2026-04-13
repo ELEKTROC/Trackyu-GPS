@@ -185,7 +185,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
         {/* DSO (Délai Moyen Paiement) */}
         <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start mb-1.5">
-            <div className="p-1.5 bg-slate-100 bg-[var(--bg-surface)]/20 rounded-lg text-[var(--text-secondary)]">
+            <div className="p-1.5 bg-[var(--bg-elevated)] bg-[var(--bg-surface)]/20 rounded-lg text-[var(--text-secondary)]">
               <Clock className="w-4 h-4" />
             </div>
             <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase">DSO</span>
@@ -433,7 +433,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                               ? 'bg-orange-500 text-white'
                               : index === 2
                                 ? 'bg-yellow-500 text-white'
-                                : 'bg-slate-400 text-white'
+                                : 'bg-[var(--text-secondary)] text-white'
                         }`}
                       >
                         {index + 1}

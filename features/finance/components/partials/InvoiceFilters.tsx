@@ -153,7 +153,7 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
       <div className="relative" ref={exportMenuRef}>
         <button
           onClick={() => setShowExportMenu(!showExportMenu)}
-          className={`p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 ${
+          className={`p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] ${
             showExportMenu ? 'bg-[var(--bg-elevated)]' : ''
           }`}
           title="Exporter"
@@ -164,13 +164,13 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
           <div className="absolute right-0 top-full mt-2 w-32 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 overflow-hidden py-1">
             <button
               onClick={() => handleExport('csv')}
-              className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+              className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
             >
               <span className="font-mono text-xs border border-[var(--border)] rounded px-1">CSV</span> Export CSV
             </button>
             <button
               onClick={() => handleExport('pdf')}
-              className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+              className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
             >
               <span className="font-mono text-xs border border-[var(--border)] rounded px-1">PDF</span> Export PDF
             </button>

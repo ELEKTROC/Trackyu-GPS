@@ -294,7 +294,7 @@ export const StockOverview: React.FC<StockOverviewProps> = ({
                   RMA_OUT: 'bg-red-100 text-red-700',
                   RMA_RETURN: 'bg-purple-100 text-purple-700',
                   TRANSFER: 'bg-amber-100 text-amber-700',
-                  STATUS_CHANGE: 'bg-slate-100 text-[var(--text-primary)]',
+                  STATUS_CHANGE: 'bg-[var(--bg-elevated)] text-[var(--text-primary)]',
                 };
                 return (
                   <div
@@ -303,7 +303,7 @@ export const StockOverview: React.FC<StockOverviewProps> = ({
                   >
                     <div className="flex items-center gap-2">
                       <span
-                        className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${typeColors[mv.type] || 'bg-slate-100 text-[var(--text-secondary)]'}`}
+                        className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${typeColors[mv.type] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                       >
                         {mv.type}
                       </span>

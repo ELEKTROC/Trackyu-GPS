@@ -86,7 +86,7 @@ export const DeviceHistoryBlock: React.FC<DeviceHistoryBlockProps> = ({ vehicleI
             {/* Indicateur de statut */}
             <span
               className={`absolute -left-[7px] top-0.5 w-3 h-3 rounded-full border-2 ${
-                isActive ? 'bg-emerald-400 border-white' : 'bg-slate-300 border-white'
+                isActive ? 'bg-emerald-400 border-white' : 'bg-[var(--border)] border-white'
               }`}
             />
 
@@ -103,7 +103,7 @@ export const DeviceHistoryBlock: React.FC<DeviceHistoryBlockProps> = ({ vehicleI
                 </span>
               )}
               {idx === 0 && !isActive && (
-                <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)] bg-slate-100 px-1.5 py-0.5 rounded-full">
+                <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)] bg-[var(--bg-elevated)] px-1.5 py-0.5 rounded-full">
                   <ArrowRightLeft className="w-2.5 h-2.5" />
                   Remplacée
                 </span>
@@ -117,7 +117,7 @@ export const DeviceHistoryBlock: React.FC<DeviceHistoryBlockProps> = ({ vehicleI
                 {formatDate(entry.assigned_at)}
                 {entry.unassigned_at ? ` → ${formatDate(entry.unassigned_at)}` : " → aujourd'hui"}
               </span>
-              <span className="text-slate-300">·</span>
+              <span className="text-[var(--text-muted)]">·</span>
               <span className="font-medium text-[var(--text-secondary)]">
                 {duration(entry.assigned_at, entry.unassigned_at)}
               </span>

@@ -123,7 +123,7 @@ export const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
 
   if (!isLoaded)
     return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-100 bg-[var(--bg-surface)] text-[var(--text-secondary)]">
+      <div className="w-full h-full flex items-center justify-center bg-[var(--bg-elevated)] bg-[var(--bg-surface)] text-[var(--text-secondary)]">
         Chargement Google Maps...
       </div>
     );

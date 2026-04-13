@@ -300,7 +300,7 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({ veh
           handleDragStart(e.clientY);
         }}
       >
-        <div className="w-12 h-1.5 bg-slate-300 bg-[var(--bg-elevated)] rounded-full" />
+        <div className="w-12 h-1.5 bg-[var(--border)] bg-[var(--bg-elevated)] rounded-full" />
         <span className="text-xs text-[var(--text-muted)] mt-1">
           {sheetState === 'collapsed' ? 'Glisser vers le haut' : sheetState === 'full' ? 'Glisser vers le bas' : ''}
         </span>
@@ -318,7 +318,7 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({ veh
             key={state}
             onClick={() => setSheetState(state)}
             className={`w-2.5 h-2.5 rounded-full transition-colors ${
-              sheetState === state ? 'bg-[var(--primary-dim)]0' : 'bg-slate-300 bg-[var(--bg-elevated)]'
+              sheetState === state ? 'bg-[var(--primary-dim)]0' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'
             }`}
             aria-label={`Taille ${state}`}
           />
@@ -1444,14 +1444,14 @@ export const MapView: React.FC<MapViewProps> = ({
               <button
                 onClick={handleAddVehicleClick}
                 title="Ajouter un véhicule"
-                className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-[var(--text-secondary)]"
+                className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] transition-colors shadow-sm text-[var(--text-secondary)]"
               >
                 <Plus className="w-4 h-4" />
               </button>
               <button
                 onClick={handleCreateGeofenceClick}
                 title="Créer une geofence"
-                className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 hover:text-[var(--primary)] transition-colors shadow-sm text-[var(--text-secondary)]"
+                className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] transition-colors shadow-sm text-[var(--text-secondary)]"
               >
                 <Hexagon className="w-4 h-4" />
               </button>
@@ -1709,7 +1709,7 @@ export const MapView: React.FC<MapViewProps> = ({
               {activeTab === 'vehicles' && (
                 <button
                   onClick={handleSelectAll}
-                  className="p-2.5 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 bg-[var(--bg-elevated)]"
+                  className="p-2.5 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]"
                   aria-label="Tout sélectionner"
                   title="Tout sélectionner"
                 >
@@ -1762,7 +1762,7 @@ export const MapView: React.FC<MapViewProps> = ({
               <div className="p-3 border-b border-[var(--border)] border-[var(--border)] bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]">
                 <button
                   onClick={() => onNavigate && onNavigate(View.SETTINGS, { tab: 'geofence' })}
-                  className="w-full py-2 text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] border border-[var(--border)] dark:border-[var(--primary)] rounded bg-[var(--bg-elevated)] hover:bg-[var(--primary-dim)] dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2 text-xs font-bold text-[var(--primary)] dark:text-[var(--primary)] border border-[var(--border)] dark:border-[var(--primary)] rounded bg-[var(--bg-elevated)] hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)] transition-colors flex items-center justify-center gap-2"
                 >
                   <Hexagon className="w-3 h-3" />
                   Gérer les Geofences (CRUD)
@@ -1775,10 +1775,10 @@ export const MapView: React.FC<MapViewProps> = ({
             ) : Object.keys(groupedData).length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full min-h-[200px] p-8 text-center">
                 <div className="w-16 h-16 bg-[var(--bg-elevated)] rounded-full flex items-center justify-center mb-4">
-                  <Car className="w-8 h-8 text-slate-300 dark:text-[var(--text-secondary)]" />
+                  <Car className="w-8 h-8 text-[var(--text-muted)] dark:text-[var(--text-secondary)]" />
                 </div>
                 <p className="text-[var(--text-muted)] text-sm font-medium">Aucun élément trouvé</p>
-                <p className="text-slate-300 dark:text-[var(--text-secondary)] text-xs mt-1">
+                <p className="text-[var(--text-muted)] dark:text-[var(--text-secondary)] text-xs mt-1">
                   {activeTab === 'vehicles'
                     ? 'Modifiez vos filtres ou votre recherche'
                     : activeTab === 'places'
@@ -1799,7 +1799,7 @@ export const MapView: React.FC<MapViewProps> = ({
                       >
                         <button
                           onClick={() => toggleClient(groupKey)}
-                          className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 dark:hover:bg-slate-700 transition-colors"
+                          className="w-full flex items-center justify-between px-4 py-2 bg-[var(--bg-elevated)]/50 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 hover:bg-[var(--bg-elevated)] transition-colors"
                         >
                           <div className="flex items-center gap-2 font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider">
                             {expandedClients[groupKey] ? (
@@ -1887,7 +1887,7 @@ export const MapView: React.FC<MapViewProps> = ({
                         >
                           <button
                             onClick={() => toggleClient(groupKey)}
-                            className="w-full flex items-center justify-between px-4 py-2 bg-slate-100/50 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 dark:hover:bg-slate-700 transition-colors"
+                            className="w-full flex items-center justify-between px-4 py-2 bg-[var(--bg-elevated)]/50 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 hover:bg-[var(--bg-elevated)] transition-colors"
                           >
                             <div className="flex items-center gap-2 font-bold text-[var(--text-primary)] text-xs uppercase tracking-wider">
                               {expandedClients[groupKey] ? (
@@ -1910,7 +1910,7 @@ export const MapView: React.FC<MapViewProps> = ({
                                   <div
                                     key={z.id}
                                     onClick={() => focusOnZone(z)}
-                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50"
+                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50"
                                   >
                                     <div className="flex items-center gap-2 mb-1">
                                       <Layers className="w-4 h-4 text-[var(--text-muted)]" />
@@ -1931,7 +1931,7 @@ export const MapView: React.FC<MapViewProps> = ({
                                 ).map((d) => (
                                   <div
                                     key={d.id}
-                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50"
+                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50"
                                   >
                                     <div className="flex items-center justify-between mb-1">
                                       <span className="text-sm font-bold text-[var(--text-primary)]">{d.name}</span>
@@ -1972,7 +1972,7 @@ export const MapView: React.FC<MapViewProps> = ({
 
       {isSidebarOpen && !isReplayActive && (
         <div
-          className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-[var(--bg-elevated)] border border-l-0 border-[var(--border)] rounded-r-md shadow-sm cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 hover:text-[var(--primary)] text-[var(--text-muted)]"
+          className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-[var(--bg-elevated)] border border-l-0 border-[var(--border)] rounded-r-md shadow-sm cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] text-[var(--text-muted)]"
           style={{ left: sidebarWidth, top: '50%', transform: 'translateY(-50%)' }}
           onClick={() => setIsSidebarOpen(false)}
         >
@@ -2039,13 +2039,13 @@ export const MapView: React.FC<MapViewProps> = ({
             <div className="flex items-center bg-white/10 rounded px-1 gap-0.5 ml-1">
               <button
                 onClick={() => setMapProvider('leaflet')}
-                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary-dim)]0 text-white' : 'text-slate-300'}`}
+                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary-dim)]0 text-white' : 'text-[var(--text-muted)]'}`}
               >
                 OSM
               </button>
               <button
                 onClick={() => googleMapsKey && setMapProvider('google')}
-                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white' : googleMapsKey ? 'text-slate-300' : 'text-[var(--text-secondary)] cursor-not-allowed'}`}
+                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white' : googleMapsKey ? 'text-[var(--text-muted)]' : 'text-[var(--text-secondary)] cursor-not-allowed'}`}
                 disabled={!googleMapsKey}
               >
                 G
@@ -2054,20 +2054,20 @@ export const MapView: React.FC<MapViewProps> = ({
             {/* Filter button */}
             <button
               onClick={() => setShowMobileMapFilter(true)}
-              className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${activeStatusFilter || filterClient || filterBranch ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+              className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${activeStatusFilter || filterClient || filterBranch ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
               aria-label="Filtres"
               title="Filtres"
             >
               <Filter className="w-3.5 h-3.5" />
               {(activeStatusFilter || filterClient || filterBranch) && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-slate-900" />
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-[var(--bg-primary)]" />
               )}
             </button>
             {/* Satellite toggle — visible uniquement quand Google Maps actif */}
             {mapProvider === 'google' && (
               <button
                 onClick={() => setGoogleMapType((t) => (t === 'roadmap' ? 'satellite' : 'roadmap'))}
-                className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${googleMapType === 'satellite' ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+                className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${googleMapType === 'satellite' ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
                 aria-label="Vue satellite"
                 title={googleMapType === 'satellite' ? 'Vue carte' : 'Vue satellite'}
               >
@@ -2087,7 +2087,7 @@ export const MapView: React.FC<MapViewProps> = ({
           <div className="absolute inset-x-0 bottom-0 bg-[var(--bg-surface)] rounded-t-2xl shadow-2xl max-h-[80vh] flex flex-col animate-in slide-in-from-bottom duration-300">
             {/* Handle */}
             <div className="flex justify-center py-2 border-b border-[var(--border)]">
-              <div className="w-10 h-1 bg-slate-300 bg-[var(--bg-elevated)] rounded-full" />
+              <div className="w-10 h-1 bg-[var(--border)] bg-[var(--bg-elevated)] rounded-full" />
             </div>
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
@@ -2123,7 +2123,7 @@ export const MapView: React.FC<MapViewProps> = ({
             >
               {filteredVehicles.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-                  <Filter className="w-10 h-10 text-slate-300 dark:text-[var(--text-secondary)] mb-3" />
+                  <Filter className="w-10 h-10 text-[var(--text-muted)] dark:text-[var(--text-secondary)] mb-3" />
                   <p className="font-medium text-[var(--text-primary)] mb-1">Aucun véhicule trouvé</p>
                   <p className="text-sm text-[var(--text-secondary)] mb-4">
                     Aucun véhicule ne correspond aux filtres actifs.
@@ -2147,7 +2147,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     focusOnVehicle(v);
                     setIsMobileVehicleListOpen(false);
                   }}
-                  className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] border-[var(--border)] active:bg-slate-50 dark:active:bg-slate-800 cursor-pointer"
+                  className="flex items-center gap-3 px-4 py-3 border-b border-[var(--border)] border-[var(--border)] active:bg-[var(--bg-elevated)] active:bg-[var(--bg-elevated)] cursor-pointer"
                 >
                   <div
                     className={`w-3 h-3 rounded-full shrink-0 ${
@@ -2157,7 +2157,7 @@ export const MapView: React.FC<MapViewProps> = ({
                           ? 'bg-orange-500'
                           : v.status === VehicleStatus.STOPPED
                             ? 'bg-red-500'
-                            : 'bg-slate-400'
+                            : 'bg-[var(--text-secondary)]'
                     }`}
                   />
                   <div className="flex-1 min-w-0">
@@ -2678,21 +2678,21 @@ export const MapView: React.FC<MapViewProps> = ({
               <div className="flex gap-2 items-center">
                 <button
                   onClick={() => setShowAllVehicles(!showAllVehicles)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showAllVehicles ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showAllVehicles ? 'bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   {showAllVehicles ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   {showAllVehicles ? 'Masquer Flotte' : 'Voir toute la flotte'}
                 </button>
                 <button
                   onClick={() => setShowZones(!showZones)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showZones ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showZones ? 'bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   {showZones ? <EyeOff className="w-4 h-4" /> : <Hexagon className="w-4 h-4" />}
                   {showZones ? 'Masquer Zones' : 'Voir Zones'}
                 </button>
                 <button
                   onClick={() => setShowHeatmap(!showHeatmap)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showHeatmap ? 'bg-slate-900 dark:bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-slate-900 dark:ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showHeatmap ? 'bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   {showHeatmap ? <EyeOff className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
                   {showHeatmap ? 'Masquer Heatmap' : 'Voir Heatmap'}
@@ -2700,7 +2700,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 {/* Toggle son alertes */}
                 <button
                   onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                  className={`p-2 rounded-full shadow-lg transition-all ${isSoundEnabled ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-muted)]'}`}
+                  className={`p-2 rounded-full shadow-lg transition-all ${isSoundEnabled ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-muted)]'}`}
                   title={isSoundEnabled ? 'Désactiver son alertes' : 'Activer son alertes'}
                 >
                   {isSoundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
@@ -2716,7 +2716,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   </button>
                   <button
                     onClick={() => googleMapsKey && setMapProvider('google')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white shadow' : googleMapsKey ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]' : 'text-slate-300 cursor-not-allowed'}`}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white shadow' : googleMapsKey ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]' : 'text-[var(--text-muted)] cursor-not-allowed'}`}
                     title={googleMapsKey ? 'Carte Google Maps' : 'Google Maps (Clé API requise)'}
                     disabled={!googleMapsKey}
                   >
@@ -2765,7 +2765,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   </div>
                   <button
                     onClick={() => setShowAlertsPanel(false)}
-                    className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded"
+                    className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
                   >
                     <X className="w-4 h-4 text-[var(--text-secondary)]" />
                   </button>
@@ -2778,7 +2778,7 @@ export const MapView: React.FC<MapViewProps> = ({
                         setSelectedVehicle(alert.vehicle);
                         setShowAlertsPanel(false);
                       }}
-                      className={`px-4 py-3 cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
+                      className={`px-4 py-3 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
                     >
                       <div
                         className={`p-2 rounded-full ${

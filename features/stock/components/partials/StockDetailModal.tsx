@@ -44,7 +44,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ isOpen, onCl
       footer={
         <button
           onClick={onClose}
-          className="px-4 py-2 bg-[var(--bg-elevated)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
+          className="px-4 py-2 bg-[var(--bg-elevated)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
         >
           Fermer
         </button>
@@ -75,7 +75,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ isOpen, onCl
                         : item.status === 'SENT_TO_SUPPLIER'
                           ? 'bg-purple-50 text-purple-700 border-purple-200'
                           : item.status === 'REMOVED'
-                            ? 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'
+                            ? 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'
                             : 'bg-red-50 text-red-700 border-red-200'
                 }`}
               >

@@ -68,7 +68,7 @@ export const AboutView: React.FC = () => {
         <p className="text-sm text-[var(--text-muted)] flex items-center justify-center gap-1">
           Fait avec <Heart className="w-3 h-3 text-red-500 fill-current" /> par l'équipe Trackyu GPS
         </p>
-        <p className="text-xs text-slate-300 dark:text-[var(--text-secondary)] mt-2">
+        <p className="text-xs text-[var(--text-muted)] dark:text-[var(--text-secondary)] mt-2">
           © 2025 Trackyu GPS. Tous droits réservés.
         </p>
       </div>

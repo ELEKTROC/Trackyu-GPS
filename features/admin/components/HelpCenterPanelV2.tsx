@@ -571,7 +571,7 @@ export const HelpCenterPanelV2: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredArticles.length === 0 ? (
               <div className="col-span-3 text-center py-12">
-                <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <FileText className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
                 <p className="text-[var(--text-secondary)] font-medium">Aucun article trouvé</p>
                 <button onClick={handleCreateArticle} className="mt-4 text-[var(--primary)] hover:underline">
                   Créer un article
@@ -649,7 +649,7 @@ export const HelpCenterPanelV2: React.FC = () => {
           <Card className="divide-y dark:divide-slate-700">
             {filteredFaqs.length === 0 ? (
               <div className="text-center py-12">
-                <HelpCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <HelpCircle className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
                 <p className="text-[var(--text-secondary)] font-medium">Aucune FAQ trouvée</p>
               </div>
             ) : (
@@ -700,7 +700,7 @@ export const HelpCenterPanelV2: React.FC = () => {
         {/* Videos placeholder */}
         {activeTab === 'videos' && (
           <Card className="p-12 text-center">
-            <Video className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+            <Video className="w-16 h-16 text-[var(--text-muted)] mx-auto mb-4" />
             <h3 className="text-lg font-bold text-[var(--text-primary)] text-[var(--text-primary)] mb-2">
               Vidéos Tutoriels
             </h3>

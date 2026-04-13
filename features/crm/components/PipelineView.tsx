@@ -21,8 +21,8 @@ const ACTIVE_STAGES: {
     label: 'Nouveaux',
     color: 'text-[var(--text-secondary)]',
     bg: 'bg-[var(--bg-elevated)]',
-    dotColor: 'bg-slate-400',
-    ringColor: 'ring-slate-400',
+    dotColor: 'bg-[var(--text-muted)]',
+    ringColor: 'ring-[var(--text-muted)]',
   },
   {
     id: 'CONTACTED',
@@ -398,7 +398,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         <span className={`w-2 h-2 rounded-full flex-shrink-0 ${stage.dotColor}`} />
         <span className={`text-xs font-bold uppercase ${stage.color}`}>{stage.label}</span>
       </div>
-      <span className="text-xs font-bold text-[var(--text-secondary)] bg-slate-200 bg-[var(--bg-elevated)] rounded-full px-1.5 py-0.5">
+      <span className="text-xs font-bold text-[var(--text-secondary)] bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-full px-1.5 py-0.5">
         {leads.length}
       </span>
     </div>
@@ -493,7 +493,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
                     onMarkLost();
                   }}
                   title="Marquer comme perdu"
-                  className="p-0.5 rounded text-slate-300 dark:text-[var(--text-secondary)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -505,7 +505,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
                     onAdvance();
                   }}
                   title="Avancer dans le pipeline"
-                  className="p-0.5 rounded text-slate-300 dark:text-[var(--text-secondary)] hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors"
+                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors"
                 >
                   <ArrowRight className="w-3 h-3" />
                 </button>

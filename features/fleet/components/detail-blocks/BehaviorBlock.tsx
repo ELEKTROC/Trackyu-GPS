@@ -46,7 +46,7 @@ export const BehaviorBlock: React.FC<BehaviorBlockProps> = ({
           isHidden={hiddenFields.has('harshBraking')}
           onToggle={() => toggleFieldVisibility('harshBraking')}
         >
-          <div className="p-2 bg-slate-50 rounded">
+          <div className="p-2 bg-[var(--bg-elevated)] rounded">
             <span className="block text-lg font-bold text-[var(--text-primary)]">{mockData.harshBraking}</span>
             <span className="text-[9px] text-[var(--text-muted)] uppercase">Freinages</span>
           </div>
@@ -57,7 +57,7 @@ export const BehaviorBlock: React.FC<BehaviorBlockProps> = ({
           isHidden={hiddenFields.has('harshAccel')}
           onToggle={() => toggleFieldVisibility('harshAccel')}
         >
-          <div className="p-2 bg-slate-50 rounded">
+          <div className="p-2 bg-[var(--bg-elevated)] rounded">
             <span className="block text-lg font-bold text-[var(--text-primary)]">{mockData.harshAccel}</span>
             <span className="text-[9px] text-[var(--text-muted)] uppercase">Accél.</span>
           </div>
@@ -68,7 +68,7 @@ export const BehaviorBlock: React.FC<BehaviorBlockProps> = ({
           isHidden={hiddenFields.has('sharpTurn')}
           onToggle={() => toggleFieldVisibility('sharpTurn')}
         >
-          <div className="p-2 bg-slate-50 rounded">
+          <div className="p-2 bg-[var(--bg-elevated)] rounded">
             <span className="block text-lg font-bold text-[var(--text-primary)]">{mockData.sharpTurn}</span>
             <span className="text-[9px] text-[var(--text-muted)] uppercase">Virages</span>
           </div>

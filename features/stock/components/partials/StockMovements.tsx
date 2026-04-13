@@ -19,7 +19,8 @@ export const StockMovements: React.FC<StockMovementsProps> = ({ stock, stockMove
     RMA_OUT: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
     RMA_RETURN: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
     TRANSFER: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-    STATUS_CHANGE: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
+    STATUS_CHANGE:
+      'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
   };
 
   const typeLabels: Record<string, string> = {
@@ -141,7 +142,7 @@ export const StockMovements: React.FC<StockMovementsProps> = ({ stock, stockMove
                   </td>
                   <td className="px-6 py-4">
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${typeColors[mv.type] || 'bg-slate-100 text-[var(--text-secondary)]'}`}
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${typeColors[mv.type] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                     >
                       {typeLabels[mv.type] || mv.type}
                     </span>
@@ -158,7 +159,7 @@ export const StockMovements: React.FC<StockMovementsProps> = ({ stock, stockMove
             {(!stockMovements || stockMovements.length === 0) && (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center text-[var(--text-secondary)]">
-                  <History className="w-12 h-12 mx-auto mb-3 text-slate-300 dark:text-[var(--text-secondary)]" />
+                  <History className="w-12 h-12 mx-auto mb-3 text-[var(--text-muted)] dark:text-[var(--text-secondary)]" />
                   <p className="text-lg font-medium">Aucun mouvement enregistré</p>
                   <p className="text-sm">Les mouvements de stock apparaîtront ici</p>
                 </td>

@@ -97,7 +97,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
         </div>
         <div>
           <p className="section-title">Interventions</p>
-          <p className="text-xl font-bold text-[var(--text-primary)]">
+          <p className="page-title">
             {monthInterventionsCount} <span className="text-sm font-normal text-[var(--text-secondary)]">ce mois</span>
           </p>
         </div>
@@ -109,7 +109,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
         </div>
         <div>
           <p className="section-title">Tâches / RdV</p>
-          <p className="text-xl font-bold text-[var(--text-primary)]">
+          <p className="page-title">
             {monthTasksCount} <span className="text-sm font-normal text-[var(--text-secondary)]">ce mois</span>
           </p>
         </div>
@@ -121,7 +121,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
         </div>
         <div>
           <p className="section-title">Taux d'occupation</p>
-          <p className="text-xl font-bold text-[var(--text-primary)]">{occupationRate.rate}%</p>
+          <p className="page-title">{occupationRate.rate}%</p>
           <p className="text-[10px] text-[var(--text-muted)]">
             {occupationRate.totalEvents}/{occupationRate.theoreticalCapacity} créneaux
           </p>
@@ -134,9 +134,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
         </div>
         <div>
           <p className="section-title">{selectedAgentName ? 'Agent' : 'Agents'}</p>
-          <p className="text-xl font-bold text-[var(--text-primary)]">
-            {selectedAgentName || `${occupationRate.agentCount} actifs`}
-          </p>
+          <p className="page-title">{selectedAgentName || `${occupationRate.agentCount} actifs`}</p>
           <p className="text-[10px] text-[var(--text-muted)]">{occupationRate.workDays} jours ouvrés</p>
         </div>
       </Card>

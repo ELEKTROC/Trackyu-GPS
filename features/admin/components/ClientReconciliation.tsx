@@ -432,7 +432,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
               onClick={() => setFilter('all')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                 filter === 'all'
-                  ? 'bg-slate-200 text-[var(--text-primary)]'
+                  ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'
                   : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
               }`}
             >
@@ -520,12 +520,12 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
                 {filteredMatches.map((match) => {
                   const isExpanded = expandedIds.has(match.id);
                   return (
                     <React.Fragment key={match.id}>
-                      <tr className="hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-900/50">
+                      <tr className="hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-surface)]/50">
                         <td className="px-4 py-3">
                           <button
                             onClick={() => toggleExpand(match.id)}
@@ -575,7 +575,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
                                 ? 'bg-green-100 text-green-700'
                                 : match.matchScore >= 70
                                   ? 'bg-yellow-100 text-yellow-700'
-                                  : 'bg-slate-100 text-[var(--text-secondary)]'
+                                  : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                             }`}
                           >
                             {match.matchScore}%
@@ -613,7 +613,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                               {/* TRAKZEE Details */}
                               <div
-                                className={`p-3 rounded-lg border ${match.sources.trakzee ? 'bg-[var(--primary-dim)] border-[var(--border)]' : 'bg-slate-100 border-[var(--border)]'}`}
+                                className={`p-3 rounded-lg border ${match.sources.trakzee ? 'bg-[var(--primary-dim)] border-[var(--border)]' : 'bg-[var(--bg-elevated)] border-[var(--border)]'}`}
                               >
                                 <div className="font-semibold text-[var(--primary)] mb-2">TRAKZEE</div>
                                 {match.sources.trakzee ? (
@@ -641,7 +641,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
 
                               {/* Zoho Books Details */}
                               <div
-                                className={`p-3 rounded-lg border ${match.sources.zohoBooks ? 'bg-green-50 border-green-200' : 'bg-slate-100 border-[var(--border)]'}`}
+                                className={`p-3 rounded-lg border ${match.sources.zohoBooks ? 'bg-green-50 border-green-200' : 'bg-[var(--bg-elevated)] border-[var(--border)]'}`}
                               >
                                 <div className="font-semibold text-green-700 mb-2">Zoho Books (ABIDJAN GPS)</div>
                                 {match.sources.zohoBooks ? (
@@ -670,7 +670,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
 
                               {/* Zoho Invoice Details */}
                               <div
-                                className={`p-3 rounded-lg border ${match.sources.zohoInvoice ? 'bg-purple-50 border-purple-200' : 'bg-slate-100 border-[var(--border)]'}`}
+                                className={`p-3 rounded-lg border ${match.sources.zohoInvoice ? 'bg-purple-50 border-purple-200' : 'bg-[var(--bg-elevated)] border-[var(--border)]'}`}
                               >
                                 <div className="font-semibold text-purple-700 mb-2">Zoho Invoice (SMARTRACK)</div>
                                 {match.sources.zohoInvoice ? (

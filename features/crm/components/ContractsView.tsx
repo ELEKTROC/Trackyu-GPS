@@ -545,9 +545,9 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       case 'EXPIRED':
         return 'bg-red-100 text-red-800 border-red-200';
       case 'TERMINATED':
-        return 'bg-slate-100 text-[var(--text-primary)] border-[var(--border)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border-[var(--border)]';
       default:
-        return 'bg-slate-100 text-[var(--text-primary)] border-[var(--border)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border-[var(--border)]';
     }
   };
 
@@ -895,7 +895,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               </button>
               <button
                 onClick={() => handleBulkStatus('TERMINATED')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
               >
                 <XCircle className="w-3.5 h-3.5" /> Résilier
               </button>
@@ -911,7 +911,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               </button>
               <button
                 onClick={handleBulkGenerateInvoices}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
               >
                 <DollarSign className="w-3.5 h-3.5 text-green-500" /> Générer factures
               </button>
@@ -1098,7 +1098,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                           {contract.resellerName}
                         </span>
                       ) : (
-                        <span className="text-xs text-slate-300">—</span>
+                        <span className="text-xs text-[var(--text-muted)]">—</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-[var(--text-secondary)] text-xs whitespace-nowrap">
@@ -1120,7 +1120,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                       {formatPrice(contract.monthlyFee ?? 0)}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)]">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-primary)]">
                         {contract.vehicleIds?.length || contract.vehicleCount || 0}
                       </span>
                     </td>
@@ -1160,7 +1160,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                                     e.stopPropagation();
                                     handleStatusChange(contract, t.value);
                                   }}
-                                  className={`w-full text-left px-3 py-2 text-sm hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors ${t.color}`}
+                                  className={`w-full text-left px-3 py-2 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors ${t.color}`}
                                 >
                                   {t.label} → {STATUS_LABELS[t.value]}
                                 </button>
@@ -1296,7 +1296,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               Les véhicules suivants sont déjà assignés à des contrats actifs. Retirez-les du contrat ou résiliez les
               contrats existants avant de continuer.
             </p>
-            <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-[var(--border)] rounded-lg overflow-hidden">
+            <div className="divide-y divide-[var(--border)] dark:divide-slate-800 border border-[var(--border)] rounded-lg overflow-hidden">
               {vehicleConflicts.map((c, i) => {
                 const veh = vehicles.find((v) => v.id === c.vehicleId);
                 return (
@@ -1319,7 +1319,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setVehicleConflicts(null)}
-                className="px-4 py-2 text-sm bg-slate-800 bg-[var(--bg-elevated)] text-white rounded-lg hover:bg-slate-700"
+                className="px-4 py-2 text-sm bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-surface)]"
               >
                 Fermer
               </button>

@@ -66,10 +66,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
       <div className="bg-[var(--bg-elevated)] rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
         <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg-elevated)] shrink-0">
           <h3 className="font-bold text-[var(--text-primary)]">Saisie d'Écriture Comptable (OD)</h3>
-          <button
-            onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200"
-          >
+          <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             ✕
           </button>
         </div>
@@ -221,7 +218,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
             <button
               type="button"
               onClick={onAddLine}
-              className="w-full py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-xs font-bold uppercase transition-colors"
+              className="w-full py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-xs font-bold uppercase transition-colors"
             >
               + Ajouter une ligne
             </button>

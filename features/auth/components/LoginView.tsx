@@ -201,7 +201,7 @@ export const LoginView: React.FC = () => {
             <span className="text-3xl font-bold tracking-tight">TrackYU GPS</span>
           </div>
           <h1 className="text-5xl font-bold mb-6 leading-tight">Le Futur de la Gestion de Flotte</h1>
-          <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+          <p className="text-lg text-[var(--text-muted)] mb-8 leading-relaxed">
             Pilotez vos opérations logistiques avec la puissance de l'IA. Optimisation des trajets, maintenance
             prédictive et sécurité en temps réel.
           </p>

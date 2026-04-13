@@ -651,7 +651,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
       PARTIAL: 'bg-yellow-100 text-yellow-800',
       SENT: 'bg-[var(--primary-dim)] text-[var(--primary)]',
       OVERDUE: 'bg-red-100 text-red-700',
-      DRAFT: 'bg-slate-100 text-[var(--text-secondary)]',
+      DRAFT: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
       ACCEPTED: 'bg-green-100 text-green-700',
       REJECTED: 'bg-red-100 text-red-700',
       CANCELLED: 'bg-red-100 text-red-700',
@@ -1375,7 +1375,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                 />
                 <button
                   onClick={handleImportClick}
-                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                   title="Importer"
                 >
                   <Upload className="w-4 h-4" />
@@ -1383,7 +1383,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                 <div className="relative">
                   <button
                     onClick={() => setShowExportMenu(!showExportMenu)}
-                    className={`p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 ${showExportMenu ? 'bg-[var(--bg-elevated)]' : ''}`}
+                    className={`p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] ${showExportMenu ? 'bg-[var(--bg-elevated)]' : ''}`}
                     title="Exporter"
                   >
                     <Download className="w-4 h-4" />
@@ -1392,13 +1392,13 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                     <div className="absolute right-0 top-full mt-2 w-32 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 overflow-hidden py-1">
                       <button
                         onClick={() => handleExport('csv')}
-                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                       >
                         <span className="font-mono text-xs border rounded px-1">CSV</span> Export CSV
                       </button>
                       <button
                         onClick={() => handleExport('pdf')}
-                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                        className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                       >
                         <span className="font-mono text-xs border rounded px-1">PDF</span> Export PDF
                       </button>
@@ -1408,7 +1408,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                 {mode === 'INVOICES' && (
                   <button
                     onClick={() => setIsImportModalOpen(true)}
-                    className="px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
+                    className="px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                   >
                     <Download className="w-4 h-4" /> Importer Interv.
                   </button>
@@ -1571,7 +1571,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
             <div className="hidden sm:block relative">
               <button
                 onClick={() => setShowColumnManager(!showColumnManager)}
-                className={`p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 ${showColumnManager ? 'bg-[var(--bg-elevated)]' : ''}`}
+                className={`p-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] ${showColumnManager ? 'bg-[var(--bg-elevated)]' : ''}`}
                 title="Gérer les colonnes"
               >
                 <Columns className="w-4 h-4" />
@@ -1592,7 +1592,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                     {(mode === 'INVOICES' ? INVOICE_COLUMNS : QUOTE_COLUMNS).map((col) => (
                       <label
                         key={col.id}
-                        className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 rounded cursor-pointer"
+                        className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 rounded cursor-pointer"
                       >
                         <input
                           type="checkbox"
@@ -1716,7 +1716,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
 
         {/* Mobile cards — Factures / Devis */}
         {isMobile && (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800 bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] mb-20">
+          <div className="divide-y divide-[var(--border)] bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] mb-20">
             {paginatedData.length === 0 ? (
               filter !== 'ALL' ||
               resellerFilter !== 'ALL' ||
@@ -1763,12 +1763,12 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                         ? 'border-l-red-500'
                         : item.status === 'SENT'
                           ? 'border-l-blue-500'
-                          : 'border-l-slate-400';
+                          : 'border-l-[var(--text-muted)]';
                 return (
                   <div
                     key={item.id}
                     onClick={() => setSelectedItem(item)}
-                    className={`pl-4 pr-4 py-3 border-l-4 ${borderColor} cursor-pointer tr-hover/50 active:bg-slate-100 dark:active:bg-slate-700`}
+                    className={`pl-4 pr-4 py-3 border-l-4 ${borderColor} cursor-pointer tr-hover/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="min-w-0 flex-1">
@@ -1926,7 +1926,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+                <tbody className="divide-y divide-[var(--border)] text-sm">
                   {paginatedData.map((item, idx) => {
                     // Use amountHT (HT) in priority, then TTC, then compute from items
                     const itemsTotal = ((item as Invoice | Quote).items || []).reduce(
@@ -2120,7 +2120,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                         openPaymentModal(item as Invoice);
                                         setActionMenuId(null);
                                       }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                                     >
                                       <DollarSign className="w-4 h-4 text-green-500" /> Enregistrer un paiement
                                     </button>
@@ -2131,7 +2131,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                         openPaymentHistoryModal(item as Invoice);
                                         setActionMenuId(null);
                                       }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                                     >
                                       <Receipt className="w-4 h-4 text-amber-500" /> Historique paiements
                                     </button>
@@ -2142,7 +2142,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                         handleAction('credit_note', item);
                                         setActionMenuId(null);
                                       }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                                     >
                                       <XCircle className="w-4 h-4 text-orange-500" /> Générer un avoir
                                     </button>
@@ -2153,7 +2153,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                         handleGenerateContract(item);
                                         setActionMenuId(null);
                                       }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                                     >
                                       <FileText className="w-4 h-4 text-indigo-500" /> Générer contrat
                                     </button>
@@ -2163,7 +2163,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                       handleAction('clone', item);
                                       setActionMenuId(null);
                                     }}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                                   >
                                     <Copy className="w-4 h-4 text-purple-500" /> Dupliquer
                                   </button>
@@ -2172,7 +2172,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                       handleAction('send', item);
                                       setActionMenuId(null);
                                     }}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                                   >
                                     <Mail className="w-4 h-4 text-[var(--text-secondary)]" /> Envoyer par email
                                   </button>
@@ -2497,7 +2497,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                     Preuve de Paiement (Optionnel)
                   </label>
                   <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-[var(--border)] border-dashed rounded-lg cursor-pointer bg-slate-50 dark:hover:bg-bray-800 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] border-[var(--border)] dark:hover:border-slate-500 dark:hover:bg-slate-600">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-[var(--border)] border-dashed rounded-lg cursor-pointer bg-[var(--bg-elevated)] dark:hover:bg-bray-800 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] border-[var(--border)] hover:border-[var(--primary)] hover:bg-[var(--bg-elevated)]">
                       <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         {paymentForm.attachment ? (
                           <>
@@ -2824,7 +2824,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setIsImportModalOpen(false)}
-                  className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] dark:hover:bg-slate-800 rounded-lg"
+                  className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
                 >
                   Annuler
                 </button>
@@ -3037,7 +3037,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                 <button
                   onClick={handleAddVehicleToContract}
                   disabled={!contractLinkData.selectedContractId}
-                  className="px-4 py-2 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] disabled:bg-slate-300 rounded-lg font-bold text-sm flex items-center gap-2"
+                  className="px-4 py-2 bg-[var(--primary)] text-white hover:bg-[var(--primary-light)] disabled:bg-[var(--border)] rounded-lg font-bold text-sm flex items-center gap-2"
                 >
                   <CheckCircle className="w-4 h-4" /> Ajouter au contrat
                 </button>

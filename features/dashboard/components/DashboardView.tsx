@@ -1352,7 +1352,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             count={stockStats.rma}
             label="En SAV (RMA)"
             color={stockStats.rma > 0 ? 'text-amber-600' : 'text-[var(--text-secondary)]'}
-            dotColor={stockStats.rma > 0 ? 'bg-amber-500' : 'bg-slate-400'}
+            dotColor={stockStats.rma > 0 ? 'bg-amber-500' : 'bg-[var(--text-secondary)]'}
           />
           <StatusBadge
             count={stockStats.simsInStock}

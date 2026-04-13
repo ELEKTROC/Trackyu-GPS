@@ -362,7 +362,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                       ? 'bg-yellow-100 text-yellow-700'
                       : connectionStatus.status === 'ALERT'
                         ? 'bg-red-100 text-red-700'
-                        : 'bg-slate-100 text-[var(--text-primary)]'
+                        : 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'
               }`}
             >
               {connectionStatus.status === 'MOVING'
@@ -556,7 +556,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
                   commandMode === 'SMS'
                     ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
-                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'
+                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <Smartphone className="w-4 h-4" /> Config APN
@@ -567,7 +567,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
                   commandMode === 'SMS'
                     ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
-                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'
+                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <Server className="w-4 h-4" /> Config IP/Port
@@ -949,7 +949,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                     <button
                       type="button"
                       onClick={() => setFormData({ ...formData, calibrationTable: '' })}
-                      className="text-[10px] bg-slate-200 text-[var(--text-secondary)] px-2 py-1.5 rounded hover:bg-slate-300"
+                      className="text-[10px] bg-[var(--bg-elevated)] text-[var(--text-secondary)] px-2 py-1.5 rounded hover:bg-[var(--border)]"
                     >
                       Effacer
                     </button>

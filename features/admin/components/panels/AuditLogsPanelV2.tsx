@@ -156,8 +156,8 @@ const ACTION_CONFIG: Record<
     label: 'Déconnexion',
     icon: LogOut,
     color: 'text-[var(--text-secondary)]',
-    bgColor: 'bg-slate-100',
-    barColor: 'bg-slate-500',
+    bgColor: 'bg-[var(--bg-elevated)]',
+    barColor: 'bg-[var(--text-secondary)]',
   },
   EXPORT: { label: 'Export', icon: Download, color: 'text-cyan-600', bgColor: 'bg-cyan-100', barColor: 'bg-cyan-500' },
   IMPORT: {
@@ -171,8 +171,8 @@ const ACTION_CONFIG: Record<
     label: 'Consultation',
     icon: Eye,
     color: 'text-[var(--text-secondary)]',
-    bgColor: 'bg-slate-100',
-    barColor: 'bg-slate-500',
+    bgColor: 'bg-[var(--bg-elevated)]',
+    barColor: 'bg-[var(--text-secondary)]',
   },
   SECURITY: {
     label: 'Sécurité',
@@ -600,7 +600,7 @@ export const AuditLogsPanelV2: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between shrink-0">
         <div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+          <h2 className="page-title flex items-center gap-2">
             <Activity className="w-6 h-6 text-purple-600" />
             Journal d'Audit
           </h2>
@@ -830,11 +830,11 @@ export const AuditLogsPanelV2: React.FC = () => {
         {activeTab === 'timeline' && (
           <div className="relative pl-8">
             {/* Timeline line */}
-            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-slate-200 bg-[var(--bg-elevated)]"></div>
+            <div className="absolute left-3 top-0 bottom-0 w-0.5 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]"></div>
 
             {filteredLogs.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-[var(--text-secondary)]">
-                <Activity className="w-12 h-12 text-slate-300 mb-4" />
+                <Activity className="w-12 h-12 text-[var(--text-muted)] mb-4" />
                 <p className="font-medium">Aucun log trouvé</p>
                 <p className="text-sm">Modifiez vos filtres</p>
               </div>
@@ -901,7 +901,8 @@ export const AuditLogsPanelV2: React.FC = () => {
                               {log.entityId && !log.entityName && (
                                 <>
                                   {' '}
-                                  ID: <code className="text-xs bg-slate-100 px-1 rounded">{log.entityId}</code>
+                                  ID:{' '}
+                                  <code className="text-xs bg-[var(--bg-elevated)] px-1 rounded">{log.entityId}</code>
                                 </>
                               )}
                             </p>

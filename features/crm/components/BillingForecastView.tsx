@@ -68,16 +68,19 @@ const INVOICE_CELL_COLORS: Record<string, string> = {
   sent: 'bg-[var(--primary-dim)]   text-[var(--primary)]   dark:bg-[var(--primary-dim)]   dark:text-[var(--primary)]',
   OVERDUE: 'bg-red-100    text-red-800    dark:bg-red-900/40    dark:text-red-300',
   overdue: 'bg-red-100    text-red-800    dark:bg-red-900/40    dark:text-red-300',
-  DRAFT: 'bg-slate-100  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]     dark:text-[var(--text-muted)]',
-  draft: 'bg-slate-100  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]     dark:text-[var(--text-muted)]',
+  DRAFT:
+    'bg-[var(--bg-elevated)]  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]     dark:text-[var(--text-muted)]',
+  draft:
+    'bg-[var(--bg-elevated)]  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]     dark:text-[var(--text-muted)]',
   PARTIAL: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
   PARTIALLY_PAID: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
   partial: 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300',
-  CANCELLED: 'bg-slate-100  text-[var(--text-muted)]  bg-[var(--bg-elevated)]/60  dark:text-[var(--text-secondary)]',
+  CANCELLED:
+    'bg-[var(--bg-elevated)]  text-[var(--text-muted)]  bg-[var(--bg-elevated)]/60  dark:text-[var(--text-secondary)]',
 };
 // Aucune facture trouvée = prévisionnel (neutre)
 const INVOICE_CELL_DEFAULT =
-  'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)]/50 dark:text-[var(--text-muted)]';
+  'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)]/50 dark:text-[var(--text-muted)]';
 
 const CYCLE_LABELS: Record<string, string> = {
   ANNUAL: 'AN',
@@ -597,7 +600,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
         <div className="relative">
           <button
             onClick={() => setShowExportMenu((e) => !e)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
             Exporter
@@ -608,21 +611,21 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
               <div className="absolute left-0 mt-1 w-40 bg-[var(--bg-elevated)] rounded-lg shadow-xl border border-[var(--border)] z-20 py-1">
                 <button
                   onClick={handleExportCSV}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2 text-[var(--text-primary)]"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
                 >
                   <FileText className="w-3.5 h-3.5 text-green-500" />
                   CSV
                 </button>
                 <button
                   onClick={handleExportExcel}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2 text-[var(--text-primary)]"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500" />
                   Excel
                 </button>
                 <button
                   onClick={handleExportPDF}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2 text-[var(--text-primary)]"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
                 >
                   <FileText className="w-3.5 h-3.5 text-red-500" />
                   PDF
@@ -661,13 +664,13 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                 status: 'DRAFT',
                 label: 'Brouillon',
                 color:
-                  'bg-slate-100  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]     dark:text-[var(--text-muted)]',
+                  'bg-[var(--bg-elevated)]  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]     dark:text-[var(--text-muted)]',
               },
               {
                 status: null,
                 label: 'Prévision',
                 color:
-                  'bg-slate-100  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]/50  dark:text-[var(--text-muted)]',
+                  'bg-[var(--bg-elevated)]  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]/50  dark:text-[var(--text-muted)]',
               },
             ] as const
           ).map(({ label, color }) => (
@@ -832,12 +835,14 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                             >
                               {contract.contractNumber}
                             </button>
-                            <span className="ml-auto flex-shrink-0 bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-full px-1.5 text-[10px]">
+                            <span className="ml-auto flex-shrink-0 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-full px-1.5 text-[10px]">
                               {contract.subs.length}
                             </span>
                           </div>
                         </td>
-                        <td className="text-center px-1 py-2.5 text-slate-300 dark:text-[var(--text-secondary)]">—</td>
+                        <td className="text-center px-1 py-2.5 text-[var(--text-muted)] dark:text-[var(--text-secondary)]">
+                          —
+                        </td>
                         {cTotals.map((total, i) => (
                           <td
                             key={i}
@@ -847,7 +852,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                             {total > 0 ? (
                               <span className="text-[var(--text-primary)]">{format(total)}</span>
                             ) : (
-                              <span className="text-slate-300 dark:text-[var(--text-secondary)]">—</span>
+                              <span className="text-[var(--text-muted)] dark:text-[var(--text-secondary)]">—</span>
                             )}
                           </td>
                         ))}
@@ -908,7 +913,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                                         {format(sub.fee)}
                                       </span>
                                     ) : (
-                                      <span className="text-slate-200 dark:text-[var(--text-primary)]">·</span>
+                                      <span className="text-[var(--text-muted)]">·</span>
                                     )}
                                   </td>
                                 );
@@ -926,7 +931,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
 
               {/* Footer MRR */}
               <tfoot className="sticky bottom-0 z-10">
-                <tr className="bg-slate-800 bg-[var(--bg-surface)] text-white">
+                <tr className="bg-[var(--bg-surface)] text-white">
                   <td className="px-3 py-2.5 font-bold text-sm">
                     <div className="flex items-center gap-1.5">
                       <TrendingUp className="w-4 h-4 text-green-400" />
@@ -1068,7 +1073,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
               <>
                 <div className="px-4 py-3 border-b border-[var(--border)] border-[var(--border)] flex items-center justify-between">
                   <p className="text-xs font-bold text-[var(--text-primary)]">Aperçu prévisionnel</p>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
                     Non émise
                   </span>
                 </div>

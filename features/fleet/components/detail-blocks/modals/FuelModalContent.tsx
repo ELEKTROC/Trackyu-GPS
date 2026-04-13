@@ -142,7 +142,7 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({ history = []
                 className="flex items-center justify-between p-3 hover:bg-[var(--bg-elevated)] rounded-lg border border-transparent hover:border-[var(--border)] transition-all"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-[var(--text-secondary)]">
+                  <div className="w-10 h-10 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center text-[var(--text-secondary)]">
                     <MapPin className="w-5 h-5" />
                   </div>
                   <div>

@@ -457,7 +457,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
                       ? 'bg-green-100 text-green-700'
                       : selectedVehicle.status === 'OFFLINE'
                         ? 'bg-red-100 text-red-700'
-                        : 'bg-slate-100 text-[var(--text-primary)]'
+                        : 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'
                   }`}
                 >
                   {selectedVehicle.status}

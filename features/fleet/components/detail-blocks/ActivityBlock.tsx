@@ -35,7 +35,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
         isHidden={hiddenFields.has('location')}
         onToggle={() => toggleFieldVisibility('location')}
       >
-        <div className="bg-slate-50 p-3 rounded border border-[var(--border)]">
+        <div className="bg-[var(--bg-elevated)] p-3 rounded border border-[var(--border)]">
           <div className="flex justify-between items-start mb-2">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-[var(--primary)]" />

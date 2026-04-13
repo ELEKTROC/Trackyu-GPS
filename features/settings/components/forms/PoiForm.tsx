@@ -219,7 +219,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
           <div className="p-4 space-y-4">
             {/* Option: Tous les clients */}
-            <label className="flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-xl cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 border border-[var(--border)] transition-colors">
+            <label className="flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-xl cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] border border-[var(--border)] transition-colors">
               <input
                 type="checkbox"
                 {...register('allClients')}
@@ -242,7 +242,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                 <button
                   type="button"
                   onClick={() => setShowClients(!showClients)}
-                  className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+                  className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
                 >
                   <span className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
                     Sélection individuelle
@@ -350,7 +350,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               Positionner sur la carte
             </span>
           </div>
-          <div className="h-32 bg-slate-200 bg-[var(--bg-surface)] flex items-center justify-center relative">
+          <div className="h-32 bg-[var(--bg-elevated)] bg-[var(--bg-surface)] flex items-center justify-center relative">
             <div
               className="absolute inset-0 opacity-20"
               style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}

@@ -43,11 +43,11 @@ export const GpsBlock: React.FC<GpsBlockProps> = ({ mockData, isConfigMode, hidd
         <span className="font-mono font-medium">{mockData.simCard}</span>
       </ConfigurableRow>
       <div className="grid grid-cols-2 gap-2 mt-2">
-        <div className="flex items-center gap-2 p-2 bg-slate-50 rounded">
+        <div className="flex items-center gap-2 p-2 bg-[var(--bg-elevated)] rounded">
           <Battery className="w-3 h-3 text-green-500" />
           <span className="font-mono font-bold">{mockData.battery}</span>
         </div>
-        <div className="flex items-center gap-2 p-2 bg-slate-50 rounded">
+        <div className="flex items-center gap-2 p-2 bg-[var(--bg-elevated)] rounded">
           <Signal className="w-3 h-3 text-[var(--primary)]" />
           <span className="font-mono font-bold">{mockData.signal}</span>
         </div>

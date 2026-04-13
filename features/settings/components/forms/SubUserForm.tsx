@@ -334,7 +334,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             <button
               type="button"
               onClick={() => setShowVehicles(!showVehicles)}
-              className="w-full p-3 bg-[var(--bg-elevated)] flex items-center justify-between hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+              className="w-full p-3 bg-[var(--bg-elevated)] flex items-center justify-between hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               <span className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
                 <div className="p-1 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
@@ -419,7 +419,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             <button
               type="button"
               onClick={() => setShowPermissions(!showPermissions)}
-              className="w-full p-3 bg-[var(--bg-elevated)] flex items-center justify-between hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+              className="w-full p-3 bg-[var(--bg-elevated)] flex items-center justify-between hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               <span className="flex items-center gap-2 text-sm font-medium text-[var(--text-primary)]">
                 <div className="p-1 bg-purple-100 dark:bg-purple-800 rounded-lg">

@@ -251,7 +251,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((i: Record<string, unknown>) => (
                   <tr key={i.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-[var(--primary)]">{i.id as string}</td>
@@ -281,7 +281,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Montant</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((p: Record<string, unknown>) => (
                   <tr key={p.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-[var(--text-secondary)]">{p.ref as string}</td>
@@ -305,7 +305,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((int: Record<string, unknown>) => (
                   <tr key={int.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-purple-600">{int.id as string}</td>
@@ -313,7 +313,9 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                     <td className="py-3 px-4">{int.type as string}</td>
                     <td className="py-3 px-4">{int.tech as string}</td>
                     <td className="py-3 px-4 text-right">
-                      <span className="px-2 py-1 bg-slate-100 rounded text-xs font-bold">{int.status as string}</span>
+                      <span className="px-2 py-1 bg-[var(--bg-elevated)] rounded text-xs font-bold">
+                        {int.status as string}
+                      </span>
                     </td>
                   </tr>
                 ))}
@@ -332,7 +334,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Crédit</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((j: Record<string, unknown>) => (
                   <tr key={j.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 text-[var(--text-secondary)]">{j.date as string}</td>
@@ -364,7 +366,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                     ))}
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((item: any, i: number) => (
                   <tr key={i} className="tr-hover/50">
                     {(item ? Object.values(item).slice(0, 5) : []).map((val: any, idx) => (
@@ -389,7 +391,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <button
                 key={tab.id}
                 onClick={() => setActiveTrxSubTab(tab.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-[var(--bg-elevated)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300'}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-[var(--bg-elevated)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-muted)]'}`}
               >
                 <tab.icon className="w-3 h-3" /> {tab.label}
               </button>
@@ -425,7 +427,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <button
                 onClick={() => setTrxPage((p) => Math.max(1, p - 1))}
                 disabled={trxPage === 1}
-                className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page précédente"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -436,7 +438,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <button
                 onClick={() => setTrxPage((p) => Math.min(totalPages, p + 1))}
                 disabled={trxPage === totalPages}
-                className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page suivante"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -465,7 +467,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <p className="text-xs text-[var(--text-secondary)] font-medium uppercase tracking-wider">{client.type}</p>
               <div className="mt-4 flex gap-2">
                 <span
-                  className={`px-2 py-1 rounded text-[10px] font-bold uppercase border ${client.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}
+                  className={`px-2 py-1 rounded text-[10px] font-bold uppercase border ${client.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-200' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'}`}
                 >
                   {client.status}
                 </span>
@@ -486,7 +488,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                 <button
                   key={item.id}
                   onClick={() => setActiveDetailTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-[var(--text-secondary)] tr-hover hover:text-[var(--text-primary)] dark:hover:text-slate-300'}`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-[var(--text-secondary)] tr-hover hover:text-[var(--text-primary)] dark:hover:text-[var(--text-muted)]'}`}
                 >
                   <item.icon
                     className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
@@ -519,7 +521,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
           </div>
 
           {/* MAIN CONTENT AREA */}
-          <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 bg-[var(--bg-surface)]/50">
+          <div className="flex-1 flex flex-col min-w-0 bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/50">
             {/* Header */}
             <div className="h-16 bg-[var(--bg-elevated)] border-b border-[var(--border)] flex items-center justify-between px-6 shrink-0">
               <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
@@ -774,7 +776,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                           client.contacts.map((contact) => (
                             <div
                               key={contact.id}
-                              className="flex items-center gap-3 p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-lg transition-colors border border-transparent hover:border-[var(--border)] dark:hover:border-slate-600"
+                              className="flex items-center gap-3 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors border border-transparent hover:border-[var(--border)]"
                             >
                               <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center text-[var(--text-secondary)] font-bold text-xs">
                                 {contact.name.charAt(0)}
@@ -814,7 +816,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                       </h4>
                       <div className="grid grid-cols-2 gap-3 mb-3">
                         <div className="p-3 bg-[var(--bg-elevated)] rounded text-center">
-                          <p className="text-xl font-bold text-[var(--text-primary)]">12</p>
+                          <p className="page-title">12</p>
                           <p className="text-[10px] text-[var(--text-secondary)] uppercase">Véhicules</p>
                         </div>
                         <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded text-center">
@@ -985,7 +987,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                     ) : (
                       comments.map((com) => (
                         <div key={com.id} className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-slate-200 bg-[var(--bg-elevated)] flex items-center justify-center font-bold text-xs text-[var(--text-secondary)] shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] flex items-center justify-center font-bold text-xs text-[var(--text-secondary)] shrink-0">
                             {com.author.charAt(0)}
                           </div>
                           <div className="flex-1">
@@ -1053,7 +1055,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                       </select>
                       <button
                         onClick={() => showToast('Envoi par email...', 'info')}
-                        className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)] transition-colors"
+                        className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors"
                         title="Envoyer par Email"
                       >
                         <Mail className="w-5 h-5" />
@@ -1086,7 +1088,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                             <th className="px-4 py-3 border-b border-[var(--border)] text-right">Solde</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                        <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
                           {MOCK_STATEMENT_LINES.map((line, i) => (
                             <tr key={i} className="tr-hover/50">
                               <td className="px-4 py-3 text-[var(--text-secondary)]">{line.date}</td>

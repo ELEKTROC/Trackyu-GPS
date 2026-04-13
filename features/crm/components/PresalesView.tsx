@@ -215,7 +215,13 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
     { id: 'PIPELINE', label: 'Pipeline', icon: TrendingUp, color: 'bg-purple-500', description: 'Vue pipeline Kanban' },
     { id: 'QUOTES', label: 'Devis', icon: FileDigit, color: 'bg-green-500', description: 'Propositions commerciales' },
     { id: 'CATALOG', label: 'Catalogue', icon: BookOpen, color: 'bg-teal-500', description: 'Produits et services' },
-    { id: 'TASKS', label: 'Tâches', icon: ListTodo, color: 'bg-slate-500', description: 'Suivi des tâches' },
+    {
+      id: 'TASKS',
+      label: 'Tâches',
+      icon: ListTodo,
+      color: 'bg-[var(--text-secondary)]',
+      description: 'Suivi des tâches',
+    },
     {
       id: 'AUTOMATION',
       label: 'Automatisations',

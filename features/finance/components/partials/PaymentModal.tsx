@@ -104,10 +104,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       <div className="bg-[var(--bg-elevated)] rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200 max-h-[90vh] flex flex-col">
         <div className="p-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg-elevated)] shrink-0">
           <h3 className="font-bold text-[var(--text-primary)]">Nouveau Paiement Entrant</h3>
-          <button
-            onClick={onClose}
-            className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200"
-          >
+          <button onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
             ✕
           </button>
         </div>
@@ -176,7 +173,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               </label>
               <input
                 type="text"
-                className="w-full p-2 border border-[var(--border)] rounded-lg bg-slate-100 bg-[var(--bg-surface)] text-[var(--text-secondary)] text-sm cursor-not-allowed"
+                className="w-full p-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] bg-[var(--bg-surface)] text-[var(--text-secondary)] text-sm cursor-not-allowed"
                 value={paymentForm.reference}
                 readOnly
               />
@@ -469,7 +466,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 type="button"
                 onClick={onSaveDraft}
                 disabled={!paymentForm.clientId}
-                className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 text-[var(--text-primary)] rounded-lg text-sm font-bold transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-sm font-bold transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Save className="w-4 h-4" /> Enregistrer brouillon
               </button>

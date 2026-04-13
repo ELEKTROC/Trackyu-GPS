@@ -157,7 +157,7 @@ export const CatalogDetail: React.FC<CatalogDetailProps> = ({ item, onClose, onE
             <FileText className="w-12 h-12 mb-3 opacity-50" />
             <p className="text-lg font-bold">Transactions</p>
             <p className="text-sm">Les devis et factures liés à cet article apparaîtront ici.</p>
-            <p className="text-xs mt-2 text-slate-300">Fonctionnalité à venir</p>
+            <p className="text-xs mt-2 text-[var(--text-muted)]">Fonctionnalité à venir</p>
           </div>
         )}
 
@@ -166,7 +166,7 @@ export const CatalogDetail: React.FC<CatalogDetailProps> = ({ item, onClose, onE
             <Clock className="w-12 h-12 mb-3 opacity-50" />
             <p className="text-lg font-bold">Historique des modifications</p>
             <p className="text-sm">L'historique des changements sur cet article apparaîtra ici.</p>
-            <p className="text-xs mt-2 text-slate-300">Fonctionnalité à venir</p>
+            <p className="text-xs mt-2 text-[var(--text-muted)]">Fonctionnalité à venir</p>
           </div>
         )}
       </div>
@@ -174,7 +174,7 @@ export const CatalogDetail: React.FC<CatalogDetailProps> = ({ item, onClose, onE
       <div className="flex justify-end pt-4 border-t border-[var(--border)] border-[var(--border)]">
         <button
           onClick={onClose}
-          className="px-4 py-2 bg-slate-100 hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded"
+          className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded"
         >
           Fermer
         </button>

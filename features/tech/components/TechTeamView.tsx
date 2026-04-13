@@ -247,7 +247,7 @@ export const TechTeamView: React.FC = () => {
                     <th className="px-3 sm:px-4 py-2 text-[var(--text-secondary)] font-medium text-right">Moy.</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
                   {stats.techStats.length === 0 && (
                     <tr>
                       <td colSpan={4} className="px-4 py-6 text-center text-[var(--text-muted)] text-sm">
@@ -285,7 +285,7 @@ export const TechTeamView: React.FC = () => {
                     <th className="px-3 sm:px-4 py-2 text-[var(--text-secondary)] font-medium text-right">Moy.</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
                   {stats.techStats.length === 0 && (
                     <tr>
                       <td colSpan={4} className="px-4 py-6 text-center text-[var(--text-muted)] text-sm">
@@ -325,7 +325,7 @@ export const TechTeamView: React.FC = () => {
                     <th className="px-3 sm:px-4 py-2 text-[var(--text-secondary)] font-medium text-right">Moy.</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
                   {stats.techStats.length === 0 && (
                     <tr>
                       <td colSpan={4} className="px-4 py-6 text-center text-[var(--text-muted)] text-sm">
@@ -363,7 +363,7 @@ export const TechTeamView: React.FC = () => {
                     <th className="px-3 sm:px-4 py-2 text-[var(--text-secondary)] font-medium text-right">SAV</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
                   {stats.techStats.length === 0 && (
                     <tr>
                       <td colSpan={4} className="px-4 py-6 text-center text-[var(--text-muted)] text-sm">

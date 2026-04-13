@@ -62,7 +62,7 @@ export const CollapsibleSection: React.FC<{
   if (isConfigMode) {
     return (
       <div
-        className={`border rounded-lg mb-3 p-3 flex flex-col transition-colors ${isVisible ? 'bg-white border-[var(--border)]' : 'bg-slate-50 border-[var(--border)]'}`}
+        className={`border rounded-lg mb-3 p-3 flex flex-col transition-colors ${isVisible ? 'bg-white border-[var(--border)]' : 'bg-[var(--bg-elevated)] border-[var(--border)]'}`}
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
@@ -110,7 +110,7 @@ export const CollapsibleSection: React.FC<{
     <div className="border border-[var(--border)] rounded-lg bg-white overflow-hidden shadow-sm mb-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-[var(--border)] hover:bg-[var(--bg-elevated)] transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 bg-[var(--bg-elevated)] border-b border-[var(--border)] hover:bg-[var(--bg-elevated)] transition-colors"
       >
         <div className="flex items-center gap-2 font-bold text-[var(--text-primary)] text-sm uppercase tracking-wide">
           {Icon && <Icon className="w-4 h-4 text-[var(--text-muted)]" />}

@@ -877,7 +877,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           )}
           <div
             onClick={() => onVehicleClick && onVehicleClick(vehicle)}
-            className={`group flex items-center border-b border-[var(--border)] hover:bg-[var(--primary-dim)] dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
+            className={`group flex items-center border-b border-[var(--border)] hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)]/50 transition-colors cursor-pointer ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
             style={{ height: ROW_HEIGHT }}
           >
             <div className="w-10 shrink-0 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
@@ -1320,7 +1320,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       <ArrowDown className="w-3 h-3 text-[var(--primary)]" />
                     )
                   ) : (
-                    <ArrowUpDown className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ArrowUpDown className="w-3 h-3 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
                   )}
 
                   {col.filterable && (
@@ -1543,7 +1543,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     className="flex items-center gap-1 text-xs font-medium"
                     title="Hors ligne"
                   >
-                    <span className="w-2 h-2 rounded-full bg-slate-400"></span>
+                    <span className="w-2 h-2 rounded-full bg-[var(--text-secondary)]"></span>
                     <span className="text-[var(--text-secondary)]">{stats.offline}</span>
                   </button>
                   {statusFilter.length > 0 && (
@@ -1805,7 +1805,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       )}
                       <div
                         onClick={() => onVehicleClick && onVehicleClick(vehicle)}
-                        className={`group flex items-center border-b border-[var(--border)] hover:bg-[var(--primary-dim)] dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
+                        className={`group flex items-center border-b border-[var(--border)] hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)]/50 transition-colors cursor-pointer ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
                         style={{ height: ROW_HEIGHT }}
                       >
                         {/* Checkbox Row */}

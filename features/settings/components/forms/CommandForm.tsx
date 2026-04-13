@@ -114,7 +114,7 @@ export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                     value="GPRS"
                     className="w-4 h-4 text-[var(--primary)] border-[var(--border)] focus:ring-[var(--primary)] focus:ring-offset-0"
                   />
-                  <span className="text-sm text-[var(--text-primary)] group-hover:text-[var(--text-primary)] dark:group-hover:text-slate-100 transition-colors">
+                  <span className="text-sm text-[var(--text-primary)] group-hover:text-[var(--text-primary)] transition-colors">
                     GPRS (Data)
                   </span>
                 </label>
@@ -125,7 +125,7 @@ export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                     value="SMS"
                     className="w-4 h-4 text-[var(--primary)] border-[var(--border)] focus:ring-[var(--primary)] focus:ring-offset-0"
                   />
-                  <span className="text-sm text-[var(--text-primary)] group-hover:text-[var(--text-primary)] dark:group-hover:text-slate-100 transition-colors">
+                  <span className="text-sm text-[var(--text-primary)] group-hover:text-[var(--text-primary)] transition-colors">
                     SMS (Backup)
                   </span>
                 </label>

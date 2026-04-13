@@ -806,7 +806,7 @@ export const MyAccountView: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading || !passwordData.current || !passwordData.new}
-                  className="w-full px-4 py-2 bg-slate-800 bg-[var(--bg-elevated)] text-white rounded-lg hover:bg-slate-900 dark:hover:bg-slate-600 transition-colors font-medium shadow-sm disabled:opacity-70"
+                  className="w-full px-4 py-2 bg-[var(--bg-elevated)] text-white rounded-lg hover:bg-slate-900 hover:bg-[var(--bg-elevated)] transition-colors font-medium shadow-sm disabled:opacity-70"
                 >
                   Mettre à jour le mot de passe
                 </button>

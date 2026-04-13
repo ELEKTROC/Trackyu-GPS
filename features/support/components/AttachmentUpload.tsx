@@ -196,7 +196,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
                 <a
                   href={attachment.fileUrl}
                   download
-                  className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded transition-colors"
+                  className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded transition-colors"
                   title="Télécharger"
                 >
                   <Download className="w-4 h-4 text-[var(--text-secondary)]" />

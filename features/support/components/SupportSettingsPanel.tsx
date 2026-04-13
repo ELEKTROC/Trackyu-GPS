@@ -435,7 +435,7 @@ export const SupportSettingsPanel: React.FC = () => {
       case 'LOW':
         return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
       default:
-        return 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]';
     }
   };
 
@@ -607,7 +607,7 @@ export const SupportSettingsPanel: React.FC = () => {
               </button>
               <button
                 onClick={() => setNewCategory(null)}
-                className="px-4 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600"
+                className="px-4 py-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg hover:bg-[var(--border)] hover:bg-[var(--bg-elevated)]"
                 title="Annuler"
               >
                 <X className="w-4 h-4" />
@@ -629,7 +629,7 @@ export const SupportSettingsPanel: React.FC = () => {
               className={`p-4 border rounded-lg transition-colors ${
                 category.is_active
                   ? 'bg-[var(--bg-elevated)] border-[var(--border)]'
-                  : 'bg-slate-100 bg-[var(--bg-surface)] border-[var(--border)] opacity-60'
+                  : 'bg-[var(--bg-elevated)] bg-[var(--bg-surface)] border-[var(--border)] opacity-60'
               }`}
             >
               {isEditing ? (
@@ -665,7 +665,7 @@ export const SupportSettingsPanel: React.FC = () => {
                     </button>
                     <button
                       onClick={() => setEditingCategory(null)}
-                      className="px-4 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
+                      className="px-4 py-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg"
                       title="Annuler"
                     >
                       <X className="w-4 h-4" />
@@ -723,7 +723,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       </button>
                     ) : (
                       <span className="p-2" title="Catégorie système non modifiable">
-                        <Lock className="w-4 h-4 text-slate-300" />
+                        <Lock className="w-4 h-4 text-[var(--text-muted)]" />
                       </span>
                     )}
                     {category.can_delete ? (
@@ -839,7 +839,7 @@ export const SupportSettingsPanel: React.FC = () => {
               </button>
               <button
                 onClick={() => setNewSubcategory(null)}
-                className="px-4 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
+                className="px-4 py-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg"
                 title="Annuler"
               >
                 <X className="w-4 h-4" />
@@ -972,7 +972,7 @@ export const SupportSettingsPanel: React.FC = () => {
                               </button>
                               <button
                                 onClick={() => setEditingSubcategory(null)}
-                                className="px-2 py-1 bg-slate-200 bg-[var(--bg-elevated)] rounded"
+                                className="px-2 py-1 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded"
                                 title="Annuler"
                               >
                                 <X className="w-4 h-4" />
@@ -1029,7 +1029,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                 </button>
                               ) : (
                                 <span className="p-1.5" title="Élément système">
-                                  <Lock className="w-3.5 h-3.5 text-slate-300" />
+                                  <Lock className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                                 </span>
                               )}
                               {subcat.can_delete && (
@@ -1100,7 +1100,7 @@ export const SupportSettingsPanel: React.FC = () => {
               </button>
               <button
                 onClick={() => setNewIntType(null)}
-                className="px-3 py-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
+                className="px-3 py-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1129,7 +1129,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       else next.add(type.id);
                       setExpandedIntTypes(next);
                     }}
-                    className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded"
+                    className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
                   >
                     {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                   </button>
@@ -1212,7 +1212,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       </button>
                       <button
                         onClick={() => setNewIntNature(null)}
-                        className="p-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg"
+                        className="p-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -1228,7 +1228,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       {typeNatures.map((nature) => (
                         <div
                           key={nature.id}
-                          className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] hover:border-[var(--border)] dark:hover:border-slate-600 transition-colors"
+                          className="flex items-center justify-between p-3 rounded-lg border border-[var(--border)] hover:border-[var(--border)] transition-colors"
                         >
                           {editingIntNature?.id === nature.id ? (
                             <div className="flex-1 flex gap-2">
@@ -1314,7 +1314,7 @@ export const SupportSettingsPanel: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Settings className="w-6 h-6 text-[var(--primary)]" />
-          <h2 className="text-xl font-bold text-[var(--text-primary)]">Configuration du support</h2>
+          <h2 className="page-title">Configuration du support</h2>
           {isSuperAdmin && (
             <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full flex items-center gap-1">
               <Globe className="w-3 h-3" />
@@ -1325,7 +1325,7 @@ export const SupportSettingsPanel: React.FC = () => {
         {!isSuperAdmin && (
           <button
             onClick={handleResetOverrides}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--text-secondary)] bg-slate-100 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
             title="Réinitialiser aux valeurs système par défaut"
           >
             <RotateCcw className="w-4 h-4" />

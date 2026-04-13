@@ -293,7 +293,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
       case 'SENT':
         return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
       case 'DRAFT':
-        return 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] border-[var(--border)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] border-[var(--border)]';
       case 'PARTIALLY_PAID':
       case 'PARTIAL':
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800';
@@ -301,7 +301,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
       case 'RETARD':
         return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800';
       case 'CANCELLED':
-        return 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-secondary)] border-[var(--border)] line-through';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-secondary)] border-[var(--border)] line-through';
       default:
         return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800';
     }
@@ -386,7 +386,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-center">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((inv: Invoice) => {
                   const effectiveStatus = getEffectiveStatus(inv);
                   const balance = Number(inv.amount || 0) - Number(inv.paidAmount || 0);
@@ -448,7 +448,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="text-right">Montant</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((p: Payment) => (
                   <tr key={p.id} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-[var(--text-secondary)]">{p.ref}</td>
@@ -472,7 +472,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((q: Quote) => {
                   const qStatusMap: Record<string, string> = {
                     DRAFT: 'Brouillon',
@@ -514,7 +514,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((c: Contract) => {
                   const cStatusMap: Record<string, string> = {
                     ACTIVE: 'Actif',
@@ -567,7 +567,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((itv: Intervention) => {
                   const itvStatusMap: Record<string, string> = {
                     COMPLETED: 'Terminée',
@@ -619,7 +619,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((t: Ticket) => {
                   const tStatusMap: Record<string, string> = {
                     OPEN: 'Ouvert',
@@ -640,7 +640,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                       <td className="py-3 px-4 max-w-[250px] truncate">{t.subject}</td>
                       <td className="py-3 px-4">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${t.priority === 'CRITICAL' ? 'bg-red-100 text-red-700' : t.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' : t.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${t.priority === 'CRITICAL' ? 'bg-red-100 text-red-700' : t.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' : t.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                         >
                           {tPriorityMap[t.priority?.toUpperCase()] || t.priority}
                         </span>
@@ -692,7 +692,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     ))}
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                 {paginatedData.map((item: any, i: number) => (
                   <tr key={i} className="tr-hover/50">
                     {Object.values(item)
@@ -719,7 +719,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <button
                 key={tab.id}
                 onClick={() => setActiveTrxSubTab(tab.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-[var(--bg-elevated)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300'}`}
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${activeTrxSubTab === tab.id ? 'bg-[var(--bg-elevated)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-muted)]'}`}
               >
                 <tab.icon className="w-3 h-3" /> {tab.label}
               </button>
@@ -745,7 +745,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <button
                 onClick={() => setTrxPage((p) => Math.max(1, p - 1))}
                 disabled={trxPage === 1}
-                className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page précédente"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -756,7 +756,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <button
                 onClick={() => setTrxPage((p) => Math.min(totalPages, p + 1))}
                 disabled={trxPage === totalPages}
-                className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page suivante"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -833,7 +833,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   setNewStatus(tier.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE');
                   setShowStatusModal(true);
                 }}
-                className={`px-2 py-1 rounded text-[10px] font-bold uppercase border flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ${tier.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-200' : tier.status === 'SUSPENDED' ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}
+                className={`px-2 py-1 rounded text-[10px] font-bold uppercase border flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity ${tier.status === 'ACTIVE' ? 'bg-green-50 text-green-600 border-green-200' : tier.status === 'SUSPENDED' ? 'bg-amber-50 text-amber-600 border-amber-200' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'}`}
                 title="Cliquer pour changer le statut"
               >
                 <RefreshCw className="w-3 h-3" />
@@ -888,7 +888,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <button
                 key={item.id}
                 onClick={() => setActiveDetailTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-[var(--text-secondary)] tr-hover hover:text-[var(--text-primary)] dark:hover:text-slate-300'}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeDetailTab === item.id ? 'bg-[var(--primary-dim)] text-[var(--primary)] shadow-sm ring-1 ring-[var(--border)]' : 'text-[var(--text-secondary)] tr-hover hover:text-[var(--text-primary)] dark:hover:text-[var(--text-muted)]'}`}
               >
                 <item.icon
                   className={`w-4 h-4 ${activeDetailTab === item.id ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
@@ -926,7 +926,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
         </div>
 
         {/* MAIN CONTENT AREA */}
-        <div className="flex-1 flex flex-col min-w-0 bg-slate-50/50 bg-[var(--bg-surface)]/50">
+        <div className="flex-1 flex flex-col min-w-0 bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/50">
           {/* Header */}
           <div className="h-16 bg-[var(--bg-elevated)] border-b border-[var(--border)] flex items-center justify-between px-6 shrink-0">
             <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
@@ -991,7 +991,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               >
                 <Mail className="w-4 h-4" />
               </button>
-              <div className="w-px h-6 bg-slate-200 bg-[var(--bg-elevated)] mx-1" />
+              <div className="w-px h-6 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] mx-1" />
               <button
                 onClick={onClose}
                 className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-muted)] hover:text-red-500 transition-colors"
@@ -1314,7 +1314,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     </div>
                     <div className="space-y-3">
                       <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)] border-[var(--border)] flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">
+                        <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">
                           {(tier.contactName || tier.name).charAt(0)}
                         </div>
                         <div>
@@ -1326,7 +1326,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                       </div>
                       {tier.secondContactName && (
                         <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)] border-[var(--border)] flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">
+                          <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center text-xs font-bold text-[var(--text-secondary)]">
                             {tier.secondContactName.charAt(0)}
                           </div>
                           <div>
@@ -1432,7 +1432,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                 <th className="py-3 px-4 text-right">Paiement</th>
                               </tr>
                             </thead>
-                            <tbody className="text-sm divide-y divide-slate-100 dark:divide-slate-800">
+                            <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
                               {tierVehicles.map((vehicle: Vehicle) => {
                                 const contract = getVehicleContract(vehicle);
                                 const payStatus = getVehicleInvoiceStatus(vehicle);
@@ -1448,7 +1448,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                                 ? 'bg-yellow-500'
                                                 : vehicle.status === VehicleStatus.STOPPED
                                                   ? 'bg-orange-500'
-                                                  : 'bg-slate-300'
+                                                  : 'bg-[var(--border)]'
                                           }`}
                                         />
                                         <span className="font-bold text-[var(--text-primary)]">{vehicle.name}</span>
@@ -1472,7 +1472,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                           {new Date(vehicle.installDate).toLocaleDateString('fr-FR')}
                                         </span>
                                       ) : (
-                                        <span className="text-slate-300">-</span>
+                                        <span className="text-[var(--text-muted)]">-</span>
                                       )}
                                     </td>
                                     <td className="py-3 px-4 text-xs">
@@ -1494,7 +1494,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                           </span>
                                         </div>
                                       ) : (
-                                        <span className="text-slate-300">Aucun</span>
+                                        <span className="text-[var(--text-muted)]">Aucun</span>
                                       )}
                                     </td>
                                     <td className="py-3 px-4">
@@ -1506,7 +1506,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                               ? 'bg-yellow-100 text-yellow-700'
                                               : vehicle.status === VehicleStatus.STOPPED
                                                 ? 'bg-orange-100 text-orange-700'
-                                                : 'bg-slate-100 text-[var(--text-secondary)]'
+                                                : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                                         }`}
                                       >
                                         {vehicle.status === VehicleStatus.MOVING
@@ -1667,7 +1667,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                           LOGIN: {
                             icon: Eye,
                             color:
-                              'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
+                              'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
                             label: 'Connexion',
                           },
                           STATUS_CHANGE: {
@@ -1714,7 +1714,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                           système: {
                             icon: Activity,
                             color:
-                              'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
+                              'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
                             label: 'Système',
                           },
                         };
@@ -1816,12 +1816,12 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                               ? auditActionConfig[entry.type] || {
                                   icon: Activity,
                                   color:
-                                    'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
+                                    'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
                                   label: entry.type,
                                 }
                               : commentTypeConfig[entry.type] || {
                                   icon: StickyNote,
-                                  color: 'bg-slate-100 text-[var(--text-secondary)]',
+                                  color: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
                                   label: 'Note',
                                 };
                           const EntryIcon = config.icon;
@@ -1898,7 +1898,8 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     {
                       value: 'INACTIVE',
                       label: 'Inactif',
-                      color: 'bg-slate-50 text-[var(--text-primary)] border-[var(--border)] ring-slate-500',
+                      color:
+                        'bg-[var(--bg-elevated)] text-[var(--text-primary)] border-[var(--border)] ring-[var(--border-strong)]',
                     },
                     {
                       value: 'SUSPENDED',

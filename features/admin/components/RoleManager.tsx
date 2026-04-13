@@ -303,13 +303,13 @@ export const RoleManager: React.FC = () => {
               className={`p-3 rounded-lg cursor-pointer border transition-all ${
                 selectedRole?.id === role.id
                   ? 'bg-[var(--primary-dim)] border-[var(--border)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] shadow-sm'
-                  : 'bg-[var(--bg-elevated)] border-transparent hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'
+                  : 'bg-[var(--bg-elevated)] border-transparent hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
               }`}
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                   <div
-                    className={`p-2 rounded-full ${role.isSystem ? 'bg-purple-100 text-purple-600' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
+                    className={`p-2 rounded-full ${role.isSystem ? 'bg-purple-100 text-purple-600' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                   >
                     {role.isSystem ? <Lock className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
                   </div>

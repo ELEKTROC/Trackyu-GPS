@@ -42,7 +42,7 @@ export const ViolationsModalContent: React.FC = () => {
       case 'low':
         return 'bg-yellow-100 text-yellow-600 border-yellow-200';
       default:
-        return 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]';
     }
   };
 
@@ -64,7 +64,7 @@ export const ViolationsModalContent: React.FC = () => {
       {/* Score de sécurité */}
       <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-6 text-white flex items-center justify-between shadow-lg">
         <div>
-          <h3 className="text-slate-300 font-medium mb-1 flex items-center gap-2">
+          <h3 className="text-[var(--text-muted)] font-medium mb-1 flex items-center gap-2">
             <Shield className="w-5 h-5" /> Score de Conduite
           </h3>
           <div className="text-4xl font-bold tracking-tight">{safetyScore}/100</div>
@@ -110,7 +110,7 @@ export const ViolationsModalContent: React.FC = () => {
 
               <div className="pl-[3.25rem]">
                 <p className="text-sm text-[var(--text-secondary)] mb-2">{violation.details}</p>
-                <div className="flex items-center gap-1 text-xs text-[var(--text-muted)] bg-slate-50 p-2 rounded border border-[var(--border)] inline-flex">
+                <div className="flex items-center gap-1 text-xs text-[var(--text-muted)] bg-[var(--bg-elevated)] p-2 rounded border border-[var(--border)] inline-flex">
                   <MapPin className="w-3 h-3" />
                   {violation.location}
                 </div>

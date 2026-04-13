@@ -135,7 +135,7 @@ export const PaymentApprovalPanel: React.FC<PaymentApprovalPanelProps> = ({ paym
             >
               {/* En-tête du paiement */}
               <div
-                className="p-4 cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 transition-colors"
+                className="p-4 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 transition-colors"
                 onClick={() => toggleExpand(payment.id)}
               >
                 <div className="flex items-center justify-between">
@@ -297,7 +297,7 @@ export const PaymentApprovalPanel: React.FC<PaymentApprovalPanelProps> = ({ paym
                   setShowRejectModal(null);
                   setRejectReason('');
                 }}
-                className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
               >
                 Annuler
               </button>

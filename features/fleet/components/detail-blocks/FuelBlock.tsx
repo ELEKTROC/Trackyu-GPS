@@ -26,7 +26,7 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex bg-slate-100 p-1 rounded-lg mb-3">
+      <div className="flex bg-[var(--bg-elevated)] p-1 rounded-lg mb-3">
         {['Synthèse', 'Historique'].map((tab) => (
           <button
             key={tab}
@@ -53,7 +53,7 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
                 <span className="text-xs text-[var(--text-muted)] font-normal">({currentFuel.volume}L)</span>
               </span>
             </div>
-            <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
               <div
                 className="h-full bg-orange-500 transition-all duration-500"
                 style={{ width: `${currentFuel.level}%` }}
@@ -62,13 +62,13 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
           </ConfigurableRow>
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="p-2 bg-slate-50 rounded border border-[var(--border)]">
+            <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)]">
               <div className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Conso. Moyenne</div>
               <div className="text-sm font-bold text-[var(--text-primary)]">
                 {mockData.fuelStats?.avgConsumption || 0} L/100km
               </div>
             </div>
-            <div className="p-2 bg-slate-50 rounded border border-[var(--border)]">
+            <div className="p-2 bg-[var(--bg-elevated)] rounded border border-[var(--border)]">
               <div className="text-[10px] text-[var(--text-muted)] uppercase font-bold">Gaspillage Ralenti</div>
               <div className="text-sm font-bold text-red-600">{mockData.fuelStats?.idlingWaste || 0} L</div>
             </div>
@@ -111,7 +111,7 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
           {mockData.refillsList.map((refill: any, i: number) => (
             <div
               key={i}
-              className="flex items-center justify-between p-2 border border-[var(--border)] rounded bg-slate-50"
+              className="flex items-center justify-between p-2 border border-[var(--border)] rounded bg-[var(--bg-elevated)]"
             >
               <div className="flex items-center gap-3">
                 <div className="p-1.5 bg-green-100 text-green-600 rounded">

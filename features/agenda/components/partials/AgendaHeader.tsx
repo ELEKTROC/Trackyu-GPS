@@ -62,19 +62,19 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
         <div className="flex bg-[var(--bg-elevated)] p-1 rounded-lg border border-[var(--border)]">
           <button
             onClick={() => setFilter('ALL')}
-            className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'ALL' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'}`}
+            className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'ALL' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
             Tout
           </button>
           <button
             onClick={() => setFilter('TECH')}
-            className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'TECH' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'}`}
+            className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'TECH' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
             Tech
           </button>
           <button
             onClick={() => setFilter('BUSINESS')}
-            className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'BUSINESS' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'}`}
+            className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'BUSINESS' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
             Comm.
           </button>
@@ -113,7 +113,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                   onNewEvent('TECH');
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
+                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
               >
                 Intervention Technique
               </button>
@@ -122,7 +122,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                   onNewEvent('BUSINESS');
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
+                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
               >
                 Rendez-vous Commercial
               </button>
@@ -131,7 +131,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                   onNewEvent('TASK');
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-primary)]"
+                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)]"
               >
                 Tâche
               </button>

@@ -147,7 +147,9 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, day)}
               className={`min-h-[80px] sm:min-h-[120px] p-1 sm:p-2 border-r border-b border-[var(--border)] transition-all ${
-                !isSameMonth(day, monthStart) ? 'bg-slate-50/50 bg-[var(--bg-surface)]/20' : 'bg-[var(--bg-surface)]/40'
+                !isSameMonth(day, monthStart)
+                  ? 'bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/20'
+                  : 'bg-[var(--bg-surface)]/40'
               } ${isSameDay(day, new Date()) ? 'ring-2 ring-inset ring-[var(--primary)] ring-opacity-50' : ''} ${
                 isDragOver
                   ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] ring-2 ring-[var(--primary-dim)]'
@@ -160,7 +162,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
                     isSameDay(day, new Date())
                       ? 'w-6 h-6 flex items-center justify-center bg-[var(--primary)] text-white rounded-full'
                       : !isSameMonth(day, monthStart)
-                        ? 'text-slate-300'
+                        ? 'text-[var(--text-muted)]'
                         : 'text-[var(--text-secondary)]'
                   }`}
                 >
@@ -267,7 +269,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
                         ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                         : hoveredEvent.status === 'IN_PROGRESS'
                           ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
-                          : 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
+                          : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                     }`}
                   >
                     {hoveredEvent.status === 'TODO'

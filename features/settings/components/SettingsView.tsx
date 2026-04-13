@@ -766,11 +766,14 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         const STATUS_FR: Record<string, { label: string; cls: string }> = {
           MOVING: { label: 'En mouvement', cls: 'bg-green-100 text-green-700' },
           IDLE: { label: 'Ralenti', cls: 'bg-yellow-100 text-yellow-700' },
-          STOPPED: { label: 'Arrêté', cls: 'bg-slate-100 text-[var(--text-secondary)]' },
+          STOPPED: { label: 'Arrêté', cls: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]' },
           OFFLINE: { label: 'Hors ligne', cls: 'bg-red-100 text-red-600' },
         };
         const statusKey = String(item.status ?? '');
-        const s = STATUS_FR[statusKey] ?? { label: statusKey, cls: 'bg-slate-100 text-[var(--text-secondary)]' };
+        const s = STATUS_FR[statusKey] ?? {
+          label: statusKey,
+          cls: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
+        };
         return <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${s.cls}`}>{s.label}</span>;
       }
     }
@@ -917,7 +920,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       if (colLower.includes('niveau'))
         return (
           <span
-            className={`text-xs px-2 py-1 rounded-full ${item.niveau === 'Expert' ? 'bg-purple-100 text-purple-700' : item.niveau === 'Confirmé' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
+            className={`text-xs px-2 py-1 rounded-full ${item.niveau === 'Expert' ? 'bg-purple-100 text-purple-700' : item.niveau === 'Confirmé' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
           >
             {item.niveau}
           </span>
@@ -959,7 +962,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
           <div className="relative" ref={columnMenuRef}>
             <button
               onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''} shadow-sm`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''} shadow-sm`}
               title="Gérer les colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
@@ -973,7 +976,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                   {columns.map((col) => (
                     <label
                       key={col}
-                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer text-sm"
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                     >
                       <input
                         type="checkbox"
@@ -1100,7 +1103,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                     e.stopPropagation();
                                     handleStatusChange(item.id, status);
                                   }}
-                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
+                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
                                 >
                                   {status}
                                 </button>
@@ -1683,7 +1686,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     groups: 'bg-violet-500',
     objects: 'bg-orange-500',
     drivers: 'bg-amber-500',
-    commands: 'bg-slate-600',
+    commands: 'bg-[var(--bg-elevated)]',
     geofencing: 'bg-orange-600',
     poi: 'bg-cyan-500',
     maintenance: 'bg-green-600',
@@ -1693,10 +1696,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     clients: 'bg-pink-500',
     techs: 'bg-teal-600',
     reseller: 'bg-indigo-600',
-    sync: 'bg-slate-500',
+    sync: 'bg-[var(--text-secondary)]',
     support_settings: 'bg-gray-500',
     about: 'bg-cyan-500',
-    privacy: 'bg-slate-400',
+    privacy: 'bg-[var(--text-secondary)]',
   };
 
   // --- STATE MANAGEMENT FOR 2-LEVEL TABS ---
@@ -1992,7 +1995,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
               <p className="font-bold text-sm text-[var(--text-primary)] truncate">{user?.name || 'Profil'}</p>
               <p className="text-xs text-[var(--text-muted)] truncate">{user?.email}</p>
             </div>
-            <ChevronRight className="w-5 h-5 text-slate-300 dark:text-[var(--text-secondary)] shrink-0" />
+            <ChevronRight className="w-5 h-5 text-[var(--text-muted)] dark:text-[var(--text-secondary)] shrink-0" />
           </button>
 
           {/* Grouped settings list */}
@@ -2004,7 +2007,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
                 <div className="bg-[var(--bg-elevated)] rounded-2xl border border-[var(--border)] overflow-hidden divide-y divide-[var(--border)]">
                   {group.items.map((item) => {
                     const Icon = item.icon;
-                    const bgColor = ICON_COLORS[item.id] || 'bg-slate-500';
+                    const bgColor = ICON_COLORS[item.id] || 'bg-[var(--text-secondary)]';
                     return (
                       <button
                         key={item.id}
@@ -2012,13 +2015,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
                           setActiveTab(item.id as TabId);
                           setMobileShowList(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 active:bg-slate-100 dark:active:bg-slate-700 text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700 text-left"
                       >
                         <div className={`w-9 h-9 rounded-full ${bgColor} flex items-center justify-center shrink-0`}>
                           <Icon className="w-4.5 h-4.5 text-white" style={{ width: 18, height: 18 }} />
                         </div>
                         <span className="flex-1 text-sm font-medium text-[var(--text-primary)]">{item.label}</span>
-                        <ChevronRight className="w-4 h-4 text-slate-300 dark:text-[var(--text-secondary)] shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-[var(--text-muted)] dark:text-[var(--text-secondary)] shrink-0" />
                       </button>
                     );
                   })}
@@ -2084,7 +2087,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           <div className="flex justify-end gap-3 w-full">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 border border-[var(--border)] rounded text-[var(--text-secondary)] text-sm font-bold hover:bg-white dark:hover:bg-slate-700 transition-colors"
+              className="px-4 py-2 border border-[var(--border)] rounded text-[var(--text-secondary)] text-sm font-bold hover:bg-white hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Annuler
             </button>

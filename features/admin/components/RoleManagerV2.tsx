@@ -161,10 +161,10 @@ const COLOR_CLASSES: Record<string, { dot: string; bg: string; text: string; bad
     badge: 'bg-amber-100 text-amber-700',
   },
   slate: {
-    dot: 'bg-slate-500',
-    bg: 'bg-slate-100 bg-[var(--bg-surface)]/30',
+    dot: 'bg-[var(--text-muted)]',
+    bg: 'bg-[var(--bg-elevated)] bg-[var(--bg-surface)]/30',
     text: 'text-[var(--text-secondary)]',
-    badge: 'bg-slate-100 text-[var(--text-primary)]',
+    badge: 'bg-[var(--bg-elevated)] text-[var(--text-primary)]',
   },
   indigo: {
     dot: 'bg-indigo-500',
@@ -614,27 +614,27 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
   const ACTION_COLOR_CLASSES: Record<PermissionAction, { checked: string; unchecked: string }> = {
     VIEW: {
       checked: 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)]',
-      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
+      unchecked: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     CREATE: {
       checked: 'bg-green-100 text-green-600 dark:bg-green-900/30',
-      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
+      unchecked: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     EDIT: {
       checked: 'bg-amber-100 text-amber-600 dark:bg-amber-900/30',
-      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
+      unchecked: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     DELETE: {
       checked: 'bg-red-100 text-red-600 dark:bg-red-900/30',
-      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
+      unchecked: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     EXPORT: {
       checked: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30',
-      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
+      unchecked: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
     IMPORT: {
       checked: 'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30',
-      unchecked: 'bg-slate-100 text-[var(--text-muted)] bg-[var(--bg-elevated)]',
+      unchecked: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] bg-[var(--bg-elevated)]',
     },
   };
 
@@ -657,7 +657,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
     if (!isAvailable) {
       return (
         <div key={action} className="w-8 h-8 flex items-center justify-center">
-          <span className="text-slate-300 dark:text-[var(--text-secondary)]">—</span>
+          <span className="text-[var(--text-secondary)]">—</span>
         </div>
       );
     }
@@ -1028,7 +1028,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                                 <div key={tab.id}>
                                   {/* Tab Header */}
                                   <div
-                                    className="flex items-center gap-3 p-2 pl-10 bg-[var(--bg-elevated)]/50 cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 border-b border-[var(--border)]"
+                                    className="flex items-center gap-3 p-2 pl-10 bg-[var(--bg-elevated)]/50 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 border-b border-[var(--border)]"
                                     onClick={() => toggleTab(tab.id)}
                                   >
                                     <button className="p-1">
@@ -1060,7 +1060,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
 
                                   {/* Fields */}
                                   {isTabExpanded && (
-                                    <div className="bg-slate-50/50 bg-[var(--bg-surface)]/30">
+                                    <div className="bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/30">
                                       {tab.fields.map((field) => (
                                         <div
                                           key={field.id}
@@ -1113,7 +1113,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
           </>
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-secondary)]">
-            <Shield className="w-16 h-16 text-slate-300 mb-4" />
+            <Shield className="w-16 h-16 text-[var(--text-muted)] mb-4" />
             <p className="font-medium">Sélectionnez un rôle</p>
             <p className="text-sm">pour voir et modifier ses permissions</p>
           </div>
@@ -1234,7 +1234,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                               isSelected
                                 ? 'border-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] ring-1 ring-[var(--primary)]'
                                 : selected.length >= 4
-                                  ? 'border-[var(--border)] text-slate-300 dark:text-[var(--text-secondary)] cursor-not-allowed'
+                                  ? 'border-[var(--border)] text-[var(--text-secondary)] cursor-not-allowed'
                                   : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--primary)] hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/10'
                             }`}
                           >

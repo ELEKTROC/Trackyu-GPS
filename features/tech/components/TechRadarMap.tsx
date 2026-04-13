@@ -114,7 +114,7 @@ export const TechRadarMap: React.FC<TechRadarMapProps> = ({ technicians, interve
   };
 
   return (
-    <div className="relative w-full h-full bg-slate-100 bg-[var(--bg-surface)] z-0">
+    <div className="relative w-full h-full bg-[var(--bg-elevated)] bg-[var(--bg-surface)] z-0">
       {/* Live Indicator */}
       <div className="absolute top-4 right-4 z-[1000] bg-white/90 bg-[var(--bg-elevated)]/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-[var(--border)] shadow-sm flex items-center gap-2">
         <span className="relative flex h-3 w-3">
@@ -178,7 +178,7 @@ export const TechRadarMap: React.FC<TechRadarMapProps> = ({ technicians, interve
                       {time && <span className="text-[10px] font-mono text-[var(--text-muted)]">{time}</span>}
                     </div>
                     {techName && <p className="text-[10px] text-[var(--text-muted)] mt-0.5">Tech: {techName}</p>}
-                    {int.location && <p className="text-[10px] text-slate-300 mt-0.5">{int.location}</p>}
+                    {int.location && <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{int.location}</p>}
                   </div>
                 </Popup>
               </Marker>
@@ -221,7 +221,7 @@ export const TechRadarMap: React.FC<TechRadarMapProps> = ({ technicians, interve
           <span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span>{' '}
           <span className="text-[var(--text-secondary)]">Tech Occupé</span>
         </div>
-        <div className="h-px bg-slate-200 bg-[var(--bg-elevated)] my-1"></div>
+        <div className="h-px bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] my-1"></div>
         <div className="flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[var(--primary-dim)]0"></span>{' '}
           <span className="text-[var(--text-secondary)]">Planifié</span>

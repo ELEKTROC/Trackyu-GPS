@@ -334,7 +334,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                 <div className="relative" ref={columnMenuRef}>
                   <button
                     onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                    className={`p-1.5 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''}`}
+                    className={`p-1.5 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''}`}
                   >
                     <LayoutTemplate className="w-4 h-4" />
                   </button>
@@ -347,7 +347,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                         {currentColumns.map((col) => (
                           <label
                             key={col.id}
-                            className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                            className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                           >
                             <input
                               type="checkbox"
@@ -979,7 +979,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                               {['RMA_PENDING', 'SENT_TO_SUPPLIER', 'REMOVED'].includes(item.status) && (
                                 <button
                                   onClick={() => onRmaAction(item, 'SCRAP')}
-                                  className="px-2 py-1 bg-slate-200 text-[var(--text-primary)] text-[10px] font-bold rounded hover:bg-slate-300 transition-colors"
+                                  className="px-2 py-1 bg-[var(--bg-elevated)] text-[var(--text-primary)] text-[10px] font-bold rounded hover:bg-[var(--border)] transition-colors"
                                   title="Mettre au rebut"
                                 >
                                   Pilon

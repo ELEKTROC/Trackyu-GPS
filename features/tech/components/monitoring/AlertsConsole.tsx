@@ -175,7 +175,7 @@ export const AlertsConsole: React.FC = () => {
       case 'MEDIUM': return 'border-l-yellow-500 bg-yellow-50/50 dark:bg-yellow-900/10';
       case 'LOW': return 'border-l-blue-500 bg-[var(--primary-dim)]/50 dark:bg-[var(--primary-dim)]';
       case 'WARNING': return 'border-l-orange-500 bg-orange-50/50 dark:bg-orange-900/10';
-      default: return 'border-l-slate-400 bg-slate-50/50 bg-[var(--bg-elevated)]/10';
+      default: return 'border-l-slate-400 bg-[var(--bg-elevated)]/50 bg-[var(--bg-elevated)]/10';
     }
   };
 
@@ -186,7 +186,7 @@ export const AlertsConsole: React.FC = () => {
       'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200',
       'LOW': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]',
     };
-    return <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${styles[severity] || 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>{severity}</span>;
+    return <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${styles[severity] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'}`}>{severity}</span>;
   };
 
   const getAlertIcon = (type: string) => {
@@ -198,8 +198,8 @@ export const AlertsConsole: React.FC = () => {
   const getAlertIconBgColor = (type: string, severity: string) => {
     if (severity === 'CRITICAL') return 'bg-red-100 text-red-600 dark:bg-red-900/30';
     const config = ALERT_TYPE_CONFIG[type as AlertType];
-    const colorMap: Record<string, string> = { 'red': 'bg-red-100 text-red-600 dark:bg-red-900/30', 'orange': 'bg-orange-100 text-orange-600 dark:bg-orange-900/30', 'yellow': 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30', 'blue': 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)]', 'green': 'bg-green-100 text-green-600 dark:bg-green-900/30', 'purple': 'bg-purple-100 text-purple-600 dark:bg-purple-900/30', 'slate': 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)]/30' };
-    return colorMap[config?.color] || 'bg-slate-100 text-[var(--text-secondary)]';
+    const colorMap: Record<string, string> = { 'red': 'bg-red-100 text-red-600 dark:bg-red-900/30', 'orange': 'bg-orange-100 text-orange-600 dark:bg-orange-900/30', 'yellow': 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30', 'blue': 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)]', 'green': 'bg-green-100 text-green-600 dark:bg-green-900/30', 'purple': 'bg-purple-100 text-purple-600 dark:bg-purple-900/30', 'slate': 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)]/30' };
+    return colorMap[config?.color] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
   };
 
   const getAlertTypeLabel = (type: string) => ALERT_TYPE_CONFIG[type as AlertType]?.label || type;
@@ -326,11 +326,11 @@ export const AlertsConsole: React.FC = () => {
         </button>
         <button onClick={() => setMainTab('autoAlerts')} className={`filter-chip flex items-center gap-2 ${mainTab === 'autoAlerts' ? 'active' : ''}`}>
           <Settings className="w-4 h-4" /> Règles automatiques
-          <span className="px-1.5 py-0.5 bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-primary)] text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
+          <span className="px-1.5 py-0.5 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
         </button>
         <button onClick={() => setMainTab('createdAlerts')} className={`filter-chip flex items-center gap-2 ${mainTab === 'createdAlerts' ? 'active' : ''}`}>
           <Plus className="w-4 h-4" /> Alertes créées
-          <span className="px-1.5 py-0.5 bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-primary)] text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
+          <span className="px-1.5 py-0.5 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-[10px] font-bold rounded-full">{alertConfigs.length}</span>
         </button>
       </div>
 
@@ -339,7 +339,7 @@ export const AlertsConsole: React.FC = () => {
         <DateRangeSelector periodPreset={periodPreset} setPeriodPreset={setPeriodPreset} customDateRange={customDateRange} setCustomDateRange={setCustomDateRange} />
         <div className="flex gap-2 items-center flex-wrap">
           {mainTab === 'alerts' && unreadCount > 0 && (
-            <button onClick={handleMarkAllAsRead} disabled={markingAll} className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-xs font-medium flex items-center gap-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors disabled:opacity-50">
+            <button onClick={handleMarkAllAsRead} disabled={markingAll} className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-xs font-medium flex items-center gap-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50">
               <CheckCheck className="w-3.5 h-3.5" /> Tout lu
             </button>
           )}
@@ -480,13 +480,13 @@ export const AlertsConsole: React.FC = () => {
                   </div>
                   {/* Actions */}
                   <div className="flex gap-0.5 flex-shrink-0 ml-2">
-                    {!isRead && <button onClick={() => markAlertAsRead(alert.id)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Marquer comme lu"><CheckCircle className="w-4 h-4" /></button>}
-                    <button onClick={() => handleTreat(alert)} className={`p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors ${alert.treated ? 'text-green-600' : 'text-[var(--text-secondary)] hover:text-green-600'}`} title={alert.treated ? 'Marquer non traité' : 'Marquer traité'}>
+                    {!isRead && <button onClick={() => markAlertAsRead(alert.id)} className="p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Marquer comme lu"><CheckCircle className="w-4 h-4" /></button>}
+                    <button onClick={() => handleTreat(alert)} className={`p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg transition-colors ${alert.treated ? 'text-green-600' : 'text-[var(--text-secondary)] hover:text-green-600'}`} title={alert.treated ? 'Marquer non traité' : 'Marquer traité'}>
                       {alert.treated ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                     </button>
-                    <button onClick={() => { setCommentingAlert(alert); setCommentText(alert.comment || ''); }} className={`p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg transition-colors ${alert.comment ? 'text-amber-500' : 'text-[var(--text-secondary)] hover:text-amber-500'}`} title="Commenter"><MessageCircle className="w-4 h-4" /></button>
-                    <button onClick={() => handleCreateTicket(alert)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-[var(--text-secondary)] hover:text-purple-600 transition-colors" title="Créer un ticket"><MessageSquare className="w-4 h-4" /></button>
-                    <button onClick={() => handleIntervention(alert)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-700/50 rounded-lg text-[var(--text-secondary)] hover:text-orange-600 transition-colors" title="Planifier intervention"><Wrench className="w-4 h-4" /></button>
+                    <button onClick={() => { setCommentingAlert(alert); setCommentText(alert.comment || ''); }} className={`p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg transition-colors ${alert.comment ? 'text-amber-500' : 'text-[var(--text-secondary)] hover:text-amber-500'}`} title="Commenter"><MessageCircle className="w-4 h-4" /></button>
+                    <button onClick={() => handleCreateTicket(alert)} className="p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg text-[var(--text-secondary)] hover:text-purple-600 transition-colors" title="Créer un ticket"><MessageSquare className="w-4 h-4" /></button>
+                    <button onClick={() => handleIntervention(alert)} className="p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg text-[var(--text-secondary)] hover:text-orange-600 transition-colors" title="Planifier intervention"><Wrench className="w-4 h-4" /></button>
                   </div>
                 </div>
               );
@@ -510,17 +510,17 @@ export const AlertsConsole: React.FC = () => {
             filteredAlertConfigs.map(config => (
               <Card key={config.id} className="p-4 flex items-center justify-between hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className={`p-2 rounded-lg ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-[var(--text-muted)]'}`}>
+                  <div className={`p-2 rounded-lg ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-emerald-100 text-emerald-600' : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'}`}>
                     <Bell className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="font-semibold text-[var(--text-primary)] text-sm truncate">{config.name}</h4>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${config.isActive !== false && config.status !== 'INACTIVE' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'}`}>
                         {config.isActive !== false && config.status !== 'INACTIVE' ? 'Actif' : 'Inactif'}
                       </span>
                       <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--primary-dim)] text-[var(--primary)] border border-[var(--border)]">{config.type}</span>
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${{ 'critical': 'bg-red-100 text-red-800 border-red-200', 'CRITICAL': 'bg-red-100 text-red-800 border-red-200', 'high': 'bg-orange-100 text-orange-800 border-orange-200', 'HIGH': 'bg-orange-100 text-orange-800 border-orange-200', 'medium': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'low': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]', 'LOW': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' }[config.priority] || 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${{ 'critical': 'bg-red-100 text-red-800 border-red-200', 'CRITICAL': 'bg-red-100 text-red-800 border-red-200', 'high': 'bg-orange-100 text-orange-800 border-orange-200', 'HIGH': 'bg-orange-100 text-orange-800 border-orange-200', 'medium': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'low': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]', 'LOW': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' }[config.priority] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'}`}>
                         {config.priority}
                       </span>
                     </div>
@@ -529,9 +529,9 @@ export const AlertsConsole: React.FC = () => {
                       {config.conditionValue && <span>Seuil: {config.conditionValue}</span>}
                       {config.isScheduled && <span>Planifié</span>}
                       <span className="flex gap-1">
-                        {config.notifyWeb && <span className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">Web</span>}
-                        {config.notifyEmail && <span className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">Email</span>}
-                        {config.notifySms && <span className="px-1 py-0.5 bg-slate-100 rounded text-[9px]">SMS</span>}
+                        {config.notifyWeb && <span className="px-1 py-0.5 bg-[var(--bg-elevated)] rounded text-[9px]">Web</span>}
+                        {config.notifyEmail && <span className="px-1 py-0.5 bg-[var(--bg-elevated)] rounded text-[9px]">Email</span>}
+                        {config.notifySms && <span className="px-1 py-0.5 bg-[var(--bg-elevated)] rounded text-[9px]">SMS</span>}
                       </span>
                     </div>
                   </div>
@@ -581,11 +581,11 @@ export const AlertsConsole: React.FC = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-2">
                         <h4 className="font-semibold text-[var(--text-primary)] text-sm">{config.name}</h4>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${isActive ? 'bg-green-100 text-green-700 border-green-200' : 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${isActive ? 'bg-green-100 text-green-700 border-green-200' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'}`}>
                           {isActive ? 'Actif' : 'Inactif'}
                         </span>
                         <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-[var(--primary-dim)] text-[var(--primary)] border border-[var(--border)]">{typeLabel}</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${priorityStyle[config.priority] || 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]'}`}>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${priorityStyle[config.priority] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'}`}>
                           {config.priority?.toUpperCase()}
                         </span>
                       </div>
@@ -657,7 +657,7 @@ export const AlertsConsole: React.FC = () => {
               <p className="text-right text-xs text-[var(--text-muted)] mt-1">{commentText.length}/500</p>
             </div>
             <div className="flex justify-end gap-2 p-4 border-t border-[var(--border)]">
-              <button onClick={() => setCommentingAlert(null)} className="px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] bg-slate-100 hover:bg-[var(--bg-elevated)] rounded-lg">Annuler</button>
+              <button onClick={() => setCommentingAlert(null)} className="px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg">Annuler</button>
               <button onClick={handleComment} className="px-3 py-1.5 text-xs font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg">Enregistrer</button>
             </div>
           </div>
@@ -694,7 +694,7 @@ export const AlertsConsole: React.FC = () => {
               />
             </div>
             <div className="flex justify-end gap-2 p-4 border-t border-[var(--border)] shrink-0">
-              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg transition-colors">Annuler</button>
+              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">Annuler</button>
               <button onClick={() => alertFormRef.current?.requestSubmit()} className="px-4 py-2 text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--primary-light)] rounded-lg transition-colors">{editingConfig ? 'Enregistrer' : 'Créer la règle'}</button>
             </div>
           </div>

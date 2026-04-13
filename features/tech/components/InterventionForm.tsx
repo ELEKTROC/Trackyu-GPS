@@ -208,14 +208,14 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
       <div className="relative bg-[var(--bg-surface)] rounded-t-2xl sm:rounded-xl shadow-2xl w-full max-w-5xl h-[95vh] sm:h-[85vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom sm:fade-in sm:zoom-in-95 duration-200 border-0 sm:border border-[var(--border)]">
         {/* Drag handle (mobile only) */}
         <div className="sm:hidden flex justify-center pt-2 pb-1 shrink-0">
-          <div className="w-10 h-1 bg-slate-300 bg-[var(--bg-elevated)] rounded-full" />
+          <div className="w-10 h-1 bg-[var(--border)] bg-[var(--bg-elevated)] rounded-full" />
         </div>
 
         {/* Header */}
         <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg-elevated)]">
           <div>
             <div className="flex items-center gap-3">
-              <h3 className="text-xl font-bold text-[var(--text-primary)]">Intervention {formData.id || 'Nouvelle'}</h3>
+              <h3 className="page-title">Intervention {formData.id || 'Nouvelle'}</h3>
               <span
                 className={`px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${getStatusBgClass(formData.status || 'PENDING')}`}
               >
@@ -241,7 +241,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
             <button
               onClick={onClose}
               title="Fermer"
-              className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full text-[var(--text-secondary)]"
+              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)]"
             >
               <X className="w-5 h-5" />
             </button>
@@ -268,7 +268,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
         </div>
 
         {/* Body - Tab Content */}
-        <div className="flex-1 overflow-y-auto bg-slate-50/50 bg-[var(--bg-surface)]/50 p-3 sm:p-6">
+        <div className="flex-1 overflow-y-auto bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/50 p-3 sm:p-6">
           {activeTab === 'REQUEST' && (
             <InterventionRequestTab
               formData={formData}
@@ -341,7 +341,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
           <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
+              className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
             >
               Annuler
             </button>

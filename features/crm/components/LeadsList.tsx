@@ -120,7 +120,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
       case 'NEGOTIATION':
         return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
       default:
-        return 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
     }
   };
   const getStatusLabel = (status: string) => {

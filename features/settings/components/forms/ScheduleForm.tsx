@@ -162,7 +162,7 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   className={`p-3 rounded-xl border text-left transition-all ${
                     isSelected
                       ? `bg-${type.color}-50 dark:bg-${type.color}-900/30 border-${type.color}-500 ring-2 ring-${type.color}-500`
-                      : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:border-slate-400'
+                      : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:border-[var(--border-strong)]'
                   }`}
                 >
                   <IconComp

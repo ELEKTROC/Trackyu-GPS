@@ -195,7 +195,7 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         </FormSection>
 
         {/* Ralenti Excessif */}
-        <div className="border border-[var(--border)] rounded-xl p-5 bg-slate-50/50 bg-[var(--bg-elevated)]/30 space-y-4">
+        <div className="border border-[var(--border)] rounded-xl p-5 bg-[var(--bg-elevated)]/50 bg-[var(--bg-elevated)]/30 space-y-4">
           <h4 className="font-semibold text-sm text-[var(--text-primary)]">Ralenti Excessif</h4>
           <FormGrid columns={2}>
             <FormField label="Seuil (min)">

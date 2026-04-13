@@ -117,7 +117,7 @@ const STOCK_TABS = [
     id: 'movements',
     label: 'Mouvements',
     icon: History,
-    color: 'bg-slate-500',
+    color: 'bg-[var(--text-secondary)]',
     description: 'Historique des mouvements',
   },
   { id: 'rma', label: 'SAV / RMA', icon: AlertTriangle, color: 'bg-red-500', description: 'Retours et réparations' },

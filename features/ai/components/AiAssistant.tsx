@@ -321,7 +321,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
           </div>
           <button
             onClick={handleSwitchMode}
-            className="flex items-center gap-2 text-xs font-medium bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 px-3 py-1 rounded-full transition-colors"
+            className="flex items-center gap-2 text-xs font-medium bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-3 py-1 rounded-full transition-colors"
           >
             {mode === 'ai' ? 'Parler à un humain' : "Retour à l'IA"}
             {mode === 'ai' ? (
@@ -354,7 +354,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                   isUser
-                    ? 'bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
+                    ? 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                     : isSupport
                       ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
                       : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
@@ -411,9 +411,18 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
             </div>
             <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-sm rounded-tl-none">
               <div className="flex gap-1">
-                <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div
+                  className="w-2 h-2 bg-[var(--text-secondary)] rounded-full animate-bounce"
+                  style={{ animationDelay: '0ms' }}
+                />
+                <div
+                  className="w-2 h-2 bg-[var(--text-secondary)] rounded-full animate-bounce"
+                  style={{ animationDelay: '150ms' }}
+                />
+                <div
+                  className="w-2 h-2 bg-[var(--text-secondary)] rounded-full animate-bounce"
+                  style={{ animationDelay: '300ms' }}
+                />
               </div>
             </div>
           </div>

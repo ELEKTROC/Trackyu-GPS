@@ -339,7 +339,7 @@ export const OfflineTrackerList: React.FC = () => {
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div className="flex gap-2 flex-wrap">
           {[
-            { key: 'ALL' as const, label: 'Tous', active: 'bg-slate-800 text-white', inactive: 'bg-slate-100 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]' },
+            { key: 'ALL' as const, label: 'Tous', active: 'bg-[var(--primary)] text-white', inactive: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]' },
             { key: '24H' as const, label: '1h - 24h', active: 'bg-yellow-500 text-white', inactive: 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100' },
             { key: '48H' as const, label: '24h - 48h', active: 'bg-orange-500 text-white', inactive: 'bg-orange-50 text-orange-700 hover:bg-orange-100' },
             { key: '7D' as const, label: '48h - 7j', active: 'bg-red-400 text-white', inactive: 'bg-red-50 text-red-600 hover:bg-red-100' },
@@ -389,7 +389,7 @@ export const OfflineTrackerList: React.FC = () => {
             </button>
             <button
               onClick={() => handleBulkAction('TICKET')}
-              className="px-3 py-1 bg-slate-700 text-white rounded text-xs font-medium hover:bg-slate-800"
+              className="px-3 py-1 bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-surface)]"
             >
               <MessageSquare className="w-3 h-3 inline mr-1" /> Tickets
             </button>
@@ -448,7 +448,7 @@ export const OfflineTrackerList: React.FC = () => {
       ) : (
       <div className="flex-1 overflow-auto custom-scrollbar pb-16 lg:pb-0">
         <table className="w-full text-left text-sm">
-          <thead className="bg-slate-50 text-[var(--text-secondary)] uppercase font-bold text-xs sticky top-0 z-10">
+          <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase font-bold text-xs sticky top-0 z-10">
             <tr>
               <th className="px-3 py-3 w-10">
                 <button onClick={toggleSelectAll} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]" title="Sélectionner tout">
@@ -467,7 +467,7 @@ export const OfflineTrackerList: React.FC = () => {
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-[var(--border)]">
             {paginatedVehicles.map(vehicle => {
               const lastComment = getLastComment(vehicle.id);
               const commentCount = getVehicleComments(vehicle.id).length;
@@ -501,11 +501,11 @@ export const OfflineTrackerList: React.FC = () => {
                         className="text-left text-xs text-[var(--text-secondary)] hover:text-[var(--primary)] truncate block w-full"
                         title={lastComment.text}
                       >
-                        <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[var(--text-secondary)] mr-1">{commentCount}</span>
+                        <span className="bg-[var(--bg-elevated)] px-1.5 py-0.5 rounded text-[var(--text-secondary)] mr-1">{commentCount}</span>
                         {lastComment.text}
                       </button>
                     ) : (
-                      <span className="text-xs text-slate-300">--</span>
+                      <span className="text-xs text-[var(--text-muted)]">--</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -535,7 +535,7 @@ export const OfflineTrackerList: React.FC = () => {
                       </button>
                       <button
                         onClick={() => handleAction('TICKET', vehicle)}
-                        className="p-1.5 bg-slate-100 text-[var(--text-secondary)] rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50"
+                        className="p-1.5 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50"
                         title="Créer Ticket Support"
                         disabled={loadingAction === `TICKET-${vehicle.id}`}
                       >
@@ -617,7 +617,7 @@ export const OfflineTrackerList: React.FC = () => {
                 <p className="text-[var(--text-muted)] text-sm text-center py-4">Aucun commentaire pour ce véhicule.</p>
               ) : (
                 getVehicleComments(commentModal.vehicle.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(c => (
-                  <div key={c.id} className="bg-slate-50 rounded-lg px-3 py-2">
+                  <div key={c.id} className="bg-[var(--bg-elevated)] rounded-lg px-3 py-2">
                     <div className="flex justify-between text-xs text-[var(--text-muted)] mb-1">
                       <span className="font-medium text-[var(--text-secondary)]">{c.author}</span>
                       <span>{new Date(c.createdAt).toLocaleString()}</span>
@@ -676,7 +676,7 @@ export const OfflineTrackerList: React.FC = () => {
               </div>
 
               {/* Vehicle summary */}
-              <div className="px-5 py-3 bg-slate-50 border-b grid grid-cols-2 gap-3 text-sm">
+              <div className="px-5 py-3 bg-[var(--bg-elevated)] border-b grid grid-cols-2 gap-3 text-sm">
                 <div><span className="text-[var(--text-secondary)]">IMEI :</span> <span className="font-mono">{vehicle.imei || '--'}</span></div>
                 <div><span className="text-[var(--text-secondary)]">Client :</span> <span>{vehicle.client}</span></div>
                 <div><span className="text-[var(--text-secondary)]">Durée offline :</span> <span className="font-bold text-red-600">{offlineDuration}</span></div>
@@ -701,7 +701,7 @@ export const OfflineTrackerList: React.FC = () => {
                       };
                       return (
                         <div key={i} className="relative pl-6">
-                          <div className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${colors[entry.type] || 'bg-slate-400'}`} />
+                          <div className={`absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full ${colors[entry.type] || 'bg-[var(--text-secondary)]'}`} />
                           <div className="text-xs text-[var(--text-muted)]">{new Date(entry.date).toLocaleString()}</div>
                           <div className="text-sm text-[var(--text-primary)]">{entry.description}</div>
                         </div>
@@ -727,7 +727,7 @@ export const OfflineTrackerList: React.FC = () => {
                 </button>
                 <button
                   onClick={() => { setInactivityModal(null); handleAction('TICKET', vehicle); }}
-                  className="px-3 py-1.5 bg-slate-700 text-white rounded text-xs font-medium hover:bg-slate-800"
+                  className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-surface)]"
                 >
                   <MessageSquare className="w-3 h-3 inline mr-1" /> Ticket
                 </button>

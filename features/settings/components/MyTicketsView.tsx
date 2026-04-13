@@ -50,7 +50,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
   CLOSED: {
     label: 'Clôturé',
     color:
-      'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] border-[var(--border)]',
+      'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)] border-[var(--border)]',
     icon: <CheckCircle className="w-3 h-3" />,
   },
 };

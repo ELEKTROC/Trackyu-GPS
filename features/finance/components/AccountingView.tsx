@@ -80,7 +80,13 @@ const ACCOUNTING_TABS = [
     color: 'bg-indigo-500',
     description: 'Journal et plan comptable',
   },
-  { id: 'BANKING', label: 'Banque', icon: Building2, color: 'bg-slate-600', description: 'Rapprochement bancaire' },
+  {
+    id: 'BANKING',
+    label: 'Banque',
+    icon: Building2,
+    color: 'bg-[var(--bg-elevated)]',
+    description: 'Rapprochement bancaire',
+  },
   { id: 'CASH', label: 'Caisse', icon: DollarSign, color: 'bg-teal-500', description: 'Gestion de la caisse' },
   { id: 'REPORTS', label: 'Rapports', icon: FileText, color: 'bg-orange-500', description: 'Rapports financiers' },
   { id: 'EXPENSES', label: 'Dépenses', icon: Receipt, color: 'bg-amber-500', description: 'Factures fournisseurs' },
@@ -912,7 +918,7 @@ export const AccountingView: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="p-2 bg-slate-800 bg-[var(--bg-elevated)] text-white rounded-lg shadow-md shrink-0">
+          <div className="p-2 bg-[var(--bg-elevated)] text-white rounded-lg shadow-md shrink-0">
             <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div className="min-w-0">
@@ -985,7 +991,7 @@ export const AccountingView: React.FC = () => {
           {activeTab === 'FINANCE' &&
             (payments.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-[var(--bg-surface)] rounded-2xl shadow-sm">
-                <DollarSign className="w-16 h-16 text-slate-200 dark:text-[var(--text-primary)] mb-4" />
+                <DollarSign className="w-16 h-16 text-[var(--text-muted)] mb-4" />
                 <p className="text-lg font-semibold text-[var(--text-secondary)]">Aucun paiement enregistré</p>
                 <p className="text-sm text-[var(--text-muted)] mt-1">Les paiements reçus apparaîtront ici</p>
               </div>

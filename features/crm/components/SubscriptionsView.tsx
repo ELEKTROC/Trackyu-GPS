@@ -86,7 +86,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   EXPIRED: { label: 'Expiré', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
   CANCELLED: {
     label: 'Résilié',
-    color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
   },
   SUSPENDED: { label: 'Suspendu', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
   EXPIRING_SOON: {
@@ -580,7 +580,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
               </div>
               <div>
                 <p className="section-title">Véhicules Actifs</p>
-                <p className="text-xl font-bold text-[var(--text-primary)]">{kpis.totalVehicles}</p>
+                <p className="page-title">{kpis.totalVehicles}</p>
               </div>
             </div>
           </Card>
@@ -591,7 +591,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
               </div>
               <div>
                 <p className="section-title">MRR</p>
-                <p className="text-xl font-bold text-[var(--text-primary)]">{formatPrice(kpis.mrr)}</p>
+                <p className="page-title">{formatPrice(kpis.mrr)}</p>
               </div>
             </div>
           </Card>
@@ -602,7 +602,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
               </div>
               <div>
                 <p className="section-title">Expire sous 30j</p>
-                <p className="text-xl font-bold text-[var(--text-primary)]">{kpis.expiringSoon}</p>
+                <p className="page-title">{kpis.expiringSoon}</p>
               </div>
             </div>
           </Card>
@@ -613,7 +613,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
               </div>
               <div>
                 <p className="section-title">Expirés</p>
-                <p className="text-xl font-bold text-[var(--text-primary)]">{kpis.expired}</p>
+                <p className="page-title">{kpis.expired}</p>
               </div>
             </div>
           </Card>
@@ -773,7 +773,8 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             paginatedSubscriptions.map((sub) => {
               const statusInfo = STATUS_LABELS[sub.effectiveStatus] || {
                 label: sub.effectiveStatus,
-                color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
+                color:
+                  'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]',
               };
               const borderColor =
                 sub.effectiveStatus === 'ACTIVE'
@@ -1154,7 +1155,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                   },
                                   [VehicleStatus.OFFLINE]: {
                                     label: 'Hors ligne',
-                                    dot: 'bg-slate-400',
+                                    dot: 'bg-[var(--text-secondary)]',
                                     text: 'text-[var(--text-secondary)]',
                                     bg: 'bg-[var(--bg-elevated)]/40',
                                   },

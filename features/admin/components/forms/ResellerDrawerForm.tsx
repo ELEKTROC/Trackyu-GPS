@@ -349,7 +349,7 @@ export function ResellerDrawerForm({
     }
 
     return (
-      <label className="flex items-center gap-2 py-1 cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 px-2 rounded">
+      <label className="flex items-center gap-2 py-1 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-2 rounded">
         {Icon && <Icon className="w-4 h-4 text-[var(--text-muted)]" />}
         <input
           type="checkbox"
@@ -391,7 +391,7 @@ export function ResellerDrawerForm({
                   maxLength={10}
                   disabled={!isCreateMode}
                   className={`w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] font-mono uppercase ${
-                    !isCreateMode ? 'bg-slate-100 bg-[var(--bg-elevated)] cursor-not-allowed' : ''
+                    !isCreateMode ? 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] cursor-not-allowed' : ''
                   } ${form.formState.errors.slug ? 'border-red-500' : ''}`}
                   onChange={(e) => {
                     const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
@@ -444,7 +444,7 @@ export function ResellerDrawerForm({
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                 >
                   {showPassword ? <X className="w-4 h-4" /> : <Shield className="w-4 h-4" />}
                 </button>
@@ -570,7 +570,7 @@ export function ResellerDrawerForm({
                             className={`px-2 py-1 rounded-full text-xs ${
                               client.status === 'active'
                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                : 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
+                                : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                             }`}
                           >
                             {client.status === 'active' ? 'Actif' : 'Inactif'}
@@ -849,7 +849,7 @@ export function ResellerDrawerForm({
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   isActive
                     ? 'border-[var(--primary)] text-[var(--primary)]'
-                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-muted)]'
                 }`}
               >
                 <Icon className="w-4 h-4" />

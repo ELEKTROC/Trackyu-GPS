@@ -486,7 +486,7 @@ export const MessageTemplatesPanel: React.FC = () => {
                               </span>
                             )}
                             {template.delay_days && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
                                 <Clock className="w-3 h-3" />J{template.delay_days > 0 ? '+' : ''}
                                 {template.delay_days}
                               </span>
@@ -570,7 +570,7 @@ export const MessageTemplatesPanel: React.FC = () => {
 
         {filteredTemplates.length === 0 && (
           <Card className="p-8 text-center">
-            <MessageSquare className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <MessageSquare className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-4" />
             <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">Aucun template trouvé</h3>
             <p className="text-sm text-[var(--text-secondary)]">
               {searchQuery || filterCategory !== 'ALL' || filterChannel !== 'ALL'
@@ -852,7 +852,7 @@ export const MessageTemplatesPanel: React.FC = () => {
           <div className="flex justify-end pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsPreviewModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
+              className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               Fermer
             </button>

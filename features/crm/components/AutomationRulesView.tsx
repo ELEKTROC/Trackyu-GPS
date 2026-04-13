@@ -294,7 +294,7 @@ export const AutomationRulesView: React.FC = () => {
       {filteredRules.length === 0 && (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-3">
-            <Zap className="w-16 h-16 text-slate-300 dark:text-[var(--text-secondary)] mx-auto" />
+            <Zap className="w-16 h-16 text-[var(--text-muted)] dark:text-[var(--text-secondary)] mx-auto" />
             <p className="text-[var(--text-secondary)] text-lg">Aucune règle d'automatisation</p>
             <button onClick={openCreate} className="text-[var(--primary)] hover:text-[var(--primary)] font-medium">
               Créer votre première règle →
@@ -837,7 +837,7 @@ export const AutomationRulesView: React.FC = () => {
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsModalOpen(false)}
-              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg text-[var(--text-secondary)] dark:hover:bg-slate-700"
+              className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]"
             >
               Annuler
             </button>

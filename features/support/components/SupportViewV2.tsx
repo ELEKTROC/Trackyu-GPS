@@ -172,7 +172,7 @@ const SUPPORT_TABS = [
     id: 'CONFIG' as TabId,
     label: 'Configuration',
     icon: Settings,
-    color: 'bg-slate-500',
+    color: 'bg-[var(--text-secondary)]',
     description: 'Paramètres du support',
   },
   { id: 'LIVECHAT' as TabId, label: 'Live Chat', icon: Headset, color: 'bg-green-500', description: 'Chat en direct' },
@@ -1117,7 +1117,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
       CRITICAL: 'bg-red-100 text-red-700 border-red-200',
       HIGH: 'bg-orange-100 text-orange-700 border-orange-200',
       MEDIUM: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]',
-      LOW: 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]',
+      LOW: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]',
     };
     return styles[priority] || styles.MEDIUM;
   };
@@ -1722,7 +1722,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     </button>
                     <button
                       onClick={clearSelection}
-                      className="px-2 py-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300 text-xs transition-colors"
+                      className="px-2 py-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-muted)] text-xs transition-colors"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -1763,7 +1763,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               {/* Ticket List */}
               <div className="flex-1 overflow-y-auto pb-4 lg:pb-0">
                 {loadingTicketList ? (
-                  <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                  <div className="divide-y divide-[var(--border)] dark:divide-slate-800">
                     {Array.from({ length: 8 }).map((_, i) => (
                       <ListItemSkeleton key={i} />
                     ))}
@@ -1840,7 +1840,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                             </p>
                             <p className="text-xs text-[var(--text-secondary)] flex items-center gap-2">
                               <User className="w-3 h-3" /> {getClientName(ticket)}
-                              <span className="text-slate-300">•</span>
+                              <span className="text-[var(--text-muted)]">•</span>
                               {ticket.source && ticket.source !== 'TrackYu' && (
                                 <>
                                   <span className="text-[10px]">
@@ -1854,7 +1854,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                                             ? '📱'
                                             : '🌐'}
                                   </span>
-                                  <span className="text-slate-300">•</span>
+                                  <span className="text-[var(--text-muted)]">•</span>
                                 </>
                               )}
                               <Clock className="w-3 h-3" /> {new Date(ticket.createdAt).toLocaleDateString('fr-FR')}{' '}
@@ -1985,12 +1985,12 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                               {selectedTicket.source}
                             </span>
                           )}
-                          <span className="text-slate-300">|</span>
+                          <span className="text-[var(--text-muted)]">|</span>
                           <Clock className="w-4 h-4" />{' '}
                           {selectedTicket.receivedAt
                             ? `Reçu ${new Date(selectedTicket.receivedAt).toLocaleString('fr-FR')}`
                             : new Date(selectedTicket.createdAt).toLocaleString()}
-                          <span className="text-slate-300">|</span>
+                          <span className="text-[var(--text-muted)]">|</span>
                           {getRemainingTime(selectedTicket)}
                         </p>
                       </div>
@@ -2106,7 +2106,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         {selectedTicket.status === 'RESOLVED' && (
                           <button
                             onClick={() => handleStatusClick('CLOSED')}
-                            className="px-3 py-2 bg-slate-700 text-white rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-slate-800 transition-colors"
+                            className="px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border)] rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-[var(--bg-surface)] transition-colors"
                           >
                             <Lock className="w-4 h-4" /> Clôturer
                           </button>
@@ -2326,7 +2326,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {selectedTicket.updatedAt &&
                       new Date(selectedTicket.updatedAt).getTime() !== new Date(selectedTicket.createdAt).getTime() && (
                         <div className="relative">
-                          <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-slate-400 border-2 border-[var(--bg-surface)]" />
+                          <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[var(--text-secondary)] border-2 border-[var(--bg-surface)]" />
                           <p className="text-xs text-[var(--text-primary)]">
                             <span className="font-semibold">Modifié</span>
                           </p>
@@ -2358,7 +2358,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                     {/* Clôturé */}
                     {selectedTicket.closedAt && (
                       <div className="relative">
-                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-slate-700 border-2 border-[var(--bg-surface)]" />
+                        <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-[var(--text-muted)] border-2 border-[var(--bg-surface)]" />
                         <p className="text-xs text-[var(--text-primary)]">
                           <span className="font-semibold">Clôturé</span>
                         </p>

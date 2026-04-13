@@ -358,7 +358,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
 
         <button
           onClick={fetchData}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
         >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
           Actualiser
@@ -449,7 +449,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                   filter === item.value
                     ? 'bg-[var(--primary)] text-white'
-                    : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600'
+                    : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 {item.label} ({item.count || 0})
@@ -468,7 +468,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
           </div>
         ) : filteredRequests.length === 0 ? (
           <div className="p-8 text-center">
-            <UserPlus className="mx-auto text-slate-300 dark:text-[var(--text-secondary)] mb-2" size={48} />
+            <UserPlus className="mx-auto text-[var(--text-muted)] dark:text-[var(--text-secondary)] mb-2" size={48} />
             <p className="text-[var(--text-secondary)]">Aucune demande trouvée</p>
           </div>
         ) : isMobile ? (
@@ -898,7 +898,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               )}
               <button
                 onClick={() => setDetailModalOpen(false)}
-                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
               >
                 Fermer
               </button>
@@ -948,7 +948,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
           <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setEmailPreviewModalOpen(false)}
-              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Annuler
             </button>
@@ -997,7 +997,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               className="w-full px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:ring-2 focus:ring-green-500"
             />
             <div className="flex items-center gap-2 mt-2">
-              <div className="flex-1 bg-slate-200 bg-[var(--bg-elevated)] rounded-full h-2">
+              <div className="flex-1 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all ${
                     smsMessage.length > 140 ? 'bg-red-500' : 'bg-green-500'
@@ -1017,7 +1017,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
           <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setSmsPreviewModalOpen(false)}
-              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Annuler
             </button>

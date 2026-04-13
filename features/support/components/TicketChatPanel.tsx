@@ -119,7 +119,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
   return (
     <div className={`flex flex-col h-full bg-[var(--bg-surface)] ${className}`}>
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 bg-[var(--bg-surface)]/50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/50">
         {ticket.messages && ticket.messages.length > 0 ? (
           ticket.messages.map((msg: TicketMessage) => (
             <div
@@ -127,7 +127,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
               className={`flex ${msg.sender === 'SUPPORT' ? 'justify-end' : msg.sender === 'SYSTEM' ? 'justify-center' : 'justify-start'}`}
             >
               {msg.sender === 'SYSTEM' ? (
-                <div className="bg-slate-200 bg-[var(--bg-elevated)] px-4 py-1 rounded-full text-[10px] text-[var(--text-secondary)] max-w-[90%] text-center">
+                <div className="bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] px-4 py-1 rounded-full text-[10px] text-[var(--text-secondary)] max-w-[90%] text-center">
                   {msg.text}
                 </div>
               ) : (
@@ -215,7 +215,7 @@ export const TicketChatPanel: React.FC<TicketChatPanelProps> = ({
             <button
               onClick={handleSendMessage}
               disabled={!messageInput.trim()}
-              className="absolute bottom-3 right-3 p-2 bg-[var(--primary)] text-white rounded-lg disabled:opacity-50 disabled:bg-slate-400 transition-all shadow-md hover:bg-[var(--primary-light)]"
+              className="absolute bottom-3 right-3 p-2 bg-[var(--primary)] text-white rounded-lg disabled:opacity-50 disabled:bg-[var(--text-muted)] transition-all shadow-md hover:bg-[var(--primary-light)]"
               title="Envoyer le message"
             >
               <Send className="w-4 h-4" />

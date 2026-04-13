@@ -64,7 +64,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-all flex items-center gap-2 ${
                 activeTab === tab.id
                   ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
-                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-300 hover:border-[var(--border)]'
+                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-[var(--text-muted)] hover:border-[var(--border)]'
               }`}
             >
               <tab.icon className="w-4 h-4" /> {tab.label}

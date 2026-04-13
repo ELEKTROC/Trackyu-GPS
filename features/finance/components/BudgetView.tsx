@@ -449,7 +449,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
               <button
                 onClick={handleAddLine}
                 disabled={!newLineAccount}
-                className="w-full bg-[var(--primary)] hover:bg-[var(--primary-light)] disabled:bg-slate-200 disabled:text-[var(--text-muted)] text-white p-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all mt-4"
+                className="w-full bg-[var(--primary)] hover:bg-[var(--primary-light)] disabled:bg-[var(--bg-elevated)] disabled:text-[var(--text-muted)] text-white p-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-500/20 transition-all mt-4"
               >
                 Valider la ligne
               </button>

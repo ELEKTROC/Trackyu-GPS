@@ -529,7 +529,7 @@ export const DocumentTemplatesPanelV2 = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {templates.length === 0 ? (
           <Card className="col-span-full p-8 text-center">
-            <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <FileText className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-4" />
             <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">Aucun modèle créé</h3>
             <p className="text-sm text-[var(--text-secondary)] mb-4">
               Commencez par créer votre premier template de document
@@ -786,7 +786,7 @@ export const DocumentTemplatesPanelV2 = () => {
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setIsPreviewModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
+              className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               Fermer
             </button>

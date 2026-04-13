@@ -286,7 +286,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
           <div className="relative" ref={paymentColumnMenuRef}>
             <button
               onClick={() => setIsPaymentColumnMenuOpen(!isPaymentColumnMenuOpen)}
-              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)] transition-colors ${isPaymentColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isPaymentColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
               title="Gérer les colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
@@ -300,7 +300,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                   {effectiveColumns.map((col) => (
                     <label
                       key={col.id}
-                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer text-sm"
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                     >
                       <input
                         type="checkbox"
@@ -354,7 +354,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
         ) : (
           <div className="flex-1 overflow-auto custom-scrollbar">
             <table className="w-full text-left border-collapse">
-              <thead className="bg-slate-100 bg-[var(--bg-surface)] sticky top-0 z-10 shadow-sm">
+              <thead className="bg-[var(--bg-elevated)] bg-[var(--bg-surface)] sticky top-0 z-10 shadow-sm">
                 <tr>
                   {visiblePaymentColumns.includes('date') && (
                     <SortableHeader
@@ -463,7 +463,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+              <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
                 {sortedPayments.map((payment, i) => {
                   const client =
                     tiers.find((t) => t.id === payment.clientId) || clients.find((c) => c.id === payment.clientId);

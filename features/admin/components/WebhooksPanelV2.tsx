@@ -434,7 +434,7 @@ export const WebhooksPanelV2 = () => {
       <div className="space-y-4">
         {webhooks.length === 0 ? (
           <Card className="p-8 text-center">
-            <Webhook className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <Webhook className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-4" />
             <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2">Aucun webhook configuré</h3>
             <p className="text-sm text-[var(--text-secondary)] mb-4">
               Créez votre premier webhook pour recevoir des notifications automatiques
@@ -459,7 +459,7 @@ export const WebhooksPanelV2 = () => {
                     className={`p-2 rounded-lg ${
                       webhook.status === 'ACTIVE'
                         ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'
+                        : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'
                     }`}
                   >
                     <Webhook className="w-6 h-6" />
@@ -485,7 +485,7 @@ export const WebhooksPanelV2 = () => {
                         </span>
                       ))}
                       {webhook.events.length > 4 && (
-                        <span className="px-2 py-0.5 bg-slate-100 text-[var(--text-secondary)] text-xs rounded-full bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
+                        <span className="px-2 py-0.5 bg-[var(--bg-elevated)] text-[var(--text-secondary)] text-xs rounded-full bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
                           +{webhook.events.length - 4} autres
                         </span>
                       )}
@@ -566,7 +566,7 @@ export const WebhooksPanelV2 = () => {
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, secret: crypto.randomUUID() })}
-                className="px-3 py-2 text-sm bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
+                className="px-3 py-2 text-sm bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
               >
                 Générer
               </button>
@@ -596,7 +596,7 @@ export const WebhooksPanelV2 = () => {
                             ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
                             : categorySelected > 0
                               ? 'bg-[var(--primary-dim)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
-                              : 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'
+                              : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'
                         }`}
                       >
                         {categorySelected}/{events.length}
@@ -792,7 +792,7 @@ export const WebhooksPanelV2 = () => {
           <div className="flex justify-end pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsHistoryModalOpen(false)}
-              className="px-4 py-2 bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg"
+              className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
             >
               Fermer
             </button>

@@ -224,14 +224,14 @@ const COLOR_CLASSES: Record<
     darkText: 'dark:text-cyan-400',
   },
   slate: {
-    bg50: 'bg-slate-50',
-    bg100: 'bg-slate-100',
+    bg50: 'bg-[var(--bg-elevated)]',
+    bg100: 'bg-[var(--bg-elevated)]',
     text600: 'text-[var(--text-secondary)]',
     text700: 'text-[var(--text-primary)]',
-    ring400: 'ring-slate-400',
+    ring400: 'ring-[var(--text-secondary)]',
     hoverBg100: 'hover:bg-[var(--bg-elevated)]',
-    darkBg: 'dark:bg-slate-900/30',
-    darkText: 'dark:text-[var(--text-muted)]',
+    darkBg: 'bg-[var(--bg-elevated)]',
+    darkText: 'text-[var(--text-muted)]',
   },
   red: {
     bg50: 'bg-red-50',
@@ -830,7 +830,7 @@ export const StaffPanelV2: React.FC = () => {
               <MobileCardList bordered={false}>
                 {paginatedUsers.length === 0 ? (
                   <div className="px-6 py-12 text-center text-[var(--text-secondary)]">
-                    <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                    <Users className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-4" />
                     <p className="font-medium">Aucun utilisateur trouvé</p>
                   </div>
                 ) : (
@@ -937,7 +937,7 @@ export const StaffPanelV2: React.FC = () => {
                           colSpan={isSuperAdmin ? 7 : 6}
                           className="px-6 py-12 text-center text-[var(--text-secondary)]"
                         >
-                          <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                          <Users className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-4" />
                           <p className="font-medium">Aucun utilisateur trouvé</p>
                           <p className="text-sm">Modifiez vos filtres ou créez un nouvel utilisateur</p>
                         </td>
@@ -1522,7 +1522,7 @@ export const StaffPanelV2: React.FC = () => {
                       ? 'bg-green-50 text-green-700 border border-green-200'
                       : formData.status === 'Suspendu'
                         ? 'bg-red-50 text-red-700 border border-red-200'
-                        : 'bg-slate-100 text-[var(--text-secondary)] border border-[var(--border)]'
+                        : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)]'
                   }`}
                 >
                   {formData.status === 'Actif' ? <CheckCircle className="w-4 h-4" /> : <XCircle className="w-4 h-4" />}
@@ -1590,7 +1590,7 @@ export const StaffPanelV2: React.FC = () => {
                 {organizations.map((org) => (
                   <label
                     key={org.id}
-                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-white dark:hover:bg-slate-700 rounded"
+                    className="flex items-center gap-2 cursor-pointer p-2 hover:bg-white hover:bg-[var(--bg-elevated)] rounded"
                   >
                     <input
                       type="checkbox"
@@ -2197,7 +2197,7 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
                         ? 'bg-purple-100 text-purple-700'
                         : (user as StaffUser).niveau === 'Confirmé'
                           ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
-                          : 'bg-slate-100 text-[var(--text-primary)]'
+                          : 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'
                     }`}
                   >
                     {(user as StaffUser).niveau || 'Junior'}

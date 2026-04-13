@@ -130,7 +130,7 @@ export const ScheduleReportModal: React.FC<ScheduleReportModalProps> = ({ isOpen
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] dark:hover:bg-slate-800 rounded-lg transition-colors"
+            className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
           >
             Annuler
           </button>

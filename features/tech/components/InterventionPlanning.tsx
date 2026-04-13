@@ -294,7 +294,10 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
         {/* Toolbar mobile */}
         <div className="p-3 border-b border-[var(--border)] bg-[var(--bg-elevated)] shrink-0">
           <div className="flex items-center gap-2">
-            <button onClick={goPrev} className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-lg">
+            <button
+              onClick={goPrev}
+              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
+            >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
@@ -303,7 +306,10 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
             >
               Aujourd'hui
             </button>
-            <button onClick={goNext} className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-lg">
+            <button
+              onClick={goNext}
+              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
+            >
               <ChevronRight className="w-4 h-4" />
             </button>
             <div className="flex-1 text-center">
@@ -343,7 +349,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                   {ints.length} intervention{ints.length > 1 ? 's' : ''}
                 </span>
               </div>
-              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              <div className="divide-y divide-[var(--border)] dark:divide-slate-800">
                 {[...ints]
                   .sort((a, b) => new Date(a.scheduledDate || 0).getTime() - new Date(b.scheduledDate || 0).getTime())
                   .map((int) => {
@@ -355,7 +361,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                       <div
                         key={int.id}
                         onClick={() => onEdit(int)}
-                        className="flex items-stretch cursor-pointer tr-hover/50 active:bg-slate-100 dark:active:bg-slate-700"
+                        className="flex items-stretch cursor-pointer tr-hover/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700"
                       >
                         <div className={`w-1 shrink-0 ${getStatusBgClass(int.status)}`} />
                         <div className="flex-1 px-3 py-3 min-w-0">
@@ -377,7 +383,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                           )}
                         </div>
                         <div className="flex items-center pr-3">
-                          <ChevronRight className="w-4 h-4 text-slate-300 dark:text-[var(--text-secondary)]" />
+                          <ChevronRight className="w-4 h-4 text-[var(--text-muted)] dark:text-[var(--text-secondary)]" />
                         </div>
                       </div>
                     );
@@ -395,7 +401,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                   À planifier ({unplannedInterventions.length})
                 </span>
               </div>
-              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              <div className="divide-y divide-[var(--border)] dark:divide-slate-800">
                 {unplannedInterventions.map((int) => (
                   <div
                     key={int.id}
@@ -413,7 +419,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                       )}
                     </div>
                     <div className="flex items-center pr-3">
-                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-[var(--text-secondary)]" />
+                      <ChevronRight className="w-4 h-4 text-[var(--text-muted)] dark:text-[var(--text-secondary)]" />
                     </div>
                   </div>
                 ))}
@@ -448,7 +454,10 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
 
           {/* Navigation date */}
           <div className="flex items-center gap-1.5">
-            <button onClick={goPrev} className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded">
+            <button
+              onClick={goPrev}
+              className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
+            >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
@@ -457,7 +466,10 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
             >
               Aujourd'hui
             </button>
-            <button onClick={goNext} className="p-1 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded">
+            <button
+              onClick={goNext}
+              className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
+            >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -668,7 +680,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                             );
                           })}
                           {dayInts.length === 0 && (
-                            <div className="flex-1 flex items-center justify-center text-[10px] text-slate-300 dark:text-[var(--text-secondary)] select-none">
+                            <div className="flex-1 flex items-center justify-center text-[10px] text-[var(--text-muted)] dark:text-[var(--text-secondary)] select-none">
                               —
                             </div>
                           )}

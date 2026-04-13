@@ -51,7 +51,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
           <button
             {...attributes}
             {...listeners}
-            className={`p-1 rounded-md text-slate-300 dark:text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50 cursor-grab active:cursor-grabbing transition-colors ${editMode ? 'opacity-100' : 'opacity-0 group-hover/section:opacity-100 focus:opacity-100'}`}
+            className={`p-1 rounded-md text-[var(--text-muted)] dark:text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50 cursor-grab active:cursor-grabbing transition-colors ${editMode ? 'opacity-100' : 'opacity-0 group-hover/section:opacity-100 focus:opacity-100'}`}
             aria-label={`Déplacer la section ${label}`}
             title="Glisser pour réorganiser"
           >
@@ -61,7 +61,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
           {/* Collapse toggle */}
           <button
             onClick={() => onToggleCollapse(id)}
-            className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider transition-colors ${hidden ? 'text-slate-300 dark:text-[var(--text-secondary)] line-through' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-300'}`}
+            className={`flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider transition-colors ${hidden ? 'text-[var(--text-muted)] dark:text-[var(--text-secondary)] line-through' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)]'}`}
           >
             {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {label}
@@ -74,7 +74,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
           {editMode && onToggleHidden && (
             <button
               onClick={() => onToggleHidden(id)}
-              className={`p-1 rounded-md transition-colors ${hidden ? 'text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-300 hover:bg-[var(--bg-elevated)]/50'}`}
+              className={`p-1 rounded-md transition-colors ${hidden ? 'text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50'}`}
               title={hidden ? 'Afficher cette section' : 'Masquer cette section'}
             >
               {hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

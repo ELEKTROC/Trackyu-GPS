@@ -69,7 +69,7 @@ export const MobileTabLayout: React.FC<MobileTabLayoutProps> = ({
                 className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border text-left transition-colors active:scale-[0.98] ${
                   isActive
                     ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]'
-                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50'
+                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50'
                 }`}
               >
                 {Icon && (

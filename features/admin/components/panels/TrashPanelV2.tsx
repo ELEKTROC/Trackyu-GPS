@@ -230,7 +230,7 @@ export const TrashPanelV2: React.FC = () => {
               {filteredUsers.map((u: TrashUser) => (
                 <tr
                   key={`user-${u.id}`}
-                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/30"
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
@@ -301,7 +301,7 @@ export const TrashPanelV2: React.FC = () => {
               {filteredContracts.map((c: TrashContract) => (
                 <tr
                   key={`contract-${c.id}`}
-                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/30"
                 >
                   <td className="py-3 px-4">
                     <span className="font-medium text-[var(--text-primary)] text-sm line-through opacity-70">
@@ -367,7 +367,7 @@ export const TrashPanelV2: React.FC = () => {
               {filteredTenants.map((t: TrashTenant) => (
                 <tr
                   key={`tenant-${t.id}`}
-                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/30"
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
@@ -420,7 +420,7 @@ export const TrashPanelV2: React.FC = () => {
         <button
           onClick={fetchTrash}
           disabled={loading}
-          className="px-4 py-2 text-sm bg-slate-100 hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 self-start sm:self-auto"
+          className="px-4 py-2 text-sm bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg flex items-center gap-2 transition-colors disabled:opacity-50 self-start sm:self-auto"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Actualiser
@@ -436,7 +436,7 @@ export const TrashPanelV2: React.FC = () => {
             className={`p-3 rounded-xl border transition-all text-left ${
               subTab === tab.id
                 ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 ring-1 ring-red-200 dark:ring-red-800'
-                : 'border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--border)] dark:hover:border-slate-600'
+                : 'border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--border)]'
             }`}
           >
             <div className="flex items-center gap-2 mb-1">

@@ -214,7 +214,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 relative ${
                 activeTab === tab.id
                   ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
-                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-slate-300'
+                  : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)]'
               }`}
             >
               <tab.icon className="w-4 h-4" />

@@ -379,7 +379,7 @@ export const ResellersPanelV2: React.FC = () => {
             <div>
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Revendeurs Actifs</p>
               {isLoadingStats ? (
-                <div className="h-8 w-16 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
+                <div className="h-8 w-16 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
                   <p className="text-2xl font-bold text-[var(--text-primary)]">{globalStats.activeResellers}</p>
@@ -398,7 +398,7 @@ export const ResellersPanelV2: React.FC = () => {
             <div>
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Clients Gérés</p>
               {isLoadingStats ? (
-                <div className="h-8 w-16 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
+                <div className="h-8 w-16 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
                   <p className="text-2xl font-bold text-[var(--text-primary)]">
@@ -418,7 +418,7 @@ export const ResellersPanelV2: React.FC = () => {
             <div>
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Véhicules Trackés</p>
               {isLoadingStats ? (
-                <div className="h-8 w-16 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
+                <div className="h-8 w-16 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
                   <p className="text-2xl font-bold text-[var(--text-primary)]">
@@ -438,7 +438,7 @@ export const ResellersPanelV2: React.FC = () => {
             <div>
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">MRR Total</p>
               {isLoadingStats ? (
-                <div className="h-8 w-20 bg-slate-200 bg-[var(--bg-elevated)] animate-pulse rounded" />
+                <div className="h-8 w-20 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
                   <p className="text-2xl font-bold text-[var(--text-primary)]">
@@ -518,7 +518,7 @@ export const ResellersPanelV2: React.FC = () => {
           <MobileCardList bordered={false}>
             {filteredResellers.length === 0 ? (
               <div className="px-6 py-12 text-center text-[var(--text-secondary)]">
-                <Building2 className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                <Building2 className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-4" />
                 <p className="font-medium">Aucun revendeur trouvé</p>
               </div>
             ) : (
@@ -631,7 +631,7 @@ export const ResellersPanelV2: React.FC = () => {
                 {filteredResellers.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-12 text-center text-[var(--text-secondary)]">
-                      <Building2 className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                      <Building2 className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-4" />
                       <p className="font-medium">Aucun revendeur trouvé</p>
                       <p className="text-sm">Modifiez vos filtres ou créez un nouveau revendeur</p>
                     </td>

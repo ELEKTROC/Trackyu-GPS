@@ -134,7 +134,7 @@ const ProgressBar: React.FC<{
           <span>{value.toFixed(1)}%</span>
         </div>
       )}
-      <div className="w-full bg-slate-200 bg-[var(--bg-elevated)] rounded-full h-2">
+      <div className="w-full bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-full h-2">
         <div
           className={`h-2 rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${percent}%` }}
@@ -199,7 +199,7 @@ export const SystemMetricsPanel: React.FC = () => {
           onClick={() => refetch()}
           title="Rafraîchir les métriques"
           aria-label="Rafraîchir les métriques"
-          className="p-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors"
+          className="p-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
         >
           <RefreshCw className={`w-4 h-4 text-[var(--text-secondary)] ${loadingGps ? 'animate-spin' : ''}`} />
         </button>

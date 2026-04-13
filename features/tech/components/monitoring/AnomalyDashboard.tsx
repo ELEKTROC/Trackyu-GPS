@@ -56,7 +56,7 @@ export const AnomalyDashboard: React.FC = () => {
       case 'CRITICAL': return 'bg-red-100 text-red-800 border-red-200';
       case 'WARNING': return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'INFO': return 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]';
-      default: return 'bg-slate-100 text-[var(--text-primary)] border-[var(--border)]';
+      default: return 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border-[var(--border)]';
     }
   };
 
@@ -162,7 +162,7 @@ export const AnomalyDashboard: React.FC = () => {
 
       {/* Main List */}
       <Card className="lg:col-span-2 flex flex-col overflow-hidden">
-        <div className="p-4 border-b border-[var(--border)] bg-slate-50 flex justify-between items-center">
+        <div className="p-4 border-b border-[var(--border)] bg-[var(--bg-elevated)] flex justify-between items-center">
           <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
             <Activity className="w-5 h-5 text-[var(--primary)]" />
             Détection d'Anomalies
@@ -204,7 +204,7 @@ export const AnomalyDashboard: React.FC = () => {
             </MobileCardList>
           ) : (
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 text-[var(--text-secondary)] uppercase font-bold text-xs sticky top-0">
+            <thead className="bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase font-bold text-xs sticky top-0">
               <tr>
                 <SortableHeader label="Type" sortKey="code" currentSortKey={anomalySortConfig.key} currentDirection={anomalySortConfig.direction} onSort={handleAnomalySort} />
                 <SortableHeader label="Véhicule" sortKey="vehicleName" currentSortKey={anomalySortConfig.key} currentDirection={anomalySortConfig.direction} onSort={handleAnomalySort} />
@@ -213,7 +213,7 @@ export const AnomalyDashboard: React.FC = () => {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[var(--border)]">
               {sortedAnomalies.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-4 py-12 text-center text-[var(--text-muted)]">
@@ -270,7 +270,7 @@ export const AnomalyDashboard: React.FC = () => {
       </Card>
 
       {/* Recommendations Panel - Dynamique */}
-      <Card className="p-0 flex flex-col overflow-hidden bg-slate-50 border-[var(--border)]">
+      <Card className="p-0 flex flex-col overflow-hidden bg-[var(--bg-elevated)] border-[var(--border)]">
         <div className="p-4 border-b border-[var(--border)] bg-white">
           <h3 className="font-bold text-[var(--text-primary)]">Recommandations IA</h3>
         </div>
@@ -345,7 +345,7 @@ export const AnomalyDashboard: React.FC = () => {
                 const idleAnomalies = displayAnomalies.filter(a => a.code === 'LONG_IDLE');
                 if (idleAnomalies.length === 0) return null;
                 return (
-                    <div className="p-3 bg-slate-50 border border-[var(--border)] rounded-lg">
+                    <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg">
                         <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1 flex items-center gap-2">
                             <Clock className="w-4 h-4" /> Véhicules Immobiles ({idleAnomalies.length})
                         </h4>

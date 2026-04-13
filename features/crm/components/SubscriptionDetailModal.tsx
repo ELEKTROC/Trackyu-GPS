@@ -55,20 +55,20 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   EXPIRED: { label: 'Expiré', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
   CANCELLED: {
     label: 'Résilié',
-    color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
   },
   CANCELED: {
     label: 'Résilié',
-    color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
   },
   SUSPENDED: { label: 'Suspendu', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' },
   TERMINATED: {
     label: 'Terminé',
-    color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
   },
   DRAFT: {
     label: 'Brouillon',
-    color: 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-surface)]/30 dark:text-[var(--text-muted)]',
   },
 };
 
@@ -249,7 +249,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-lg transition-colors"
+            className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -268,7 +268,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
                 activeTab === tab.id
                   ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm'
-                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -383,7 +383,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                   </div>
                   <div className="flex justify-between">
                     <span className="text-[var(--text-secondary)] text-sm">Plaque</span>
-                    <span className="font-mono bg-slate-200 bg-[var(--bg-elevated)] px-2 py-0.5 rounded text-sm">
+                    <span className="font-mono bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] px-2 py-0.5 rounded text-sm">
                       {vehicle?.licensePlate || '-'}
                     </span>
                   </div>
@@ -531,7 +531,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                 </div>
               ) : (
                 <div className="relative">
-                  <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-slate-200 bg-[var(--bg-elevated)]" />
+                  <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]" />
                   {historyEvents.map((event, index) => (
                     <div key={index} className="relative pl-10 pb-4">
                       <div
@@ -544,7 +544,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
                                 ? 'bg-purple-500 border-purple-500'
                                 : event.type === 'STATUS_CHANGE'
                                   ? 'bg-amber-500 border-amber-500'
-                                  : 'bg-slate-300 border-[var(--border)]'
+                                  : 'bg-[var(--border)] border-[var(--border)]'
                         }`}
                       />
                       <div className="bg-[var(--bg-elevated)]/50 rounded-lg p-3">
@@ -582,7 +582,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               <div className="flex gap-2">
                 <button
                   onClick={() => setConfirmRésilier(false)}
-                  className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700"
+                  className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
                 >
                   Annuler
                 </button>

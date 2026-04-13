@@ -379,7 +379,7 @@ export const AlertForm = React.forwardRef<
               <button
                 type="button"
                 onClick={() => setIsVehicleDropdownOpen(!isVehicleDropdownOpen)}
-                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-left flex justify-between items-center hover:border-slate-400 transition-colors"
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-left flex justify-between items-center hover:border-[var(--border-strong)] transition-colors"
               >
                 <span
                   className={
@@ -403,7 +403,7 @@ export const AlertForm = React.forwardRef<
                     filteredVehicles.map((v: Vehicle) => (
                       <label
                         key={v.id}
-                        className="flex items-center gap-2 p-2.5 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 cursor-pointer"
+                        className="flex items-center gap-2 p-2.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] cursor-pointer"
                       >
                         <input
                           type="checkbox"
@@ -511,7 +511,7 @@ export const AlertForm = React.forwardRef<
               <button
                 type="button"
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-left flex justify-between items-center hover:border-slate-400 transition-colors"
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-left flex justify-between items-center hover:border-[var(--border-strong)] transition-colors"
               >
                 <span
                   className={selectedUserIds.length === 0 ? 'text-[var(--text-muted)]' : 'text-[var(--text-primary)]'}
@@ -533,7 +533,7 @@ export const AlertForm = React.forwardRef<
                     filteredUsers.map((u: User) => (
                       <label
                         key={u.id}
-                        className="flex items-start gap-2 p-3 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 cursor-pointer border-b border-[var(--border)] border-[var(--border)] last:border-0"
+                        className="flex items-start gap-2 p-3 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] cursor-pointer border-b border-[var(--border)] border-[var(--border)] last:border-0"
                       >
                         <input
                           type="checkbox"

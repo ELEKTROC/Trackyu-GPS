@@ -552,7 +552,7 @@ export const TechSettingsPanel: React.FC = () => {
           </div>
           <button
             onClick={fetchAllData}
-            className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200"
+            className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-secondary)]"
             title="Rafraîchir"
           >
             <RotateCcw className="w-5 h-5" />
@@ -569,7 +569,7 @@ export const TechSettingsPanel: React.FC = () => {
                 className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === tab.id
                     ? 'border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
-                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200'
+                    : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-secondary)]'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -651,7 +651,7 @@ export const TechSettingsPanel: React.FC = () => {
                           <button
                             key={color}
                             onClick={() => setNewType({ ...newType, color })}
-                            className={`w-6 h-6 rounded-full border-2 ${newType.color === color ? 'border-slate-800 dark:border-white' : 'border-transparent'}`}
+                            className={`w-6 h-6 rounded-full border-2 ${newType.color === color ? 'border-[var(--text-primary)]' : 'border-transparent'}`}
                             style={{ backgroundColor: color }}
                           />
                         ))}
@@ -695,7 +695,7 @@ export const TechSettingsPanel: React.FC = () => {
                       className={`flex items-center justify-between p-4 rounded-lg border ${
                         type.is_active
                           ? 'bg-[var(--bg-elevated)] border-[var(--border)]'
-                          : 'bg-slate-100 bg-[var(--bg-surface)] border-[var(--border)] opacity-60'
+                          : 'bg-[var(--bg-elevated)] bg-[var(--bg-surface)] border-[var(--border)] opacity-60'
                       }`}
                     >
                       {isEditing ? (
@@ -883,7 +883,7 @@ export const TechSettingsPanel: React.FC = () => {
                       className={`flex items-center justify-between p-4 rounded-lg border ${
                         nature.is_active
                           ? 'bg-[var(--bg-elevated)] border-[var(--border)]'
-                          : 'bg-slate-100 bg-[var(--bg-surface)] opacity-60'
+                          : 'bg-[var(--bg-elevated)] bg-[var(--bg-surface)] opacity-60'
                       }`}
                     >
                       <div>
@@ -1029,7 +1029,7 @@ export const TechSettingsPanel: React.FC = () => {
                         }}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--primary-dim)] dark:peer-focus:ring-[var(--primary-dim)] rounded-full peer bg-[var(--bg-elevated)] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--border)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-[var(--border)] peer-checked:bg-[var(--primary)]"></div>
+                      <div className="w-11 h-6 bg-[var(--bg-elevated)] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--primary-dim)] dark:peer-focus:ring-[var(--primary-dim)] rounded-full peer bg-[var(--bg-elevated)] peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--border)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all border-[var(--border)] peer-checked:bg-[var(--primary)]"></div>
                     </label>
                   </div>
                 </div>

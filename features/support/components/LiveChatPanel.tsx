@@ -84,7 +84,12 @@ const STATUS_CONFIG = {
     bg: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]',
     dot: 'bg-[var(--primary-dim)]0',
   },
-  closed: { label: 'Fermée', color: 'text-[var(--text-muted)]', bg: 'bg-[var(--bg-elevated)]', dot: 'bg-slate-400' },
+  closed: {
+    label: 'Fermée',
+    color: 'text-[var(--text-muted)]',
+    bg: 'bg-[var(--bg-elevated)]',
+    dot: 'bg-[var(--text-secondary)]',
+  },
 };
 
 const ROLE_LABELS: Record<string, string> = {
@@ -539,7 +544,7 @@ export const LiveChatPanel: React.FC = () => {
                     ? chatTab === 'support'
                       ? 'bg-[var(--primary)] text-white'
                       : 'bg-green-600 text-white'
-                    : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'
+                    : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 {f.label}
@@ -556,7 +561,7 @@ export const LiveChatPanel: React.FC = () => {
             </div>
           ) : filteredConversations.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <MessageSquare className="w-10 h-10 text-slate-300 dark:text-[var(--text-secondary)] mx-auto mb-3" />
+              <MessageSquare className="w-10 h-10 text-[var(--text-muted)] dark:text-[var(--text-secondary)] mx-auto mb-3" />
               <p className="text-sm text-[var(--text-secondary)]">
                 {chatTab === 'internal' ? "Aucune conversation d'équipe" : 'Aucune conversation de support'}
               </p>
@@ -591,7 +596,7 @@ export const LiveChatPanel: React.FC = () => {
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="relative">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-green-100 dark:bg-green-900/30' : 'bg-slate-200 bg-[var(--bg-elevated)]'}`}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]'}`}
                         >
                           {isInternal ? (
                             <Users className="w-4 h-4 text-green-600" />
@@ -600,7 +605,7 @@ export const LiveChatPanel: React.FC = () => {
                           )}
                         </div>
                         <div
-                          className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-surface)] ${STATUS_CONFIG[conv.status]?.dot || 'bg-slate-400'}`}
+                          className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[var(--bg-surface)] ${STATUS_CONFIG[conv.status]?.dot || 'bg-[var(--text-secondary)]'}`}
                         />
                       </div>
                       <div className="min-w-0">

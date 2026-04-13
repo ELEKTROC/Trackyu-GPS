@@ -138,7 +138,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               )}
             </div>
             <h2 className="font-bold text-[var(--text-primary)]">Notifications</h2>
-            <span className="bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-secondary)] px-2 py-0.5 rounded-full text-xs font-bold">
+            <span className="bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] px-2 py-0.5 rounded-full text-xs font-bold">
               {unreadCount}
             </span>
           </div>
@@ -146,13 +146,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             <button
               onClick={onMarkAllAsRead}
               title="Tout marquer comme lu"
-              className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full text-[var(--text-secondary)] transition-colors"
+              className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)] transition-colors"
             >
               <Check className="w-5 h-5" />
             </button>
             <button
               onClick={onClose}
-              className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full text-[var(--text-secondary)] transition-colors"
+              className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -199,8 +199,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   onClick={() => setFilter(type.id as typeof filter)}
                   className={`px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-colors ${
                     filter === type.id
-                      ? 'bg-slate-800 dark:bg-[var(--primary)] text-white border-slate-800 dark:border-[var(--primary)]'
-                      : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'
+                      ? 'bg-[var(--primary)] text-white border-[var(--primary)]'
+                      : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
                   }`}
                 >
                   {type.label}
@@ -211,13 +211,13 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             <div className="flex gap-2 overflow-x-auto pb-2 pt-1 custom-scrollbar">
               <button
                 onClick={() => setFilter('ALL')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'ALL' ? 'bg-slate-800 dark:bg-[var(--primary)] text-white border-slate-800 dark:border-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'ALL' ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'}`}
               >
                 Tout
               </button>
               <button
                 onClick={() => setFilter('UNREAD')}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'UNREAD' ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700'}`}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'UNREAD' ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'}`}
               >
                 Non lu
               </button>

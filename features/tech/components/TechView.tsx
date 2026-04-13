@@ -56,13 +56,15 @@ const STOCK_STATUS_LABELS: Record<string, { label: string; bg: string; text: str
   RMA_PENDING: { label: 'SAV en attente', bg: 'bg-orange-100', text: 'text-orange-700' },
   SENT_TO_SUPPLIER: { label: 'Envoyé fournisseur', bg: 'bg-purple-100', text: 'text-purple-700' },
   REPLACED_BY_SUPPLIER: { label: 'Remplacé', bg: 'bg-teal-100', text: 'text-teal-700' },
-  SCRAPPED: { label: 'Mis au rebut', bg: 'bg-slate-200', text: 'text-[var(--text-secondary)]' },
+  SCRAPPED: { label: 'Mis au rebut', bg: 'bg-[var(--bg-elevated)]', text: 'text-[var(--text-secondary)]' },
   LOST: { label: 'Perdu', bg: 'bg-red-200', text: 'text-red-800' },
   REMOVED: { label: 'Retiré', bg: 'bg-yellow-100', text: 'text-yellow-700' },
 };
 
 const getStockStatusStyle = (status: string) => {
-  return STOCK_STATUS_LABELS[status] || { label: status, bg: 'bg-slate-100', text: 'text-[var(--text-primary)]' };
+  return (
+    STOCK_STATUS_LABELS[status] || { label: status, bg: 'bg-[var(--bg-elevated)]', text: 'text-[var(--text-primary)]' }
+  );
 };
 
 const TECH_TABS = [
@@ -89,7 +91,13 @@ const TECH_TABS = [
   },
   { id: 'MAP', label: 'Radar', icon: MapIcon, color: 'bg-teal-500', description: 'Carte des techniciens' },
   { id: 'STOCK', label: 'Stock', icon: Box, color: 'bg-amber-500', description: 'Gestion du matériel' },
-  { id: 'TEAM', label: 'Équipe', icon: Users, color: 'bg-slate-500', description: 'Gestion des techniciens' },
+  {
+    id: 'TEAM',
+    label: 'Équipe',
+    icon: Users,
+    color: 'bg-[var(--text-secondary)]',
+    description: 'Gestion des techniciens',
+  },
 ];
 
 // Mobile: TECH role only sees LIST, STOCK, TEAM (no OVERVIEW/PLANNING/Radar)
@@ -480,7 +488,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                       ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-300'
                       : item.type === 'ACCESSORY'
                         ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-                        : 'bg-slate-100 text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
+                        : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
               return (
                 <div
                   key={item.id}
@@ -611,12 +619,12 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+              <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
                 {paginatedStock.map((item) => (
                   <tr key={item.id} className="density-row tr-hover/50">
                     <td className="px-4 py-2">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item.type === 'BOX' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : item.type === 'SIM' ? 'bg-purple-100 text-purple-700' : item.type === 'SENSOR' ? 'bg-teal-100 text-teal-700' : item.type === 'ACCESSORY' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-[var(--text-primary)]'}`}
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item.type === 'BOX' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : item.type === 'SIM' ? 'bg-purple-100 text-purple-700' : item.type === 'SENSOR' ? 'bg-teal-100 text-teal-700' : item.type === 'ACCESSORY' ? 'bg-amber-100 text-amber-700' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)]'}`}
                       >
                         {item.type}
                       </span>
@@ -687,14 +695,14 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 <button
                   onClick={() => setStockPage((p) => Math.max(1, p - 1))}
                   disabled={stockPage === 1}
-                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setStockPage((p) => Math.min(totalStockPages, p + 1))}
                   disabled={stockPage === totalStockPages}
-                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -815,7 +823,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-sm">
+            <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
               {paginatedHistory.map((log) => (
                 <tr key={log.id} className="density-row tr-hover/50">
                   <td className="px-4 py-2 text-[var(--text-secondary)] text-xs">
@@ -858,14 +866,14 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
             <button
               onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
               disabled={historyPage === 1}
-              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setHistoryPage((p) => Math.min(totalHistoryPages, p + 1))}
               disabled={historyPage === totalHistoryPages}
-              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -931,7 +939,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 <div className="relative hidden sm:block" ref={filterMenuRef}>
                   <button
                     onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-                    className={`flex items-center gap-2 px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-bold rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 shadow-sm transition-colors whitespace-nowrap ${isFilterMenuOpen ? 'ring-2 ring-offset-2 ring-[var(--primary)]' : ''}`}
+                    className={`flex items-center gap-2 px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-bold rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] shadow-sm transition-colors whitespace-nowrap ${isFilterMenuOpen ? 'ring-2 ring-offset-2 ring-[var(--primary)]' : ''}`}
                   >
                     <Filter className="w-4 h-4" /> <span className="hidden sm:inline">Filtres</span>
                   </button>
@@ -1140,7 +1148,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
           {viewMode === 'OVERVIEW' &&
             (interventions.length === 0 ? (
               <Card className="flex-1 flex flex-col items-center justify-center p-12 text-center border-[var(--border)]">
-                <ClipboardCheck className="w-16 h-16 text-slate-200 dark:text-[var(--text-primary)] mb-4" />
+                <ClipboardCheck className="w-16 h-16 text-[var(--text-muted)] mb-4" />
                 <p className="text-lg font-semibold text-[var(--text-secondary)]">Aucune intervention</p>
                 <p className="text-sm text-[var(--text-muted)] mt-1">
                   Créez votre première intervention pour voir les statistiques
@@ -1157,7 +1165,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               const listData = isMobile ? mobileKpiFilteredInterventions : filteredInterventions;
               return listData.length === 0 ? (
                 <Card className="flex-1 flex flex-col items-center justify-center p-12 text-center border-[var(--border)]">
-                  <Wrench className="w-16 h-16 text-slate-200 dark:text-[var(--text-primary)] mb-4" />
+                  <Wrench className="w-16 h-16 text-[var(--text-muted)] mb-4" />
                   <p className="text-lg font-semibold text-[var(--text-secondary)]">Aucune intervention trouvée</p>
                   <p className="text-sm text-[var(--text-muted)] mt-1">
                     Modifiez les filtres ou créez une nouvelle intervention

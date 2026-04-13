@@ -234,7 +234,7 @@ const CATALOG: ReportSection[] = [
     label: 'Support',
     tab: 'support',
     description: 'Tickets, délais de résolution et satisfaction client',
-    color: 'bg-slate-500',
+    color: 'bg-[var(--text-secondary)]',
     textColor: 'text-[var(--text-secondary)]',
     borderColor: 'border-[var(--border)]',
     bgLight: 'bg-[var(--bg-elevated)]',
@@ -375,7 +375,7 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
             className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               !activeCategory
                 ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]'
-                : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'
+                : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >
             Tous
@@ -387,7 +387,7 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
               className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 activeCategory === s.id
                   ? `${s.color} text-white`
-                  : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'
+                  : 'bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               <s.sectionIcon className="w-3 h-3" />
@@ -428,7 +428,7 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
                       >
                         <Icon className={`w-4 h-4 ${section.textColor}`} />
                       </div>
-                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-[var(--text-secondary)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary)] transition-colors shrink-0 mt-0.5" />
+                      <ChevronRight className="w-4 h-4 text-[var(--text-muted)] dark:text-[var(--text-secondary)] group-hover:text-[var(--primary)] dark:group-hover:text-[var(--primary)] transition-colors shrink-0 mt-0.5" />
                     </div>
                     <p className="text-sm font-semibold text-[var(--text-primary)] leading-tight mb-1">{item.label}</p>
                     <p className="text-xs text-[var(--text-secondary)] leading-relaxed">{item.description}</p>
@@ -462,7 +462,7 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
           <span className="hidden sm:inline">Rapports</span>
         </button>
 
-        <div className="w-px h-4 bg-slate-200 bg-[var(--bg-elevated)] shrink-0" />
+        <div className="w-px h-4 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] shrink-0" />
 
         {currentSection && currentItem && (
           <div className="flex items-center gap-2 min-w-0 flex-1">

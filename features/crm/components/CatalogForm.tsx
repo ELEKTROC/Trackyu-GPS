@@ -197,7 +197,7 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
           />
         </FormField>
         <FormField label="Statut (Lecture seule)">
-          <Select value={formData.status || 'ACTIVE'} disabled className="bg-slate-50 cursor-not-allowed">
+          <Select value={formData.status || 'ACTIVE'} disabled className="bg-[var(--bg-elevated)] cursor-not-allowed">
             <option value="ACTIVE">Actif</option>
             <option value="INACTIVE">Inactif</option>
           </Select>

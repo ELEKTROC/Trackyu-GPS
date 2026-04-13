@@ -46,7 +46,11 @@ const categoryLabels: Record<string, string> = {
 
 // Helper: status badge config
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  DRAFT: { label: 'Brouillon', color: 'bg-slate-100 text-[var(--text-primary)] border-[var(--border)]', icon: Clock },
+  DRAFT: {
+    label: 'Brouillon',
+    color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border-[var(--border)]',
+    icon: Clock,
+  },
   SENT: {
     label: 'Envoyée',
     color: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]',
@@ -235,7 +239,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
             (() => {
               const cfg = statusConfig[item.status] || {
                 label: item.status,
-                color: 'bg-slate-100 text-[var(--text-secondary)] border-[var(--border)]',
+                color: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]',
                 icon: Clock,
               };
               const Icon = cfg.icon;
@@ -354,7 +358,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       {/* Items Table - Responsive */}
       <div className="overflow-x-auto -mx-4 md:mx-0">
         <table className="w-full text-xs md:text-sm mb-4 min-w-[400px]">
-          <thead className="bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase text-xs">
+          <thead className="bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] uppercase text-xs">
             <tr>
               <th className="p-2 text-left">Description</th>
               <th className="p-2 w-12 md:w-20 text-center">Qté</th>
@@ -462,19 +466,19 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       <div className="flex flex-wrap justify-center md:justify-end gap-2 pt-6 border-t border-[var(--border)] mt-6 no-print">
         <button
           onClick={onEdit}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
         >
           <Edit2 className="w-3 h-3" /> Modifier
         </button>
         <button
           onClick={() => onAction('download')}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
         >
           <Download className="w-3 h-3" /> PDF
         </button>
         <button
           onClick={() => onAction('send')}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
         >
           <Mail className="w-3 h-3" /> Envoyer
         </button>

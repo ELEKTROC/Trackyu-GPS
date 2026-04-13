@@ -341,7 +341,7 @@ export const InterventionVehicleTab: React.FC<VehicleTabProps> = ({
                         {isMaterialMenuOpen && (
                             <div className="absolute top-full left-0 right-0 mt-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto p-2 custom-scrollbar">
                                 {catalogItems.filter(i => i.category === 'Matériel').map(item => (
-                                    <label key={item.id} className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer text-sm">
+                                    <label key={item.id} className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm">
                                         <input title={item.name} type="checkbox" checked={formData.material?.includes(item.name) || false} onChange={() => handleMaterialToggle(item.name)} className="rounded border-[var(--border)] text-[var(--primary)]" />
                                         <span className="text-[var(--text-primary)]">{item.name}</span>
                                     </label>
@@ -471,7 +471,7 @@ export const InterventionVehicleTab: React.FC<VehicleTabProps> = ({
           {['checkStart', 'checkLights', 'checkDashboard', 'checkAC', 'checkAudio', 'checkBattery'].map((field) => (
             <label
               key={field}
-              className="flex items-center p-3 border border-[var(--border)] rounded-lg cursor-pointer hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors select-none"
+              className="flex items-center p-3 border border-[var(--border)] rounded-lg cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors select-none"
             >
               <input
                 type="checkbox"

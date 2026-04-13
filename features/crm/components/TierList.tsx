@@ -233,7 +233,8 @@ export const TierList: React.FC<TierListProps> = ({
     WHATSGPS: { label: 'WhatsGPS', className: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' },
     AUTRES: {
       label: 'Autres',
-      className: 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
+      className:
+        'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]',
     },
   };
 
@@ -256,7 +257,7 @@ export const TierList: React.FC<TierListProps> = ({
                     ? 'bg-purple-100 text-purple-700'
                     : tier.clientData?.segment === 'Grand Compte'
                       ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
-                      : 'bg-slate-100 text-[var(--text-secondary)]'
+                      : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                 }`}
               >
                 {tier.clientData?.segment || 'Standard'}
@@ -453,7 +454,7 @@ export const TierList: React.FC<TierListProps> = ({
                       </p>
                     </div>
                     <span
-                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${tier.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-slate-100 text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'}`}
+                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${tier.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'}`}
                     >
                       {tier.status === 'ACTIVE' ? 'Actif' : 'Inactif'}
                     </span>

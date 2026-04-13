@@ -151,13 +151,13 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
         onClick={() => onFocus(vehicle)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`relative px-4 py-3 border-l-4 border-b border-slate-50 border-[var(--border)] transition-all cursor-pointer flex gap-3 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 ${isFocused ? 'border-l-blue-500 bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'border-l-transparent'}`}
+        className={`relative px-4 py-3 border-l-4 border-b border-slate-50 border-[var(--border)] transition-all cursor-pointer flex gap-3 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 ${isFocused ? 'border-l-blue-500 bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'border-l-transparent'}`}
       >
         <div className="flex items-start pt-1" onClick={(e) => onToggleSelection(vehicle.id, e)}>
           {isSelected ? (
             <CheckSquare className="w-4 h-4 text-[var(--primary)] cursor-pointer" />
           ) : (
-            <Square className="w-4 h-4 text-slate-300 dark:text-[var(--text-secondary)] hover:text-[var(--text-muted)] cursor-pointer" />
+            <Square className="w-4 h-4 text-[var(--text-muted)] dark:text-[var(--text-secondary)] hover:text-[var(--text-muted)] cursor-pointer" />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -206,15 +206,13 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
 
             <div className="flex items-center gap-3">
               <Signal
-                className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-slate-300 dark:text-[var(--text-secondary)]'}`}
+                className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-[var(--text-muted)] dark:text-[var(--text-secondary)]'}`}
               />
 
               {config.showFuel && <Battery className={`w-3 h-3 ${batteryColor}`} />}
 
               {config.showIgnition && (
-                <Key
-                  className={`w-3 h-3 ${isIgnitionOn ? 'text-orange-400' : 'text-slate-200 dark:text-[var(--text-secondary)]'}`}
-                />
+                <Key className={`w-3 h-3 ${isIgnitionOn ? 'text-orange-400' : 'text-[var(--text-secondary)]'}`} />
               )}
 
               {/* Immobilization Icon */}

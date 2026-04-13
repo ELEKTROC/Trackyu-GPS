@@ -67,7 +67,7 @@ export const BranchForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   type="checkbox"
                   className="w-5 h-5 rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)] focus:ring-offset-0"
                 />
-                <span className="text-sm text-[var(--text-primary)] group-hover:text-[var(--text-primary)] dark:group-hover:text-slate-100 transition-colors">
+                <span className="text-sm text-[var(--text-primary)] group-hover:text-[var(--text-primary)] transition-colors">
                   Flotte par défaut
                 </span>
               </label>

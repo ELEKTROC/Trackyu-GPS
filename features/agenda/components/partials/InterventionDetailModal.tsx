@@ -87,12 +87,12 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
 
   const getPriorityLabel = (priority: string) => {
     const labels: Record<string, { label: string; color: string }> = {
-      LOW: { label: 'Basse', color: 'bg-slate-100 text-[var(--text-primary)]' },
+      LOW: { label: 'Basse', color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)]' },
       NORMAL: { label: 'Normale', color: 'bg-[var(--primary-dim)] text-[var(--primary)]' },
       HIGH: { label: 'Haute', color: 'bg-orange-100 text-orange-700' },
       URGENT: { label: 'Urgente', color: 'bg-red-100 text-red-700' },
     };
-    return labels[priority] || { label: priority, color: 'bg-slate-100 text-[var(--text-primary)]' };
+    return labels[priority] || { label: priority, color: 'bg-[var(--bg-elevated)] text-[var(--text-primary)]' };
   };
 
   const priority = getPriorityLabel(intervention.priority || 'NORMAL');
@@ -203,7 +203,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
       <div className="relative bg-[var(--bg-surface)] rounded-t-2xl sm:rounded-xl shadow-2xl w-full sm:max-w-2xl h-[92vh] sm:h-auto sm:max-h-[90vh] flex flex-col border-0 sm:border border-[var(--border)] z-[101] animate-in slide-in-from-bottom sm:zoom-in-95 duration-200">
         {/* Drag handle — mobile only */}
         <div className="sm:hidden flex justify-center pt-2 pb-1 shrink-0">
-          <div className="w-10 h-1 bg-slate-300 bg-[var(--bg-elevated)] rounded-full" />
+          <div className="w-10 h-1 bg-[var(--border)] bg-[var(--bg-elevated)] rounded-full" />
         </div>
 
         {/* Header - Fixed at top */}
@@ -254,7 +254,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
             )}
             <button
               onClick={onClose}
-              className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full text-[var(--text-secondary)] transition-colors"
+              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -541,7 +541,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
             </button>
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:text-[var(--text-muted)] dark:hover:text-slate-200 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
+              className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:text-[var(--text-muted)] border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Fermer
             </button>

@@ -262,7 +262,7 @@ export const InterventionRequestTab: React.FC<InterventionRequestTabProps> = ({
             <label className="text-xs font-bold text-[var(--text-secondary)] uppercase">Nature</label>
             <select
               title="Nature"
-              className="w-full p-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] text-sm disabled:opacity-50 disabled:bg-slate-100"
+              className="w-full p-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-surface)] text-sm disabled:opacity-50 disabled:bg-[var(--bg-elevated)]"
               value={formData.nature || ''}
               onChange={(e) => setFormData({ ...formData, nature: e.target.value as any })}
               disabled={formData.type === 'INSTALLATION'}
@@ -383,7 +383,7 @@ export const InterventionRequestTab: React.FC<InterventionRequestTabProps> = ({
                   .map((item) => (
                     <label
                       key={item.id}
-                      className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer text-sm"
+                      className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                     >
                       <input
                         title={item.name}

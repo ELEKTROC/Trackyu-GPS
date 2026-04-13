@@ -631,7 +631,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   return (
     <div className="h-full flex flex-col bg-[var(--bg-elevated)]">
       {/* --- HEADER --- */}
-      <div className="bg-slate-900 text-white shrink-0 p-4 shadow-md relative">
+      <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] shrink-0 p-4 shadow-md relative">
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-lg border border-white/10">
@@ -653,7 +653,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               <div className="flex items-center gap-1 mt-1">
                 <MapPin className="w-3 h-3 text-[var(--primary)] shrink-0" />
                 <span
-                  className="text-xs text-slate-300 truncate max-w-[160px]"
+                  className="text-xs text-[var(--text-muted)] truncate max-w-[160px]"
                   title={vehicle.address || vehicle.geofence || ''}
                 >
                   {vehicle.address ||
@@ -682,14 +682,14 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           <div className="flex gap-2">
             <button
               onClick={() => setIsConfigMode(!isConfigMode)}
-              className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-slate-300 hover:bg-white/20'}`}
+              className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
               title="Configurer l'affichage"
             >
               <SlidersHorizontal className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-slate-300"
+              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-[var(--text-muted)]"
               title="Fermer"
             >
               <X className="w-4 h-4" />
@@ -709,7 +709,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           </div>
 
           {/* Kilométrage */}
-          <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
+          <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--text-muted)]">
             <Navigation className="w-3 h-3 text-[var(--primary)]" />
             <span>{(vehicle.mileage / 1000).toFixed(1)} km</span>
           </div>
@@ -721,7 +721,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             isHidden={hiddenFields.has('headerEngineHours')}
             onToggle={() => toggleFieldVisibility('headerEngineHours')}
           >
-            <div className="flex items-center gap-1.5 text-xs font-mono text-slate-300">
+            <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--text-muted)]">
               <Activity className="w-3 h-3 text-orange-400" />
               <span>{mockData.engineHoursTotal}</span>
             </div>
@@ -743,7 +743,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       )}
 
       {/* --- CONTENU DÉFILANT (BLOCS) --- */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/50 bg-[var(--bg-surface)]/50">
+      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/50">
         {blocks.map((block, index) => (
           <CollapsibleSection
             key={block.id}
@@ -861,7 +861,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
         footer={
           <button
             onClick={() => setActiveModal(null)}
-            className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded text-[var(--text-primary)] font-medium text-sm"
+            className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-[var(--text-primary)] font-medium text-sm"
           >
             Fermer
           </button>

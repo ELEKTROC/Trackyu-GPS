@@ -126,7 +126,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
               {formData.type === 'SUPPLIER' && <Truck className="w-6 h-6" />}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-[var(--text-primary)]">
+              <h2 className="page-title">
                 {formData.id ? 'Modifier' : 'Nouveau'}{' '}
                 {formData.type === 'CLIENT' ? 'Client' : formData.type === 'RESELLER' ? 'Revendeur' : 'Fournisseur'}
               </h2>
@@ -155,7 +155,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
             <button
               onClick={onClose}
               title="Fermer"
-              className="p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded-full transition-colors"
+              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
             >
               <X className="w-5 h-5 text-[var(--text-secondary)]" />
             </button>
@@ -202,7 +202,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
                         ? 'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400'
                         : formData.status === 'SUSPENDED'
                           ? 'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400'
-                          : 'bg-slate-50 border-[var(--border)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] border-[var(--border)] dark:text-[var(--text-muted)]'
+                          : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] border-[var(--border)] dark:text-[var(--text-muted)]'
                     }`}
                   >
                     <span
@@ -211,7 +211,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
                           ? 'bg-emerald-500'
                           : formData.status === 'SUSPENDED'
                             ? 'bg-amber-500'
-                            : 'bg-slate-400'
+                            : 'bg-[var(--text-secondary)]'
                       }`}
                     />
                     {formData.status === 'ACTIVE'
@@ -261,7 +261,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
 
                         setFormData({ ...formData, accountingCode: `${prefix}${paddedSequence}` });
                       }}
-                      className="px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-xl border border-[var(--border)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 transition-colors text-xs font-bold"
+                      className="px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-xl border border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors text-xs font-bold"
                       title="Générer un code (411 + N° Séquence)"
                     >
                       Générer

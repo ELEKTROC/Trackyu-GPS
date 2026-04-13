@@ -491,7 +491,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({ isOp
     // Étape de confirmation
     return (
       <div className="space-y-6">
-        <div className="bg-slate-50 p-4 rounded-lg space-y-4">
+        <div className="bg-[var(--bg-elevated)] p-4 rounded-lg space-y-4">
           <h4 className="font-bold text-[var(--text-primary)]">Récapitulatif</h4>
 
           <div className="grid grid-cols-2 gap-4 text-sm">
@@ -544,7 +544,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({ isOp
                 </span>
               ))}
               {selectedRecipients.length > 10 && (
-                <span className="px-2 py-1 bg-slate-100 text-[var(--text-secondary)] rounded text-xs">
+                <span className="px-2 py-1 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded text-xs">
                   +{selectedRecipients.length - 10} autres
                 </span>
               )}
@@ -568,7 +568,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({ isOp
                     ? 'bg-[var(--primary)] text-white'
                     : i < ['compose', 'recipients', 'confirm'].indexOf(step)
                       ? 'bg-green-100 text-green-600'
-                      : 'bg-slate-100 text-[var(--text-muted)]'
+                      : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
                 }`}
               >
                 {i < ['compose', 'recipients', 'confirm'].indexOf(step) ? <Check className="w-4 h-4" /> : i + 1}
@@ -576,7 +576,7 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({ isOp
               {i < 2 && (
                 <div
                   className={`flex-1 h-0.5 ${
-                    i < ['compose', 'recipients', 'confirm'].indexOf(step) ? 'bg-green-200' : 'bg-slate-200'
+                    i < ['compose', 'recipients', 'confirm'].indexOf(step) ? 'bg-green-200' : 'bg-[var(--bg-elevated)]'
                   }`}
                 />
               )}

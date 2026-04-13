@@ -280,7 +280,7 @@ export const HelpCenterView: React.FC = () => {
                   >
                     <button
                       onClick={() => setExpandedFaq(expandedFaq === idx.toString() ? null : idx.toString())}
-                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 transition-colors"
+                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 transition-colors"
                     >
                       <span className="font-medium text-[var(--text-primary)]">{faq.question}</span>
                       {expandedFaq === idx.toString() ? (
@@ -299,7 +299,7 @@ export const HelpCenterView: React.FC = () => {
                 ))
               ) : (
                 <div className="text-center py-12 bg-[var(--bg-elevated)] rounded-xl border border-dashed border-[var(--border)]">
-                  <HelpCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <HelpCircle className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
                   <p className="text-[var(--text-secondary)]">Aucun résultat trouvé pour "{searchTerm}"</p>
                 </div>
               )}
@@ -499,7 +499,7 @@ export const HelpCenterView: React.FC = () => {
                 disabled={!chatInput.trim()}
                 title="Envoyer le message"
                 aria-label="Envoyer le message"
-                className="w-10 h-10 bg-[var(--primary)] hover:bg-[var(--primary-light)] disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-full flex items-center justify-center transition-colors"
+                className="w-10 h-10 bg-[var(--primary)] hover:bg-[var(--primary-light)] disabled:bg-[var(--border)] disabled:cursor-not-allowed text-white rounded-full flex items-center justify-center transition-colors"
               >
                 <Send className="w-4 h-4" />
               </button>

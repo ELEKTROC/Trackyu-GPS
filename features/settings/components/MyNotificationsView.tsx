@@ -102,7 +102,7 @@ export const MyNotificationsView: React.FC = () => {
         <div className="flex p-1 bg-[var(--bg-elevated)] rounded-lg">
           <button
             onClick={() => setActiveTab('notifications')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'notifications' ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'}`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'notifications' ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
             <Bell className="w-4 h-4" />
             Notifications
@@ -112,7 +112,7 @@ export const MyNotificationsView: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('messages')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'messages' ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'}`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'messages' ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
             <MessageSquare className="w-4 h-4" />
             Messages
@@ -120,7 +120,7 @@ export const MyNotificationsView: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveTab('settings')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'settings' ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] dark:hover:text-slate-200'}`}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'settings' ? 'bg-[var(--bg-elevated)] text-[var(--primary)] dark:text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
             <Settings className="w-4 h-4" />
             Paramètres
@@ -137,13 +137,13 @@ export const MyNotificationsView: React.FC = () => {
               <div className="flex gap-2">
                 <button
                   onClick={() => setFilter('all')}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filter === 'all' ? 'bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filter === 'all' ? 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   Tout
                 </button>
                 <button
                   onClick={() => setFilter('unread')}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filter === 'unread' ? 'bg-slate-200 bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filter === 'unread' ? 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   Non lus
                 </button>
@@ -235,7 +235,7 @@ export const MyNotificationsView: React.FC = () => {
                                 setCommentingAlertId(null);
                                 setCommentText('');
                               }}
-                              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-300 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
+                              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -295,7 +295,7 @@ export const MyNotificationsView: React.FC = () => {
                   <div
                     key={msg.id}
                     onClick={() => setSelectedMessageId(msg.id)}
-                    className={`p-4 border-b border-slate-50 border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700/50 cursor-pointer transition-colors group ${selectedMessageId === msg.id ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-4 border-l-blue-600' : ''}`}
+                    className={`p-4 border-b border-slate-50 border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 cursor-pointer transition-colors group ${selectedMessageId === msg.id ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-4 border-l-blue-600' : ''}`}
                   >
                     <div className="flex gap-3">
                       <div className="relative">
@@ -308,7 +308,7 @@ export const MyNotificationsView: React.FC = () => {
                           <h4 className="font-bold text-sm text-[var(--text-primary)] truncate">{msg.name}</h4>
                           <span className="text-xs text-[var(--text-muted)]">{msg.time}</span>
                         </div>
-                        <p className="text-xs text-[var(--text-secondary)] truncate group-hover:text-[var(--text-primary)] dark:group-hover:text-slate-300 transition-colors">
+                        <p className="text-xs text-[var(--text-secondary)] truncate group-hover:text-[var(--text-primary)] dark:group-hover:text-[var(--text-muted)] transition-colors">
                           {msg.lastMessage}
                         </p>
                       </div>
@@ -425,7 +425,7 @@ export const MyNotificationsView: React.FC = () => {
                       onClick={() =>
                         notifContext.updatePreferences({ pushEnabled: !notifContext.preferences.pushEnabled })
                       }
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.pushEnabled ? 'bg-[var(--primary)]' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.pushEnabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.pushEnabled ? 'translate-x-7' : 'translate-x-1'}`}
@@ -452,7 +452,7 @@ export const MyNotificationsView: React.FC = () => {
                       onClick={() =>
                         notifContext.updatePreferences({ soundEnabled: !notifContext.preferences.soundEnabled })
                       }
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.soundEnabled ? 'bg-purple-600' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.soundEnabled ? 'bg-purple-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.soundEnabled ? 'translate-x-7' : 'translate-x-1'}`}
@@ -475,7 +475,7 @@ export const MyNotificationsView: React.FC = () => {
                         max="100"
                         value={notifContext.preferences.soundVolume}
                         onChange={(e) => notifContext.updatePreferences({ soundVolume: parseInt(e.target.value) })}
-                        className="w-full h-2 bg-slate-200 bg-[var(--bg-elevated)] rounded-lg appearance-none cursor-pointer accent-purple-600"
+                        className="w-full h-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg appearance-none cursor-pointer accent-purple-600"
                       />
                     </div>
                   )}
@@ -495,7 +495,7 @@ export const MyNotificationsView: React.FC = () => {
                       onClick={() =>
                         notifContext.updatePreferences({ vibrationEnabled: !notifContext.preferences.vibrationEnabled })
                       }
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.vibrationEnabled ? 'bg-orange-600' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.vibrationEnabled ? 'bg-orange-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.vibrationEnabled ? 'translate-x-7' : 'translate-x-1'}`}
@@ -529,7 +529,7 @@ export const MyNotificationsView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => notifContext.toggleAlertType('SPEEDING')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.SPEEDING ? 'bg-red-600' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.SPEEDING ? 'bg-red-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.SPEEDING ? 'translate-x-7' : 'translate-x-1'}`}
@@ -550,7 +550,7 @@ export const MyNotificationsView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => notifContext.toggleAlertType('GEOFENCE')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.GEOFENCE ? 'bg-[var(--primary)]' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.GEOFENCE ? 'bg-[var(--primary)]' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.GEOFENCE ? 'translate-x-7' : 'translate-x-1'}`}
@@ -571,7 +571,7 @@ export const MyNotificationsView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => notifContext.toggleAlertType('FUEL_LEVEL')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.FUEL_LEVEL ? 'bg-amber-600' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.FUEL_LEVEL ? 'bg-amber-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.FUEL_LEVEL ? 'translate-x-7' : 'translate-x-1'}`}
@@ -592,7 +592,7 @@ export const MyNotificationsView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => notifContext.toggleAlertType('FUEL_THEFT')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.FUEL_THEFT ? 'bg-red-600' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.FUEL_THEFT ? 'bg-red-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.FUEL_THEFT ? 'translate-x-7' : 'translate-x-1'}`}
@@ -613,7 +613,7 @@ export const MyNotificationsView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => notifContext.toggleAlertType('MAINTENANCE')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.MAINTENANCE ? 'bg-green-600' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.MAINTENANCE ? 'bg-green-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.MAINTENANCE ? 'translate-x-7' : 'translate-x-1'}`}
@@ -634,7 +634,7 @@ export const MyNotificationsView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => notifContext.toggleAlertType('SOS')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.SOS ? 'bg-red-600' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.SOS ? 'bg-red-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.SOS ? 'translate-x-7' : 'translate-x-1'}`}

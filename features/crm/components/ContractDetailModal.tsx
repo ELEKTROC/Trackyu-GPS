@@ -196,9 +196,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
       case 'TERMINATED':
         return 'bg-red-100 text-red-700 border-red-200';
       case 'EXPIRED':
-        return 'bg-slate-100 text-[var(--text-primary)] border-[var(--border)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border-[var(--border)]';
       default:
-        return 'bg-slate-100 text-[var(--text-primary)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-primary)]';
     }
   };
 
@@ -823,7 +823,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                 </td>
                                 <td className="px-3 py-2 text-center">
                                   <span
-                                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
+                                    className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                                   >
                                     {status === 'ACTIVE' ? 'Actif' : status === 'SUSPENDED' ? 'Suspendu' : status}
                                   </span>
@@ -962,7 +962,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                   </td>
                                   <td className="px-4 py-3 text-center">
                                     <span
-                                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : status === 'CANCELLED' || status === 'CANCELED' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
+                                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : status === 'SUSPENDED' ? 'bg-orange-100 text-orange-700' : status === 'CANCELLED' || status === 'CANCELED' ? 'bg-red-100 text-red-700' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                                     >
                                       {status === 'ACTIVE'
                                         ? 'Actif'
@@ -1182,7 +1182,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                                       </td>
                                       <td className="px-3 py-2 text-center">
                                         <span
-                                          className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-[var(--text-secondary)]'}`}
+                                          className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                                         >
                                           {status === 'ACTIVE' ? 'Actif' : status}
                                         </span>
@@ -1313,9 +1313,9 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                     <div key={i} className="flex gap-4">
                       <div className="flex flex-col items-center">
                         <div
-                          className={`w-2 h-2 rounded-full mt-2 ${item.type === 'CREATION' ? 'bg-[var(--primary)]' : 'bg-slate-400'}`}
+                          className={`w-2 h-2 rounded-full mt-2 ${item.type === 'CREATION' ? 'bg-[var(--primary)]' : 'bg-[var(--text-secondary)]'}`}
                         />
-                        <div className="w-0.5 flex-1 bg-slate-200 bg-[var(--bg-elevated)] my-1" />
+                        <div className="w-0.5 flex-1 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] my-1" />
                       </div>
                       <div className="pb-5">
                         <p

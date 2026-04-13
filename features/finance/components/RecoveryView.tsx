@@ -552,7 +552,11 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
           </span>
         );
       case 'LITIGATION':
-        return <span className="px-2 py-1 bg-slate-800 text-white rounded text-xs font-bold">Juridique</span>;
+        return (
+          <span className="px-2 py-1 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded text-xs font-bold">
+            Juridique
+          </span>
+        );
       default:
         return (
           <span className="px-2 py-1 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded text-xs">
@@ -598,7 +602,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
               <FileWarning className="w-8 h-8 text-orange-500 opacity-50" />
             </div>
           </Card>
-          <Card className="p-4 border-l-4 border-l-slate-500">
+          <Card className="p-4 border-l-4 border-l-[var(--border-strong)]">
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-[var(--text-secondary)]">Dossiers Critiques (&gt;60j)</p>
@@ -659,7 +663,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
           <button
             onClick={handleBulkReminder}
             disabled={isProcessingBulk}
-            className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white hover:bg-purple-700 disabled:bg-slate-300 disabled:text-[var(--text-secondary)] rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-purple-600 text-white hover:bg-purple-700 disabled:bg-[var(--border)] disabled:text-[var(--text-secondary)] rounded-lg text-sm font-medium transition-colors"
             title="Relancer les factures sélectionnées"
           >
             <Mail className="w-4 h-4" />
@@ -683,7 +687,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
           </button>
           <button
             onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-            className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg text-sm font-medium transition-colors"
           >
             <Columns className="w-4 h-4" /> Colonnes
           </button>
@@ -703,7 +707,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
               ].map((col) => (
                 <label
                   key={col}
-                  className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer"
+                  className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
                 >
                   <input
                     type="checkbox"
@@ -1044,7 +1048,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                 title="Cliquer pour modifier"
                               >
                                 <span className="truncate flex-1">{inv.notes || '-'}</span>
-                                <Settings className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <Settings className="w-3 h-3 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
                               </div>
                             )}
                           </td>
@@ -1070,7 +1074,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       setIsModalOpen(true);
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Eye className="w-4 h-4 text-[var(--text-muted)]" /> Détail recouvrement
                                   </button>
@@ -1080,7 +1084,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       setIsInvoicePreviewOpen(true);
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Eye className="w-4 h-4 text-[var(--primary)]" /> Aperçu facture
                                   </button>
@@ -1090,7 +1094,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       handleCreateRecoveryTask(inv, 'EMAIL');
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Mail className="w-4 h-4 text-[var(--primary)]" /> Relance email
                                   </button>
@@ -1101,7 +1105,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       setIsCallModalOpen(true);
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Phone className="w-4 h-4 text-green-500" /> Compte-rendu d'appel
                                   </button>
@@ -1112,7 +1116,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       setIsPTPModalOpen(true);
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Clock className="w-4 h-4 text-[var(--primary)]" /> Promesse de paiement
                                   </button>
@@ -1122,7 +1126,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       setIsExtendModalOpen(true);
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2"
                                   >
                                     <Calendar className="w-4 h-4 text-purple-500" /> Proroger échéance
                                   </button>
@@ -1131,7 +1135,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       handleToggleDispute(inv);
                                       setOpenMenuId(null);
                                     }}
-                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 flex items-center gap-2 ${inv.isDisputed ? 'text-red-600' : 'text-[var(--text-primary)]'}`}
+                                    className={`w-full text-left px-4 py-2 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2 ${inv.isDisputed ? 'text-red-600' : 'text-[var(--text-primary)]'}`}
                                   >
                                     <ShieldAlert
                                       className={`w-4 h-4 ${inv.isDisputed ? 'text-red-500' : 'text-[var(--text-muted)]'}`}
@@ -1223,7 +1227,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
               </div>
               <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
                 <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Retard</p>
-                <p className="text-xl font-bold text-[var(--text-primary)]">{selectedInvoice.daysOverdue} jours</p>
+                <p className="page-title">{selectedInvoice.daysOverdue} jours</p>
               </div>
               <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
                 <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Niveau</p>
@@ -1231,7 +1235,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
               </div>
               <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
                 <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Relances</p>
-                <p className="text-xl font-bold text-[var(--text-primary)]">{selectedInvoice.reminderCount || 0}</p>
+                <p className="page-title">{selectedInvoice.reminderCount || 0}</p>
               </div>
               <div className="p-4 bg-[var(--bg-elevated)] rounded-lg">
                 <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Dernière Relance</p>
@@ -1345,7 +1349,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                 </button>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg font-bold text-sm"
+                  className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold text-sm"
                 >
                   Fermer
                 </button>
@@ -1395,7 +1399,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                   setAutomationSettings({ ...automationSettings, level1Enabled: !automationSettings.level1Enabled })
                 }
                 title="Activer/désactiver relance niveau 1"
-                className={`w-12 h-6 rounded-full relative transition-colors ${automationSettings.level1Enabled ? 'bg-green-500' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                className={`w-12 h-6 rounded-full relative transition-colors ${automationSettings.level1Enabled ? 'bg-green-500' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
               >
                 <div
                   className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${automationSettings.level1Enabled ? 'right-1' : 'left-1'}`}
@@ -1430,7 +1434,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                   setAutomationSettings({ ...automationSettings, level2Enabled: !automationSettings.level2Enabled })
                 }
                 title="Activer/désactiver relance niveau 2"
-                className={`w-12 h-6 rounded-full relative transition-colors ${automationSettings.level2Enabled ? 'bg-orange-500' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                className={`w-12 h-6 rounded-full relative transition-colors ${automationSettings.level2Enabled ? 'bg-orange-500' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
               >
                 <div
                   className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${automationSettings.level2Enabled ? 'right-1' : 'left-1'}`}
@@ -1465,7 +1469,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                   setAutomationSettings({ ...automationSettings, level3Enabled: !automationSettings.level3Enabled })
                 }
                 title="Activer/désactiver contentieux niveau 3"
-                className={`w-12 h-6 rounded-full relative transition-colors ${automationSettings.level3Enabled ? 'bg-red-500' : 'bg-slate-300 bg-[var(--bg-elevated)]'}`}
+                className={`w-12 h-6 rounded-full relative transition-colors ${automationSettings.level3Enabled ? 'bg-red-500' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
               >
                 <div
                   className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${automationSettings.level3Enabled ? 'right-1' : 'left-1'}`}
@@ -1513,7 +1517,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-between gap-3 pt-4 border-t border-[var(--border)]">
               <button
                 onClick={() => setIsAutomationModalOpen(false)}
-                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg font-bold text-sm"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold text-sm"
               >
                 Annuler
               </button>
@@ -1575,7 +1579,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
               <button
                 onClick={() => setIsExtendModalOpen(false)}
-                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg font-bold text-sm"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold text-sm"
               >
                 Annuler
               </button>
@@ -1665,14 +1669,14 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
               <button
                 onClick={() => setIsBulkModalOpen(false)}
-                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg font-bold text-sm"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold text-sm"
               >
                 Annuler
               </button>
               <button
                 onClick={executeBulkReminder}
                 disabled={isProcessingBulk}
-                className="px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 disabled:bg-slate-300 rounded-lg font-bold text-sm flex items-center gap-2"
+                className="px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 disabled:bg-[var(--border)] rounded-lg font-bold text-sm flex items-center gap-2"
               >
                 <Mail className="w-4 h-4" />
                 {isProcessingBulk ? 'Traitement...' : `Relancer ${selectedIds.size} facture(s)`}
@@ -1721,7 +1725,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
               <button
                 onClick={() => setIsPTPModalOpen(false)}
-                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg font-bold text-sm"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold text-sm"
               >
                 Annuler
               </button>
@@ -1765,14 +1769,14 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-end gap-3 pt-4 border-t border-[var(--border)]">
               <button
                 onClick={() => setIsCallModalOpen(false)}
-                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-600 rounded-lg font-bold text-sm"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg font-bold text-sm"
               >
                 Annuler
               </button>
               <button
                 onClick={handleCallReportSave}
                 disabled={!callNote}
-                className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 disabled:bg-slate-300 rounded-lg font-bold text-sm"
+                className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 disabled:bg-[var(--border)] rounded-lg font-bold text-sm"
               >
                 Enregistrer l'appel
               </button>

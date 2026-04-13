@@ -139,7 +139,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
               setViewMode('card');
               setItemsPerPage(12);
             }}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'card' ? 'bg-[var(--bg-elevated)] shadow-sm text-purple-600' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-300'}`}
+            className={`p-1.5 rounded transition-colors ${viewMode === 'card' ? 'bg-[var(--bg-elevated)] shadow-sm text-purple-600' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)]'}`}
             title="Vue cartes"
           >
             <LayoutGrid className="w-4 h-4" />
@@ -149,7 +149,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
               setViewMode('table');
               setItemsPerPage(10);
             }}
-            className={`p-1.5 rounded transition-colors ${viewMode === 'table' ? 'bg-[var(--bg-elevated)] shadow-sm text-purple-600' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-300'}`}
+            className={`p-1.5 rounded transition-colors ${viewMode === 'table' ? 'bg-[var(--bg-elevated)] shadow-sm text-purple-600' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)]'}`}
             title="Vue tableau"
           >
             <List className="w-4 h-4" />
@@ -161,7 +161,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-              className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 text-[var(--text-secondary)] transition-colors bg-[var(--bg-elevated)]"
+              className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors bg-[var(--bg-elevated)]"
               title="Colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
@@ -174,7 +174,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                 {CATALOG_COLUMNS.map((col) => (
                   <label
                     key={col.id}
-                    className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] dark:hover:bg-slate-700 rounded cursor-pointer"
+                    className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
                   >
                     <input
                       type="checkbox"
@@ -291,7 +291,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
 
                   {/* Actions footer */}
                   <div
-                    className="flex items-center justify-end gap-1 px-3 py-2 border-t border-[var(--border)] border-[var(--border)] bg-slate-50/60 bg-[var(--bg-elevated)]/60"
+                    className="flex items-center justify-end gap-1 px-3 py-2 border-t border-[var(--border)] border-[var(--border)] bg-[var(--bg-elevated)]/60 bg-[var(--bg-elevated)]/60"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button

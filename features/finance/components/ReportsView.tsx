@@ -98,7 +98,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-[var(--text-primary)]">Balance Générale</h3>
+          <h3 className="page-title">Balance Générale</h3>
           <button
             onClick={handleExport}
             className="flex items-center gap-2 px-3 py-1.5 text-sm rounded border border-[var(--border)] text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors"
@@ -540,7 +540,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
     return (
       <div className="space-y-6 max-w-2xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold text-[var(--text-primary)]">Déclaration de TVA (Estimée)</h3>
+          <h3 className="page-title">Déclaration de TVA (Estimée)</h3>
           <button
             onClick={() =>
               exportToCSV(
@@ -567,7 +567,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
               <p className="text-sm text-[var(--text-secondary)]">TVA Collectée (Ventes)</p>
               <p className="text-xs text-[var(--text-muted)]">Comptes 4457xx</p>
             </div>
-            <p className="text-xl font-bold text-[var(--text-primary)]">{formatPrice(collectedVAT)}</p>
+            <p className="page-title">{formatPrice(collectedVAT)}</p>
           </div>
 
           <div className="flex justify-between items-center p-4 bg-[var(--bg-elevated)] rounded border border-[var(--border)]">
@@ -575,7 +575,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
               <p className="text-sm text-[var(--text-secondary)]">TVA Déductible (Achats)</p>
               <p className="text-xs text-[var(--text-muted)]">Comptes 4456xx</p>
             </div>
-            <p className="text-xl font-bold text-[var(--text-primary)]">{formatPrice(deductibleVAT)}</p>
+            <p className="page-title">{formatPrice(deductibleVAT)}</p>
           </div>
 
           <div

@@ -197,7 +197,7 @@ export const InterventionSignatureTab: React.FC<SignatureTabProps> = ({
           {formData.photos?.map((photo, idx) => (
             <div
               key={idx}
-              className="aspect-square bg-slate-100 bg-[var(--bg-surface)] rounded-lg border border-[var(--border)] flex items-center justify-center relative group overflow-hidden"
+              className="aspect-square bg-[var(--bg-elevated)] bg-[var(--bg-surface)] rounded-lg border border-[var(--border)] flex items-center justify-center relative group overflow-hidden"
             >
               <img src={photo} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover rounded-lg" />
               <button
