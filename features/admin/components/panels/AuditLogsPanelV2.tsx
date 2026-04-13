@@ -378,8 +378,8 @@ export const AuditLogsPanelV2: React.FC = () => {
           // Mapper le format backend → frontend
           const mapped: AuditLog[] = data.map((row: AuditLogApiRow) => ({
             id: row.id,
-            timestamp: row.created_at || row.timestamp,
-            userId: row.user_id || row.userId,
+            timestamp: row.created_at || row.timestamp || '',
+            userId: row.user_id || row.userId || '',
             userName: row.user_name || row.userName || 'Inconnu',
             userEmail: row.user_email || row.userEmail || '',
             userRole: row.user_role || row.userRole || '',

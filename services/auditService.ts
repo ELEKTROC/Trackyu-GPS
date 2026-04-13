@@ -1,7 +1,15 @@
 // Service d'Audit Trail centralisé
 // Sprint 2 - Task 6: Audit Trail
 
-import type { AuditEntry, AuditAction, AuditEntityType, AuditSeverity, AuditLogFilter, AuditLogSummary, AuditConfig } from '../types/audit';
+import type {
+  AuditEntry,
+  AuditAction,
+  AuditEntityType,
+  AuditSeverity,
+  AuditLogFilter,
+  AuditLogSummary,
+  AuditConfig,
+} from '../types/audit';
 import { logger } from '../utils/logger';
 
 // Configuration par défaut
@@ -9,8 +17,13 @@ const defaultConfig: AuditConfig = {
   enabled: true,
   retentionDays: 365,
   criticalActions: [
-    'DELETE', 'BULK_DELETE', 'PERIOD_LOCKED', 'PERIOD_CLOSED',
-    'INVOICE_VOIDED', 'PERMISSION_CHANGED', 'PASSWORD_CHANGED'
+    'DELETE',
+    'BULK_DELETE',
+    'PERIOD_LOCKED',
+    'PERIOD_CLOSED',
+    'INVOICE_VOIDED',
+    'PERMISSION_CHANGED',
+    'PASSWORD_CHANGED',
   ],
   excludedActions: [],
   trackReadOperations: false,
@@ -27,14 +40,14 @@ const generateId = (): string => `AUDIT-${Date.now()}-${Math.random().toString(3
 // Masquer les champs sensibles
 const maskSensitiveData = (data: any): any => {
   if (!data || typeof data !== 'object') return data;
-  
+
   const masked = { ...data };
   for (const field of config.sensitiveFields) {
     if (field in masked) {
       masked[field] = '********';
     }
   }
-  
+
   return masked;
 };
 
@@ -43,11 +56,11 @@ const determineSeverity = (action: AuditAction): AuditSeverity => {
   if (config.criticalActions.includes(action)) {
     return 'CRITICAL';
   }
-  
+
   if (['UPDATE', 'BULK_UPDATE', 'PAYMENT_RECEIVED', 'PAYMENT_SENT', 'LOGIN_FAILED'].includes(action)) {
     return 'WARNING';
   }
-  
+
   return 'INFO';
 };
 
@@ -75,15 +88,15 @@ export interface CreateAuditParams {
 
 export const createAuditEntry = (params: CreateAuditParams): AuditEntry | null => {
   if (!config.enabled) return null;
-  
+
   // Skip if action is excluded
   if (config.excludedActions.includes(params.action)) return null;
-  
+
   // Skip read operations if not tracking them
   if (params.action === 'READ' && !config.trackReadOperations) return null;
-  
+
   const now = new Date().toISOString();
-  
+
   const entry: AuditEntry = {
     id: generateId(),
     tenantId: params.tenantId,
@@ -107,14 +120,14 @@ export const createAuditEntry = (params: CreateAuditParams): AuditEntry | null =
     timestamp: now,
     createdAt: now,
   };
-  
+
   auditLogs.unshift(entry); // Add to beginning
-  
+
   // Log critical actions to console
   if (entry.severity === 'CRITICAL') {
     logger.warn('[AUDIT CRITICAL]', entry.description, entry);
   }
-  
+
   return entry;
 };
 
@@ -191,13 +204,13 @@ export const auditPeriodAction = (
     lock: { action: 'PERIOD_LOCKED', desc: 'a verrouillé la période' },
     reopen: { action: 'PERIOD_REOPENED', desc: 'a réouvert la période' },
   };
-  
+
   const { action: auditAction, desc } = actionMap[action];
-  
+
   return createAuditEntry({
     ...context,
     action: auditAction,
-    entityType: 'ACCOUNTING_PERIOD',
+    entityType: 'ACCOUNTING_PERIOD' as AuditEntityType,
     entityId: periodId,
     entityName: periodName,
     description: `${context.userName} ${desc} ${periodName}${reason ? ` - Motif: ${reason}` : ''}`,
@@ -217,7 +230,7 @@ export const auditPayment = (
   return createAuditEntry({
     ...context,
     action: type === 'received' ? 'PAYMENT_RECEIVED' : 'PAYMENT_SENT',
-    entityType: 'PAYMENT',
+    entityType: 'PAYMENT' as AuditEntityType,
     entityId: paymentId,
     entityName: `Paiement ${amount.toFixed(2)}`,
     description: `${context.userName} a enregistré un paiement ${type === 'received' ? 'reçu de' : 'envoyé à'} ${clientName} (${amount.toFixed(2)})${invoiceRefs?.length ? ` - Factures: ${invoiceRefs.join(', ')}` : ''}`,
@@ -244,11 +257,11 @@ export const auditLogin = (
     userEmail,
     userRole,
     action: success ? 'LOGIN' : 'LOGIN_FAILED',
-    entityType: 'USER',
+    entityType: 'USER' as AuditEntityType,
     entityId: userId,
     entityName: userName,
-    description: success 
-      ? `${userName} s'est connecté avec succès` 
+    description: success
+      ? `${userName} s'est connecté avec succès`
       : `Tentative de connexion échouée pour ${userEmail}${failReason ? ` - ${failReason}` : ''}`,
     severity: success ? 'INFO' : 'WARNING',
     ipAddress,
@@ -263,45 +276,46 @@ export const getAuditLogs = async (
   page: number = 1,
   pageSize: number = 50
 ): Promise<{ entries: AuditEntry[]; total: number; page: number; totalPages: number }> => {
-  let filtered = auditLogs.filter(log => log.tenantId === tenantId);
-  
+  let filtered = auditLogs.filter((log) => log.tenantId === tenantId);
+
   if (filters) {
     if (filters.startDate) {
-      filtered = filtered.filter(log => log.timestamp >= filters.startDate!);
+      filtered = filtered.filter((log) => log.timestamp >= filters.startDate!);
     }
     if (filters.endDate) {
-      filtered = filtered.filter(log => log.timestamp <= filters.endDate!);
+      filtered = filtered.filter((log) => log.timestamp <= filters.endDate!);
     }
     if (filters.userId) {
-      filtered = filtered.filter(log => log.userId === filters.userId);
+      filtered = filtered.filter((log) => log.userId === filters.userId);
     }
     if (filters.action) {
-      filtered = filtered.filter(log => log.action === filters.action);
+      filtered = filtered.filter((log) => log.action === filters.action);
     }
     if (filters.entityType) {
-      filtered = filtered.filter(log => log.entityType === filters.entityType);
+      filtered = filtered.filter((log) => log.entityType === filters.entityType);
     }
     if (filters.entityId) {
-      filtered = filtered.filter(log => log.entityId === filters.entityId);
+      filtered = filtered.filter((log) => log.entityId === filters.entityId);
     }
     if (filters.severity) {
-      filtered = filtered.filter(log => log.severity === filters.severity);
+      filtered = filtered.filter((log) => log.severity === filters.severity);
     }
     if (filters.searchTerm) {
       const term = filters.searchTerm.toLowerCase();
-      filtered = filtered.filter(log => 
-        log.description.toLowerCase().includes(term) ||
-        log.userName.toLowerCase().includes(term) ||
-        log.entityName?.toLowerCase().includes(term)
+      filtered = filtered.filter(
+        (log) =>
+          log.description?.toLowerCase().includes(term) ||
+          log.userName.toLowerCase().includes(term) ||
+          log.entityName?.toLowerCase().includes(term)
       );
     }
   }
-  
+
   const total = filtered.length;
   const totalPages = Math.ceil(total / pageSize);
   const start = (page - 1) * pageSize;
   const entries = filtered.slice(start, start + pageSize);
-  
+
   return { entries, total, page, totalPages };
 };
 
@@ -311,39 +325,40 @@ export const getAuditSummary = async (
   startDate?: string,
   endDate?: string
 ): Promise<AuditLogSummary> => {
-  let filtered = auditLogs.filter(log => log.tenantId === tenantId);
-  
+  let filtered = auditLogs.filter((log) => log.tenantId === tenantId);
+
   if (startDate) {
-    filtered = filtered.filter(log => log.timestamp >= startDate);
+    filtered = filtered.filter((log) => log.timestamp >= startDate);
   }
   if (endDate) {
-    filtered = filtered.filter(log => log.timestamp <= endDate);
+    filtered = filtered.filter((log) => log.timestamp <= endDate);
   }
-  
+
   const byAction: Record<string, number> = {};
   const byEntityType: Record<string, number> = {};
   const bySeverity: Record<string, number> = {};
-  
+
   for (const log of filtered) {
     byAction[log.action] = (byAction[log.action] || 0) + 1;
     byEntityType[log.entityType] = (byEntityType[log.entityType] || 0) + 1;
     bySeverity[log.severity] = (bySeverity[log.severity] || 0) + 1;
   }
-  
+
   return {
     totalEntries: filtered.length,
-    byAction: byAction as any,
-    byEntityType: byEntityType as any,
-    bySeverity: bySeverity as any,
+    criticalCount: bySeverity['CRITICAL'] || 0,
+    highCount: bySeverity['HIGH'] || 0,
+    mediumCount: (bySeverity['MEDIUM'] || 0) + (bySeverity['WARNING'] || 0),
+    lowCount: (bySeverity['LOW'] || 0) + (bySeverity['INFO'] || 0),
+    byAction: byAction as Record<string, number>,
+    byEntityType: byEntityType as Record<string, number>,
+    bySeverity: bySeverity as Record<string, number>,
     recentActivity: filtered.slice(0, 10),
   };
 };
 
 // Exporter les logs (pour backup ou analyse)
-export const exportAuditLogs = async (
-  tenantId: string,
-  filters?: AuditLogFilter
-): Promise<AuditEntry[]> => {
+export const exportAuditLogs = async (tenantId: string, filters?: AuditLogFilter): Promise<AuditEntry[]> => {
   const { entries } = await getAuditLogs(tenantId, filters, 1, 10000);
   return entries;
 };
