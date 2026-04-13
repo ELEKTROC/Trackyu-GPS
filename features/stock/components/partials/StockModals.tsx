@@ -44,7 +44,7 @@ export const AddDeviceModal: React.FC<AddDeviceModalProps> = ({
         <>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
           >
             Annuler
           </button>
@@ -443,7 +443,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         <>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
           >
             Annuler
           </button>
@@ -522,7 +522,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({
         <>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
           >
             Annuler
           </button>
@@ -680,7 +680,7 @@ export const EditDeviceModal: React.FC<EditDeviceModalProps> = ({
         <>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
           >
             Annuler
           </button>
@@ -913,7 +913,7 @@ export const IndividualTransferModal: React.FC<IndividualTransferModalProps> = (
         <>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
           >
             Annuler
           </button>

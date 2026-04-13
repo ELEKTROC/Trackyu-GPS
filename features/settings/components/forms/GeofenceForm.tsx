@@ -260,7 +260,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
           <div className="p-4 space-y-4">
             {/* Option: Tous les clients */}
-            <label className="flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-xl cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] border border-[var(--border)] transition-colors">
+            <label className="flex items-center gap-3 p-3 bg-[var(--bg-elevated)] rounded-xl cursor-pointer hover:bg-[var(--bg-elevated)] border border-[var(--border)] transition-colors">
               <input
                 type="checkbox"
                 {...register('allClients')}
@@ -283,7 +283,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                 <button
                   type="button"
                   onClick={() => setShowClients(!showClients)}
-                  className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+                  className="w-full p-3 flex items-center justify-between hover:bg-[var(--bg-elevated)] transition-colors"
                 >
                   <span className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
                     Sélection individuelle
@@ -379,7 +379,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   <button
                     type="button"
                     onClick={addSamplePoint}
-                    className="px-2 py-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg text-xs text-[var(--primary)] font-medium"
+                    className="px-2 py-1 hover:bg-[var(--bg-elevated)] rounded-lg text-xs text-[var(--primary)] font-medium"
                     title="Ajouter un point"
                   >
                     + Point
@@ -387,7 +387,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   <button
                     type="button"
                     onClick={clearPoints}
-                    className="p-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
+                    className="p-1.5 hover:bg-[var(--bg-elevated)] rounded-lg"
                     title="Effacer"
                   >
                     <Trash2 className="w-4 h-4 text-red-500" />

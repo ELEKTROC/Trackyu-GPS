@@ -466,19 +466,19 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
       <div className="flex flex-wrap justify-center md:justify-end gap-2 pt-6 border-t border-[var(--border)] mt-6 no-print">
         <button
           onClick={onEdit}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)]"
         >
           <Edit2 className="w-3 h-3" /> Modifier
         </button>
         <button
           onClick={() => onAction('download')}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)]"
         >
           <Download className="w-3 h-3" /> PDF
         </button>
         <button
           onClick={() => onAction('send')}
-          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+          className="p-2 px-3 flex items-center gap-1 text-xs font-bold bg-[var(--bg-elevated)] border rounded hover:bg-[var(--bg-elevated)]"
         >
           <Mail className="w-3 h-3" /> Envoyer
         </button>

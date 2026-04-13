@@ -113,7 +113,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${isOpen || totalSelected < totalVehicles ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'}`}
+        className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${isOpen || totalSelected < totalVehicles ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
       >
         <Filter className="w-4 h-4" />
         <span>Filtres {totalSelected < totalVehicles ? `(${totalSelected})` : ''}</span>
@@ -162,7 +162,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                   <div className="flex items-center bg-[var(--bg-elevated)] p-2 hover:bg-[var(--bg-elevated)]/50 transition-colors">
                     <button
                       onClick={() => toggleClient(client)}
-                      className="p-1 mr-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
+                      className="p-1 mr-1 hover:bg-[var(--bg-elevated)] rounded"
                     >
                       {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                     </button>
@@ -406,7 +406,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({ title, columns, data, 
               {/* Bouton Colonnes */}
               <button
                 onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                className={`justify-center p-2 border rounded-lg shadow-sm transition-colors ${isColumnMenuOpen ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)]' : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'}`}
+                className={`justify-center p-2 border rounded-lg shadow-sm transition-colors ${isColumnMenuOpen ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)]' : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
                 title="Gérer les colonnes"
               >
                 <LayoutTemplate className="w-4 h-4" />
@@ -422,7 +422,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({ title, columns, data, 
                     {columns.map((col) => (
                       <label
                         key={col}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
                       >
                         <input
                           type="checkbox"

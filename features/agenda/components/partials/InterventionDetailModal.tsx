@@ -254,7 +254,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
             )}
             <button
               onClick={onClose}
-              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)] transition-colors"
+              className="p-2 hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>

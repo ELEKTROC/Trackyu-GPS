@@ -38,7 +38,7 @@ export const FormActions: React.FC<FormActionsProps> = ({
             bg-[var(--bg-elevated)]
             border border-[var(--border)]
             rounded-lg
-            hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]
+            hover:bg-[var(--bg-elevated)]
             focus:outline-none focus:ring-4 focus:ring-slate-500/20
             transition-all duration-200
             disabled:opacity-50 disabled:cursor-not-allowed

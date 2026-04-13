@@ -133,7 +133,7 @@ export const SyncView: React.FC = () => {
             </div>
             <button
               onClick={handleClearCache}
-              className="px-3 py-1.5 border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+              className="px-3 py-1.5 border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Vider
             </button>
@@ -147,7 +147,7 @@ export const SyncView: React.FC = () => {
             </div>
             <button
               onClick={handleResetPrefs}
-              className="px-3 py-1.5 border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+              className="px-3 py-1.5 border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Réinitialiser
             </button>

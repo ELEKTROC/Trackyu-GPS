@@ -271,7 +271,7 @@ export const MyOperationsView: React.FC = () => {
               document.body.removeChild(link);
               showToast(TOAST.IO.EXPORT_SUCCESS('CSV'), 'success');
             }}
-            className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors flex items-center gap-2 text-sm font-medium"
+            className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors flex items-center gap-2 text-sm font-medium"
           >
             <Download className="w-4 h-4" /> Exporter
           </button>

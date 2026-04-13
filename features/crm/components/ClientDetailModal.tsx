@@ -427,7 +427,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <button
                 onClick={() => setTrxPage((p) => Math.max(1, p - 1))}
                 disabled={trxPage === 1}
-                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page précédente"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -438,7 +438,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
               <button
                 onClick={() => setTrxPage((p) => Math.min(totalPages, p + 1))}
                 disabled={trxPage === totalPages}
-                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page suivante"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -774,7 +774,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                           client.contacts.map((contact) => (
                             <div
                               key={contact.id}
-                              className="flex items-center gap-3 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors border border-transparent hover:border-[var(--border)]"
+                              className="flex items-center gap-3 p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors border border-transparent hover:border-[var(--border)]"
                             >
                               <div className="w-8 h-8 rounded-full bg-[var(--bg-elevated)] flex items-center justify-center text-[var(--text-secondary)] font-bold text-xs">
                                 {contact.name.charAt(0)}
@@ -1053,7 +1053,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                       </select>
                       <button
                         onClick={() => showToast('Envoi par email...', 'info')}
-                        className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors"
+                        className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors"
                         title="Envoyer par Email"
                       >
                         <Mail className="w-5 h-5" />

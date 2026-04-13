@@ -161,7 +161,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
           <div className="relative">
             <button
               onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-              className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors bg-[var(--bg-elevated)]"
+              className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors bg-[var(--bg-elevated)]"
               title="Colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
@@ -174,7 +174,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                 {CATALOG_COLUMNS.map((col) => (
                   <label
                     key={col.id}
-                    className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
+                    className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
                   >
                     <input
                       type="checkbox"

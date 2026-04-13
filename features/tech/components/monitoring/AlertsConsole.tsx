@@ -339,7 +339,7 @@ export const AlertsConsole: React.FC = () => {
         <DateRangeSelector periodPreset={periodPreset} setPeriodPreset={setPeriodPreset} customDateRange={customDateRange} setCustomDateRange={setCustomDateRange} />
         <div className="flex gap-2 items-center flex-wrap">
           {mainTab === 'alerts' && unreadCount > 0 && (
-            <button onClick={handleMarkAllAsRead} disabled={markingAll} className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-xs font-medium flex items-center gap-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50">
+            <button onClick={handleMarkAllAsRead} disabled={markingAll} className="px-3 py-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg text-xs font-medium flex items-center gap-1.5 hover:bg-[var(--bg-elevated)] transition-colors disabled:opacity-50">
               <CheckCheck className="w-3.5 h-3.5" /> Tout lu
             </button>
           )}
@@ -694,7 +694,7 @@ export const AlertsConsole: React.FC = () => {
               />
             </div>
             <div className="flex justify-end gap-2 p-4 border-t border-[var(--border)] shrink-0">
-              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">Annuler</button>
+              <button onClick={() => { setShowAlertConfigModal(false); setEditingConfig(null); }} className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">Annuler</button>
               <button onClick={() => alertFormRef.current?.requestSubmit()} className="px-4 py-2 text-sm font-medium text-white bg-[var(--primary)] hover:bg-[var(--primary-light)] rounded-lg transition-colors">{editingConfig ? 'Enregistrer' : 'Créer la règle'}</button>
             </div>
           </div>

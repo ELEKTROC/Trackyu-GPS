@@ -556,7 +556,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
                   commandMode === 'SMS'
                     ? 'bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)] hover:bg-orange-100'
-                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
+                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <Smartphone className="w-4 h-4" /> Config APN
@@ -567,7 +567,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
                   commandMode === 'SMS'
                     ? 'bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)] hover:bg-orange-100'
-                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
+                    : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 <Server className="w-4 h-4" /> Config IP/Port

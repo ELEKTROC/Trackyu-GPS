@@ -2003,7 +2003,7 @@ export const OrganizationPanelV2: React.FC = () => {
                         type="button"
                         onClick={() => document.getElementById(`doc-upload-${docKey}`)?.click()}
                         disabled={docUploading !== null}
-                        className="px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                        className="px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-lg text-sm font-medium flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                       >
                         {docUploading === docKey ? (
                           <Loader2 className="w-4 h-4 animate-spin" />

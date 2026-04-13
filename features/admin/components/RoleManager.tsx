@@ -303,7 +303,7 @@ export const RoleManager: React.FC = () => {
               className={`p-3 rounded-lg cursor-pointer border transition-all ${
                 selectedRole?.id === role.id
                   ? 'bg-[var(--primary-dim)] border-[var(--border)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] shadow-sm'
-                  : 'bg-[var(--bg-elevated)] border-transparent hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
+                  : 'bg-[var(--bg-elevated)] border-transparent hover:bg-[var(--bg-elevated)]'
               }`}
             >
               <div className="flex justify-between items-center">

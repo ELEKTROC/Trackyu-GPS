@@ -299,7 +299,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
         <div className="flex gap-2 flex-wrap sm:flex-nowrap">
           <button
             onClick={() => setIsHistoryModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
           >
             <History className="w-4 h-4" />
             Historique
@@ -385,7 +385,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                   return (
                     <tr
                       key={entry.id}
-                      className="bg-[var(--bg-elevated)] border-b border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50"
+                      className="bg-[var(--bg-elevated)] border-b border-[var(--border)] hover:bg-[var(--bg-elevated)]/50"
                     >
                       <td className="px-6 py-4">{entry.date}</td>
                       <td className="px-6 py-4 font-mono text-xs">{entry.ref}</td>
@@ -432,7 +432,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
               <h3 className="font-bold text-xl text-[var(--text-primary)]">Nouvelle Opération de Caisse</h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
+                className="p-2 hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-[var(--text-secondary)]" />
               </button>

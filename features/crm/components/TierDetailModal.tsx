@@ -745,7 +745,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <button
                 onClick={() => setTrxPage((p) => Math.max(1, p - 1))}
                 disabled={trxPage === 1}
-                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page précédente"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -756,7 +756,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <button
                 onClick={() => setTrxPage((p) => Math.min(totalPages, p + 1))}
                 disabled={trxPage === totalPages}
-                className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
+                className="p-1 hover:bg-[var(--bg-elevated)] rounded disabled:opacity-30"
                 title="Page suivante"
               >
                 <ChevronRight className="w-4 h-4" />

@@ -962,7 +962,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
           <div className="relative" ref={columnMenuRef}>
             <button
               onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''} shadow-sm`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''} shadow-sm`}
               title="Gérer les colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
@@ -976,7 +976,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                   {columns.map((col) => (
                     <label
                       key={col}
-                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                     >
                       <input
                         type="checkbox"
@@ -1103,7 +1103,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                                     e.stopPropagation();
                                     handleStatusChange(item.id, status);
                                   }}
-                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
+                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--bg-elevated)] ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
                                 >
                                   {status}
                                 </button>
@@ -2015,7 +2015,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
                           setActiveTab(item.id as TabId);
                           setMobileShowList(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700 text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-elevated)]/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700 text-left"
                       >
                         <div className={`w-9 h-9 rounded-full ${bgColor} flex items-center justify-center shrink-0`}>
                           <Icon className="w-4.5 h-4.5 text-white" style={{ width: 18, height: 18 }} />

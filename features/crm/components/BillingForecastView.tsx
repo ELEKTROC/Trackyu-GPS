@@ -600,7 +600,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
         <div className="relative">
           <button
             onClick={() => setShowExportMenu((e) => !e)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg border bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors"
           >
             <Download className="w-3.5 h-3.5" />
             Exporter
@@ -611,21 +611,21 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
               <div className="absolute left-0 mt-1 w-40 bg-[var(--bg-elevated)] rounded-lg shadow-xl border border-[var(--border)] z-20 py-1">
                 <button
                   onClick={handleExportCSV}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
                 >
                   <FileText className="w-3.5 h-3.5 text-green-500" />
                   CSV
                 </button>
                 <button
                   onClick={handleExportExcel}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500" />
                   Excel
                 </button>
                 <button
                   onClick={handleExportPDF}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[var(--bg-elevated)] flex items-center gap-2 text-[var(--text-primary)]"
                 >
                   <FileText className="w-3.5 h-3.5 text-red-500" />
                   PDF

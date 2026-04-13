@@ -358,7 +358,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
 
         <button
           onClick={fetchData}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
         >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
           Actualiser
@@ -449,7 +449,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                   filter === item.value
                     ? 'bg-[var(--primary)] text-white'
-                    : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
+                    : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 {item.label} ({item.count || 0})
@@ -898,7 +898,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
               )}
               <button
                 onClick={() => setDetailModalOpen(false)}
-                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+                className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)]"
               >
                 Fermer
               </button>
@@ -948,7 +948,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
           <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setEmailPreviewModalOpen(false)}
-              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Annuler
             </button>
@@ -1017,7 +1017,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
           <div className="flex justify-end gap-2 pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setSmsPreviewModalOpen(false)}
-              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Annuler
             </button>

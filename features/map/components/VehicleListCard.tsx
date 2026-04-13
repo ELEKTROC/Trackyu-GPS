@@ -151,7 +151,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
         onClick={() => onFocus(vehicle)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`relative px-4 py-3 border-l-4 border-b border-slate-50 border-[var(--border)] transition-all cursor-pointer flex gap-3 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 ${isFocused ? 'border-l-blue-500 bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'border-l-transparent'}`}
+        className={`relative px-4 py-3 border-l-4 border-b border-slate-50 border-[var(--border)] transition-all cursor-pointer flex gap-3 hover:bg-[var(--bg-elevated)]/50 ${isFocused ? 'border-l-blue-500 bg-[var(--primary-dim)]/30 dark:bg-[var(--primary-dim)]' : 'border-l-transparent'}`}
       >
         <div className="flex items-start pt-1" onClick={(e) => onToggleSelection(vehicle.id, e)}>
           {isSelected ? (

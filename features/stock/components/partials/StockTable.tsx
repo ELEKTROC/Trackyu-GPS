@@ -334,7 +334,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                 <div className="relative" ref={columnMenuRef}>
                   <button
                     onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                    className={`p-1.5 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''}`}
+                    className={`p-1.5 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary)]/20' : ''}`}
                   >
                     <LayoutTemplate className="w-4 h-4" />
                   </button>
@@ -347,7 +347,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                         {currentColumns.map((col) => (
                           <label
                             key={col.id}
-                            className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+                            className="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer text-sm hover:bg-[var(--bg-elevated)]"
                           >
                             <input
                               type="checkbox"

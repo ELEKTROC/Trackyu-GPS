@@ -321,7 +321,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
             {isChartMenuOpen && (
               <div className="absolute top-full right-0 mt-2 w-56 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2">
                 <p className="text-xs font-bold text-[var(--text-secondary)] uppercase px-2 py-1">Affichage</p>
-                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
+                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCharts.tech}
@@ -330,7 +330,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                   />
                   <span className="text-sm text-[var(--text-primary)]">Par Technicien</span>
                 </label>
-                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
+                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCharts.nature}
@@ -339,7 +339,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                   />
                   <span className="text-sm text-[var(--text-primary)]">Par Nature</span>
                 </label>
-                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
+                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCharts.material}
@@ -348,7 +348,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                   />
                   <span className="text-sm text-[var(--text-primary)]">Par Matériel</span>
                 </label>
-                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
+                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCharts.vehicle}
@@ -357,7 +357,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                   />
                   <span className="text-sm text-[var(--text-primary)]">Par Engin</span>
                 </label>
-                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
+                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCharts.period}
@@ -366,7 +366,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                   />
                   <span className="text-sm text-[var(--text-primary)]">Evolution</span>
                 </label>
-                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
+                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCharts.status}
@@ -375,7 +375,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                   />
                   <span className="text-sm text-[var(--text-primary)]">Par Statut</span>
                 </label>
-                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
+                <label className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={visibleCharts.clients}

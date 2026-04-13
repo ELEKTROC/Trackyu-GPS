@@ -472,7 +472,7 @@ export const OfflineTrackerList: React.FC = () => {
               const lastComment = getLastComment(vehicle.id);
               const commentCount = getVehicleComments(vehicle.id).length;
               return (
-                <tr key={vehicle.id} className={`hover:bg-[var(--bg-elevated)] transition-colors group ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)]/50' : ''}`}>
+                <tr key={vehicle.id} className={`tr-hover transition-colors group ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)]/50' : ''}`}>
                   <td className="px-3 py-3">
                     <button onClick={() => toggleSelect(vehicle.id)} className="text-[var(--text-muted)] hover:text-[var(--text-secondary)]">
                       {selectedIds.has(vehicle.id) ? <CheckSquare className="w-4 h-4 text-[var(--primary)]" /> : <Square className="w-4 h-4" />}

@@ -407,7 +407,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+          className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)]"
         >
           Annuler
         </button>

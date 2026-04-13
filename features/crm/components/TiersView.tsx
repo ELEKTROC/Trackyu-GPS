@@ -240,7 +240,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
           <div className="relative" ref={filterMenuRef}>
             <button
               onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isFilterMenuOpen || activeFilters.length > 0 ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isFilterMenuOpen || activeFilters.length > 0 ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
               title="Filtrer les résultats"
             >
               <Filter className="w-4 h-4" />
@@ -260,7 +260,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
                     <button
                       key={opt.id}
                       onClick={() => toggleFilter(opt.id)}
-                      className="w-full flex items-center justify-between px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-md transition-colors"
+                      className="w-full flex items-center justify-between px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-md transition-colors"
                     >
                       <span>{opt.label}</span>
                       {activeFilters.includes(opt.id) && <Check className="w-3 h-3 text-[var(--primary)]" />}
@@ -275,7 +275,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
           <div className="hidden sm:block relative" ref={columnMenuRef}>
             <button
               onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
               title="Gérer les colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
@@ -289,7 +289,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
                   {['Nom', 'Type', 'Email', 'Téléphone', 'Ville', 'Statut', 'Date Création'].map((col) => (
                     <label
                       key={col}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
                     >
                       <input
                         type="checkbox"
@@ -309,7 +309,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
           {/* EXPORT BUTTON — desktop only */}
           <button
             onClick={handleExportExcel}
-            className="hidden sm:block p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors active:bg-[var(--bg-elevated)] active:bg-[var(--bg-elevated)]"
+            className="hidden sm:block p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors active:bg-[var(--bg-elevated)] active:bg-[var(--bg-elevated)]"
             title="Exporter en Excel (CSV)"
           >
             <Download className="w-4 h-4" />
@@ -319,7 +319,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
           <div className="hidden sm:block relative" ref={importMenuRef}>
             <button
               onClick={() => setIsImportMenuOpen(!isImportMenuOpen)}
-              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isImportMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isImportMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]' : ''}`}
               title="Importer des données"
             >
               <Upload className="w-4 h-4" />
@@ -334,7 +334,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
                     showToast(TOAST.CRM.FEATURE_COMING_SOON('Import de fichier'), 'info');
                     setIsImportMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-3 text-[var(--text-primary)] transition-colors"
+                  className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] flex items-center gap-3 text-[var(--text-primary)] transition-colors"
                 >
                   <FileSpreadsheet className="w-4 h-4 text-green-600" />
                   <span>Importer un fichier</span>
@@ -344,7 +344,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
                     handleDownloadTemplate();
                     setIsImportMenuOpen(false);
                   }}
-                  className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center gap-3 border-t border-[var(--border)] border-[var(--border)] text-[var(--text-primary)] transition-colors"
+                  className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] flex items-center gap-3 border-t border-[var(--border)] border-[var(--border)] text-[var(--text-primary)] transition-colors"
                 >
                   <Download className="w-4 h-4 text-[var(--primary)]" />
                   <span>Télécharger le modèle</span>

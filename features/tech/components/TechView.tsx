@@ -695,14 +695,14 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 <button
                   onClick={() => setStockPage((p) => Math.max(1, p - 1))}
                   disabled={stockPage === 1}
-                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setStockPage((p) => Math.min(totalStockPages, p + 1))}
                   disabled={stockPage === totalStockPages}
-                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -866,14 +866,14 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
             <button
               onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
               disabled={historyPage === 1}
-              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => setHistoryPage((p) => Math.min(totalHistoryPages, p + 1))}
               disabled={historyPage === totalHistoryPages}
-              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -939,7 +939,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 <div className="relative hidden sm:block" ref={filterMenuRef}>
                   <button
                     onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
-                    className={`flex items-center gap-2 px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-bold rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] shadow-sm transition-colors whitespace-nowrap ${isFilterMenuOpen ? 'ring-2 ring-offset-2 ring-[var(--primary)]' : ''}`}
+                    className={`flex items-center gap-2 px-4 py-2 border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] text-sm font-bold rounded-lg hover:bg-[var(--bg-elevated)] shadow-sm transition-colors whitespace-nowrap ${isFilterMenuOpen ? 'ring-2 ring-offset-2 ring-[var(--primary)]' : ''}`}
                   >
                     <Filter className="w-4 h-4" /> <span className="hidden sm:inline">Filtres</span>
                   </button>

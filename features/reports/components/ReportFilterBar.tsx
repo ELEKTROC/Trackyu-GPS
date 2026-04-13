@@ -146,7 +146,7 @@ const HierarchicalFilter: React.FC<HierarchicalFilterProps> = ({ clientVehicleMa
                   <div className="flex items-center bg-[var(--bg-elevated)] p-2 hover:bg-[var(--bg-elevated)]/50 transition-colors">
                     <button
                       onClick={() => toggleClient(clientName)}
-                      className="p-1 mr-1 rounded hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+                      className="p-1 mr-1 rounded hover:bg-[var(--bg-elevated)]"
                     >
                       {expanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                     </button>
@@ -292,7 +292,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
       {/* Schedule */}
       <button
         onClick={() => setIsScheduleOpen(true)}
-        className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors text-sm font-medium"
+        className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors text-sm font-medium"
       >
         <CalendarClock className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Programmer</span>
@@ -323,7 +323,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                 onGenerate('view');
                 setIsGenerateOpen(false);
               }}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] text-left"
             >
               <Eye className="w-3.5 h-3.5 text-[var(--text-muted)]" /> Afficher
             </button>
@@ -333,7 +333,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                 onGenerate('csv');
                 setIsGenerateOpen(false);
               }}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] text-left"
             >
               <FileText className="w-3.5 h-3.5 text-[var(--text-muted)]" /> Exporter CSV
             </button>
@@ -342,7 +342,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                 onGenerate('excel');
                 setIsGenerateOpen(false);
               }}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] text-left"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-[var(--text-muted)]" /> Exporter Excel
             </button>
@@ -351,7 +351,7 @@ export const ReportFilterBar: React.FC<ReportFilterBarProps> = ({
                 onGenerate('pdf');
                 setIsGenerateOpen(false);
               }}
-              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-left"
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] text-left"
             >
               <Download className="w-3.5 h-3.5 text-[var(--text-muted)]" /> Exporter PDF
             </button>

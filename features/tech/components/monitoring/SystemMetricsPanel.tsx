@@ -199,7 +199,7 @@ export const SystemMetricsPanel: React.FC = () => {
           onClick={() => refetch()}
           title="Rafraîchir les métriques"
           aria-label="Rafraîchir les métriques"
-          className="p-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+          className="p-2 rounded-lg bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
         >
           <RefreshCw className={`w-4 h-4 text-[var(--text-secondary)] ${loadingGps ? 'animate-spin' : ''}`} />
         </button>

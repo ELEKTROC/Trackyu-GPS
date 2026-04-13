@@ -223,7 +223,7 @@ export const AnomalyDashboard: React.FC = () => {
                   </td>
                 </tr>
               ) : sortedAnomalies.map((anomaly) => (
-                <tr key={anomaly.id} className="hover:bg-[var(--bg-elevated)] transition-colors group">
+                <tr key={anomaly.id} className="tr-hover transition-colors group">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {getIcon(anomaly.code)}

@@ -286,7 +286,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
           <div className="relative" ref={paymentColumnMenuRef}>
             <button
               onClick={() => setIsPaymentColumnMenuOpen(!isPaymentColumnMenuOpen)}
-              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isPaymentColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
+              className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isPaymentColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
               title="Gérer les colonnes"
             >
               <LayoutTemplate className="w-4 h-4" />
@@ -300,7 +300,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                   {effectiveColumns.map((col) => (
                     <label
                       key={col.id}
-                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
+                      className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                     >
                       <input
                         type="checkbox"

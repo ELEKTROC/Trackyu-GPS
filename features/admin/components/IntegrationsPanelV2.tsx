@@ -1377,7 +1377,7 @@ export const IntegrationsPanelV2: React.FC = () => {
           <div className="flex justify-end pt-4 border-t border-[var(--border)]">
             <button
               onClick={() => setIsTestModalOpen(false)}
-              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+              className="px-4 py-2 bg-[var(--bg-elevated)] text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
             >
               Fermer
             </button>

@@ -155,7 +155,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
             <button
               onClick={onClose}
               title="Fermer"
-              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
+              className="p-2 hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
             >
               <X className="w-5 h-5 text-[var(--text-secondary)]" />
             </button>
@@ -261,7 +261,7 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
 
                         setFormData({ ...formData, accountingCode: `${prefix}${paddedSequence}` });
                       }}
-                      className="px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-xl border border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors text-xs font-bold"
+                      className="px-3 py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] rounded-xl border border-[var(--border)] hover:bg-[var(--bg-elevated)] transition-colors text-xs font-bold"
                       title="Générer un code (411 + N° Séquence)"
                     >
                       Générer

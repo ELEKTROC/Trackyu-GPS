@@ -383,7 +383,7 @@ export const InterventionRequestTab: React.FC<InterventionRequestTabProps> = ({
                   .map((item) => (
                     <label
                       key={item.id}
-                      className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
+                      className="flex items-center gap-2 p-2 hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                     >
                       <input
                         title={item.name}

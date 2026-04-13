@@ -230,7 +230,7 @@ export const TrashPanelV2: React.FC = () => {
               {filteredUsers.map((u: TrashUser) => (
                 <tr
                   key={`user-${u.id}`}
-                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)]/30"
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
@@ -301,7 +301,7 @@ export const TrashPanelV2: React.FC = () => {
               {filteredContracts.map((c: TrashContract) => (
                 <tr
                   key={`contract-${c.id}`}
-                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)]/30"
                 >
                   <td className="py-3 px-4">
                     <span className="font-medium text-[var(--text-primary)] text-sm line-through opacity-70">
@@ -367,7 +367,7 @@ export const TrashPanelV2: React.FC = () => {
               {filteredTenants.map((t: TrashTenant) => (
                 <tr
                   key={`tenant-${t.id}`}
-                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/30"
+                  className="border-b border-[var(--border)] border-[var(--border)]/50 hover:bg-[var(--bg-elevated)]/30"
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">

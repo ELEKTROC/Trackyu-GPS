@@ -1028,7 +1028,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                                 <div key={tab.id}>
                                   {/* Tab Header */}
                                   <div
-                                    className="flex items-center gap-3 p-2 pl-10 bg-[var(--bg-elevated)]/50 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 border-b border-[var(--border)]"
+                                    className="flex items-center gap-3 p-2 pl-10 bg-[var(--bg-elevated)]/50 cursor-pointer hover:bg-[var(--bg-elevated)]/50 border-b border-[var(--border)]"
                                     onClick={() => toggleTab(tab.id)}
                                   >
                                     <button className="p-1">

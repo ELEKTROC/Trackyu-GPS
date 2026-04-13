@@ -294,10 +294,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
         {/* Toolbar mobile */}
         <div className="p-3 border-b border-[var(--border)] bg-[var(--bg-elevated)] shrink-0">
           <div className="flex items-center gap-2">
-            <button
-              onClick={goPrev}
-              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
-            >
+            <button onClick={goPrev} className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg">
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
@@ -306,10 +303,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
             >
               Aujourd'hui
             </button>
-            <button
-              onClick={goNext}
-              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg"
-            >
+            <button onClick={goNext} className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg">
               <ChevronRight className="w-4 h-4" />
             </button>
             <div className="flex-1 text-center">
@@ -454,10 +448,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
 
           {/* Navigation date */}
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={goPrev}
-              className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
-            >
+            <button onClick={goPrev} className="p-1 hover:bg-[var(--bg-elevated)] rounded">
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
@@ -466,10 +457,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
             >
               Aujourd'hui
             </button>
-            <button
-              onClick={goNext}
-              className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
-            >
+            <button onClick={goNext} className="p-1 hover:bg-[var(--bg-elevated)] rounded">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

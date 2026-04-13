@@ -403,7 +403,7 @@ export const AlertForm = React.forwardRef<
                     filteredVehicles.map((v: Vehicle) => (
                       <label
                         key={v.id}
-                        className="flex items-center gap-2 p-2.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] cursor-pointer"
+                        className="flex items-center gap-2 p-2.5 hover:bg-[var(--bg-elevated)] cursor-pointer"
                       >
                         <input
                           type="checkbox"
@@ -533,7 +533,7 @@ export const AlertForm = React.forwardRef<
                     filteredUsers.map((u: User) => (
                       <label
                         key={u.id}
-                        className="flex items-start gap-2 p-3 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] cursor-pointer border-b border-[var(--border)] border-[var(--border)] last:border-0"
+                        className="flex items-start gap-2 p-3 hover:bg-[var(--bg-elevated)] cursor-pointer border-b border-[var(--border)] border-[var(--border)] last:border-0"
                       >
                         <input
                           type="checkbox"

@@ -113,7 +113,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                   onNewEvent('TECH');
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
+                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
               >
                 Intervention Technique
               </button>
@@ -122,7 +122,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                   onNewEvent('BUSINESS');
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
+                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
               >
                 Rendez-vous Commercial
               </button>
@@ -131,7 +131,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                   onNewEvent('TASK');
                   setDropdownOpen(false);
                 }}
-                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-primary)]"
+                className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] text-[var(--text-primary)]"
               >
                 Tâche
               </button>

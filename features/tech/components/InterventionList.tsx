@@ -1013,7 +1013,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
             <div className="flex-1"></div>
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full"
+              className="p-1 hover:bg-[var(--bg-elevated)] rounded-full"
               aria-label="Effacer la sélection"
               title="Effacer la sélection"
             >
@@ -1040,7 +1040,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   className={`p-2 border rounded-lg text-sm font-bold transition-colors flex items-center gap-1 ${
                     hasActiveFilters
                       ? 'border-[var(--primary)] bg-[var(--primary-dim)] text-[var(--primary)] dark:border-[var(--primary)] dark:bg-[var(--primary-dim)] dark:text-[var(--primary)]'
-                      : 'border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
+                      : 'border-[var(--border)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                   }`}
                   title="Filtres"
                 >
@@ -1137,7 +1137,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               </div>
               <button
                 onClick={() => setIsImportModalOpen(true)}
-                className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
+                className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
                 title="Importer"
               >
                 <Upload className="w-4 h-4" />
@@ -1145,7 +1145,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               <div className="relative" ref={exportMenuRef}>
                 <button
                   onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                  className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
+                  className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
                   title="Exporter"
                 >
                   <Download className="w-4 h-4" />
@@ -1154,19 +1154,19 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                   <div className="absolute top-full right-0 mt-2 w-48 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 p-2 animate-in fade-in slide-in-from-top-2">
                     <button
                       onClick={handleExport}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-sm text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] rounded text-sm text-left"
                     >
                       <FileDown className="w-4 h-4 text-red-500" /> Export PDF
                     </button>
                     <button
                       onClick={handleExportCSV}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-sm text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] rounded text-sm text-left"
                     >
                       <FileSpreadsheet className="w-4 h-4 text-green-500" /> Export CSV
                     </button>
                     <button
                       onClick={handleExportExcel}
-                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-sm text-left"
+                      className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] rounded text-sm text-left"
                     >
                       <FileSpreadsheet className="w-4 h-4 text-[var(--primary)]" /> Export Excel
                     </button>
@@ -1176,7 +1176,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               <div className="relative" ref={columnMenuRef}>
                 <button
                   onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                  className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
+                  className="p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)]"
                   title="Colonnes"
                 >
                   <LayoutTemplate className="w-4 h-4" />
@@ -1189,7 +1189,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                     {INTERVENTION_COLUMNS.map((col) => (
                       <label
                         key={col.id}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-xs"
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-xs"
                       >
                         <input
                           type="checkbox"
@@ -1376,7 +1376,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
                         )}
                       <button
                         onClick={() => onEdit(int)}
-                        className="p-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)] transition-colors"
+                        className="p-1.5 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)] transition-colors"
                         aria-label="Modifier"
                         title="Modifier"
                       >

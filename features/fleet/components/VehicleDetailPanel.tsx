@@ -861,7 +861,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
         footer={
           <button
             onClick={() => setActiveModal(null)}
-            className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-[var(--text-primary)] font-medium text-sm"
+            className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-[var(--text-primary)] font-medium text-sm"
           >
             Fermer
           </button>

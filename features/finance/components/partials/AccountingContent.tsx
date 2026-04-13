@@ -194,7 +194,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
               onClick={() =>
                 generateFEC(journalEntries || [], `FEC_EXPORT_${new Date().toISOString().slice(0, 10)}.csv`)
               }
-              className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
             >
               <Download className="w-4 h-4" /> <span className="hidden sm:inline">Export FEC</span>
             </button>
@@ -227,7 +227,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
             <div className="relative" ref={columnMenuRef}>
               <button
                 onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
-                className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
+                className={`p-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] transition-colors ${isColumnMenuOpen ? 'bg-[var(--bg-elevated)] ring-2 ring-[var(--primary-dim)]' : ''}`}
                 title="Gérer les colonnes"
               >
                 <LayoutTemplate className="w-4 h-4" />
@@ -241,7 +241,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                     {JOURNAL_COLUMNS.map((col) => (
                       <label
                         key={col.id}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
                       >
                         <input
                           type="checkbox"

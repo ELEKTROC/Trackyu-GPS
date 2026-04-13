@@ -1129,7 +1129,7 @@ export const SupportSettingsPanel: React.FC = () => {
                       else next.add(type.id);
                       setExpandedIntTypes(next);
                     }}
-                    className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
+                    className="p-1 hover:bg-[var(--bg-elevated)] rounded"
                   >
                     {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                   </button>

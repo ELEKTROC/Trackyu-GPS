@@ -218,7 +218,7 @@ export const EntryModal: React.FC<EntryModalProps> = ({
             <button
               type="button"
               onClick={onAddLine}
-              className="w-full py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] text-xs font-bold uppercase transition-colors"
+              className="w-full py-2 bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] text-xs font-bold uppercase transition-colors"
             >
               + Ajouter une ligne
             </button>

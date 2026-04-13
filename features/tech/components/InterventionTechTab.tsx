@@ -133,13 +133,13 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({ formDa
           <div className="flex gap-3 pt-2">
             <button
               onClick={() => handleSimulateTest('APN')}
-              className="flex-1 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] flex items-center justify-center gap-2"
             >
               <Smartphone className="w-4 h-4" /> Config APN
             </button>
             <button
               onClick={() => handleSimulateTest('IP')}
-              className="flex-1 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--bg-elevated)] flex items-center justify-center gap-2"
             >
               <Server className="w-4 h-4" /> Config IP/Port
             </button>

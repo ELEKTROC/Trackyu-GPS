@@ -280,7 +280,7 @@ export const HelpCenterView: React.FC = () => {
                   >
                     <button
                       onClick={() => setExpandedFaq(expandedFaq === idx.toString() ? null : idx.toString())}
-                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 transition-colors"
+                      className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-[var(--bg-elevated)]/50 transition-colors"
                     >
                       <span className="font-medium text-[var(--text-primary)]">{faq.question}</span>
                       {expandedFaq === idx.toString() ? (

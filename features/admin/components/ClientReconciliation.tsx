@@ -525,7 +525,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
                   const isExpanded = expandedIds.has(match.id);
                   return (
                     <React.Fragment key={match.id}>
-                      <tr className="hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-surface)]/50">
+                      <tr className="tr-hover transition-colors">
                         <td className="px-4 py-3">
                           <button
                             onClick={() => toggleExpand(match.id)}

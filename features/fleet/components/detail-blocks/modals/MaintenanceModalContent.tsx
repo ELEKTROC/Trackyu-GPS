@@ -95,7 +95,7 @@ export const MaintenanceModalContent: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
               {maintenanceHistory.map((item) => (
-                <tr key={item.id} className="hover:bg-[var(--bg-elevated)] transition-colors">
+                <tr key={item.id} className="tr-hover transition-colors">
                   <td className="px-4 py-3 font-mono text-[var(--text-secondary)]">{item.date}</td>
                   <td className="px-4 py-3">
                     <div className="font-bold text-[var(--text-primary)]">{item.task}</div>

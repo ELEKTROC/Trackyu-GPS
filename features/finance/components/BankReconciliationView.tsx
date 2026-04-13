@@ -274,10 +274,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
           </thead>
           <tbody className="divide-y divide-[var(--border)]">
             {sortedTransactions.map((tx) => (
-              <tr
-                key={tx.id}
-                className="hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 transition-colors"
-              >
+              <tr key={tx.id} className="hover:bg-[var(--bg-elevated)]/50 transition-colors">
                 <td className="px-4 py-3 font-mono">{new Date(tx.date).toLocaleDateString('fr-FR')}</td>
                 <td className="px-4 py-3 font-bold text-[var(--text-primary)]">{tx.description}</td>
                 <td
@@ -407,7 +404,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
                   {getSuggestions(reconcileTx).map((match) => (
                     <div
                       key={match.id}
-                      className="flex justify-between items-center p-3 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] cursor-pointer"
+                      className="flex justify-between items-center p-3 border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] cursor-pointer"
                       onClick={() => handleReconcile(reconcileTx)}
                     >
                       <div>
@@ -457,7 +454,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
+                className="p-2 hover:bg-[var(--bg-elevated)] rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-[var(--text-secondary)]" />
               </button>
@@ -652,7 +649,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg text-sm font-medium transition-colors"
+                className="px-4 py-2 text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg text-sm font-medium transition-colors"
               >
                 Annuler
               </button>

@@ -544,7 +544,7 @@ export const LiveChatPanel: React.FC = () => {
                     ? chatTab === 'support'
                       ? 'bg-[var(--primary)] text-white'
                       : 'bg-green-600 text-white'
-                    : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
+                    : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
                 {f.label}

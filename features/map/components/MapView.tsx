@@ -1709,7 +1709,7 @@ export const MapView: React.FC<MapViewProps> = ({
               {activeTab === 'vehicles' && (
                 <button
                   onClick={handleSelectAll}
-                  className="p-2.5 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]"
+                  className="p-2.5 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]"
                   aria-label="Tout sélectionner"
                   title="Tout sélectionner"
                 >
@@ -1910,7 +1910,7 @@ export const MapView: React.FC<MapViewProps> = ({
                                   <div
                                     key={z.id}
                                     onClick={() => focusOnZone(z)}
-                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50"
+                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)]/50"
                                   >
                                     <div className="flex items-center gap-2 mb-1">
                                       <Layers className="w-4 h-4 text-[var(--text-muted)]" />
@@ -1931,7 +1931,7 @@ export const MapView: React.FC<MapViewProps> = ({
                                 ).map((d) => (
                                   <div
                                     key={d.id}
-                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50"
+                                    className="px-4 py-3 border-b border-slate-50 border-[var(--border)] cursor-pointer hover:bg-[var(--bg-elevated)]/50"
                                   >
                                     <div className="flex items-center justify-between mb-1">
                                       <span className="text-sm font-bold text-[var(--text-primary)]">{d.name}</span>
@@ -1972,7 +1972,7 @@ export const MapView: React.FC<MapViewProps> = ({
 
       {isSidebarOpen && !isReplayActive && (
         <div
-          className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-[var(--bg-elevated)] border border-l-0 border-[var(--border)] rounded-r-md shadow-sm cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] text-[var(--text-muted)]"
+          className="hidden lg:flex absolute z-20 items-center justify-center w-6 h-12 bg-[var(--bg-elevated)] border border-l-0 border-[var(--border)] rounded-r-md shadow-sm cursor-pointer hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] text-[var(--text-muted)]"
           style={{ left: sidebarWidth, top: '50%', transform: 'translateY(-50%)' }}
           onClick={() => setIsSidebarOpen(false)}
         >
@@ -2765,7 +2765,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   </div>
                   <button
                     onClick={() => setShowAlertsPanel(false)}
-                    className="p-1 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded"
+                    className="p-1 hover:bg-[var(--bg-elevated)] rounded"
                   >
                     <X className="w-4 h-4 text-[var(--text-secondary)]" />
                   </button>
@@ -2778,7 +2778,7 @@ export const MapView: React.FC<MapViewProps> = ({
                         setSelectedVehicle(alert.vehicle);
                         setShowAlertsPanel(false);
                       }}
-                      className={`px-4 py-3 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-[var(--clr-danger-dim)]' : ''}`}
+                      className={`px-4 py-3 cursor-pointer hover:bg-[var(--bg-elevated)] flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-[var(--clr-danger-dim)]' : ''}`}
                     >
                       <div
                         className={`p-2 rounded-full ${

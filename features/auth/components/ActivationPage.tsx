@@ -104,7 +104,7 @@ export const ActivationPage: React.FC = () => {
       {/* Left panel — branding */}
       <div
         className="hidden lg:flex lg:w-1/2 relative p-12 text-white flex-col justify-between overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #E8771A 0%, #C85F0E 50%, #8B3A00 100%)' }}
+        style={{ background: 'var(--brand-gradient)' }}
       >
         <div className="relative z-10 flex flex-col h-full justify-center">
           <div className="flex items-center gap-3 mb-8">

@@ -295,7 +295,7 @@ export const MyNotificationsView: React.FC = () => {
                   <div
                     key={msg.id}
                     onClick={() => setSelectedMessageId(msg.id)}
-                    className={`p-4 border-b border-slate-50 border-[var(--border)]/50 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50 cursor-pointer transition-colors group ${selectedMessageId === msg.id ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-4 border-l-blue-600' : ''}`}
+                    className={`p-4 border-b border-slate-50 border-[var(--border)]/50 hover:bg-[var(--bg-elevated)]/50 cursor-pointer transition-colors group ${selectedMessageId === msg.id ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-l-4 border-l-blue-600' : ''}`}
                   >
                     <div className="flex gap-3">
                       <div className="relative">

@@ -261,7 +261,7 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
         <button
           type="button"
           onClick={() => setIsVehicleListOpen(!isVehicleListOpen)}
-          className="w-full p-4 bg-[var(--bg-elevated)] flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+          className="w-full p-4 bg-[var(--bg-elevated)] flex items-center justify-between text-left hover:bg-[var(--bg-elevated)] transition-colors"
         >
           <span className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
             <div className="p-1.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">

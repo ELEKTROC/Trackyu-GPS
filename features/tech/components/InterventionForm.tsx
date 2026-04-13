@@ -241,7 +241,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
             <button
               onClick={onClose}
               title="Fermer"
-              className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)]"
+              className="p-2 hover:bg-[var(--bg-elevated)] rounded-full text-[var(--text-secondary)]"
             >
               <X className="w-5 h-5" />
             </button>
@@ -341,7 +341,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
           <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
             <button
               onClick={onClose}
-              className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+              className="px-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-primary)] text-sm font-medium hover:bg-[var(--bg-elevated)]"
             >
               Annuler
             </button>

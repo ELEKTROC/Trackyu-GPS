@@ -895,7 +895,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               </button>
               <button
                 onClick={() => handleBulkStatus('TERMINATED')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] rounded-lg hover:bg-[var(--bg-elevated)]"
               >
                 <XCircle className="w-3.5 h-3.5" /> Résilier
               </button>
@@ -911,7 +911,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               </button>
               <button
                 onClick={handleBulkGenerateInvoices}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)]"
               >
                 <DollarSign className="w-3.5 h-3.5 text-green-500" /> Générer factures
               </button>
@@ -1160,7 +1160,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                                     e.stopPropagation();
                                     handleStatusChange(contract, t.value);
                                   }}
-                                  className={`w-full text-left px-3 py-2 text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors ${t.color}`}
+                                  className={`w-full text-left px-3 py-2 text-sm hover:bg-[var(--bg-elevated)] transition-colors ${t.color}`}
                                 >
                                   {t.label} → {STATUS_LABELS[t.value]}
                                 </button>

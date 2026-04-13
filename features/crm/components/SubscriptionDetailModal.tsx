@@ -247,10 +247,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
-          >
+          <button onClick={onClose} className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -582,7 +579,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               <div className="flex gap-2">
                 <button
                   onClick={() => setConfirmRésilier(false)}
-                  className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]"
+                  className="flex-1 px-4 py-2 border border-[var(--border)] rounded-lg text-sm hover:bg-[var(--bg-elevated)]"
                 >
                   Annuler
                 </button>

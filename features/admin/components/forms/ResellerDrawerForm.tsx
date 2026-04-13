@@ -349,7 +349,7 @@ export function ResellerDrawerForm({
     }
 
     return (
-      <label className="flex items-center gap-2 py-1 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] px-2 rounded">
+      <label className="flex items-center gap-2 py-1 cursor-pointer hover:bg-[var(--bg-elevated)] px-2 rounded">
         {Icon && <Icon className="w-4 h-4 text-[var(--text-muted)]" />}
         <input
           type="checkbox"

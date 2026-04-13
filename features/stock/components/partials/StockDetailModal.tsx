@@ -44,7 +44,7 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ isOpen, onCl
       footer={
         <button
           onClick={onClose}
-          className="px-4 py-2 bg-[var(--bg-elevated)] rounded-lg hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] transition-colors"
+          className="px-4 py-2 bg-[var(--bg-elevated)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
         >
           Fermer
         </button>
