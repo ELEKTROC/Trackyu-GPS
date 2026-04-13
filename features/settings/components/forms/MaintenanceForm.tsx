@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MaintenanceSchema } from '../../../../schemas/maintenanceSchema';
 import type { z } from 'zod';
@@ -35,7 +35,7 @@ export const MaintenanceForm = React.forwardRef<
     setValue,
     formState: { errors },
   } = useForm<MaintenanceFormData>({
-    resolver: zodResolver(MaintenanceSchema),
+    resolver: zodResolver(MaintenanceSchema) as Resolver<MaintenanceFormData>,
     defaultValues: initialData || {
       nom: '',
       category: 'Visite technique',

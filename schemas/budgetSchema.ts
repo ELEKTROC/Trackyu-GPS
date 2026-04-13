@@ -23,10 +23,14 @@ export const BUDGET_CATEGORIES = {
 export type BudgetType = 'CHARGE' | 'PRODUIT';
 
 export const BudgetSchema = z.object({
-  year: z.number({ required_error: "L'année est requise" }).int().min(2020, "Année minimum : 2020").max(2100, "Année maximum : 2100"),
-  category: z.string().min(1, "La catégorie est requise"),
-  accountPrefix: z.string().min(1, "Le compte comptable est requis"),
-  allocatedAmount: z.number({ required_error: "Le montant est requis" }).min(0, "Le montant doit être positif"),
+  year: z
+    .number({ error: "L'année est requise" })
+    .int()
+    .min(2020, 'Année minimum : 2020')
+    .max(2100, 'Année maximum : 2100'),
+  category: z.string().min(1, 'La catégorie est requise'),
+  accountPrefix: z.string().min(1, 'Le compte comptable est requis'),
+  allocatedAmount: z.number({ error: 'Le montant est requis' }).min(0, 'Le montant doit être positif'),
   notes: z.string().optional(),
 });
 

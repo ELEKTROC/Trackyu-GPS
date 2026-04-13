@@ -572,6 +572,13 @@ export const generateUserActivity = (count: number): UserActivity[] => {
     accountStatus: Math.random() > 0.95 ? 'LOCKED' : 'ACTIVE',
     ipAddress: `192.168.1.${getRandomInt(1, 255)}`,
     location: getRandomElement(CITIES),
+    loginCount: getRandomInt(1, 200),
+    firstLogin: new Date(Date.now() - getRandomInt(86400000, 31536000000)).toISOString(),
+    totalActions: getRandomInt(10, 5000),
+    lastActionAt: new Date(Date.now() - getRandomInt(0, 3600000)).toISOString(),
+    mostUsedAction: ['VIEW_DASHBOARD', 'VIEW_FLEET', 'VIEW_REPORTS', 'VIEW_MAP'][getRandomInt(0, 3)],
+    avgLoginsPerWeek: Math.round(Math.random() * 10 * 10) / 10,
+    createdAt: new Date(Date.now() - getRandomInt(86400000, 63072000000)).toISOString(),
   }));
 };
 

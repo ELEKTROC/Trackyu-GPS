@@ -230,7 +230,7 @@ export const MyOperationsView: React.FC = () => {
                         ?.map((vid) => vehicles.find((v) => v.id === vid)?.licensePlate)
                         .filter(Boolean)
                         .join(', ') ||
-                      c.licensePlate ||
+                      (c as unknown as { licensePlate?: string }).licensePlate ||
                       '-';
                     return `${c.subscriptionNumber || '-'};${c.contractNumber || '-'};${new Date(c.startDate).toLocaleDateString('fr-FR')};${c.endDate ? new Date(c.endDate).toLocaleDateString('fr-FR') : '-'};${plates};${c.vehicleCount};${c.monthlyFee};${c.status}`;
                   }),
@@ -749,9 +749,16 @@ export const MyOperationsView: React.FC = () => {
         <SubscriptionDetailModal
           isOpen={!!selectedSub}
           onClose={() => setSelectedSub(null)}
-          subscriptionNumber={selectedSub.vehicle_id || selectedSub.vehicleId}
-          vehicleId={selectedSub.vehicle_id || selectedSub.vehicleId}
-          contractId={selectedSub.contract_id || selectedSub.contractId}
+          subscriptionNumber={selectedSub.subscriptionNumber || selectedSub.vehicle_id || selectedSub.vehicleId || ''}
+          vehicleId={selectedSub.vehicle_id || selectedSub.vehicleId || ''}
+          contractId={selectedSub.contract_id || selectedSub.contractId || ''}
+          subscriptionId={selectedSub.id || selectedSub.subscriptionId || ''}
+          monthlyFee={selectedSub.monthlyFee || 0}
+          billingCycle={selectedSub.billingCycle || 'MONTHLY'}
+          subscriptionStatus={selectedSub.status || 'ACTIVE'}
+          autoRenew={selectedSub.autoRenew ?? true}
+          startDate={selectedSub.startDate || selectedSub.start_date || ''}
+          endDate={selectedSub.endDate || selectedSub.end_date}
         />
       )}
     </div>

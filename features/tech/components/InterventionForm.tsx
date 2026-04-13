@@ -431,15 +431,7 @@ export const InterventionForm: React.FC<InterventionFormProps> = ({
           }}
           isEditMode={false}
           ticketForm={ticketForm}
-          setTicketForm={
-            setTicketForm as unknown as (form: {
-              subject: string;
-              priority: string;
-              description: string;
-              clientId: string;
-              vehicleId: string;
-            }) => void
-          }
+          setTicketForm={setTicketForm as any}
           formErrors={ticketFormErrors}
           handleSaveTicket={handleSaveTicketFromForm}
           clients={clients}

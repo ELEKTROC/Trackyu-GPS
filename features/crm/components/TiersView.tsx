@@ -449,7 +449,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
           setSelectedTier(tier);
           setShowDetail(true);
         }}
-        dateRange={dateRange}
+        dateRange={dateRange ?? undefined}
         filter={getFilterFunction}
       />
 

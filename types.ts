@@ -218,6 +218,8 @@ export interface SystemUser {
   // Identification RH
   matricule?: string; // Numéro matricule / Numéro employé
   cin?: string; // Carte d'identité nationale / CNI / CIN
+  ncc?: string; // Numéro de Contribuable / NCC (Côte d'Ivoire)
+  rccm?: string; // Registre du Commerce et du Crédit Mobilier
   dateNaissance?: string; // Date de naissance
   lieuNaissance?: string; // Lieu de naissance
   nationalite?: string; // Nationalité
@@ -249,9 +251,9 @@ export interface SystemUser {
   };
 
   // Métadonnées
-  createdAt?: string;
-  updatedAt?: string;
-  lastLogin?: string;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  lastLogin?: string | null;
   require2FA?: boolean;
   allowedTenants?: string[]; // IDs des organisations auxquelles l'utilisateur a accès (multi-tenant)
   mobileTabs?: string[]; // Onglets mobile configurés par SuperAdmin (override du profil par rôle)
@@ -573,6 +575,7 @@ export interface Intervention {
 
   scheduledDate: string; // ISO Date string
   endTime?: string; // Date de fin réelle (Clôture)
+  enRouteTime?: string; // Date/Heure de départ en route
   duration: number; // en minutes
   location: string;
   address?: string; // Adresse de l'intervention
@@ -591,6 +594,7 @@ export interface Intervention {
   // Identifiants Véhicule
   licensePlate?: string; // Plaque Définitive
   tempPlate?: string; // WW
+  wwPlate?: string; // Alias de tempPlate (plaque WW)
   vin?: string; // Châssis
   vehicleName?: string; // Nom du véhicule
   vehicleType?: string; // Type d'engin (e.g., Camion, VUL, Engin TP)

@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, type Resolver, Controller } from 'react-hook-form';
 import type { Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { SubUserFormData } from '../../../../schemas/subUserSchema';
@@ -142,7 +142,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       control,
       formState: { errors },
     } = useForm<SubUserFormData>({
-      resolver: zodResolver(SubUserSchema),
+      resolver: zodResolver(SubUserSchema) as Resolver<SubUserFormData>,
       defaultValues: initialData || {
         nom: '',
         email: '',

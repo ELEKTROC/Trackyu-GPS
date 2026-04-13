@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EcoDrivingSchema } from '../../../../schemas/ecoDrivingSchema';
 import { Truck, Gauge, Car, RotateCcw, AlertTriangle } from 'lucide-react';
@@ -40,7 +40,7 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       handleSubmit,
       formState: { errors },
     } = useForm<EcoDrivingFormData>({
-      resolver: zodResolver(EcoDrivingSchema),
+      resolver: zodResolver(EcoDrivingSchema) as Resolver<EcoDrivingFormData>,
       defaultValues: initialData || {
         statut: 'Actif',
         maxSpeedLimit: 110,

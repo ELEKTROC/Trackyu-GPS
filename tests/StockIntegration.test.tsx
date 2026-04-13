@@ -62,11 +62,11 @@ const mockVehicles: Vehicle[] = [
     licensePlate: 'AA-123-BB',
     brand: 'Renault',
     model: 'Master',
-    status: 'ACTIVE',
+    status: 'STOPPED' as any,
     tenantId: 'tenant1',
     createdAt: '',
     updatedAt: '',
-  },
+  } as unknown as Vehicle,
 ];
 
 // Mock useTheme used by child components
@@ -104,7 +104,7 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
 
   return {
     ...render(
-      <ToastContext.Provider value={{ showToast: mockShowToast, toasts: [], removeToast: vi.fn() }}>
+      <ToastContext.Provider value={{ showToast: mockShowToast } as any}>
         <DataContext.Provider value={defaultContext as any}>{ui}</DataContext.Provider>
       </ToastContext.Provider>
     ),

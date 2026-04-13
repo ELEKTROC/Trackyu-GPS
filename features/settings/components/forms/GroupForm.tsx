@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, type Resolver, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { GroupFormData } from '../../../../schemas/groupSchema';
 import { GroupSchema } from '../../../../schemas/groupSchema';
@@ -84,7 +84,7 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
     setValue,
     control,
   } = useForm<GroupFormData>({
-    resolver: zodResolver(GroupSchema),
+    resolver: zodResolver(GroupSchema) as Resolver<GroupFormData>,
     defaultValues: initialData || { statut: 'ACTIVE', vehicleIds: [] },
   });
 
@@ -235,11 +235,15 @@ export const GroupForm = React.forwardRef<HTMLFormElement, BaseFormProps>(({ ini
 
           {selectedCriteriaType &&
             selectedCriteriaType !== 'CUSTOM' &&
-            dynamicCriteriaOptions[selectedCriteriaType]?.values.length > 0 && (
+            (dynamicCriteriaOptions as Record<string, { values: { id: string; label: string }[]; label: string }>)[
+              selectedCriteriaType
+            ]?.values.length > 0 && (
               <FormField label="Valeur">
                 <Select {...register('criteriaValue')}>
                   <option value="">-- Sélectionner une valeur --</option>
-                  {dynamicCriteriaOptions[selectedCriteriaType].values.map((v) => (
+                  {(
+                    dynamicCriteriaOptions as Record<string, { values: { id: string; label: string }[]; label: string }>
+                  )[selectedCriteriaType].values.map((v: { id: string; label: string }) => (
                     <option key={v.id} value={v.id}>
                       {v.label}
                     </option>

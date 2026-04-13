@@ -242,7 +242,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                       borderRadius: '8px',
                       border: `1px solid ${tooltipBorder}`,
                     }}
-                    formatter={(value: number) => formatPrice(value)}
+                    formatter={(value: unknown) => formatPrice(value as number)}
                   />
                   <Bar dataKey="encaissements" fill="#10b981" name="Encaissements" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="depenses" fill="#ef4444" name="Dépenses" radius={[4, 4, 0, 0]} />
@@ -299,7 +299,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                       borderRadius: '8px',
                       border: `1px solid ${tooltipBorder}`,
                     }}
-                    formatter={(value: number) => formatPrice(value)}
+                    formatter={(value: unknown) => formatPrice(value as number)}
                   />
                   <Area
                     type="monotone"
@@ -338,7 +338,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                     borderRadius: '8px',
                     border: `1px solid ${tooltipBorder}`,
                   }}
-                  formatter={(value: number) => formatPrice(value)}
+                  formatter={(value: unknown) => formatPrice(value as number)}
                 />
                 <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                   {agingBalance.map((entry, index) => (
@@ -395,7 +395,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                       borderRadius: '8px',
                       border: `1px solid ${tooltipBorder}`,
                     }}
-                    formatter={(value: number) => formatPrice(value)}
+                    formatter={(value: unknown) => formatPrice(value as number)}
                   />
                   <Bar dataKey="budget" fill="#94a3b8" name="Budget" radius={[0, 4, 4, 0]} />
                   <Bar dataKey="reel" fill="#3b82f6" name="Réel" radius={[0, 4, 4, 0]} />
@@ -495,7 +495,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                     borderRadius: '8px',
                     border: `1px solid ${tooltipBorder}`,
                   }}
-                  formatter={(value: number) => formatPrice(value)}
+                  formatter={(value: unknown) => formatPrice(value as number)}
                 />
                 <Legend verticalAlign="bottom" height={30} iconSize={10} wrapperStyle={{ fontSize: '11px' }} />
               </RePieChart>

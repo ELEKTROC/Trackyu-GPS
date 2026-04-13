@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   User,
@@ -127,7 +127,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
       watch,
       formState: { errors, isDirty },
     } = useForm<UserFormData>({
-      resolver: zodResolver(UserFullSchema),
+      resolver: zodResolver(UserFullSchema) as Resolver<UserFormData>,
       defaultValues: {
         language: 'fr',
         timezone: 'UTC+1',
@@ -185,7 +185,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
       try {
         await onFormSubmit({
           ...data,
-          subUsers: subUsersList,
+          subUsers: subUsersList as SubUserFormData[],
           documents: documentsList,
         });
       } finally {

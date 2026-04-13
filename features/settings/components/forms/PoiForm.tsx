@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { PoiFormData } from '../../../../schemas/poiSchema';
 import { PoiSchema } from '../../../../schemas/poiSchema';
@@ -55,7 +55,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       setValue,
       watch,
     } = useForm<PoiFormData>({
-      resolver: zodResolver(PoiSchema),
+      resolver: zodResolver(PoiSchema) as Resolver<PoiFormData>,
       defaultValues: initialData
         ? {
             ...initialData,

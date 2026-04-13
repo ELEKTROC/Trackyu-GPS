@@ -460,7 +460,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
     const newEndDate = bulkNeverExpires ? null : bulkEndDate;
     for (const c of targets) {
       try {
-        await updateContract({ ...c, endDate: newEndDate ?? undefined });
+        await updateContract({ ...c, endDate: (newEndDate ?? c.endDate) as string });
       } catch {
         /* continue */
       }

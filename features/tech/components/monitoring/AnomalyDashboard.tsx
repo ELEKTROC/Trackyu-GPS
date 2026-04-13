@@ -186,8 +186,8 @@ export const AnomalyDashboard: React.FC = () => {
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5">
-                          {getIcon(anomaly.code)}
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${getSeverityColor(anomaly.severity)}`}>{anomaly.label}</span>
+                          {getIcon(anomaly.code ?? '')}
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${getSeverityColor(anomaly.severity ?? '')}`}>{anomaly.label}</span>
                         </div>
                         <p className="text-sm font-bold text-[var(--text-primary)] truncate">{anomaly.vehicleName}</p>
                         <p className="text-xs text-[var(--text-secondary)] truncate">{anomaly.description}</p>
@@ -226,8 +226,8 @@ export const AnomalyDashboard: React.FC = () => {
                 <tr key={anomaly.id} className="tr-hover transition-colors group">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      {getIcon(anomaly.code)}
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${getSeverityColor(anomaly.severity)}`}>
+                      {getIcon(anomaly.code ?? '')}
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${getSeverityColor(anomaly.severity ?? '')}`}>
                         {anomaly.label}
                       </span>
                     </div>

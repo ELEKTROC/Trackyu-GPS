@@ -420,7 +420,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   );
   const discount = formState.discount || 0;
   const taxableAmount = Math.max(0, subtotal - discount);
-  const vatAmount = taxableAmount * (formState.vatRate / 100);
+  const vatAmount = taxableAmount * ((formState.vatRate ?? 0) / 100);
   const total = taxableAmount + vatAmount;
 
   // Note: formState.amount est calculé à la volée via `total` — pas besoin de le stocker dans le state

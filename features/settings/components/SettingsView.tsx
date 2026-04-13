@@ -1254,13 +1254,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
       city: '',
       country: '',
       resellerId: '',
-      companyName: '',
       contactName: '',
       secondContactName: '',
-      vehicules: 0,
-      clients: 0,
       createdAt: new Date(),
-      lastLogin: new Date(),
     },
   });
 

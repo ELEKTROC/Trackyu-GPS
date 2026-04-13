@@ -746,7 +746,9 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                                 border: 'none',
                                 boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                               }}
-                              formatter={(value: number) => [formatPrice(value), 'CA HT']}
+                              formatter={(value: unknown) =>
+                                [formatPrice(value as number), 'CA HT'] as [string, string]
+                              }
                             />
                             <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
                           </BarChart>

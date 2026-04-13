@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { AlertFormData } from '../../../../schemas/alertSchema';
 import { AlertSchema } from '../../../../schemas/alertSchema';
@@ -40,7 +40,7 @@ export const AlertForm = React.forwardRef<
     setValue,
     formState: { errors },
   } = useForm<AlertFormData>({
-    resolver: zodResolver(AlertSchema),
+    resolver: zodResolver(AlertSchema) as Resolver<AlertFormData>,
     defaultValues: initialData || {
       nom: '',
       type: 'Vitesse',

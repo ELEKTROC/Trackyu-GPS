@@ -131,7 +131,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
   };
 
   const getSuggestions = (tx: BankTransaction) => {
-    const matches = [];
+    const matches: { type: string; ref: string | undefined; date: string; amount: number; id: string }[] = [];
     // Match Sales Invoices — compare against remaining balance (amount - already paid)
     invoices.forEach((inv) => {
       const remaining = inv.amount - (inv.paidAmount || 0);

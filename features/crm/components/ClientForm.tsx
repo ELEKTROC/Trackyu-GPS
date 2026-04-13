@@ -52,7 +52,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({ initialData, onSave, onC
       let finalId = formData.id;
       if (isNew && !finalId) {
         try {
-          finalId = await getNextNumber.mutateAsync('client');
+          finalId = await getNextNumber.mutateAsync({ module: 'client' });
         } catch (err) {
           logger.error('Failed to generate client number:', err);
           showToast(TOAST.CRUD.ERROR_CREATE('numéro client'), 'error');

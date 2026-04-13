@@ -102,8 +102,10 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
       '{client_name}': client?.name || '',
       '{document_number}': docNumber,
       '{document_type}': docLabel,
-      '{amount}': formatPrice(documentData?.amount || 0),
-      '{valid_until}': documentData?.validUntil ? new Date(documentData.validUntil).toLocaleDateString('fr-FR') : '',
+      '{amount}': formatPrice((documentData?.amount as number) || 0),
+      '{valid_until}': documentData?.validUntil
+        ? new Date(documentData.validUntil as string).toLocaleDateString('fr-FR')
+        : '',
       '{company_name}': 'TrackYu GPS',
     };
     Object.entries(vars).forEach(([key, val]) => {
@@ -142,7 +144,7 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
         // Use the finance sendInvoiceEmail for existing docs, or generic send for new
         if (documentData.id) {
           await api.finance.sendInvoiceEmail(documentData.id, {
-            recipientEmail: emailTo,
+            to: emailTo,
             subject,
             message,
           });
@@ -182,8 +184,8 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
             </span>
           </div>
           <div className="flex gap-4 mt-1 text-xs text-[var(--primary)] dark:text-[var(--primary)]">
-            <span>Client: {client?.name || documentData?.clientName || '—'}</span>
-            <span>Montant: {formatPrice(documentData?.amount || 0)}</span>
+            <span>Client: {client?.name || (documentData?.clientName as string | undefined) || '—'}</span>
+            <span>Montant: {formatPrice((documentData?.amount as number) || 0)}</span>
           </div>
         </div>
 

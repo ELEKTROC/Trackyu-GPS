@@ -993,8 +993,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                 ))}
               </Pie>
               <Tooltip
-                formatter={(_value: unknown, _name: unknown, props: { payload: { value: number } }) =>
-                  `${props.payload.value} véhicule${props.payload.value > 1 ? 's' : ''}` as unknown as string
+                formatter={(value: unknown) =>
+                  `${value as number} véhicule${(value as number) > 1 ? 's' : ''}` as unknown as string
                 }
                 contentStyle={tooltipStyle}
                 itemStyle={tooltipItemStyle}

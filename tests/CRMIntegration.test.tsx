@@ -107,6 +107,7 @@ const mockCatalogItems: CatalogItem[] = [
     category: 'Matériel',
     price: 85000,
     status: 'ACTIVE',
+    unit: 'pièce',
     isSellable: true,
     isPurchasable: true,
     trackStock: true,
@@ -158,7 +159,7 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
   return {
     ...render(
       <AuthContext.Provider value={mockAuthContext as any}>
-        <ToastContext.Provider value={{ showToast: mockShowToast, toasts: [], removeToast: vi.fn() }}>
+        <ToastContext.Provider value={{ showToast: mockShowToast } as any}>
           <DataContext.Provider value={defaultContext as any}>{ui}</DataContext.Provider>
         </ToastContext.Provider>
       </AuthContext.Provider>

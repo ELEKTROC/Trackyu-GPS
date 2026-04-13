@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { BranchSchema } from '../../../../schemas/branchSchema';
 import { Building2, Info } from 'lucide-react';
@@ -26,7 +26,7 @@ export const BranchForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       handleSubmit,
       formState: { errors },
     } = useForm<BranchFormData>({
-      resolver: zodResolver(BranchSchema),
+      resolver: zodResolver(BranchSchema) as Resolver<BranchFormData>,
       defaultValues: initialData || { status: 'ACTIVE', isDefault: false },
     });
 

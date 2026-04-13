@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import type { Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ScheduleFormData } from '../../../../schemas/scheduleSchema';
@@ -66,7 +66,7 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       watch,
       setValue,
     } = useForm<ScheduleFormData>({
-      resolver: zodResolver(ScheduleSchema),
+      resolver: zodResolver(ScheduleSchema) as Resolver<ScheduleFormData>,
       defaultValues: initialData || {
         ruleType: 'WORKING_HOURS',
         statut: 'Actif',

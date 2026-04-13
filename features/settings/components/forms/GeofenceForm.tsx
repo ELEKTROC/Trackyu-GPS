@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { GeofenceFormData } from '../../../../schemas/geofenceSchema';
 import { GeofenceSchema } from '../../../../schemas/geofenceSchema';
@@ -67,7 +67,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       setValue,
       watch,
     } = useForm<GeofenceFormData>({
-      resolver: zodResolver(GeofenceSchema),
+      resolver: zodResolver(GeofenceSchema) as Resolver<GeofenceFormData>,
       defaultValues: initialData || {
         statut: 'Active',
         type: 'Polygone',

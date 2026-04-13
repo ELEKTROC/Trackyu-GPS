@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ClientSchema } from '../../../../schemas/clientSchema';
 import { User, Phone, CreditCard, Key, UserPlus, AlertCircle } from 'lucide-react';
@@ -28,7 +28,7 @@ export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       formState: { errors },
       watch,
     } = useForm<ClientFormData>({
-      resolver: zodResolver(ClientSchema),
+      resolver: zodResolver(ClientSchema) as Resolver<ClientFormData>,
       defaultValues: initialData || {
         type: 'B2B',
         status: 'ACTIVE',

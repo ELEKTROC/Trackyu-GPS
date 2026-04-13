@@ -7,7 +7,7 @@ import { api } from '../services/api';
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -23,9 +23,9 @@ Object.defineProperty(window, 'matchMedia', {
 vi.mock('../services/api', () => ({
   api: {
     analytics: {
-      getDashboardStats: vi.fn()
-    }
-  }
+      getDashboardStats: vi.fn(),
+    },
+  },
 }));
 
 // Mock react-query to avoid QueryClientProvider dependency
@@ -61,7 +61,7 @@ vi.mock('../contexts/DataContext', () => ({
     alerts: [],
     fuelRecords: [],
     maintenanceRecords: [],
-  })
+  }),
 }));
 
 // Mock useCurrency hook
@@ -69,7 +69,7 @@ vi.mock('../hooks/useCurrency', () => ({
   useCurrency: () => ({
     currency: 'XOF',
     formatPrice: (amount: number) => `${amount} FCFA`,
-  })
+  }),
 }));
 
 // Mock Recharts to avoid rendering issues in tests
@@ -95,7 +95,7 @@ vi.mock('recharts', () => {
 
 const mockVehicles = [
   { id: 'V1', name: 'Vehicle 1', status: 'MOVING' },
-  { id: 'V2', name: 'Vehicle 2', status: 'STOPPED' }
+  { id: 'V2', name: 'Vehicle 2', status: 'STOPPED' },
 ];
 
 const mockMetrics = {
@@ -105,14 +105,17 @@ const mockMetrics = {
   alertVehicles: 1,
   totalFuel: 500,
   totalDistance: 1000,
-  averageScore: 95
-};
+  averageScore: 95,
+  avgFuelEfficiency: 0,
+  avgDriverScore: 95,
+  alerts: 1,
+} as any;
 
 const mockStats = {
   revenue: { daily: [], monthly: [] },
   costs: { fuel: 100, maintenance: 50 },
   alerts: { count: 5, critical: 1 },
-  utilization: 85
+  utilization: 85,
 };
 
 describe('DashboardView', () => {
@@ -129,7 +132,7 @@ describe('DashboardView', () => {
     );
 
     expect(screen.getByText('Véhicules Actifs')).toBeDefined();
-    
+
     await waitFor(() => {
       expect(api.analytics.getDashboardStats).toHaveBeenCalled();
     });
