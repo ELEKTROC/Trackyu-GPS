@@ -93,12 +93,6 @@ const loadGoogleFont = (fontName: string) => {
 /**
  * Apply CSS custom properties to <html>
  */
-// Sidebar style → CSS vars for bg/text/border
-const SIDEBAR_MAP: Record<string, { bg: string; text: string; border: string }> = {
-  dark: { bg: '#0f172a', text: '#e2e8f0', border: '#1e293b' },
-  light: { bg: '#ffffff', text: '#1e293b', border: '#e2e8f0' },
-  colored: { bg: 'var(--brand-primary)', text: '#ffffff', border: 'rgba(255,255,255,0.15)' },
-};
 
 // Table density → row vertical padding
 const DENSITY_MAP: Record<string, string> = {
@@ -118,14 +112,9 @@ const applyToDOM = (s: AppearanceSettings) => {
   root.style.setProperty('--brand-font-size', FONT_SIZE_SCALE[s.fontSize] || '16px');
   root.style.setProperty('--brand-radius', RADIUS_MAP[s.borderRadius] || '0.75rem');
 
-  const sidebar = SIDEBAR_MAP[s.sidebarStyle] || SIDEBAR_MAP['dark'];
-  root.style.setProperty('--brand-sidebar-bg', sidebar.bg);
-  root.style.setProperty('--brand-sidebar-text', sidebar.text);
-  root.style.setProperty('--brand-sidebar-border', sidebar.border);
-
   root.style.setProperty('--brand-density-py', DENSITY_MAP[s.tableDensity] || DENSITY_MAP['standard']);
 
-  // Propagate sidebar style as a data attribute for CSS selectors
+  // Sidebar colors are driven by CSS via [data-theme][data-sidebar] selectors (index.css)
   root.setAttribute('data-sidebar', s.sidebarStyle);
   root.setAttribute('data-density', s.tableDensity);
 

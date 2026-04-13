@@ -414,6 +414,46 @@ textarea:focus {
   --clr-emerald-badge-text: #065f46; /* emerald-800 */
 }
 
+/* ── Sidebar colors — theme-aware via [data-theme][data-sidebar] ─────────
+   data-sidebar est posé par AppearanceContext sur <html>.
+   Les sélecteurs combinés ont priorité sur le fallback générique.
+   ────────────────────────────────────────────────────────────────────── */
+
+/* dark sidebar — quasi-noir (fallback dark theme) */
+[data-sidebar='dark'] {
+  --brand-sidebar-bg: #131316; /* quasi-noir */
+  --brand-sidebar-text: #e2e8f0; /* gris clair */
+  --brand-sidebar-border: #2a2a2e; /* gris très sombre */
+}
+
+/* dark sidebar — marine très profond (ocean theme) */
+[data-theme='ocean'][data-sidebar='dark'] {
+  --brand-sidebar-bg: #060c16; /* marine très profond */
+  --brand-sidebar-text: #c8dff0; /* blanc bleuté */
+  --brand-sidebar-border: #1e2e42; /* marine sombre */
+}
+
+/* dark sidebar — ardoise foncé forcé (light theme) */
+[data-theme='light'][data-sidebar='dark'] {
+  --brand-sidebar-bg: #1e293b; /* ardoise foncé */
+  --brand-sidebar-text: #e2e8f0; /* gris clair */
+  --brand-sidebar-border: #334155; /* ardoise moyen */
+}
+
+/* light sidebar — blanc, tous thèmes */
+[data-sidebar='light'] {
+  --brand-sidebar-bg: #ffffff; /* blanc */
+  --brand-sidebar-text: #1e293b; /* ardoise foncé */
+  --brand-sidebar-border: #e2e8f0; /* gris perle */
+}
+
+/* colored sidebar — couleur primaire du thème (orange ou bleu selon thème) */
+[data-sidebar='colored'] {
+  --brand-sidebar-bg: var(--primary); /* orange (dark/light) ou bleu (ocean) */
+  --brand-sidebar-text: #ffffff; /* blanc */
+  --brand-sidebar-border: rgba(255, 255, 255, 0.15);
+}
+
 /* Custom styles from index.html */
 body {
   font-family: var(--brand-font);
