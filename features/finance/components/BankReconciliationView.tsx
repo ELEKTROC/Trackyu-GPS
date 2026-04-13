@@ -177,7 +177,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
 
           <div className="bg-[var(--bg-elevated)] p-4 rounded-xl border border-[var(--border)] shadow-sm">
             <div className="flex justify-between items-start mb-2">
-              <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+              <div className="p-2 bg-[var(--clr-success-muted)] rounded-lg">
                 <TrendingUp className="w-5 h-5 text-green-600" />
               </div>
               <span className="section-title">Crédits</span>
@@ -188,7 +188,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
 
           <div className="bg-[var(--bg-elevated)] p-4 rounded-xl border border-[var(--border)] shadow-sm">
             <div className="flex justify-between items-start mb-2">
-              <div className="p-2 bg-red-100 dark:bg-red-900/20 rounded-lg">
+              <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg">
                 <TrendingDown className="w-5 h-5 text-red-600" />
               </div>
               <span className="section-title">Débits</span>
@@ -200,7 +200,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
           <div className="bg-[var(--bg-elevated)] p-4 rounded-xl border border-[var(--border)] shadow-sm">
             <div className="flex justify-between items-start mb-2">
               <div
-                className={`p-2 rounded-lg ${bankBalance.pendingCount > 0 ? 'bg-orange-100 dark:bg-orange-900/20' : 'bg-green-100 dark:bg-green-900/20'}`}
+                className={`p-2 rounded-lg ${bankBalance.pendingCount > 0 ? 'bg-[var(--clr-warning-muted)]' : 'bg-[var(--clr-success-muted)]'}`}
               >
                 {bankBalance.pendingCount > 0 ? (
                   <AlertCircle className="w-5 h-5 text-orange-600" />

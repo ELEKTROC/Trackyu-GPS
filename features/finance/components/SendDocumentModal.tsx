@@ -207,7 +207,7 @@ export const SendDocumentModal: React.FC<SendDocumentModalProps> = ({
               onClick={() => setChannel('WHATSAPP')}
               className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border-2 font-bold text-sm transition-all ${
                 channel === 'WHATSAPP'
-                  ? 'border-green-500 bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300'
+                  ? 'border-green-500 bg-green-50 dark:bg-green-900/40 text-[var(--clr-success-strong)]'
                   : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--border)]'
               }`}
             >

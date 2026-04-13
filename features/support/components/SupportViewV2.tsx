@@ -1187,14 +1187,14 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
             </button>
             <button
               onClick={handleExportExcel}
-              className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-green-200 text-green-600 bg-green-50 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors"
+              className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-green-200 text-green-600 bg-[var(--clr-success-dim)] dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors"
               title="Export Excel"
             >
               <FileText className="w-3.5 h-3.5" /> Excel
             </button>
             <button
               onClick={handleExportPDF}
-              className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-red-200 text-red-600 bg-red-50 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors"
+              className="flex items-center gap-1 px-2 py-1.5 text-xs font-bold rounded border border-red-200 text-red-600 bg-[var(--clr-danger-dim)] dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors"
               title="Export PDF"
             >
               <Download className="w-3.5 h-3.5" /> PDF
@@ -1430,7 +1430,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         setSelectedTicketId(t.id);
                         setActiveTab('TICKETS');
                       }}
-                      className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg cursor-pointer hover:bg-red-100 transition-colors"
+                      className="flex items-center justify-between p-3 bg-[var(--clr-danger-dim)] rounded-lg cursor-pointer hover:bg-red-100 transition-colors"
                     >
                       <div>
                         <span className="font-bold text-[var(--text-primary)]">{t.id}</span>
@@ -1585,12 +1585,12 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                               </span>
                             </td>
                             <td className="text-center py-2 px-3">
-                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold">
+                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--clr-success-muted)] text-[var(--clr-success-strong)] text-xs font-bold">
                                 {a.resolved}
                               </span>
                             </td>
                             <td className="text-center py-2 px-3">
-                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-xs font-bold">
+                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--clr-warning-muted)] text-[var(--clr-warning-strong)] text-xs font-bold">
                                 {a.inProgress}
                               </span>
                             </td>

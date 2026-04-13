@@ -149,8 +149,8 @@ export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
           )}
 
           {isSensitive && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-              <div className="flex items-center gap-2 mb-3 text-red-600 dark:text-red-400 font-semibold text-xs uppercase tracking-wide">
+            <div className="p-4 bg-[var(--clr-danger-dim)] border border-[var(--clr-danger-border)] rounded-xl">
+              <div className="flex items-center gap-2 mb-3 text-[var(--clr-danger)] font-semibold text-xs uppercase tracking-wide">
                 <AlertTriangle className="w-4 h-4" /> Zone de Danger
               </div>
               <p className="text-sm text-[var(--text-secondary)] mb-4">

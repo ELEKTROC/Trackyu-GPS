@@ -262,7 +262,7 @@ export const InterventionVehicleTab: React.FC<VehicleTabProps> = ({
 
           {/* Mutation Info for Transfer */}
           {isTransfer() && (
-            <div className="md:col-span-4 p-4 bg-orange-50 dark:bg-orange-900/10 rounded-lg border border-orange-200 dark:border-orange-800 flex items-start gap-3">
+            <div className="md:col-span-4 p-4 bg-[var(--clr-warning-dim)] rounded-lg border border-[var(--clr-warning-border)] flex items-start gap-3">
               <Truck className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
               <div>
                 <h5 className="text-sm font-bold text-orange-700 uppercase">Mutation d'identité</h5>
@@ -438,7 +438,7 @@ export const InterventionVehicleTab: React.FC<VehicleTabProps> = ({
                 <AlertTriangle className="w-3 h-3" /> État matériel retiré *
               </label>
               <select
-                className="w-full px-3 py-2.5 border-2 border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50 dark:bg-orange-900/10 text-sm font-bold"
+                className="w-full px-3 py-2.5 border-2 border-[var(--clr-warning-border)] rounded-lg bg-[var(--clr-warning-dim)] text-sm font-bold"
                 value={formData.removedMaterialStatus || ''}
                 onChange={(e) =>
                   setFormData({

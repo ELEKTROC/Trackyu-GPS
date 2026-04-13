@@ -163,7 +163,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
             </div>
             <button
               onClick={() => deleteBudget(budget.id)}
-              className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-all"
+              className="opacity-0 group-hover:opacity-100 p-1 text-red-500 hover:bg-[var(--clr-danger-dim)] rounded transition-all"
             >
               <Trash2 className="w-3 h-3" />
             </button>
@@ -246,13 +246,13 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
 
       {/* Overspend Alerts */}
       {overspendAlerts.length > 0 && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3 flex flex-wrap gap-2 items-center">
+        <div className="bg-[var(--clr-danger-dim)] border border-[var(--clr-danger-border)] rounded-xl p-3 flex flex-wrap gap-2 items-center">
           <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
-          <span className="text-xs font-bold text-red-700 dark:text-red-400">Dépassement budgétaire :</span>
+          <span className="text-xs font-bold text-[var(--clr-danger-strong)]">Dépassement budgétaire :</span>
           {overspendAlerts.map((a) => (
             <span
               key={a.category}
-              className="px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 rounded-full text-xs font-bold"
+              className="px-2 py-0.5 bg-red-100 dark:bg-red-900/40 text-[var(--clr-danger-strong)] rounded-full text-xs font-bold"
             >
               {a.category} +{formatPrice(a.gap)}
             </span>
@@ -288,7 +288,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
               <tr className="bg-green-50/50 dark:bg-green-900/5">
                 <td
                   colSpan={14}
-                  className="p-2 px-4 text-xs font-black text-green-700 dark:text-green-400 flex items-center gap-2"
+                  className="p-2 px-4 text-xs font-black text-[var(--clr-success-strong)] flex items-center gap-2"
                 >
                   <TrendingUp className="w-3 h-3" /> PRODUITS (PROVISIONS VENTES)
                 </td>
@@ -304,16 +304,16 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
               )}
 
               {/* Total Produits */}
-              <tr className="bg-green-50 dark:bg-green-900/10 font-bold border-t border-green-100 dark:border-green-800">
-                <td className="sticky left-0 z-10 p-3 bg-green-50 dark:bg-green-900 border-r border-green-100 dark:border-green-800 text-xs font-black text-green-800 dark:text-green-300">
+              <tr className="bg-[var(--clr-success-dim)] font-bold border-t border-[var(--clr-success-border)]">
+                <td className="sticky left-0 z-10 p-3 bg-green-50 dark:bg-green-900 border-r border-[var(--clr-success-border)] text-xs font-black text-[var(--clr-success-strong)]">
                   TOTAL PRODUITS (I)
                 </td>
                 {calculations.monthlyTotals.produits.map((sum, i) => (
-                  <td key={i} className="p-3 text-center text-xs font-mono text-green-700 dark:text-green-400">
+                  <td key={i} className="p-3 text-center text-xs font-mono text-[var(--clr-success-strong)]">
                     {sum === 0 ? '-' : Math.round(sum).toLocaleString()}
                   </td>
                 ))}
-                <td className="p-3 text-right text-sm font-black text-green-800 dark:text-green-300 bg-green-100 dark:bg-green-800/20 border-l border-green-200 dark:border-green-700">
+                <td className="p-3 text-right text-sm font-black text-[var(--clr-success-strong)] bg-green-100 dark:bg-green-800/20 border-l border-green-200 dark:border-green-700">
                   {Math.round(calculations.annualTotals.produits).toLocaleString()}
                 </td>
               </tr>
@@ -324,7 +324,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
               <tr className="bg-orange-50/50 dark:bg-orange-900/5">
                 <td
                   colSpan={14}
-                  className="p-2 px-4 text-xs font-black text-orange-700 dark:text-orange-400 flex items-center gap-2"
+                  className="p-2 px-4 text-xs font-black text-[var(--clr-warning-strong)] flex items-center gap-2"
                 >
                   <AlertTriangle className="w-3 h-3" /> CHARGES D'EXPLOITATION
                 </td>
@@ -340,16 +340,16 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
               )}
 
               {/* Total Charges */}
-              <tr className="bg-orange-50 dark:bg-orange-900/10 font-bold border-t border-orange-100 dark:border-orange-800">
-                <td className="sticky left-0 z-10 p-3 bg-orange-50 dark:bg-orange-900 border-r border-orange-100 dark:border-orange-800 text-xs font-black text-orange-800 dark:text-orange-300">
+              <tr className="bg-[var(--clr-warning-dim)] font-bold border-t border-[var(--clr-warning-border)]">
+                <td className="sticky left-0 z-10 p-3 bg-orange-50 dark:bg-orange-900 border-r border-[var(--clr-warning-border)] text-xs font-black text-[var(--clr-warning-strong)]">
                   TOTAL CHARGES (II)
                 </td>
                 {calculations.monthlyTotals.charges.map((sum, i) => (
-                  <td key={i} className="p-3 text-center text-xs font-mono text-orange-700 dark:text-orange-400">
+                  <td key={i} className="p-3 text-center text-xs font-mono text-[var(--clr-warning-strong)]">
                     {sum === 0 ? '-' : Math.round(sum).toLocaleString()}
                   </td>
                 ))}
-                <td className="p-3 text-right text-sm font-black text-orange-800 dark:text-orange-300 bg-orange-100 dark:bg-orange-800/20 border-l border-orange-200 dark:border-orange-700">
+                <td className="p-3 text-right text-sm font-black text-[var(--clr-warning-strong)] bg-orange-100 dark:bg-orange-800/20 border-l border-orange-200 dark:border-orange-700">
                   {Math.round(calculations.annualTotals.charges).toLocaleString()}
                 </td>
               </tr>

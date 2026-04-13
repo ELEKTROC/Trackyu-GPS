@@ -754,7 +754,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                             togglePlate(plateSearchTerm.toUpperCase());
                             setPlateSearchTerm('');
                           }}
-                          className="p-2 text-xs cursor-pointer hover:bg-green-50 dark:hover:bg-green-900/30 border-t border-[var(--border)] text-green-600"
+                          className="p-2 text-xs cursor-pointer hover:bg-[var(--clr-success-dim)] border-t border-[var(--border)] text-green-600"
                         >
                           <Plus className="w-3 h-3 inline mr-1" /> Ajouter "{plateSearchTerm.toUpperCase()}"
                           manuellement

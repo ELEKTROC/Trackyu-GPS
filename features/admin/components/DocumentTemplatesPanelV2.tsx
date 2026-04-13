@@ -571,7 +571,7 @@ export const DocumentTemplatesPanelV2 = () => {
                     {!template.is_system && (
                       <button
                         onClick={() => handleDelete(template.id)}
-                        className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                        className="p-1.5 hover:bg-[var(--clr-danger-dim)] rounded-lg"
                         title="Supprimer"
                       >
                         <Trash2 className="w-4 h-4 text-red-600" />

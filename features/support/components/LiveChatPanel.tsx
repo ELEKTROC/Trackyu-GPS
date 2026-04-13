@@ -75,7 +75,7 @@ const STATUS_CONFIG = {
   open: {
     label: 'En attente',
     color: 'text-orange-500',
-    bg: 'bg-orange-100 dark:bg-orange-900/30',
+    bg: 'bg-[var(--clr-warning-muted)]',
     dot: 'bg-orange-500',
   },
   assigned: {
@@ -515,7 +515,7 @@ export const LiveChatPanel: React.FC = () => {
               }}
               className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-medium rounded-md transition-colors ${
                 chatTab === 'internal'
-                  ? 'bg-[var(--bg-elevated)] text-green-600 dark:text-green-400 shadow-sm'
+                  ? 'bg-[var(--bg-elevated)] text-[var(--clr-success)] shadow-sm'
                   : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
@@ -596,7 +596,7 @@ export const LiveChatPanel: React.FC = () => {
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="relative">
                         <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]'}`}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center ${isInternal ? 'bg-[var(--clr-success-muted)]' : 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)]'}`}
                         >
                           {isInternal ? (
                             <Users className="w-4 h-4 text-green-600" />
@@ -650,7 +650,7 @@ export const LiveChatPanel: React.FC = () => {
                   <ChevronLeft className="w-5 h-5 text-[var(--text-secondary)]" />
                 </button>
                 <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center ${activeConversation.conversation_type === 'internal' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'}`}
+                  className={`w-9 h-9 rounded-full flex items-center justify-center ${activeConversation.conversation_type === 'internal' ? 'bg-[var(--clr-success-muted)]' : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'}`}
                 >
                   {activeConversation.conversation_type === 'internal' ? (
                     <Users className="w-5 h-5 text-green-600" />
@@ -681,7 +681,7 @@ export const LiveChatPanel: React.FC = () => {
                 {activeConversation.status !== 'closed' && (
                   <button
                     onClick={() => closeConversation(activeConversation.id)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
                     title="Fermer la conversation"
                   >
                     <X className="w-3.5 h-3.5" /> Fermer
@@ -868,7 +868,7 @@ export const LiveChatPanel: React.FC = () => {
                               onClick={() => startInternalChat(agent)}
                               className="w-full text-left p-3 tr-hover/50 border-b border-[var(--border)] border-[var(--border)] transition-colors flex items-center gap-3"
                             >
-                              <div className="w-9 h-9 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+                              <div className="w-9 h-9 rounded-full bg-[var(--clr-success-muted)] flex items-center justify-center shrink-0">
                                 <User className="w-4.5 h-4.5 text-green-600" />
                               </div>
                               <div className="min-w-0 flex-1">

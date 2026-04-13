@@ -940,7 +940,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
         </Card>
         <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-lg">
+            <div className="p-1.5 bg-[var(--clr-success-muted)] text-green-600 rounded-lg">
               <Activity className="w-4 h-4" />
             </div>
             <div>
@@ -951,7 +951,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
         </Card>
         <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-red-100 dark:bg-red-900/20 text-red-600 rounded-lg">
+            <div className="p-1.5 bg-[var(--clr-danger-muted)] text-red-600 rounded-lg">
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div>
@@ -962,7 +962,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
         </Card>
         <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-purple-100 dark:bg-purple-900/20 text-purple-600 rounded-lg">
+            <div className="p-1.5 bg-[var(--clr-info-muted)] text-purple-600 rounded-lg">
               <Smartphone className="w-4 h-4" />
             </div>
             <div>
@@ -984,7 +984,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
         </Card>
         <Card className="bg-[var(--bg-elevated)] border-[var(--border)] p-3">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-orange-100 dark:bg-orange-900/20 text-orange-600 rounded-lg">
+            <div className="p-1.5 bg-[var(--clr-warning-muted)] text-orange-600 rounded-lg">
               <PackageOpen className="w-4 h-4" />
             </div>
             <div>

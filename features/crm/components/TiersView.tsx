@@ -386,7 +386,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
                 <p className="section-title">Nouveaux (Mois)</p>
                 <p className="page-title mt-1">+{kpis.newClients}</p>
               </div>
-              <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+              <div className="p-3 bg-[var(--clr-success-dim)] rounded-full text-green-600">
                 <UserCheck className="w-6 h-6" />
               </div>
             </div>
@@ -397,7 +397,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
                 <p className="section-title">Revendeurs</p>
                 <p className="page-title mt-1">{kpis.resellers}</p>
               </div>
-              <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+              <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
                 <Briefcase className="w-6 h-6" />
               </div>
             </div>
@@ -408,7 +408,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
                 <p className="section-title">Fournisseurs</p>
                 <p className="page-title mt-1">{kpis.suppliers}</p>
               </div>
-              <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
+              <div className="p-3 bg-[var(--clr-warning-dim)] rounded-full text-orange-600">
                 <LayoutTemplate className="w-6 h-6" />
               </div>
             </div>

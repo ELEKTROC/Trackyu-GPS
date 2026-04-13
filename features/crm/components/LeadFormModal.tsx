@@ -304,7 +304,7 @@ export const LeadFormModal: React.FC<LeadFormModalProps> = ({
                         const newProducts = (editingLead.interestedProducts || []).filter((p) => p.id !== product.id);
                         updateField({ interestedProducts: newProducts });
                       }}
-                      className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="p-1.5 text-red-500 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
                     >
                       <X className="w-4 h-4" />
                     </button>

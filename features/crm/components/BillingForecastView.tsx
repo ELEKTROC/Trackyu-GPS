@@ -1105,7 +1105,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                   <div className="h-px bg-[var(--bg-elevated)]" />
                   <div className="flex justify-between text-xs font-bold">
                     <span className="text-[var(--text-primary)]">Montant prévu</span>
-                    <span className="text-green-600 dark:text-green-400">{format(previewPopup.sub.fee)}</span>
+                    <span className="text-[var(--clr-success)]">{format(previewPopup.sub.fee)}</span>
                   </div>
                   <p className="text-[10px] text-[var(--text-muted)] italic">
                     Facture non encore générée pour cette période.

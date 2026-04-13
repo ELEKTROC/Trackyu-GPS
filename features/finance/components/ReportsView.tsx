@@ -222,11 +222,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
                   <div className="text-sm">
                     <span className="text-[var(--text-secondary)] mr-4">Débit: {formatPrice(totalDebit)}</span>
                     <span className="text-[var(--text-secondary)] mr-4">Crédit: {formatPrice(totalCredit)}</span>
-                    <span
-                      className={
-                        balance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
-                      }
-                    >
+                    <span className={balance >= 0 ? 'text-[var(--clr-emerald)]' : 'text-[var(--clr-danger)]'}>
                       Solde: {formatPrice(balance)}
                     </span>
                   </div>
@@ -313,7 +309,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
         </div>
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-red-600 dark:text-red-400 border-b border-red-500/30 pb-2">
+            <h3 className="text-lg font-bold text-[var(--clr-danger)] border-b border-red-500/30 pb-2">
               Charges (Classe 6)
             </h3>
             <div className="flex justify-between p-2 bg-[var(--bg-elevated)]/50 rounded border border-[var(--border)]">
@@ -349,7 +345,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 border-b border-emerald-500/30 pb-2">
+            <h3 className="text-lg font-bold text-[var(--clr-emerald)] border-b border-emerald-500/30 pb-2">
               Produits (Classe 7)
             </h3>
             <div className="flex justify-between p-2 bg-[var(--bg-elevated)]/50 rounded border border-[var(--border)]">
@@ -381,7 +377,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
 
         <div className="flex justify-center mt-8">
           <div
-            className={`px-8 py-4 rounded-xl border ${result >= 0 ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500 text-emerald-700 dark:text-emerald-400' : 'bg-red-50 dark:bg-red-500/10 border-red-500 text-red-700 dark:text-red-400'}`}
+            className={`px-8 py-4 rounded-xl border ${result >= 0 ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500 text-[var(--clr-emerald-strong)]' : 'bg-red-50 dark:bg-red-500/10 border-red-500 text-[var(--clr-danger-strong)]'}`}
           >
             <span className="text-xl font-bold mr-4">RÉSULTAT NET :</span>
             <span className="text-2xl font-mono font-bold">{formatPrice(result)}</span>
@@ -467,9 +463,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
         </div>
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400 border-b border-emerald-500/30 pb-2">
-              Actif
-            </h3>
+            <h3 className="text-lg font-bold text-[var(--clr-emerald)] border-b border-emerald-500/30 pb-2">Actif</h3>
             <div className="flex justify-between p-2 bg-[var(--bg-elevated)]/50 rounded border border-[var(--border)]">
               <span className="text-[var(--text-primary)]">Immobilisations (Cl. 2)</span>
               <span className="font-mono text-[var(--text-primary)]">{formatPrice(fixedAssets)}</span>
@@ -493,7 +487,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
           </div>
 
           <div className="space-y-4">
-            <h3 className="text-lg font-bold text-red-600 dark:text-red-400 border-b border-red-500/30 pb-2">Passif</h3>
+            <h3 className="text-lg font-bold text-[var(--clr-danger)] border-b border-red-500/30 pb-2">Passif</h3>
             <div className="flex justify-between p-2 bg-[var(--bg-elevated)]/50 rounded border border-[var(--border)]">
               <span className="text-[var(--text-primary)]">Capitaux Propres (1)</span>
               <span className="font-mono text-[var(--text-primary)]">{formatPrice(equity)}</span>
@@ -508,9 +502,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
             </div>
             <div className="flex justify-between p-2 bg-[var(--bg-elevated)]/50 rounded mt-4 border-t border-[var(--border)]">
               <span className="font-bold text-[var(--text-primary)]">Résultat de l'exercice</span>
-              <span
-                className={result >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}
-              >
+              <span className={result >= 0 ? 'text-[var(--clr-emerald)]' : 'text-[var(--clr-danger)]'}>
                 {formatPrice(result)}
               </span>
             </div>
@@ -583,13 +575,13 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
           >
             <div>
               <p
-                className={`text-sm font-bold ${vatToPay >= 0 ? 'text-red-700 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}
+                className={`text-sm font-bold ${vatToPay >= 0 ? 'text-[var(--clr-danger-strong)]' : 'text-[var(--clr-emerald-strong)]'}`}
               >
                 {vatToPay >= 0 ? 'TVA À PAYER' : 'CRÉDIT DE TVA'}
               </p>
             </div>
             <p
-              className={`text-2xl font-bold ${vatToPay >= 0 ? 'text-red-700 dark:text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}
+              className={`text-2xl font-bold ${vatToPay >= 0 ? 'text-[var(--clr-danger-strong)]' : 'text-[var(--clr-emerald-strong)]'}`}
             >
               {formatPrice(Math.abs(vatToPay))}
             </p>
@@ -667,7 +659,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
           <Card className="hover:border-emerald-500 transition-colors h-full">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-purple-100 dark:bg-purple-500/20 rounded-lg">
-                <Filter className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <Filter className="w-6 h-6 text-[var(--clr-info)]" />
               </div>
               <div>
                 <h3 className="font-bold text-[var(--text-primary)]">Bilan</h3>
@@ -715,7 +707,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
           <Card className="hover:border-emerald-500 transition-colors h-full">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-orange-100 dark:bg-orange-500/20 rounded-lg">
-                <Download className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                <Download className="w-6 h-6 text-[var(--clr-warning)]" />
               </div>
               <div>
                 <h3 className="font-bold text-[var(--text-primary)]">Export FEC</h3>

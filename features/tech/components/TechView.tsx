@@ -392,7 +392,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
     <div className="flex-1 flex flex-col gap-4 overflow-hidden">
       {/* PENDING TRANSFERS */}
       {pendingStock.length > 0 && (
-        <Card className="bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
+        <Card className="bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-orange-800 dark:text-orange-200 flex items-center gap-2">
               <Box className="w-5 h-5" /> Réceptions en attente ({pendingStock.length})
@@ -401,7 +401,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="text-orange-700 dark:text-orange-300 border-b border-orange-200 dark:border-orange-800">
+                <tr className="text-[var(--clr-warning-strong)] border-b border-[var(--clr-warning-border)]">
                   <th className="pb-2">Type</th>
                   <th className="pb-2">Modèle</th>
                   <th className="pb-2">S/N</th>
@@ -410,7 +410,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               </thead>
               <tbody>
                 {pendingStock.map((item) => (
-                  <tr key={item.id} className="border-b border-orange-100 dark:border-orange-800/50 last:border-0">
+                  <tr key={item.id} className="border-b border-[var(--clr-warning-border)]/50 last:border-0">
                     <td className="py-2">{item.type}</td>
                     <td className="py-2">{item.model}</td>
                     <td className="py-2 font-mono">{item.serialNumber || item.imei || item.iccid}</td>
@@ -1045,8 +1045,8 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 label: 'En attente',
                 value: kpis.pending,
                 active: 'bg-amber-100 dark:bg-amber-900/40 border-amber-400 ring-1 ring-amber-400',
-                inactive: 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-900/30',
-                text: 'text-amber-600 dark:text-amber-400',
+                inactive: 'bg-[var(--clr-caution-dim)] border-amber-100 dark:border-amber-900/30',
+                text: 'text-[var(--clr-caution)]',
                 sub: 'text-amber-500',
               },
               {
@@ -1065,8 +1065,8 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 label: 'Terminées',
                 value: kpis.completed,
                 active: 'bg-green-100 dark:bg-green-900/40 border-green-400 ring-1 ring-green-400',
-                inactive: 'bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900/30',
-                text: 'text-green-600 dark:text-green-400',
+                inactive: 'bg-[var(--clr-success-dim)] border-green-100 dark:border-green-900/30',
+                text: 'text-[var(--clr-success)]',
                 sub: 'text-green-500',
               },
             ].map(({ key, label, value, active, inactive, text, sub }) => (
@@ -1102,7 +1102,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   <p className="section-title">Terminées</p>
                   <p className="page-title mt-1">{kpis.completed}</p>
                 </div>
-                <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+                <div className="p-3 bg-[var(--clr-success-dim)] rounded-full text-green-600">
                   <CheckCircle className="w-6 h-6" />
                 </div>
               </div>
@@ -1113,7 +1113,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   <p className="section-title">En Attente</p>
                   <p className="page-title mt-1">{kpis.pending}</p>
                 </div>
-                <div className="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-full text-amber-600">
+                <div className="p-3 bg-[var(--clr-caution-dim)] rounded-full text-amber-600">
                   <Clock className="w-6 h-6" />
                 </div>
               </div>
@@ -1124,7 +1124,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   <p className="section-title">En Cours</p>
                   <p className="page-title mt-1">{kpis.inProgress}</p>
                 </div>
-                <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
+                <div className="p-3 bg-[var(--clr-warning-dim)] rounded-full text-orange-600">
                   <Activity className="w-6 h-6" />
                 </div>
               </div>
@@ -1135,7 +1135,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   <p className="section-title">Temps Moyen</p>
                   <p className="page-title mt-1">{kpis.avgTime}</p>
                 </div>
-                <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+                <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
                   <Activity className="w-6 h-6" />
                 </div>
               </div>

@@ -1560,7 +1560,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   setPlateFilter('ALL');
                   setResellerFilter('ALL');
                 }}
-                className="hidden sm:flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium text-orange-600 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg hover:bg-orange-100"
+                className="hidden sm:flex items-center gap-1.5 px-2.5 py-2 text-xs font-medium text-orange-600 bg-[var(--clr-warning-dim)] border border-orange-200 dark:border-orange-700 rounded-lg hover:bg-orange-100"
                 title="Réinitialiser les filtres"
               >
                 <X className="w-3 h-3" /> Effacer les filtres
@@ -1634,7 +1634,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                         {(Array.isArray(invoices) ? invoices : []).filter((i) => i.status === 'PAID').length}
                       </p>
                     </div>
-                    <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+                    <div className="p-3 bg-[var(--clr-success-dim)] rounded-full text-green-600">
                       <CheckCircle className="w-6 h-6" />
                     </div>
                   </div>
@@ -1647,7 +1647,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                         {(Array.isArray(invoices) ? invoices : []).filter((i) => i.status === 'OVERDUE').length}
                       </p>
                     </div>
-                    <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-full text-red-600">
+                    <div className="p-3 bg-[var(--clr-danger-dim)] rounded-full text-red-600">
                       <AlertCircle className="w-6 h-6" />
                     </div>
                   </div>
@@ -1660,7 +1660,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                         {((kpis as Record<string, number>).collectionRate || 0).toFixed(1)} %
                       </p>
                     </div>
-                    <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+                    <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
                       <PieChart className="w-6 h-6" />
                     </div>
                   </div>
@@ -1687,7 +1687,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                         {(Array.isArray(quotes) ? quotes : []).filter((q) => q.status === 'ACCEPTED').length}
                       </p>
                     </div>
-                    <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+                    <div className="p-3 bg-[var(--clr-success-dim)] rounded-full text-green-600">
                       <CheckCircle className="w-6 h-6" />
                     </div>
                   </div>
@@ -1700,7 +1700,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                         {((kpis as Record<string, number>).conversionRate || 0).toFixed(1)} %
                       </p>
                     </div>
-                    <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+                    <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
                       <TrendingUp className="w-6 h-6" />
                     </div>
                   </div>
@@ -1799,7 +1799,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                             e.stopPropagation();
                             handleAction('pay', item);
                           }}
-                          className="px-3 py-1.5 text-xs bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 rounded-lg"
+                          className="px-3 py-1.5 text-xs bg-[var(--clr-success-dim)] text-[var(--clr-success)] rounded-lg"
                         >
                           Payer
                         </button>
@@ -2090,7 +2090,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                             {mode === 'INVOICES' && item.status !== 'PAID' && (
                               <button
                                 onClick={() => handleAction('pay', item)}
-                                className="p-2 text-[var(--text-secondary)] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-full"
+                                className="p-2 text-[var(--text-secondary)] hover:text-green-600 hover:bg-[var(--clr-success-dim)] rounded-full"
                                 title="Payer"
                               >
                                 <DollarSign className="w-4 h-4" />
@@ -2178,7 +2178,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                         handleAction('cancel', item);
                                         setActionMenuId(null);
                                       }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30"
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-orange-600 hover:bg-[var(--clr-warning-dim)]"
                                     >
                                       <XCircle className="w-4 h-4" /> Annuler
                                     </button>
@@ -2212,7 +2212,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                           handleAction('accept', item);
                                           setActionMenuId(null);
                                         }}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30"
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-green-600 hover:bg-[var(--clr-success-dim)]"
                                       >
                                         <FileCheck className="w-4 h-4" /> Accepter le devis
                                       </button>
@@ -2221,7 +2221,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                           handleAction('reject', item);
                                           setActionMenuId(null);
                                         }}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-[var(--clr-danger-dim)]"
                                       >
                                         <XCircle className="w-4 h-4" /> Refuser le devis
                                       </button>
@@ -2244,7 +2244,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                                       handleAction('delete', item);
                                       setActionMenuId(null);
                                     }}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
+                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-[var(--clr-danger-dim)]"
                                   >
                                     <Trash2 className="w-4 h-4" /> Supprimer
                                   </button>
@@ -2875,9 +2875,9 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
 
                 <button
                   onClick={() => handleContractChoice('EXISTING')}
-                  className="w-full p-4 border border-[var(--border)] rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 flex items-center gap-3 transition-colors"
+                  className="w-full p-4 border border-[var(--border)] rounded-lg hover:bg-[var(--clr-info-dim)] flex items-center gap-3 transition-colors"
                 >
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full text-purple-600 dark:text-purple-400">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full text-[var(--clr-info)]">
                     <RefreshCw className="w-5 h-5" />
                   </div>
                   <div className="text-left">
@@ -2985,26 +2985,24 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   const newMonthlyFee = unitPrice * newVehicleCount;
 
                   return (
-                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
-                      <p className="text-sm font-bold text-green-800 dark:text-green-300 mb-2">
-                        📊 Après modification :
-                      </p>
+                    <div className="bg-[var(--clr-success-dim)] p-4 rounded-lg border border-[var(--clr-success-border)]">
+                      <p className="text-sm font-bold text-[var(--clr-success-strong)] mb-2">📊 Après modification :</p>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
                         <div>
                           <p className="text-xs text-green-600">Véhicules</p>
-                          <p className="font-bold text-green-800 dark:text-green-300">
+                          <p className="font-bold text-[var(--clr-success-strong)]">
                             {selectedContract.vehicleCount || 0} → {newVehicleCount}
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-green-600">Prix unitaire</p>
-                          <p className="font-bold text-green-800 dark:text-green-300">
+                          <p className="font-bold text-[var(--clr-success-strong)]">
                             {formatPrice(unitPrice)}/véhicule
                           </p>
                         </div>
                         <div>
                           <p className="text-xs text-green-600">Nouveau mensuel</p>
-                          <p className="font-bold text-green-800 dark:text-green-300">{formatPrice(newMonthlyFee)}</p>
+                          <p className="font-bold text-[var(--clr-success-strong)]">{formatPrice(newMonthlyFee)}</p>
                         </div>
                       </div>
                     </div>
@@ -3094,7 +3092,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                       }}
                       className={`p-3 rounded-lg border-2 transition-all text-center ${
                         creditNoteForm.type === type.id
-                          ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                          ? 'border-orange-500 bg-[var(--clr-warning-dim)]'
                           : 'border-[var(--border)] hover:border-orange-300'
                       }`}
                     >

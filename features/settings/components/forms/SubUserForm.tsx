@@ -347,7 +347,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   </span>
                 )}
                 {allVehicles && (
-                  <span className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
+                  <span className="bg-[var(--clr-success-badge)] text-[var(--clr-success-badge-text)] text-xs px-2 py-0.5 rounded-full font-medium">
                     Tous
                   </span>
                 )}

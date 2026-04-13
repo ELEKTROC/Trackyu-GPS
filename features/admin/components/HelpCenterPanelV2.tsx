@@ -459,7 +459,7 @@ export const HelpCenterPanelV2: React.FC = () => {
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Vues Totales</p>
               <p className="text-2xl font-bold text-purple-600">{stats.totalViews.toLocaleString()}</p>
             </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+            <div className="p-3 bg-[var(--clr-info-muted)] rounded-lg">
               <Eye className="w-6 h-6 text-purple-600" />
             </div>
           </div>
@@ -471,7 +471,7 @@ export const HelpCenterPanelV2: React.FC = () => {
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Utile</p>
               <p className="text-2xl font-bold text-amber-600">{stats.totalHelpful}</p>
             </div>
-            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+            <div className="p-3 bg-[var(--clr-caution-muted)] rounded-lg">
               <Star className="w-6 h-6 text-amber-600" />
             </div>
           </div>

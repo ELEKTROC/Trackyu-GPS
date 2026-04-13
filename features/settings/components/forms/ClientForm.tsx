@@ -256,9 +256,9 @@ export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   </FormField>
 
                   {!clientEmail && (
-                    <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                      <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                      <p className="text-xs text-amber-700 dark:text-amber-300">
+                    <div className="flex items-center gap-2 p-3 bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-lg">
+                      <AlertCircle className="w-4 h-4 text-[var(--clr-caution)]" />
+                      <p className="text-xs text-[var(--clr-caution-strong)]">
                         Veuillez d'abord renseigner l'email du client dans l'onglet Contacts
                       </p>
                     </div>
@@ -267,9 +267,9 @@ export const ClientForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               )}
 
               {initialData?.userAccountCreated && (
-                <div className="flex items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
-                  <Key className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <p className="text-sm text-green-700 dark:text-green-300">
+                <div className="flex items-center gap-2 p-4 bg-[var(--clr-success-dim)] border border-[var(--clr-success-border)] rounded-xl">
+                  <Key className="w-4 h-4 text-[var(--clr-success)]" />
+                  <p className="text-sm text-[var(--clr-success-strong)]">
                     Un compte utilisateur a déjà été créé pour ce client
                   </p>
                 </div>

@@ -315,9 +315,9 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
         <div
           className={`p-4 rounded-xl border flex items-center justify-between ${
             connectionStatus.color === 'green'
-              ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+              ? 'bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]'
               : connectionStatus.color === 'red'
-                ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                ? 'bg-[var(--clr-danger-dim)] border-[var(--clr-danger-border)]'
                 : 'bg-[var(--bg-elevated)] border-[var(--border)]'
           }`}
         >
@@ -334,9 +334,9 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
               <p
                 className={`font-bold text-sm ${
                   connectionStatus.color === 'green'
-                    ? 'text-green-700 dark:text-green-400'
+                    ? 'text-[var(--clr-success-strong)]'
                     : connectionStatus.color === 'red'
-                      ? 'text-red-700 dark:text-red-400'
+                      ? 'text-[var(--clr-danger-strong)]'
                       : 'text-[var(--text-primary)]'
                 }`}
               >
@@ -412,7 +412,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
               onClick={() => setCommandMode('SMS')}
               className={`flex-1 p-3 rounded-lg border-2 transition-all flex items-center justify-center gap-2 ${
                 commandMode === 'SMS'
-                  ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                  ? 'border-orange-500 bg-[var(--clr-warning-dim)] text-[var(--clr-warning-strong)]'
                   : 'border-[var(--border)] hover:border-orange-300 text-[var(--text-secondary)]'
               }`}
             >
@@ -447,18 +447,18 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                     placeholder="+225 07XXXXXXXX"
                     className={`w-full p-2.5 border rounded-lg text-sm ${
                       getSimPhoneNumber()
-                        ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
-                        : 'border-orange-200 dark:border-orange-800 bg-[var(--bg-surface)]'
+                        ? 'border-[var(--clr-success-border)] bg-[var(--clr-success-dim)]'
+                        : 'border-[var(--clr-warning-border)] bg-[var(--bg-surface)]'
                     }`}
                   />
                 </div>
               </div>
               {!getSimPhoneNumber() ? (
-                <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 p-2 rounded border border-amber-200 dark:border-amber-800">
+                <p className="text-xs text-amber-600 bg-[var(--clr-caution-dim)] p-2 rounded border border-[var(--clr-caution-border)]">
                   ⚠️ Aucun numéro SIM trouvé dans la base. Entrez le numéro manuellement pour envoyer les commandes SMS.
                 </p>
               ) : (
-                <p className="text-xs text-green-600 bg-green-50 dark:bg-green-900/20 p-2 rounded border border-green-200 dark:border-green-800">
+                <p className="text-xs text-green-600 bg-[var(--clr-success-dim)] p-2 rounded border border-[var(--clr-success-border)]">
                   ✅ Numéro SIM pré-rempli depuis le véhicule / stock. Vous pouvez le modifier si nécessaire.
                 </p>
               )}
@@ -469,11 +469,11 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
 
       {/* Warning if offline and TCP selected */}
       {!connectionStatus.connected && commandMode === 'TCP' && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 rounded-lg flex items-start gap-2">
+        <div className="bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] p-3 rounded-lg flex items-start gap-2">
           <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Boîtier non connecté</p>
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+            <p className="text-sm font-medium text-[var(--clr-caution-strong)]">Boîtier non connecté</p>
+            <p className="text-xs text-[var(--clr-caution)] mt-1">
               Les commandes TCP ne peuvent pas être envoyées. Passez en mode SMS ci-dessus.
             </p>
           </div>
@@ -555,7 +555,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 disabled={isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
                 className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
                   commandMode === 'SMS'
-                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
+                    ? 'bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)] hover:bg-orange-100'
                     : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
@@ -566,7 +566,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 disabled={isSendingSms || (commandMode === 'SMS' && !simPhoneNumber)}
                 className={`flex-1 py-3 border rounded-lg text-sm font-medium flex items-center justify-center gap-2 ${
                   commandMode === 'SMS'
-                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 hover:bg-orange-100'
+                    ? 'bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)] hover:bg-orange-100'
                     : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]'
                 }`}
               >
@@ -1052,11 +1052,11 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
 
       {/* Contract Update Summary (for Removal - read-only, derived from Onglet 1) */}
       {formData.nature === 'Retrait' && formData.removalReason && (
-        <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 dark:border-red-800 shadow-sm">
-          <h4 className="text-xs font-bold text-red-700 dark:text-red-400 uppercase mb-2 flex items-center gap-2">
+        <div className="bg-[var(--clr-danger-dim)] p-4 rounded-xl border border-[var(--clr-danger-border)] shadow-sm">
+          <h4 className="text-xs font-bold text-[var(--clr-danger-strong)] uppercase mb-2 flex items-center gap-2">
             <AlertCircle className="w-4 h-4" /> Résumé des actions à la clôture
           </h4>
-          <ul className="text-sm text-red-700 dark:text-red-300 space-y-1">
+          <ul className="text-sm text-[var(--clr-danger-strong)] space-y-1">
             <li>
               • Matériel :{' '}
               <span className="font-bold">

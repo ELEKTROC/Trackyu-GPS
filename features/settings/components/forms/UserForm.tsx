@@ -330,13 +330,13 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
             {/* TAB 2: SECURITY (Nouveau) */}
             {activeTab === 1 && (
               <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl flex items-start gap-3">
+                <div className="p-4 bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-xl flex items-start gap-3">
                   <div className="p-1.5 bg-amber-100 dark:bg-amber-800 rounded-lg">
-                    <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <Lock className="w-4 h-4 text-[var(--clr-caution)]" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-amber-800 dark:text-amber-300">Sécurité du compte</h4>
-                    <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+                    <h4 className="text-sm font-bold text-[var(--clr-caution-strong)]">Sécurité du compte</h4>
+                    <p className="text-xs text-[var(--clr-caution-strong)] mt-1">
                       L'identifiant de connexion est l'adresse email du client.
                       {!isEditMode && ' Définissez un mot de passe initial.'}
                     </p>
@@ -586,7 +586,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
             {activeTab === 4 && (
               <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                 {!isEditMode && (
-                  <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-xl text-xs text-amber-700 dark:text-amber-300">
+                  <div className="p-3 bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-xl text-xs text-[var(--clr-caution-strong)]">
                     Enregistrez d'abord ce compte client pour pouvoir ajouter des sous-comptes.
                   </div>
                 )}
@@ -649,7 +649,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
                               <button
                                 type="button"
                                 onClick={() => handleRemoveSubUser(idx)}
-                                className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -711,7 +711,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
                           <button
                             type="button"
                             onClick={() => handleRemoveDocument(idx)}
-                            className="p-2 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-2 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

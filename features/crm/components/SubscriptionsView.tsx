@@ -548,17 +548,17 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
   }, [vehicles, rawSubs]);
 
   const getExpiryBadge = (sub: VehicleSubscription) => {
-    if (sub.daysUntilExpiry === null) return <span className="text-green-600 dark:text-green-400 text-xs">∞</span>;
+    if (sub.daysUntilExpiry === null) return <span className="text-[var(--clr-success)] text-xs">∞</span>;
     if (sub.daysUntilExpiry < 0)
       return (
-        <span className="text-red-600 dark:text-red-400 text-xs font-medium flex items-center gap-1">
+        <span className="text-[var(--clr-danger)] text-xs font-medium flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" />
           Expiré ({Math.abs(sub.daysUntilExpiry)}j)
         </span>
       );
     if (sub.daysUntilExpiry <= 30)
       return (
-        <span className="text-amber-600 dark:text-amber-400 text-xs font-medium flex items-center gap-1">
+        <span className="text-[var(--clr-caution)] text-xs font-medium flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" />
           {sub.daysUntilExpiry}j
         </span>
@@ -586,7 +586,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           </Card>
           <Card className="p-3 border-l-4 border-l-green-500">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-lg text-green-600">
+              <div className="p-2 bg-[var(--clr-success-dim)] rounded-lg text-green-600">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
@@ -597,7 +597,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           </Card>
           <Card className="p-3 border-l-4 border-l-amber-500">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-amber-600">
+              <div className="p-2 bg-[var(--clr-caution-dim)] rounded-lg text-amber-600">
                 <RefreshCw className="w-5 h-5" />
               </div>
               <div>
@@ -608,7 +608,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
           </Card>
           <Card className="p-3 border-l-4 border-l-red-500">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg text-red-600">
+              <div className="p-2 bg-[var(--clr-danger-dim)] rounded-lg text-red-600">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
@@ -735,7 +735,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
             </button>
             <button
               onClick={handleBulkRemove}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-red-200 dark:border-red-800 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--clr-danger-border)] text-red-600 rounded-lg hover:bg-[var(--clr-danger-dim)]"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Supprimer
@@ -1086,9 +1086,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         )}
                         {visibleColumns.includes('periodicFee') && (
                           <td className="px-4 py-3 text-right">
-                            <span className="font-bold text-green-600 dark:text-green-400">
-                              {formatPrice(sub.periodicFee)}
-                            </span>
+                            <span className="font-bold text-[var(--clr-success)]">{formatPrice(sub.periodicFee)}</span>
                             <span className="text-[10px] text-[var(--text-muted)] block">
                               /{BILLING_CYCLE_LABELS[sub.billingCycle]?.toLowerCase() || sub.billingCycle}
                             </span>
@@ -1120,7 +1118,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                         {visibleColumns.includes('invoiceCount') && (
                           <td className="px-4 py-3 text-center">
                             <span
-                              className={`inline-flex items-center gap-1 text-xs font-medium ${sub.invoiceCount > 0 ? 'text-green-600 dark:text-green-400' : 'text-[var(--text-muted)]'}`}
+                              className={`inline-flex items-center gap-1 text-xs font-medium ${sub.invoiceCount > 0 ? 'text-[var(--clr-success)]' : 'text-[var(--text-muted)]'}`}
                             >
                               <FileText className="w-3 h-3" />
                               {sub.invoiceCount}
@@ -1138,20 +1136,20 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                   [VehicleStatus.MOVING]: {
                                     label: 'En mouvement',
                                     dot: 'bg-green-500',
-                                    text: 'text-green-700 dark:text-green-400',
-                                    bg: 'bg-green-50 dark:bg-green-900/20',
+                                    text: 'text-[var(--clr-success-strong)]',
+                                    bg: 'bg-[var(--clr-success-dim)]',
                                   },
                                   [VehicleStatus.IDLE]: {
                                     label: 'Ralenti',
                                     dot: 'bg-orange-500',
-                                    text: 'text-orange-700 dark:text-orange-400',
-                                    bg: 'bg-orange-50 dark:bg-orange-900/20',
+                                    text: 'text-[var(--clr-warning-strong)]',
+                                    bg: 'bg-[var(--clr-warning-dim)]',
                                   },
                                   [VehicleStatus.STOPPED]: {
                                     label: 'Arrêté',
                                     dot: 'bg-red-500',
-                                    text: 'text-red-700 dark:text-red-400',
-                                    bg: 'bg-red-50 dark:bg-red-900/20',
+                                    text: 'text-[var(--clr-danger-strong)]',
+                                    bg: 'bg-[var(--clr-danger-dim)]',
                                   },
                                   [VehicleStatus.OFFLINE]: {
                                     label: 'Hors ligne',
@@ -1270,7 +1268,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                         handleSuspend(sub.id);
                                         setShowActionsFor(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm hover:bg-orange-50 dark:hover:bg-orange-900/20 text-orange-600 flex items-center gap-2"
+                                      className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--clr-warning-dim)] text-orange-600 flex items-center gap-2"
                                     >
                                       <PauseCircle className="w-4 h-4" />
                                       Suspendre
@@ -1282,7 +1280,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                         handleRésilier(sub.id);
                                         setShowActionsFor(null);
                                       }}
-                                      className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                      className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--clr-danger-dim)] text-red-600 flex items-center gap-2"
                                     >
                                       <XCircle className="w-4 h-4" />
                                       Résilier
@@ -1291,7 +1289,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                   <hr className="my-1 border-[var(--border)]" />
                                   <button
                                     onClick={() => handleDeleteSub(sub)}
-                                    className="w-full px-4 py-2 text-left text-sm hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 flex items-center gap-2"
+                                    className="w-full px-4 py-2 text-left text-sm hover:bg-[var(--clr-danger-dim)] text-red-600 flex items-center gap-2"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                     Supprimer l'abonnement

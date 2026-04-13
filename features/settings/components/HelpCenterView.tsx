@@ -69,7 +69,7 @@ const CATEGORIES = [
     id: 'start',
     title: 'Démarrage Rapide',
     icon: PlayCircle,
-    color: 'text-green-600 bg-green-50 dark:bg-green-900/20',
+    color: 'text-green-600 bg-[var(--clr-success-dim)]',
   },
   {
     id: 'account',
@@ -81,13 +81,13 @@ const CATEGORIES = [
     id: 'vehicles',
     title: 'Gestion de Flotte',
     icon: CarIcon,
-    color: 'text-purple-600 bg-purple-50 dark:bg-purple-900/20',
+    color: 'text-purple-600 bg-[var(--clr-info-dim)]',
   },
   {
     id: 'reports',
     title: 'Rapports & Analyses',
     icon: FileText,
-    color: 'text-orange-600 bg-orange-50 dark:bg-orange-900/20',
+    color: 'text-orange-600 bg-[var(--clr-warning-dim)]',
   },
 ];
 

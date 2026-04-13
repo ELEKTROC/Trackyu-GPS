@@ -357,7 +357,7 @@ export const GeofenceForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
             {/* Résumé */}
             {(allClients || selectedClientIds.length > 0) && (
-              <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg flex items-center gap-2 font-medium">
+              <div className="text-xs text-[var(--clr-success)] bg-[var(--clr-success-dim)] p-3 rounded-lg flex items-center gap-2 font-medium">
                 <CheckSquare className="w-4 h-4" />
                 {allClients
                   ? `Zone partagée avec tous les clients${selectedResellerId ? ' du revendeur' : ''}`

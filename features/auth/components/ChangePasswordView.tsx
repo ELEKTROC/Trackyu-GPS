@@ -49,8 +49,8 @@ const ChangePasswordView: React.FC = () => {
         <div className="bg-[var(--bg-card)] rounded-2xl shadow-xl p-8 border border-[var(--border)]">
           {/* Header */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4">
-              <KeyRound className="w-7 h-7 text-amber-600 dark:text-amber-400" />
+            <div className="w-14 h-14 rounded-2xl bg-[var(--clr-caution-muted)] flex items-center justify-center mb-4">
+              <KeyRound className="w-7 h-7 text-[var(--clr-caution)]" />
             </div>
             <h1 className="page-title">Changement de mot de passe</h1>
             <p className="text-sm text-[var(--text-muted)] mt-2 text-center">

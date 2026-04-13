@@ -513,7 +513,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                     onClose();
                   }
                 }}
-                className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-red-500 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
               >
                 <Trash2 className="w-4 h-4" /> Supprimer le client
               </button>
@@ -543,7 +543,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                 </button>
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-muted)] hover:text-red-500 transition-colors"
+                  className="p-2 hover:bg-[var(--clr-danger-dim)] rounded-lg text-[var(--text-muted)] hover:text-red-500 transition-colors"
                   title="Fermer"
                 >
                   <X className="w-5 h-5" />
@@ -817,8 +817,8 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                           <p className="page-title">12</p>
                           <p className="text-[10px] text-[var(--text-secondary)] uppercase">Véhicules</p>
                         </div>
-                        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded text-center">
-                          <p className="text-xl font-bold text-green-700 dark:text-green-400">10</p>
+                        <div className="p-3 bg-[var(--clr-success-dim)] rounded text-center">
+                          <p className="text-xl font-bold text-[var(--clr-success-strong)]">10</p>
                           <p className="text-[10px] text-green-600 dark:text-green-500 uppercase">Actifs</p>
                         </div>
                       </div>

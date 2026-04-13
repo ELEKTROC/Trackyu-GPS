@@ -76,26 +76,26 @@ export const StockOverview: React.FC<StockOverviewProps> = ({
     <div className="flex-1 overflow-y-auto space-y-4 p-1 pb-16 lg:pb-1">
       {/* Alertes Stock */}
       {(stats.lowStockBoxes || stats.pendingRma > 0 || stats.simsLowStock) && (
-        <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+        <div className="bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-lg p-4">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-5 h-5 text-amber-600" />
             <h3 className="font-bold text-amber-800 dark:text-amber-400">Alertes Stock</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
             {stats.lowStockBoxes && (
-              <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+              <div className="flex items-center gap-2 text-[var(--clr-caution-strong)]">
                 <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                 Stock boîtiers bas (&lt;5 unités)
               </div>
             )}
             {stats.pendingRma > 0 && (
-              <div className="flex items-center gap-2 text-red-700 dark:text-red-300">
+              <div className="flex items-center gap-2 text-[var(--clr-danger-strong)]">
                 <span className="w-2 h-2 bg-red-500 rounded-full"></span>
                 {stats.pendingRma} équipement(s) en RMA
               </div>
             )}
             {stats.simsLowStock && (
-              <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+              <div className="flex items-center gap-2 text-[var(--clr-caution-strong)]">
                 <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
                 Stock SIM bas (&lt;10 unités)
               </div>

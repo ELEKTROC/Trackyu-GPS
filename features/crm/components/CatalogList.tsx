@@ -103,7 +103,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
     <div className="flex-1 flex flex-col overflow-hidden bg-[var(--bg-surface)] rounded-lg border border-[var(--border)] relative">
       {/* BULK ACTIONS BAR */}
       {selectedIds.size > 0 && (
-        <div className="absolute top-0 left-0 right-0 h-14 bg-purple-50 dark:bg-purple-900/50 flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-purple-100 dark:border-purple-800 rounded-t-lg">
+        <div className="absolute top-0 left-0 right-0 h-14 bg-purple-50 dark:bg-purple-900/50 flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--clr-info-border)] rounded-t-lg">
           <span className="text-sm font-bold text-purple-800 dark:text-purple-200">
             {selectedIds.size} article(s) sélectionné(s)
           </span>
@@ -116,7 +116,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                 });
                 setSelectedIds(new Set());
               }}
-              className="text-xs bg-[var(--bg-elevated)] border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded shadow-sm hover:bg-purple-100 dark:hover:bg-purple-800 transition-colors flex items-center gap-1.5"
+              className="text-xs bg-[var(--bg-elevated)] border border-purple-200 dark:border-purple-700 text-[var(--clr-info-strong)] px-3 py-1.5 rounded shadow-sm hover:bg-purple-100 dark:hover:bg-purple-800 transition-colors flex items-center gap-1.5"
             >
               <X className="w-3 h-3" /> Désactiver
             </button>
@@ -303,14 +303,14 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                     </button>
                     <button
                       onClick={() => onClone(item)}
-                      className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+                      className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-[var(--clr-info-dim)] rounded transition-colors"
                       title="Cloner"
                     >
                       <Copy className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => onToggleStatus(item)}
-                      className={`p-1.5 rounded transition-colors ${item.status === 'ACTIVE' ? 'text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-red-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'}`}
+                      className={`p-1.5 rounded transition-colors ${item.status === 'ACTIVE' ? 'text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)]' : 'text-red-400 hover:text-green-600 hover:bg-[var(--clr-success-dim)]'}`}
                       title={item.status === 'ACTIVE' ? 'Désactiver' : 'Activer'}
                     >
                       {item.status === 'ACTIVE' ? (
@@ -323,7 +323,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                       onClick={() => {
                         if (confirm('Supprimer cet article ?')) onDelete(item.id);
                       }}
-                      className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                      className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded transition-colors"
                       title="Supprimer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -448,7 +448,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                 <tr
                   key={item.id}
                   onClick={() => onViewDetail(item)}
-                  className={`tr-hover/50 transition-colors cursor-pointer group ${selectedIds.has(item.id) ? 'bg-purple-50 dark:bg-purple-900/20' : ''}`}
+                  className={`tr-hover/50 transition-colors cursor-pointer group ${selectedIds.has(item.id) ? 'bg-[var(--clr-info-dim)]' : ''}`}
                 >
                   {visibleColumns.includes('checkbox') && (
                     <td
@@ -516,7 +516,7 @@ export const CatalogList: React.FC<CatalogListProps> = ({
                         </button>
                         <button
                           onClick={() => onClone(item)}
-                          className="p-2 text-[var(--text-muted)] hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+                          className="p-2 text-[var(--text-muted)] hover:text-purple-600 hover:bg-[var(--clr-info-dim)] rounded transition-colors"
                           title="Cloner"
                         >
                           <Copy className="w-4 h-4" />

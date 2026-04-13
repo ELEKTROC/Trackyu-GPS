@@ -673,7 +673,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         subtitle={`MRR: ${fmt(business.mrr)}`}
         icon={Briefcase}
         color="text-emerald-600"
-        bgColor="bg-emerald-50 dark:bg-emerald-900/30"
+        bgColor="bg-[var(--clr-emerald-dim)]"
         onClick={() => nav(View.CONTRACTS)}
       />
     );
@@ -684,7 +684,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         subtitle={`Recouvrement: ${business.collectionRate}%`}
         icon={TrendingUp}
         color="text-green-600"
-        bgColor="bg-green-50 dark:bg-green-900/30"
+        bgColor="bg-[var(--clr-success-dim)]"
         onClick={() => nav(View.INVOICES)}
       />
     );
@@ -697,7 +697,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         }
         icon={Headphones}
         color={support.critical > 0 ? 'text-red-600' : 'text-violet-600'}
-        bgColor={support.critical > 0 ? 'bg-red-50 dark:bg-red-900/30' : 'bg-violet-50 dark:bg-violet-900/30'}
+        bgColor={support.critical > 0 ? 'bg-[var(--clr-danger-dim)]' : 'bg-violet-50 dark:bg-violet-900/30'}
         onClick={() => nav(View.SUPPORT)}
       />
     );
@@ -708,7 +708,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         subtitle={`${tech.completed} terminée${tech.completed > 1 ? 's' : ''} - ${tech.successRate}%`}
         icon={Wrench}
         color="text-orange-600"
-        bgColor="bg-orange-50 dark:bg-orange-900/30"
+        bgColor="bg-[var(--clr-warning-dim)]"
         onClick={() => nav(View.TECH)}
       />
     );
@@ -734,7 +734,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         }
         icon={AlertCircle}
         color={fleet.alertsCount > 0 ? 'text-red-600' : 'text-green-600'}
-        bgColor={fleet.alertsCount > 0 ? 'bg-red-50 dark:bg-red-900/30' : 'bg-green-50 dark:bg-green-900/30'}
+        bgColor={fleet.alertsCount > 0 ? 'bg-[var(--clr-danger-dim)]' : 'bg-[var(--clr-success-dim)]'}
         onClick={() => nav(View.FLEET)}
       />
     );
@@ -745,7 +745,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         subtitle={`${business.overdueCount} facture${business.overdueCount > 1 ? 's' : ''} en retard`}
         icon={AlertTriangle}
         color={business.overdue > 0 ? 'text-red-600' : 'text-green-600'}
-        bgColor={business.overdue > 0 ? 'bg-red-50 dark:bg-red-900/30' : 'bg-green-50 dark:bg-green-900/30'}
+        bgColor={business.overdue > 0 ? 'bg-[var(--clr-danger-dim)]' : 'bg-[var(--clr-success-dim)]'}
         onClick={() => nav(View.INVOICES)}
       />
     );
@@ -773,7 +773,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             subtitle={`${fleet.utilization}% utilisation`}
             icon={Route}
             color="text-purple-600"
-            bgColor="bg-purple-50 dark:bg-purple-900/30"
+            bgColor="bg-[var(--clr-info-dim)]"
             onClick={() => nav(View.FLEET)}
           />
           {kpiTickets}
@@ -790,7 +790,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             subtitle={`${tech.inProgress} en cours`}
             icon={Wrench}
             color="text-amber-600"
-            bgColor="bg-amber-50 dark:bg-amber-900/30"
+            bgColor="bg-[var(--clr-caution-dim)]"
             onClick={() => nav(View.TECH)}
           />
           {kpiStock}
@@ -820,9 +820,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             subtitle={`MRR: ${fmt(business.mrr)}`}
             icon={TrendingUp}
             color={business.collectionRate >= 80 ? 'text-green-600' : 'text-amber-600'}
-            bgColor={
-              business.collectionRate >= 80 ? 'bg-green-50 dark:bg-green-900/30' : 'bg-amber-50 dark:bg-amber-900/30'
-            }
+            bgColor={business.collectionRate >= 80 ? 'bg-[var(--clr-success-dim)]' : 'bg-[var(--clr-caution-dim)]'}
             onClick={() => nav(View.INVOICES)}
           />
         </div>
@@ -838,7 +836,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             subtitle={`Rés. moy. ${support.avgResolution}h`}
             icon={AlertTriangle}
             color={support.critical > 0 ? 'text-red-600' : 'text-green-600'}
-            bgColor={support.critical > 0 ? 'bg-red-50 dark:bg-red-900/30' : 'bg-green-50 dark:bg-green-900/30'}
+            bgColor={support.critical > 0 ? 'bg-[var(--clr-danger-dim)]' : 'bg-[var(--clr-success-dim)]'}
             onClick={() => nav(View.SUPPORT)}
           />
           <KPICard
@@ -847,7 +845,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             subtitle={`${support.inProgress} en cours`}
             icon={Headphones}
             color="text-green-600"
-            bgColor="bg-green-50 dark:bg-green-900/30"
+            bgColor="bg-[var(--clr-success-dim)]"
             onClick={() => nav(View.SUPPORT)}
           />
           {kpiFleet}
@@ -1559,7 +1557,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             <button
               onClick={() => setEditMode(true)}
               title={`${hiddenCount} section${hiddenCount > 1 ? 's' : ''} masquée${hiddenCount > 1 ? 's' : ''}`}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-amber-600 bg-[var(--clr-caution-dim)] border border-amber-200 dark:border-amber-700 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
             >
               <EyeOff className="w-3.5 h-3.5" /> {hiddenCount}
             </button>

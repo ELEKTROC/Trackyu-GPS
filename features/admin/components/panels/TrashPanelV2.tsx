@@ -179,7 +179,7 @@ export const TrashPanelV2: React.FC = () => {
       <button
         onClick={() => handleRestore(entityType, id, label)}
         disabled={actionLoading === `restore-${entityType}-${id}`}
-        className="px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/40 rounded-lg flex items-center gap-1 transition-colors disabled:opacity-50"
+        className="px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 hover:bg-[var(--clr-success-muted)] dark:hover:bg-green-900/40 rounded-lg flex items-center gap-1 transition-colors disabled:opacity-50"
         title="Restaurer"
       >
         <RotateCcw className="w-3.5 h-3.5" />
@@ -188,7 +188,7 @@ export const TrashPanelV2: React.FC = () => {
       <button
         onClick={() => handlePermanentDelete(entityType, id, label)}
         disabled={actionLoading === `delete-${entityType}-${id}`}
-        className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 rounded-lg flex items-center gap-1 transition-colors disabled:opacity-50"
+        className="px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 hover:bg-[var(--clr-danger-muted)] dark:hover:bg-red-900/40 rounded-lg flex items-center gap-1 transition-colors disabled:opacity-50"
         title="Supprimer définitivement"
       >
         <Trash2 className="w-3.5 h-3.5" />
@@ -234,7 +234,7 @@ export const TrashPanelV2: React.FC = () => {
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 text-sm font-bold shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-[var(--clr-danger-muted)] flex items-center justify-center text-[var(--clr-danger)] text-sm font-bold shrink-0">
                         {u.name?.charAt(0) || '?'}
                       </div>
                       <div className="min-w-0">
@@ -272,7 +272,7 @@ export const TrashPanelV2: React.FC = () => {
         <div className="flex items-center gap-2 mb-4">
           <FileText className="w-5 h-5 text-amber-500" />
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Contrats</h3>
-          <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full text-xs font-medium">
+          <span className="px-2 py-0.5 bg-[var(--clr-caution-muted)] text-[var(--clr-caution)] rounded-full text-xs font-medium">
             {filteredContracts.length}
           </span>
         </div>
@@ -338,7 +338,7 @@ export const TrashPanelV2: React.FC = () => {
         <div className="flex items-center gap-2 mb-4">
           <Building2 className="w-5 h-5 text-purple-500" />
           <h3 className="text-base font-semibold text-[var(--text-primary)]">Tenants / Organisations</h3>
-          <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-full text-xs font-medium">
+          <span className="px-2 py-0.5 bg-[var(--clr-info-muted)] text-[var(--clr-info)] rounded-full text-xs font-medium">
             {filteredTenants.length}
           </span>
         </div>
@@ -371,7 +371,7 @@ export const TrashPanelV2: React.FC = () => {
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 text-sm font-bold shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-[var(--clr-info-muted)] flex items-center justify-center text-[var(--clr-info)] text-sm font-bold shrink-0">
                         {t.name?.charAt(0) || '?'}
                       </div>
                       <span className="font-medium text-[var(--text-primary)] text-sm line-through opacity-70">
@@ -409,7 +409,7 @@ export const TrashPanelV2: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+          <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg">
             <Archive className="w-5 h-5 text-red-500" />
           </div>
           <div>
@@ -435,7 +435,7 @@ export const TrashPanelV2: React.FC = () => {
             onClick={() => setSubTab(tab.id)}
             className={`p-3 rounded-xl border transition-all text-left ${
               subTab === tab.id
-                ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 ring-1 ring-red-200 dark:ring-red-800'
+                ? 'border-red-300 dark:border-red-700 bg-[var(--clr-danger-dim)] ring-1 ring-red-200 dark:ring-red-800'
                 : 'border-[var(--border)] bg-[var(--bg-elevated)] hover:border-[var(--border)]'
             }`}
           >
@@ -444,7 +444,7 @@ export const TrashPanelV2: React.FC = () => {
               <span className="text-xs text-[var(--text-secondary)] font-medium">{tab.label}</span>
             </div>
             <p
-              className={`text-xl font-bold ${subTab === tab.id ? 'text-red-600 dark:text-red-400' : 'text-[var(--text-primary)]'}`}
+              className={`text-xl font-bold ${subTab === tab.id ? 'text-[var(--clr-danger)]' : 'text-[var(--text-primary)]'}`}
             >
               {tab.count}
             </p>
@@ -490,9 +490,9 @@ export const TrashPanelV2: React.FC = () => {
       ) : (
         <div className="flex flex-col gap-4">
           {/* Warning banner */}
-          <div className="flex items-start gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <div className="flex items-start gap-3 p-3 bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-lg">
             <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-amber-700 dark:text-amber-400">
+            <p className="text-sm text-[var(--clr-caution-strong)]">
               La suppression définitive est <strong>irréversible</strong>. Les éléments restaurés retrouveront leur état
               précédent.
             </p>

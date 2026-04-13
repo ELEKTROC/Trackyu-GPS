@@ -732,7 +732,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                 <p className="section-title">MRR</p>
                 <p className="page-title mt-1">{formatPrice(kpis.mrr)}</p>
               </div>
-              <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+              <div className="p-3 bg-[var(--clr-success-dim)] rounded-full text-green-600">
                 <DollarSign className="w-6 h-6" />
               </div>
             </div>
@@ -743,7 +743,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                 <p className="section-title">Véhicules Couverts</p>
                 <p className="page-title mt-1">{kpis.vehiclesCovered}</p>
               </div>
-              <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+              <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
                 <Users className="w-6 h-6" />
               </div>
             </div>
@@ -754,7 +754,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                 <p className="section-title">Renouvellements (30j)</p>
                 <p className="page-title mt-1">{kpis.renewalsUpcoming}</p>
               </div>
-              <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
+              <div className="p-3 bg-[var(--clr-warning-dim)] rounded-full text-orange-600">
                 <RefreshCw className="w-6 h-6" />
               </div>
             </div>
@@ -883,13 +883,13 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <div className="flex gap-2 ml-auto flex-wrap">
               <button
                 onClick={() => handleBulkStatus('ACTIVE')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-green-200 dark:border-green-800 text-green-700 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--clr-success-border)] text-green-700 rounded-lg hover:bg-[var(--clr-success-dim)]"
               >
                 <Play className="w-3.5 h-3.5" /> Activer
               </button>
               <button
                 onClick={() => handleBulkStatus('SUSPENDED')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-orange-200 dark:border-orange-800 text-orange-700 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--clr-warning-border)] text-orange-700 rounded-lg hover:bg-[var(--clr-warning-dim)]"
               >
                 <Pause className="w-3.5 h-3.5" /> Suspendre
               </button>
@@ -917,7 +917,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               </button>
               <button
                 onClick={handleBulkDelete}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-red-200 dark:border-red-800 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-[var(--bg-elevated)] border border-[var(--clr-danger-border)] text-red-600 rounded-lg hover:bg-[var(--clr-danger-dim)]"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Supprimer
               </button>
@@ -1124,7 +1124,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                         {contract.vehicleIds?.length || contract.vehicleCount || 0}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-bold text-green-700 dark:text-green-400 text-right">
+                    <td className="px-6 py-4 font-bold text-[var(--clr-success-strong)] text-right">
                       {formatPrice(
                         (contract.monthlyFee || 0) * (contract.vehicleIds?.length || contract.vehicleCount || 0)
                       )}
@@ -1175,7 +1175,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                         <button
                           onClick={() => handleGenerateInvoice(contract)}
                           disabled={generatingInvoice === contract.id || contract.status !== 'ACTIVE'}
-                          className="p-1.5 hover:bg-green-50 dark:hover:bg-green-900/20 rounded text-[var(--text-muted)] hover:text-green-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-1.5 hover:bg-[var(--clr-success-dim)] rounded text-[var(--text-muted)] hover:text-green-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                           title="Générer Facture Brouillon"
                         >
                           {generatingInvoice === contract.id ? (
@@ -1200,7 +1200,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                         </button>
                         <button
                           onClick={() => handleDelete(contract.id)}
-                          className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-[var(--text-muted)] hover:text-red-600 transition-colors"
+                          className="p-1.5 hover:bg-[var(--clr-danger-dim)] rounded text-[var(--text-muted)] hover:text-red-600 transition-colors"
                           title="Supprimer"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -1309,7 +1309,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                         <div className="text-xs text-[var(--text-secondary)]">{veh.name}</div>
                       )}
                     </div>
-                    <div className="text-xs font-mono bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 px-2 py-1 rounded">
+                    <div className="text-xs font-mono bg-[var(--clr-warning-muted)] text-[var(--clr-warning-strong)] px-2 py-1 rounded">
                       {c.contractNumber}
                     </div>
                   </div>

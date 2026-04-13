@@ -243,14 +243,14 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
       {/* Header Stats - Hidden on mobile */}
       {!isMobile && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800">
+          <Card className="bg-[var(--clr-emerald-dim)] border-[var(--clr-emerald-border)]">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-emerald-100 dark:bg-emerald-800 rounded-full">
-                <DollarSign className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <DollarSign className="w-6 h-6 text-[var(--clr-emerald)]" />
               </div>
               <div>
-                <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">Solde Caisse</p>
-                <h3 className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{formatPrice(balance)}</h3>
+                <p className="text-sm text-[var(--clr-emerald)] font-medium">Solde Caisse</p>
+                <h3 className="text-2xl font-bold text-[var(--clr-emerald-strong)]">{formatPrice(balance)}</h3>
               </div>
             </div>
           </Card>
@@ -275,8 +275,8 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
 
           <Card>
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-red-100 dark:bg-red-900/20 rounded-full">
-                <ArrowDownLeft className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <div className="p-3 bg-[var(--clr-danger-muted)] rounded-full">
+                <ArrowDownLeft className="w-6 h-6 text-[var(--clr-danger)]" />
               </div>
               <div>
                 <p className="text-sm text-[var(--text-secondary)] font-medium">Total Sorties (Mois)</p>
@@ -558,11 +558,11 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
       >
         <div className="space-y-4">
           {isDateClosed(closingDate) ? (
-            <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg border border-orange-200 dark:border-orange-800 flex items-start gap-3">
+            <div className="bg-[var(--clr-warning-dim)] p-4 rounded-lg border border-[var(--clr-warning-border)] flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-bold text-orange-800 dark:text-orange-300">Journée déjà clôturée</p>
-                <p className="text-xs text-orange-700 dark:text-orange-400 mt-1">
+                <p className="text-sm font-bold text-[var(--clr-warning-strong)]">Journée déjà clôturée</p>
+                <p className="text-xs text-[var(--clr-warning-strong)] mt-1">
                   Cette journée a été clôturée le{' '}
                   {new Date(getClosingForDate(closingDate)?.closedAt || '').toLocaleString('fr-FR')}. Une nouvelle
                   clôture remplacera la précédente.
@@ -683,8 +683,8 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                     key={closing.id}
                     className={`p-4 rounded-lg border ${
                       closing.gap === 0
-                        ? 'border-green-200 bg-green-50 dark:bg-green-900/10 dark:border-green-800'
-                        : 'border-orange-200 bg-orange-50 dark:bg-orange-900/10 dark:border-orange-800'
+                        ? 'border-green-200 bg-[var(--clr-success-dim)] dark:border-green-800'
+                        : 'border-orange-200 bg-[var(--clr-warning-dim)] dark:border-orange-800'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -731,7 +731,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                     {closing.gap !== 0 && (
                       <div className="mt-2 pt-2 border-t border-orange-200 dark:border-orange-700">
                         <p className="text-sm">
-                          <span className="text-orange-700 dark:text-orange-400 font-bold">
+                          <span className="text-[var(--clr-warning-strong)] font-bold">
                             Écart: {formatPrice(closing.gap)}
                           </span>
                           {closing.notes && (

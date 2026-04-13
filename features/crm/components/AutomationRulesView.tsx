@@ -655,7 +655,7 @@ export const AutomationRulesView: React.FC = () => {
                       Modèle de message (Administration)
                     </label>
                     <select
-                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] border-purple-200 dark:border-purple-800"
+                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] border-[var(--clr-info-border)]"
                       value={form.action.messageTemplateId || ''}
                       onChange={(e) => {
                         if (e.target.value) applyMessageTemplate(e.target.value);
@@ -734,7 +734,7 @@ export const AutomationRulesView: React.FC = () => {
                       Modèle de message (Administration)
                     </label>
                     <select
-                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] border-purple-200 dark:border-purple-800"
+                      className="w-full px-3 py-2 border rounded-lg bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)] border-[var(--clr-info-border)]"
                       value={form.action.messageTemplateId || ''}
                       onChange={(e) => {
                         if (e.target.value) applyMessageTemplate(e.target.value);

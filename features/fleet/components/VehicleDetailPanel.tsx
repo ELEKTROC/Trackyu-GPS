@@ -794,8 +794,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             disabled={isImmobilizing}
             className={`w-full py-3 border rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
               vehicle.isImmobilized
-                ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50'
-                : 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50'
+                ? 'bg-[var(--clr-success-dim)] text-[var(--clr-success)] border-[var(--clr-success-border)] hover:bg-green-100 dark:hover:bg-green-900/50'
+                : 'bg-[var(--clr-danger-dim)] text-[var(--clr-danger)] border-[var(--clr-danger-border)] hover:bg-red-100 dark:hover:bg-red-900/50'
             }`}
           >
             {isImmobilizing ? (
@@ -837,8 +837,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             disabled={isUpdatingStatus}
             className={`w-full py-3 border rounded-lg text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
               vehicle.isBrokenDown
-                ? 'bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/50'
-                : 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-800 hover:bg-orange-100 dark:hover:bg-orange-900/50'
+                ? 'bg-[var(--clr-success-dim)] text-[var(--clr-success)] border-[var(--clr-success-border)] hover:bg-green-100 dark:hover:bg-green-900/50'
+                : 'bg-[var(--clr-warning-dim)] text-[var(--clr-warning)] border-[var(--clr-warning-border)] hover:bg-orange-100 dark:hover:bg-orange-900/50'
             }`}
           >
             {isUpdatingStatus ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wrench className="w-4 h-4" />}

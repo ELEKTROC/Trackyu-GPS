@@ -541,13 +541,13 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
         );
       case 'LEVEL_2':
         return (
-          <span className="px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300 rounded text-xs font-bold">
+          <span className="px-2 py-1 bg-[var(--clr-warning-muted)] text-[var(--clr-warning-strong)] rounded text-xs font-bold">
             Relance 2
           </span>
         );
       case 'LEVEL_3':
         return (
-          <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 rounded text-xs font-bold">
+          <span className="px-2 py-1 bg-[var(--clr-danger-muted)] text-[var(--clr-danger-strong)] rounded text-xs font-bold">
             Contentieux
           </span>
         );
@@ -584,10 +584,10 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
       {/* Header & KPIs - Hidden on mobile */}
       {!isMobile && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-4 border-l-4 border-l-red-500 bg-red-50 dark:bg-red-900/10">
+          <Card className="p-4 border-l-4 border-l-red-500 bg-[var(--clr-danger-dim)]">
             <div className="flex justify-between items-center">
               <div>
-                <p className="text-sm font-medium text-red-600 dark:text-red-400">Total En Souffrance</p>
+                <p className="text-sm font-medium text-[var(--clr-danger)]">Total En Souffrance</p>
                 <p className="page-title">{formatPrice(kpis.totalOverdue)}</p>
               </div>
               <AlertTriangle className="w-8 h-8 text-red-500 opacity-50" />
@@ -756,7 +756,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                     </div>
                     <div className="mt-1 flex items-center gap-2 flex-wrap">
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${inv.daysOverdue > 30 ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'}`}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${inv.daysOverdue > 30 ? 'bg-[var(--clr-danger-muted)] text-[var(--clr-danger-strong)]' : 'bg-[var(--clr-warning-muted)] text-[var(--clr-warning-strong)]'}`}
                       >
                         {inv.daysOverdue} jours
                       </span>
@@ -905,7 +905,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                     return (
                       <tr
                         key={inv.id}
-                        className={`tr-hover/50 transition-colors ${selectedIds.has(inv.id) ? 'bg-purple-50 dark:bg-purple-900/10' : ''}`}
+                        className={`tr-hover/50 transition-colors ${selectedIds.has(inv.id) ? 'bg-[var(--clr-info-dim)]' : ''}`}
                       >
                         <td className="p-4">
                           <input
@@ -993,7 +993,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                             <div className="flex flex-col gap-1">
                               {getLevelBadge(inv.recoveryLevel as string)}
                               {inv.isDisputed && (
-                                <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded text-[10px] font-bold flex items-center gap-1 w-fit">
+                                <span className="px-2 py-0.5 bg-[var(--clr-danger-muted)] text-[var(--clr-danger-strong)] rounded text-[10px] font-bold flex items-center gap-1 w-fit">
                                   <ShieldAlert className="w-3 h-3" /> EN LITIGE
                                 </span>
                               )}
@@ -1148,7 +1148,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                         handleCreateRecoveryTask(inv, 'LETTER');
                                         setOpenMenuId(null);
                                       }}
-                                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-[var(--clr-danger-dim)] flex items-center gap-2"
                                     >
                                       <FileWarning className="w-4 h-4" /> Mise en demeure
                                     </button>
@@ -1159,7 +1159,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                                       handleDeclareLost(inv);
                                       setOpenMenuId(null);
                                     }}
-                                    className="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                    className="w-full text-left px-4 py-2 text-sm text-[var(--clr-danger-strong)] hover:bg-[var(--clr-danger-dim)] flex items-center gap-2"
                                   >
                                     <X className="w-4 h-4" /> Déclarer perdu
                                   </button>
@@ -1274,7 +1274,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                           <td className="p-3">{task.title}</td>
                           <td className="p-3">
                             <span
-                              className={`px-2 py-1 rounded text-xs ${task.status === 'DONE' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'}`}
+                              className={`px-2 py-1 rounded text-xs ${task.status === 'DONE' ? 'bg-[var(--clr-success-muted)] text-[var(--clr-success-strong)]' : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'}`}
                             >
                               {task.status}
                             </span>
@@ -1300,7 +1300,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                     setCallNote('');
                     setIsCallModalOpen(true);
                   }}
-                  className="px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 hover:bg-green-100 rounded-lg text-sm font-bold flex items-center gap-2"
+                  className="px-3 py-2 bg-[var(--clr-success-dim)] text-[var(--clr-success-strong)] hover:bg-green-100 rounded-lg text-sm font-bold flex items-center gap-2"
                 >
                   <Phone className="w-4 h-4" /> Compte-rendu appel
                 </button>
@@ -1318,7 +1318,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                     setIsModalOpen(false);
                     setIsExtendModalOpen(true);
                   }}
-                  className="px-3 py-2 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 hover:bg-purple-100 rounded-lg text-sm font-bold flex items-center gap-2"
+                  className="px-3 py-2 bg-[var(--clr-info-dim)] text-[var(--clr-info-strong)] hover:bg-purple-100 rounded-lg text-sm font-bold flex items-center gap-2"
                 >
                   <Calendar className="w-4 h-4" /> Proroger
                 </button>
@@ -1326,14 +1326,14 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
                   onClick={() => {
                     handleToggleDispute(selectedInvoice);
                   }}
-                  className={`px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 ${selectedInvoice.isDisputed ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
+                  className={`px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 ${selectedInvoice.isDisputed ? 'bg-[var(--clr-danger-muted)] text-[var(--clr-danger-strong)] hover:bg-red-200' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'}`}
                 >
                   <ShieldAlert className="w-4 h-4" /> {selectedInvoice.isDisputed ? 'Lever litige' : 'Litige'}
                 </button>
                 {selectedInvoice.daysOverdue > 30 && (
                   <button
                     onClick={() => handleCreateRecoveryTask(selectedInvoice, 'LETTER')}
-                    className="px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 hover:bg-red-100 rounded-lg text-sm font-bold flex items-center gap-2"
+                    className="px-3 py-2 bg-[var(--clr-danger-dim)] text-[var(--clr-danger-strong)] hover:bg-red-100 rounded-lg text-sm font-bold flex items-center gap-2"
                   >
                     <FileWarning className="w-4 h-4" /> Mise en demeure
                   </button>
@@ -1342,7 +1342,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
               <div className="flex justify-end gap-3">
                 <button
                   onClick={() => handleDeclareLost(selectedInvoice)}
-                  className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 rounded-lg font-bold text-sm flex items-center gap-2"
+                  className="px-4 py-2 bg-[var(--clr-danger-muted)] text-[var(--clr-danger-strong)] hover:bg-red-200 dark:hover:bg-red-900/50 rounded-lg font-bold text-sm flex items-center gap-2"
                   title="Passe la facture en perte irrécouvrable (écriture OD : 654000 / 411000)"
                 >
                   <X className="w-4 h-4" /> Déclarer Perdu
@@ -1374,7 +1374,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
 
             {/* Niveau 1 */}
             <div
-              className={`flex items-center justify-between p-3 border rounded-lg transition-all ${automationSettings.level1Enabled ? 'border-green-300 bg-green-50 dark:bg-green-900/10' : 'border-[var(--border)]'}`}
+              className={`flex items-center justify-between p-3 border rounded-lg transition-all ${automationSettings.level1Enabled ? 'border-green-300 bg-[var(--clr-success-dim)]' : 'border-[var(--border)]'}`}
             >
               <div className="flex-1">
                 <p className="font-medium text-[var(--text-primary)]">Relance Niveau 1</p>
@@ -1409,7 +1409,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
 
             {/* Niveau 2 */}
             <div
-              className={`flex items-center justify-between p-3 border rounded-lg transition-all ${automationSettings.level2Enabled ? 'border-orange-300 bg-orange-50 dark:bg-orange-900/10' : 'border-[var(--border)]'}`}
+              className={`flex items-center justify-between p-3 border rounded-lg transition-all ${automationSettings.level2Enabled ? 'border-orange-300 bg-[var(--clr-warning-dim)]' : 'border-[var(--border)]'}`}
             >
               <div className="flex-1">
                 <p className="font-medium text-[var(--text-primary)]">Relance Niveau 2</p>
@@ -1444,7 +1444,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
 
             {/* Niveau 3 */}
             <div
-              className={`flex items-center justify-between p-3 border rounded-lg transition-all ${automationSettings.level3Enabled ? 'border-red-300 bg-red-50 dark:bg-red-900/10' : 'border-[var(--border)]'}`}
+              className={`flex items-center justify-between p-3 border rounded-lg transition-all ${automationSettings.level3Enabled ? 'border-red-300 bg-[var(--clr-danger-dim)]' : 'border-[var(--border)]'}`}
             >
               <div className="flex-1">
                 <p className="font-medium text-[var(--text-primary)]">Contentieux Niveau 3</p>
@@ -1611,7 +1611,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
       {isBulkModalOpen && (
         <Modal isOpen={isBulkModalOpen} onClose={() => setIsBulkModalOpen(false)} title="📤 Choisir le mode d'envoi">
           <div className="space-y-4">
-            <div className="p-4 bg-purple-50 dark:bg-purple-900/20 text-purple-800 dark:text-purple-300 rounded-lg text-sm">
+            <div className="p-4 bg-[var(--clr-info-dim)] text-[var(--clr-info-strong)] rounded-lg text-sm">
               <p className="font-bold mb-1">📋 {selectedIds.size} facture(s) sélectionnée(s)</p>
               <p>Choisissez le canal de relance pour ces factures.</p>
             </div>
@@ -1630,7 +1630,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
 
               <button
                 onClick={() => setBulkSendMode('SMS')}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'SMS' ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-[var(--border)] hover:border-green-300'}`}
+                className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'SMS' ? 'border-green-500 bg-[var(--clr-success-dim)]' : 'border-[var(--border)] hover:border-green-300'}`}
               >
                 <Phone
                   className={`w-6 h-6 mb-2 ${bulkSendMode === 'SMS' ? 'text-green-600' : 'text-[var(--text-muted)]'}`}
@@ -1641,7 +1641,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
 
               <button
                 onClick={() => setBulkSendMode('WHATSAPP')}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'WHATSAPP' ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' : 'border-[var(--border)] hover:border-emerald-300'}`}
+                className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'WHATSAPP' ? 'border-emerald-500 bg-[var(--clr-emerald-dim)]' : 'border-[var(--border)] hover:border-emerald-300'}`}
               >
                 <svg
                   className={`w-6 h-6 mb-2 ${bulkSendMode === 'WHATSAPP' ? 'text-emerald-600' : 'text-[var(--text-muted)]'}`}
@@ -1656,7 +1656,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
 
               <button
                 onClick={() => setBulkSendMode('CALL')}
-                className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'CALL' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-[var(--border)] hover:border-orange-300'}`}
+                className={`p-4 rounded-lg border-2 text-left transition-all ${bulkSendMode === 'CALL' ? 'border-orange-500 bg-[var(--clr-warning-dim)]' : 'border-[var(--border)] hover:border-orange-300'}`}
               >
                 <Phone
                   className={`w-6 h-6 mb-2 ${bulkSendMode === 'CALL' ? 'text-orange-600' : 'text-[var(--text-muted)]'}`}
@@ -1747,7 +1747,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
       {isCallModalOpen && selectedInvoice && (
         <Modal isOpen={isCallModalOpen} onClose={() => setIsCallModalOpen(false)} title="📞 Compte-rendu d'Appel">
           <div className="space-y-4">
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-lg text-sm">
+            <div className="p-4 bg-[var(--clr-success-dim)] text-[var(--clr-success-strong)] rounded-lg text-sm">
               <p className="font-bold mb-1">Facture {selectedInvoice.number}</p>
               <p>Notez ici le résultat de votre échange avec le client.</p>
             </div>

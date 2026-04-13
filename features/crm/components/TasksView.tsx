@@ -59,11 +59,11 @@ export const TasksView: React.FC = () => {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'URGENT':
-        return 'text-purple-600 bg-purple-50 dark:bg-purple-900/20';
+        return 'text-purple-600 bg-[var(--clr-info-dim)]';
       case 'HIGH':
-        return 'text-red-600 bg-red-50 dark:bg-red-900/20';
+        return 'text-red-600 bg-[var(--clr-danger-dim)]';
       case 'MEDIUM':
-        return 'text-amber-600 bg-amber-50 dark:bg-amber-900/20';
+        return 'text-amber-600 bg-[var(--clr-caution-dim)]';
       case 'LOW':
         return 'text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]';
       default:
@@ -215,7 +215,7 @@ export const TasksView: React.FC = () => {
                         {getPriorityLabel(task.priority)}
                       </span>
                       {task.status === 'BLOCKED' && (
-                        <span className="px-2 py-0.5 rounded text-xs font-bold text-orange-600 bg-orange-50 dark:bg-orange-900/20">
+                        <span className="px-2 py-0.5 rounded text-xs font-bold text-orange-600 bg-[var(--clr-warning-dim)]">
                           Bloqué
                         </span>
                       )}
@@ -261,7 +261,7 @@ export const TasksView: React.FC = () => {
                       </div>
                     )}
                     {task.reminder && task.reminder !== 'NONE' && (
-                      <div className="flex items-center gap-1 px-2 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-600 rounded">
+                      <div className="flex items-center gap-1 px-2 py-0.5 bg-[var(--clr-caution-dim)] text-amber-600 rounded">
                         <Bell className="w-3 h-3" />
                         {getReminderLabel(task.reminder)}
                       </div>

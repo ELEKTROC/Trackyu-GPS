@@ -204,15 +204,15 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         )}
 
         {/* Section Partage Clients */}
-        <div className="border border-green-200 dark:border-green-800 rounded-xl overflow-hidden bg-green-50/50 dark:bg-green-900/20">
-          <div className="p-4 border-b border-green-200 dark:border-green-800">
-            <h4 className="text-sm font-semibold text-green-700 dark:text-green-300 flex items-center gap-2">
+        <div className="border border-[var(--clr-success-border)] rounded-xl overflow-hidden bg-green-50/50 dark:bg-green-900/20">
+          <div className="p-4 border-b border-[var(--clr-success-border)]">
+            <h4 className="text-sm font-semibold text-[var(--clr-success-strong)] flex items-center gap-2">
               <div className="p-1.5 bg-green-100 dark:bg-green-800 rounded-lg">
                 <Users className="w-4 h-4" />
               </div>
               Clients ayant accès à ce POI
             </h4>
-            <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+            <p className="text-xs text-[var(--clr-success)] mt-1">
               Partagez ce point d'intérêt entre plusieurs clients
             </p>
           </div>
@@ -247,7 +247,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   <span className="text-sm text-[var(--text-secondary)] flex items-center gap-2">
                     Sélection individuelle
                     {selectedClientIds.length > 0 && (
-                      <span className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-xs px-2 py-0.5 rounded-full font-medium">
+                      <span className="bg-[var(--clr-success-badge)] text-[var(--clr-success-badge-text)] text-xs px-2 py-0.5 rounded-full font-medium">
                         {selectedClientIds.length} client(s)
                       </span>
                     )}
@@ -311,7 +311,7 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
             {/* Résumé */}
             {(allClients || selectedClientIds.length > 0) && (
-              <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-3 rounded-lg flex items-center gap-2 font-medium">
+              <div className="text-xs text-[var(--clr-success)] bg-[var(--clr-success-dim)] p-3 rounded-lg flex items-center gap-2 font-medium">
                 <CheckSquare className="w-4 h-4" />
                 {allClients
                   ? `POI partagé avec tous les clients${selectedResellerId ? ' du revendeur' : ''}`

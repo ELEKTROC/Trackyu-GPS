@@ -247,8 +247,8 @@ export const AlertForm = React.forwardRef<
                   <Input {...register('conditionDuration')} type="number" placeholder="Ex: 5" defaultValue={5} />
                 </FormField>
               </FormGrid>
-              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                <p className="text-xs text-amber-700 dark:text-amber-300">
+              <div className="p-3 bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-lg">
+                <p className="text-xs text-[var(--clr-caution-strong)]">
                   <strong>ℹ️ Comment ça fonctionne :</strong>
                   <br />
                   Les événements de conduite brusque sont détectés par l'<strong>accéléromètre embarqué</strong> dans le
@@ -261,8 +261,8 @@ export const AlertForm = React.forwardRef<
 
           {/* Crash Detection */}
           {type === 'Crash' && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-xs text-red-700 dark:text-red-300">
+            <div className="p-3 bg-[var(--clr-danger-dim)] border border-[var(--clr-danger-border)] rounded-lg">
+              <p className="text-xs text-[var(--clr-danger-strong)]">
                 <strong>⚠️ Détection d'Accident (Crash)</strong>
                 <br />
                 Cette alerte est déclenchée automatiquement par le boîtier GPS lorsqu'un impact important est détecté
@@ -275,8 +275,8 @@ export const AlertForm = React.forwardRef<
 
           {/* SOS Button */}
           {type === 'SOS' && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-xs text-red-700 dark:text-red-300">
+            <div className="p-3 bg-[var(--clr-danger-dim)] border border-[var(--clr-danger-border)] rounded-lg">
+              <p className="text-xs text-[var(--clr-danger-strong)]">
                 <strong>🆘 Bouton SOS (Urgence)</strong>
                 <br />
                 Cette alerte est déclenchée lorsque le conducteur appuie sur le bouton SOS du boîtier GPS. Elle est

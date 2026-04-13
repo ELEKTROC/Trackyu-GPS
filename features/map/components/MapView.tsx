@@ -2778,7 +2778,7 @@ export const MapView: React.FC<MapViewProps> = ({
                         setSelectedVehicle(alert.vehicle);
                         setShowAlertsPanel(false);
                       }}
-                      className={`px-4 py-3 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-red-50 dark:bg-red-900/20' : ''}`}
+                      className={`px-4 py-3 cursor-pointer hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] flex items-start gap-3 ${alert.severity === 'critical' ? 'bg-[var(--clr-danger-dim)]' : ''}`}
                     >
                       <div
                         className={`p-2 rounded-full ${

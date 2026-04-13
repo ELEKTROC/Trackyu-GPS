@@ -643,13 +643,13 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
             </div>
             <div className="p-2.5 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] border-[var(--border)] text-center">
               <p className="text-[10px] uppercase font-bold text-[var(--text-secondary)] mb-1">Actifs</p>
-              <p className="font-mono font-bold text-green-700 dark:text-green-400">
+              <p className="font-mono font-bold text-[var(--clr-success-strong)]">
                 {contractSubs.filter((s) => (s.status || '').toUpperCase() === 'ACTIVE').length}
               </p>
             </div>
             <div className="col-span-2 p-2.5 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] border-[var(--border)] text-center">
               <p className="text-[10px] uppercase font-bold text-[var(--text-secondary)] mb-1">Total facturation</p>
-              <p className="font-mono font-bold text-green-700 dark:text-green-400">{formatPrice(subsTotal)}</p>
+              <p className="font-mono font-bold text-[var(--clr-success-strong)]">{formatPrice(subsTotal)}</p>
             </div>
           </div>
 
@@ -1125,7 +1125,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                           {branding?.phone && <p className="text-xs text-[var(--text-secondary)]">{branding.phone}</p>}
                           {branding?.email && <p className="text-xs text-[var(--text-secondary)]">{branding.email}</p>}
                         </div>
-                        <div className="p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl">
+                        <div className="p-4 bg-[var(--clr-info-dim)] border border-[var(--clr-info-border)] rounded-xl">
                           <p className="text-[10px] font-bold text-purple-600 uppercase mb-2">Le Client</p>
                           <p className="font-bold text-[var(--text-primary)]">{client?.name || contract.clientId}</p>
                           {client?.address && (
@@ -1268,7 +1268,7 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Client signature */}
-                        <div className="p-5 border-2 border-dashed border-purple-200 dark:border-purple-800 rounded-xl bg-purple-50/40 dark:bg-purple-900/10">
+                        <div className="p-5 border-2 border-dashed border-[var(--clr-info-border)] rounded-xl bg-purple-50/40 dark:bg-purple-900/10">
                           <p className="text-[10px] font-bold text-purple-600 uppercase mb-1">Le Client</p>
                           <p className="font-bold text-sm text-[var(--text-primary)] mb-3">
                             {client?.name || contract.clientId}

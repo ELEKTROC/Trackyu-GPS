@@ -153,20 +153,20 @@ export const UserMonitoring: React.FC = () => {
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-green-700 dark:text-green-400">{stats.onlineCount}</div>
+        <div className="bg-[var(--clr-success-dim)] border border-[var(--clr-success-border)] rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-[var(--clr-success-strong)]">{stats.onlineCount}</div>
           <div className="text-xs text-green-600 dark:text-green-500 flex items-center justify-center gap-1"><CheckCircle className="w-3 h-3" /> En ligne</div>
         </div>
         <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--border)] dark:border-[var(--primary)] rounded-lg p-3 text-center">
           <div className="text-2xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">{stats.totalLogins}</div>
           <div className="text-xs text-[var(--primary)] dark:text-[var(--primary)] flex items-center justify-center gap-1"><LogIn className="w-3 h-3" /> Connexions totales</div>
         </div>
-        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">{stats.totalActions}</div>
+        <div className="bg-[var(--clr-info-dim)] border border-[var(--clr-info-border)] rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-[var(--clr-info-strong)]">{stats.totalActions}</div>
           <div className="text-xs text-purple-600 dark:text-purple-500 flex items-center justify-center gap-1"><Activity className="w-3 h-3" /> Actions totales</div>
         </div>
-        <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">{stats.withErrors}</div>
+        <div className="bg-[var(--clr-warning-dim)] border border-[var(--clr-warning-border)] rounded-lg p-3 text-center">
+          <div className="text-2xl font-bold text-[var(--clr-warning-strong)]">{stats.withErrors}</div>
           <div className="text-xs text-orange-600 dark:text-orange-500 flex items-center justify-center gap-1"><AlertCircle className="w-3 h-3" /> Erreurs MDP</div>
         </div>
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-3 text-center">
@@ -233,7 +233,7 @@ export const UserMonitoring: React.FC = () => {
                 </td>
                 <td className="px-3 py-2.5 text-center">
                   <div className="flex flex-col items-center">
-                    <span className="font-semibold text-purple-700 dark:text-purple-400">{user.totalActions}</span>
+                    <span className="font-semibold text-[var(--clr-info-strong)]">{user.totalActions}</span>
                     {user.mostUsedAction && (
                       <span className="text-[10px] text-[var(--text-muted)] truncate max-w-[80px]" title={user.mostUsedAction}>
                         {ACTION_LABELS[user.mostUsedAction] || user.mostUsedAction}
@@ -313,16 +313,16 @@ export const UserMonitoring: React.FC = () => {
                 <div className="text-lg font-bold text-[var(--primary)] dark:text-[var(--primary)]">{logsModal.user.loginCount}</div>
                 <div className="text-[10px] text-[var(--primary)] dark:text-[var(--primary)]">Connexions</div>
               </div>
-              <div className="text-center p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                <div className="text-lg font-bold text-purple-700 dark:text-purple-400">{logsModal.user.totalActions}</div>
+              <div className="text-center p-2 bg-[var(--clr-info-dim)] rounded-lg">
+                <div className="text-lg font-bold text-[var(--clr-info-strong)]">{logsModal.user.totalActions}</div>
                 <div className="text-[10px] text-purple-600 dark:text-purple-500">Actions</div>
               </div>
-              <div className="text-center p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <div className="text-lg font-bold text-green-700 dark:text-green-400">{logsModal.user.avgLoginsPerWeek}</div>
+              <div className="text-center p-2 bg-[var(--clr-success-dim)] rounded-lg">
+                <div className="text-lg font-bold text-[var(--clr-success-strong)]">{logsModal.user.avgLoginsPerWeek}</div>
                 <div className="text-[10px] text-green-600 dark:text-green-500">Moy/Semaine</div>
               </div>
-              <div className="text-center p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                <div className="text-lg font-bold text-orange-700 dark:text-orange-400">{logsModal.user.passwordErrors}</div>
+              <div className="text-center p-2 bg-[var(--clr-warning-dim)] rounded-lg">
+                <div className="text-lg font-bold text-[var(--clr-warning-strong)]">{logsModal.user.passwordErrors}</div>
                 <div className="text-[10px] text-orange-600 dark:text-orange-500">Erreurs MDP</div>
               </div>
             </div>

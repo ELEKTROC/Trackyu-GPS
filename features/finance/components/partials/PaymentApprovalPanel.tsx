@@ -92,9 +92,9 @@ export const PaymentApprovalPanel: React.FC<PaymentApprovalPanelProps> = ({ paym
 
   if (pendingPayments.length === 0) {
     return (
-      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6 text-center">
+      <div className="bg-[var(--clr-success-dim)] border border-[var(--clr-success-border)] rounded-xl p-6 text-center">
         <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-        <h3 className="font-bold text-green-700 dark:text-green-400">Aucun paiement en attente</h3>
+        <h3 className="font-bold text-[var(--clr-success-strong)]">Aucun paiement en attente</h3>
         <p className="text-sm text-green-600 dark:text-green-500 mt-1">Tous les paiements ont été traités</p>
       </div>
     );
@@ -105,7 +105,7 @@ export const PaymentApprovalPanel: React.FC<PaymentApprovalPanelProps> = ({ paym
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center">
+          <div className="w-10 h-10 bg-[var(--clr-warning-muted)] rounded-lg flex items-center justify-center">
             <Clock className="w-5 h-5 text-orange-600" />
           </div>
           <div>

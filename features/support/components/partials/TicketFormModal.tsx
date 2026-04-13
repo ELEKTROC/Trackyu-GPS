@@ -704,9 +704,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
             <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Sujet <span className="text-red-500">*</span>
               {ticketForm.subject && (
-                <span className="ml-2 text-xs font-normal text-green-600 dark:text-green-400">
-                  ✓ Généré automatiquement
-                </span>
+                <span className="ml-2 text-xs font-normal text-[var(--clr-success)]">✓ Généré automatiquement</span>
               )}
             </label>
             <input
@@ -723,7 +721,7 @@ export const TicketFormModal: React.FC<TicketFormModalProps> = ({
             <label className="block text-sm font-medium text-[var(--text-primary)] mb-1">
               Description <span className="text-red-500">*</span>
               {ticketForm.description && (
-                <span className="ml-2 text-xs font-normal text-green-600 dark:text-green-400">✓ Pré-remplie</span>
+                <span className="ml-2 text-xs font-normal text-[var(--clr-success)]">✓ Pré-remplie</span>
               )}
             </label>
             <textarea

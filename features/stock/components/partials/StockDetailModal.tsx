@@ -111,8 +111,8 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ isOpen, onCl
 
         {/* SIM Specific Info */}
         {item.type === 'SIM' && (
-          <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-100 dark:border-purple-800">
-            <h4 className="font-bold text-purple-800 dark:text-purple-300 mb-2 flex items-center gap-2">
+          <div className="p-4 bg-[var(--clr-info-dim)] rounded-xl border border-[var(--clr-info-border)]">
+            <h4 className="font-bold text-[var(--clr-info-strong)] mb-2 flex items-center gap-2">
               <Smartphone className="w-4 h-4" /> Infos SIM
             </h4>
             <div className="grid grid-cols-2 gap-4 text-sm">

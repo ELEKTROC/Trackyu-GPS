@@ -217,7 +217,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
             </button>
 
             {lockDate && (
-              <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-xs font-bold border border-red-200 dark:border-red-800">
+              <div className="hidden md:flex items-center gap-2 px-3 py-2 bg-[var(--clr-danger-dim)] text-[var(--clr-danger)] rounded-lg text-xs font-bold border border-[var(--clr-danger-border)]">
                 <BookOpen className="w-3 h-3" />
                 {lockDate}
               </div>

@@ -290,7 +290,7 @@ export const SalesDashboard: React.FC<{
 
         <Card className="p-4 border-[var(--border)] bg-gradient-to-br from-purple-50 to-white dark:from-slate-800 dark:to-slate-900">
           <div className="flex justify-between items-start mb-2">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
+            <div className="p-2 bg-[var(--clr-info-muted)] rounded-lg text-[var(--clr-info)]">
               <DollarSign className="w-5 h-5" />
             </div>
           </div>
@@ -301,7 +301,7 @@ export const SalesDashboard: React.FC<{
 
         <Card className="p-4 border-[var(--border)]">
           <div className="flex justify-between items-start mb-2">
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg text-green-600 dark:text-green-400">
+            <div className="p-2 bg-[var(--clr-success-muted)] rounded-lg text-[var(--clr-success)]">
               <CheckCircle className="w-5 h-5" />
             </div>
           </div>
@@ -312,7 +312,7 @@ export const SalesDashboard: React.FC<{
 
         <Card className="p-4 border-[var(--border)]">
           <div className="flex justify-between items-start mb-2">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-orange-600 dark:text-orange-400">
+            <div className="p-2 bg-[var(--clr-warning-muted)] rounded-lg text-[var(--clr-warning)]">
               <AlertCircle className="w-5 h-5" />
             </div>
             <span className="text-[10px] font-bold text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded">
@@ -326,7 +326,7 @@ export const SalesDashboard: React.FC<{
 
         <Card className="p-4 border-[var(--border)]">
           <div className="flex justify-between items-start mb-2">
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+            <div className="p-2 bg-[var(--clr-emerald-muted)] rounded-lg text-[var(--clr-emerald)]">
               <Users className="w-5 h-5" />
             </div>
             <span
@@ -544,7 +544,7 @@ export const SalesDashboard: React.FC<{
                 return (
                   <div
                     key={c.id}
-                    className="flex items-center gap-3 p-3 bg-orange-50 dark:bg-orange-900/10 rounded-lg border border-orange-200 dark:border-orange-800"
+                    className="flex items-center gap-3 p-3 bg-[var(--clr-warning-dim)] rounded-lg border border-[var(--clr-warning-border)]"
                   >
                     <div
                       className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${

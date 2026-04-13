@@ -609,7 +609,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               <button
                 onClick={handleSuspend}
                 disabled={actionLoading}
-                className="px-3 py-2 text-sm border border-orange-300 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg flex items-center gap-1.5 disabled:opacity-50"
+                className="px-3 py-2 text-sm border border-orange-300 text-orange-600 hover:bg-[var(--clr-warning-dim)] rounded-lg flex items-center gap-1.5 disabled:opacity-50"
               >
                 <PauseCircle className="w-4 h-4" />
                 Suspendre
@@ -619,7 +619,7 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               <button
                 onClick={() => setConfirmRésilier(true)}
                 disabled={actionLoading}
-                className="px-3 py-2 text-sm border border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg flex items-center gap-1.5 disabled:opacity-50"
+                className="px-3 py-2 text-sm border border-red-300 text-red-600 hover:bg-[var(--clr-danger-dim)] rounded-lg flex items-center gap-1.5 disabled:opacity-50"
               >
                 <XCircle className="w-4 h-4" />
                 Résilier

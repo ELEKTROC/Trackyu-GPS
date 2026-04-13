@@ -616,7 +616,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         return <span className="text-sm text-[var(--text-secondary)] truncate">{vehicle.group || '-'}</span>;
       case 'geofence':
         return (
-          <span className="text-xs font-mono text-purple-600 dark:text-purple-400 truncate bg-purple-50 dark:bg-purple-900/20 px-2 py-0.5 rounded border border-purple-100 dark:border-purple-800">
+          <span className="text-xs font-mono text-[var(--clr-info)] truncate bg-[var(--clr-info-dim)] px-2 py-0.5 rounded border border-[var(--clr-info-border)]">
             {vehicle.geofence || '-'}
           </span>
         );
@@ -650,7 +650,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         return <span className="font-mono text-sm text-[var(--text-primary)]">{vehicle.fuelQuantity} L</span>;
       case 'refuel':
         return vehicle.refuelAmount > 0 ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-xs font-bold border border-green-100 dark:border-green-900/50">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--clr-success-dim)] text-[var(--clr-success-strong)] rounded text-xs font-bold border border-green-100 dark:border-green-900/50">
             +{vehicle.refuelAmount} L
           </span>
         ) : (
@@ -710,7 +710,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         return <span className="font-mono text-sm text-[var(--text-secondary)]">{vehicle.dailyMileage} km</span>;
       case 'violations':
         return vehicle.violationsCount > 0 ? (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--clr-danger-muted)] text-[var(--clr-danger-strong)] rounded-full text-xs font-bold">
             <AlertCircle className="w-3 h-3" /> {vehicle.violationsCount}
           </span>
         ) : (
@@ -741,7 +741,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
       case 'score':
         return (
           <span
-            className={`font-bold ${vehicle.driverScore > 80 ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}
+            className={`font-bold ${vehicle.driverScore > 80 ? 'text-[var(--clr-success)]' : 'text-yellow-600 dark:text-yellow-400'}`}
           >
             {vehicle.driverScore}
           </span>
@@ -925,22 +925,22 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           label: 'Carburant total',
           value: `${Math.round(fv.reduce((s, v) => s + (v.fuelQuantity || 0), 0))} L`,
           icon: Fuel,
-          color: 'text-green-600 dark:text-green-400',
-          bg: 'bg-green-50 dark:bg-green-900/20',
+          color: 'text-[var(--clr-success)]',
+          bg: 'bg-[var(--clr-success-dim)]',
         },
         {
           label: 'Pertes suspectes',
           value: `${Math.round(fv.reduce((s, v) => s + (v.suspectLoss || 0), 0))} L`,
           icon: Droplets,
-          color: 'text-red-600 dark:text-red-400',
-          bg: 'bg-red-50 dark:bg-red-900/20',
+          color: 'text-[var(--clr-danger)]',
+          bg: 'bg-[var(--clr-danger-dim)]',
         },
         {
           label: 'Recharges',
           value: `${fv.filter((v) => (v.refuelAmount || 0) > 0).length} véh.`,
           icon: TrendingUp,
-          color: 'text-emerald-600 dark:text-emerald-400',
-          bg: 'bg-emerald-50 dark:bg-emerald-900/20',
+          color: 'text-[var(--clr-emerald)]',
+          bg: 'bg-[var(--clr-emerald-dim)]',
         },
       ];
     if (activeView === 'TECH')
@@ -957,22 +957,22 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           value:
             fv.length > 0 ? `${Math.round(fv.reduce((s, v) => s + (v.driverScore || 0), 0) / fv.length)}/100` : '--',
           icon: Gauge,
-          color: 'text-green-600 dark:text-green-400',
-          bg: 'bg-green-50 dark:bg-green-900/20',
+          color: 'text-[var(--clr-success)]',
+          bg: 'bg-[var(--clr-success-dim)]',
         },
         {
           label: 'Violations',
           value: String(fv.reduce((s, v) => s + (v.violationsCount || 0), 0)),
           icon: AlertTriangle,
-          color: 'text-orange-600 dark:text-orange-400',
-          bg: 'bg-orange-50 dark:bg-orange-900/20',
+          color: 'text-[var(--clr-warning)]',
+          bg: 'bg-[var(--clr-warning-dim)]',
         },
         {
           label: 'Maintenance < 7j',
           value: `${stats.maintenanceDue} véh.`,
           icon: Wrench,
-          color: 'text-red-600 dark:text-red-400',
-          bg: 'bg-red-50 dark:bg-red-900/20',
+          color: 'text-[var(--clr-danger)]',
+          bg: 'bg-[var(--clr-danger-dim)]',
         },
       ];
     // STANDARD
@@ -988,22 +988,22 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         label: 'En mouvement',
         value: `${stats.moving} (${stats.total > 0 ? Math.round((stats.moving / stats.total) * 100) : 0}%)`,
         icon: TrendingUp,
-        color: 'text-green-600 dark:text-green-400',
-        bg: 'bg-green-50 dark:bg-green-900/20',
+        color: 'text-[var(--clr-success)]',
+        bg: 'bg-[var(--clr-success-dim)]',
       },
       {
         label: 'Alertes actives',
         value: String(stats.alertsCount),
         icon: AlertTriangle,
-        color: 'text-red-600 dark:text-red-400',
-        bg: 'bg-red-50 dark:bg-red-900/20',
+        color: 'text-[var(--clr-danger)]',
+        bg: 'bg-[var(--clr-danger-dim)]',
       },
       {
         label: 'Maintenance < 7j',
         value: `${stats.maintenanceDue} véh.`,
         icon: Wrench,
-        color: 'text-orange-600 dark:text-orange-400',
-        bg: 'bg-orange-50 dark:bg-orange-900/20',
+        color: 'text-[var(--clr-warning)]',
+        bg: 'bg-[var(--clr-warning-dim)]',
       },
     ];
   }, [activeView, filteredVehicles, stats]);
@@ -1152,7 +1152,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
             </button>
             <button
               onClick={handleExportExcel}
-              className="hidden sm:flex items-center gap-2 px-3 py-2 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-lg text-xs font-bold text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+              className="hidden sm:flex items-center gap-2 px-3 py-2 bg-[var(--clr-emerald-dim)] border border-emerald-200 dark:border-emerald-700 rounded-lg text-xs font-bold text-[var(--clr-emerald-strong)] hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
             >
               <FileSpreadsheet className="w-3 h-3" /> <span className="hidden md:inline">Export Excel</span>
             </button>
@@ -1224,8 +1224,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 label: 'Vue Technique',
                 icon: <Wrench className="w-3 h-3" />,
                 activeClass: 'bg-orange-500 text-white border-orange-500',
-                inactiveClass:
-                  'border-[var(--border)] hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300',
+                inactiveClass: 'border-[var(--border)] hover:bg-[var(--clr-warning-dim)] hover:border-orange-300',
               },
             ] as const
           ).map(({ key, label, icon, activeClass, inactiveClass }) => (
@@ -1514,7 +1513,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     title="En mouvement"
                   >
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span className="text-green-600 dark:text-green-400">{stats.moving}</span>
+                    <span className="text-[var(--clr-success)]">{stats.moving}</span>
                   </button>
                   <button
                     onClick={() => {
@@ -1524,7 +1523,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     title="Au ralenti"
                   >
                     <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-                    <span className="text-amber-600 dark:text-amber-400">{stats.idle}</span>
+                    <span className="text-[var(--clr-caution)]">{stats.idle}</span>
                   </button>
                   <button
                     onClick={() => {
@@ -1605,17 +1604,17 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   const locationText = vehicle.address || vehicle.geofence || 'Position inconnue';
 
                   const cardBg = isMoving
-                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                    ? 'bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]'
                     : isIdle
-                      ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                      ? 'bg-[var(--clr-caution-dim)] border-[var(--clr-caution-border)]'
                       : isOffline
                         ? 'bg-[var(--bg-elevated)] border-[var(--border)]'
-                        : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
+                        : 'bg-[var(--clr-danger-dim)] border-[var(--clr-danger-border)]';
 
                   const speedColor = isMoving
-                    ? 'text-green-700 dark:text-green-400'
+                    ? 'text-[var(--clr-success-strong)]'
                     : isIdle
-                      ? 'text-amber-600 dark:text-amber-400'
+                      ? 'text-[var(--clr-caution)]'
                       : 'text-[var(--text-muted)]';
 
                   const fuel = vehicle.fuelLevel ?? 0;
@@ -1661,7 +1660,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                             </span>
                           )}
                           <p
-                            className={`text-xs font-medium mb-1 ${isMoving ? 'text-green-700 dark:text-green-400' : isIdle ? 'text-amber-600 dark:text-amber-400' : 'text-[var(--text-muted)]'}`}
+                            className={`text-xs font-medium mb-1 ${isMoving ? 'text-[var(--clr-success-strong)]' : isIdle ? 'text-[var(--clr-caution)]' : 'text-[var(--text-muted)]'}`}
                           >
                             {statusLabel}
                           </p>
@@ -1681,18 +1680,18 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       {/* ── Icons row ── */}
                       <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[var(--border)]">
                         {/* GPS signal */}
-                        <div className={isOffline ? 'text-red-500' : 'text-green-600 dark:text-green-400'}>
+                        <div className={isOffline ? 'text-red-500' : 'text-[var(--clr-success)]'}>
                           {isOffline ? <WifiOff className="w-4 h-4" /> : <Wifi className="w-4 h-4" />}
                         </div>
 
                         {/* Ignition */}
                         <Key
-                          className={`w-4 h-4 ${isMoving || isIdle ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}
+                          className={`w-4 h-4 ${isMoving || isIdle ? 'text-[var(--clr-success)]' : 'text-red-500'}`}
                         />
 
                         {/* Relay / immobilizer: vert = normal, rouge = coupé */}
                         <Zap
-                          className={`w-4 h-4 ${vehicle.isImmobilized ? 'text-red-500' : 'text-green-600 dark:text-green-400'}`}
+                          className={`w-4 h-4 ${vehicle.isImmobilized ? 'text-red-500' : 'text-[var(--clr-success)]'}`}
                         />
 
                         {/* Fuel % only */}

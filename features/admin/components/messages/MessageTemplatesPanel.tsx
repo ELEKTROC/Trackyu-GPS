@@ -552,7 +552,7 @@ export const MessageTemplatesPanel: React.FC = () => {
                           {!template.is_system && (
                             <button
                               onClick={() => handleDelete(template.id)}
-                              className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                              className="p-1.5 hover:bg-[var(--clr-danger-dim)] rounded-lg"
                               title="Supprimer"
                             >
                               <Trash2 className="w-4 h-4 text-red-500" />
@@ -818,9 +818,9 @@ export const MessageTemplatesPanel: React.FC = () => {
                 <div
                   className={`p-4 rounded-lg ${
                     previewTemplate.channel === 'SMS'
-                      ? 'bg-green-50 dark:bg-green-900/20'
+                      ? 'bg-[var(--clr-success-dim)]'
                       : previewTemplate.channel === 'WHATSAPP'
-                        ? 'bg-emerald-50 dark:bg-emerald-900/20'
+                        ? 'bg-[var(--clr-emerald-dim)]'
                         : 'bg-sky-50 dark:bg-sky-900/20'
                   }`}
                 >

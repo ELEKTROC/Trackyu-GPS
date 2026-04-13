@@ -373,7 +373,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                   </button>
                   <button
                     onClick={onExportPDF}
-                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold rounded-lg border border-red-200 text-red-600 bg-red-50 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors"
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold rounded-lg border border-red-200 text-red-600 bg-[var(--clr-danger-dim)] dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors"
                     title="Exporter PDF"
                   >
                     <Download className="w-4 h-4" /> <span className="hidden lg:inline">PDF</span>
@@ -493,14 +493,14 @@ export const StockTable: React.FC<StockTableProps> = ({
                             : item.status;
                 const statusColors =
                   item.status === 'INSTALLED'
-                    ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                    ? 'bg-[var(--clr-success-dim)] text-[var(--clr-success-strong)]'
                     : item.status === 'IN_STOCK'
                       ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
                       : item.status === 'RMA_PENDING'
-                        ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
+                        ? 'bg-[var(--clr-caution-dim)] text-[var(--clr-caution-strong)]'
                         : item.status === 'SENT_TO_SUPPLIER'
-                          ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400'
-                          : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400';
+                          ? 'bg-[var(--clr-info-dim)] text-[var(--clr-info-strong)]'
+                          : 'bg-[var(--clr-danger-dim)] text-[var(--clr-danger-strong)]';
                 const locationLabel =
                   item.location === 'CLIENT'
                     ? 'Chez Client'
@@ -835,16 +835,16 @@ export const StockTable: React.FC<StockTableProps> = ({
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-semibold border uppercase ${
                             item.status === 'INSTALLED'
-                              ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800'
+                              ? 'bg-[var(--clr-success-dim)] text-[var(--clr-success-strong)] border-[var(--clr-success-border)]'
                               : item.status === 'IN_STOCK'
                                 ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] border-[var(--border)] dark:border-[var(--primary)]'
                                 : item.status === 'RMA_PENDING'
-                                  ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800'
+                                  ? 'bg-[var(--clr-caution-dim)] text-[var(--clr-caution-strong)] border-[var(--clr-caution-border)]'
                                   : item.status === 'SENT_TO_SUPPLIER'
-                                    ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800'
+                                    ? 'bg-[var(--clr-info-dim)] text-[var(--clr-info-strong)] border-[var(--clr-info-border)]'
                                     : item.status === 'REMOVED'
                                       ? 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'
-                                      : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800'
+                                      : 'bg-[var(--clr-danger-dim)] text-[var(--clr-danger-strong)] border-[var(--clr-danger-border)]'
                           }`}
                         >
                           {item.status === 'INSTALLED'
@@ -867,11 +867,11 @@ export const StockTable: React.FC<StockTableProps> = ({
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-semibold border uppercase ${
                             item.location === 'CLIENT'
-                              ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800'
+                              ? 'bg-[var(--clr-success-dim)] text-[var(--clr-success-strong)] border-[var(--clr-success-border)]'
                               : item.location === 'TECH'
-                                ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800'
+                                ? 'bg-[var(--clr-info-dim)] text-[var(--clr-info-strong)] border-[var(--clr-info-border)]'
                                 : item.location === 'SIEGE'
-                                  ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400 border-orange-200 dark:border-orange-800'
+                                  ? 'bg-[var(--clr-warning-dim)] text-[var(--clr-warning-strong)] border-[var(--clr-warning-border)]'
                                   : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)]'
                           }`}
                         >
@@ -999,7 +999,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                           {onTransferClick && (
                             <button
                               onClick={() => onTransferClick(item)}
-                              className="p-1.5 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg text-[var(--text-muted)] hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                              className="p-1.5 hover:bg-[var(--clr-info-dim)] rounded-lg text-[var(--text-muted)] hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                               title="Transférer"
                             >
                               <ArrowRightLeft className="w-4 h-4" />
@@ -1008,7 +1008,7 @@ export const StockTable: React.FC<StockTableProps> = ({
                           {onDeleteClick && ['IN_STOCK', 'REMOVED', 'SCRAPPED', 'LOST'].includes(item.status) && (
                             <button
                               onClick={() => onDeleteClick(item)}
-                              className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-muted)] hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                              className="p-1.5 hover:bg-[var(--clr-danger-dim)] rounded-lg text-[var(--text-muted)] hover:text-red-600 dark:hover:text-red-400 transition-colors"
                               title="Supprimer"
                             >
                               <Trash2 className="w-4 h-4" />

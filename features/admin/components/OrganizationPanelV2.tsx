@@ -1488,7 +1488,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 <Calendar className="w-5 h-5 text-green-600" />
                 <h4 className="font-bold text-sm text-[var(--text-primary)]">Abonnements Mensuels</h4>
               </div>
-              <div className="grid grid-cols-2 gap-6 p-4 bg-green-50 dark:bg-green-900/10 rounded-lg">
+              <div className="grid grid-cols-2 gap-6 p-4 bg-[var(--clr-success-dim)] rounded-lg">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Jour de Génération
@@ -1547,7 +1547,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 <CalendarCheck className="w-5 h-5 text-orange-600" />
                 <h4 className="font-bold text-sm text-[var(--text-primary)]">Abonnements Trimestriels</h4>
               </div>
-              <div className="grid grid-cols-2 gap-6 p-4 bg-orange-50 dark:bg-orange-900/10 rounded-lg">
+              <div className="grid grid-cols-2 gap-6 p-4 bg-[var(--clr-warning-dim)] rounded-lg">
                 <div>
                   <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
                     Mois de Génération dans le Trimestre
@@ -1622,7 +1622,7 @@ export const OrganizationPanelV2: React.FC = () => {
                 <Calendar className="w-5 h-5 text-purple-600" />
                 <h4 className="font-bold text-sm text-[var(--text-primary)]">Abonnements Annuels</h4>
               </div>
-              <div className="p-4 bg-purple-50 dark:bg-purple-900/10 rounded-lg">
+              <div className="p-4 bg-[var(--clr-info-dim)] rounded-lg">
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
@@ -1675,16 +1675,16 @@ export const OrganizationPanelV2: React.FC = () => {
             <div className="mt-6 p-4 bg-[var(--bg-elevated)] rounded-lg">
               <h4 className="font-bold text-sm text-[var(--text-primary)] mb-3">📊 Résumé de la Configuration</h4>
               <div className="grid grid-cols-3 gap-4 text-sm">
-                <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                  <p className="font-bold text-green-700 dark:text-green-400">Mensuel</p>
+                <div className="p-3 bg-[var(--clr-success-muted)] rounded-lg">
+                  <p className="font-bold text-[var(--clr-success-strong)]">Mensuel</p>
                   <p className="text-[var(--text-secondary)]">
                     Généré le {settings.subscriptionBilling?.monthly?.generationDay ?? 1}
                     <br />
                     Échéance le {settings.subscriptionBilling?.monthly?.dueDayOffset ?? 5}
                   </p>
                 </div>
-                <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                  <p className="font-bold text-orange-700 dark:text-orange-400">Trimestriel</p>
+                <div className="p-3 bg-[var(--clr-warning-muted)] rounded-lg">
+                  <p className="font-bold text-[var(--clr-warning-strong)]">Trimestriel</p>
                   <p className="text-[var(--text-secondary)]">
                     Généré le {settings.subscriptionBilling?.quarterly?.generationDay ?? 1} du{' '}
                     {['1er', '2ème', 'dernier'][settings.subscriptionBilling?.quarterly?.generationMonthOffset ?? 2]}{' '}
@@ -1693,8 +1693,8 @@ export const OrganizationPanelV2: React.FC = () => {
                     Échéance fin trimestre
                   </p>
                 </div>
-                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                  <p className="font-bold text-purple-700 dark:text-purple-400">Annuel</p>
+                <div className="p-3 bg-[var(--clr-info-muted)] rounded-lg">
+                  <p className="font-bold text-[var(--clr-info-strong)]">Annuel</p>
                   <p className="text-[var(--text-secondary)]">
                     Généré {settings.subscriptionBilling?.annual?.generationMonthsBefore ?? 2} mois avant
                     <br />
@@ -1896,7 +1896,7 @@ export const OrganizationPanelV2: React.FC = () => {
                                   });
                                 }
                               }}
-                              className="px-2 py-1 text-xs text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
+                              className="px-2 py-1 text-xs text-orange-600 hover:bg-[var(--clr-warning-dim)] rounded transition-colors"
                               title="Réinitialiser le compteur à 1"
                             >
                               Reset
@@ -2531,7 +2531,7 @@ export const OrganizationPanelV2: React.FC = () => {
 
               <label className="flex items-center justify-between p-4 bg-[var(--bg-elevated)] rounded-lg cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <div className="p-2 bg-[var(--clr-success-muted)] rounded-lg">
                     <Smartphone className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
@@ -2589,7 +2589,7 @@ export const OrganizationPanelV2: React.FC = () => {
             <div className="space-y-4">
               <label className="flex items-center justify-between p-4 bg-[var(--bg-elevated)] rounded-lg cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                  <div className="p-2 bg-[var(--clr-info-muted)] rounded-lg">
                     <Smartphone className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
@@ -2647,10 +2647,10 @@ export const OrganizationPanelV2: React.FC = () => {
               </div>
 
               {settings.apiKeysEnabled && (
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                <div className="p-4 bg-[var(--clr-caution-dim)] rounded-lg border border-[var(--clr-caution-border)]">
                   <div className="flex items-center gap-2 mb-3">
                     <AlertTriangle className="w-4 h-4 text-amber-600" />
-                    <span className="text-sm text-amber-700 dark:text-amber-400">
+                    <span className="text-sm text-[var(--clr-caution-strong)]">
                       Gardez cette clé secrète. Ne la partagez jamais.
                     </span>
                   </div>

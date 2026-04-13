@@ -287,7 +287,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                       <p className="section-title">Gagnés</p>
                       <p className="text-2xl font-bold text-green-600 mt-1">{kpis.wonLeads}</p>
                     </div>
-                    <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+                    <div className="p-2 bg-[var(--clr-success-dim)] rounded-full text-green-600">
                       <CheckCircle className="w-5 h-5" />
                     </div>
                   </div>
@@ -298,7 +298,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                       <p className="section-title">Perdus</p>
                       <p className="text-2xl font-bold text-red-600 mt-1">{kpis.lostLeads}</p>
                     </div>
-                    <div className="p-2 bg-red-50 dark:bg-red-900/30 rounded-full text-red-600">
+                    <div className="p-2 bg-[var(--clr-danger-dim)] rounded-full text-red-600">
                       <XCircle className="w-5 h-5" />
                     </div>
                   </div>
@@ -309,7 +309,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                       <p className="section-title">Taux Conv.</p>
                       <p className="text-2xl font-bold text-purple-600 mt-1">{kpis.conversionRate.toFixed(1)}%</p>
                     </div>
-                    <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+                    <div className="p-2 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
                       <Target className="w-5 h-5" />
                     </div>
                   </div>
@@ -344,12 +344,12 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                     <Thermometer className="w-4 h-4 text-orange-500" /> Scoring Leads
                   </h3>
                   <div className="flex items-center gap-4">
-                    <div className="flex-1 text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                    <div className="flex-1 text-center p-3 bg-[var(--clr-danger-dim)] rounded-lg border border-[var(--clr-danger-border)]">
                       <Flame className="w-6 h-6 text-red-500 mx-auto mb-1" />
                       <p className="text-2xl font-bold text-red-600">{kpis.hotLeads}</p>
                       <p className="text-[10px] text-red-500 font-bold uppercase">Hot</p>
                     </div>
-                    <div className="flex-1 text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                    <div className="flex-1 text-center p-3 bg-[var(--clr-warning-dim)] rounded-lg border border-[var(--clr-warning-border)]">
                       <Thermometer className="w-6 h-6 text-orange-500 mx-auto mb-1" />
                       <p className="text-2xl font-bold text-orange-600">{kpis.warmLeads}</p>
                       <p className="text-[10px] text-orange-500 font-bold uppercase">Warm</p>
@@ -384,7 +384,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                       {kpis.dormantList.map((lead: Lead) => (
                         <div
                           key={lead.id}
-                          className="flex items-center gap-2 p-2 bg-[var(--bg-elevated)] rounded border border-amber-200 dark:border-amber-800"
+                          className="flex items-center gap-2 p-2 bg-[var(--bg-elevated)] rounded border border-[var(--clr-caution-border)]"
                         >
                           <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">
                             {Math.ceil(
@@ -519,7 +519,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                     <p className="section-title">Nouveaux (Mois)</p>
                     <p className="page-title mt-1">+{kpis.newLeads}</p>
                   </div>
-                  <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
+                  <div className="p-3 bg-[var(--clr-success-dim)] rounded-full text-green-600">
                     <TrendingUp className="w-6 h-6" />
                   </div>
                 </div>
@@ -530,7 +530,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                     <p className="section-title">Qualifiés</p>
                     <p className="page-title mt-1">{kpis.qualifiedLeads}</p>
                   </div>
-                  <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
+                  <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
                     <CheckCircle className="w-6 h-6" />
                   </div>
                 </div>
@@ -541,7 +541,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                     <p className="section-title">Taux Conversion</p>
                     <p className="page-title mt-1">{kpis.conversionRate.toFixed(1)}%</p>
                   </div>
-                  <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
+                  <div className="p-3 bg-[var(--clr-warning-dim)] rounded-full text-orange-600">
                     <Briefcase className="w-6 h-6" />
                   </div>
                 </div>
@@ -592,7 +592,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                       <p className="section-title">Prix Moyen</p>
                       <p className="page-title mt-1">{catalogKpis.avgPrice.toFixed(2)}</p>
                     </div>
-                    <div className="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-full text-amber-600">
+                    <div className="p-3 bg-[var(--clr-caution-dim)] rounded-full text-amber-600">
                       <Briefcase className="w-6 h-6" />
                     </div>
                   </div>

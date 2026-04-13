@@ -543,7 +543,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                         </td>
                       )}
                       {visiblePaymentColumns.includes('excess') && (
-                        <td className="px-4 py-2 text-right font-mono font-bold text-orange-600 dark:text-orange-400">
+                        <td className="px-4 py-2 text-right font-mono font-bold text-[var(--clr-warning)]">
                           {excessAmount > 0 ? `${formatPrice(excessAmount)}` : '-'}
                         </td>
                       )}

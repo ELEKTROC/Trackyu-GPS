@@ -85,8 +85,8 @@ export const SyncView: React.FC = () => {
 
         <div className="p-6 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <Server className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="p-3 bg-[var(--clr-info-muted)] rounded-lg">
+              <Server className="w-6 h-6 text-[var(--clr-info)]" />
             </div>
             <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full flex items-center gap-1">
               <CheckCircle className="w-3 h-3" /> Opérationnel
@@ -106,8 +106,8 @@ export const SyncView: React.FC = () => {
 
         <div className="p-6 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-              <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+            <div className="p-3 bg-[var(--clr-warning-muted)] rounded-lg">
+              <Clock className="w-6 h-6 text-[var(--clr-warning)]" />
             </div>
             <span className="text-xs font-mono text-[var(--text-secondary)]">
               {lastSync.toLocaleTimeString('fr-FR')}

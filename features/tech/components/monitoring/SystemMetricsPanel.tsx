@@ -64,10 +64,10 @@ const StatCard: React.FC<{
 }> = ({ title, value, subtitle, icon: Icon, color, trend }) => {
   const colors = {
     blue: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]',
-    purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800',
-    green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-    orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
-    red: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
+    purple: 'bg-[var(--clr-info-dim)] border-[var(--clr-info-border)]',
+    green: 'bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]',
+    orange: 'bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)]',
+    red: 'bg-[var(--clr-danger-dim)] border-[var(--clr-danger-border)]',
     cyan: 'bg-cyan-50 dark:bg-cyan-900/20 border-cyan-200 dark:border-cyan-800',
     pink: 'bg-pink-50 dark:bg-pink-900/20 border-pink-200 dark:border-pink-800',
     yellow: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800',
@@ -86,10 +86,10 @@ const StatCard: React.FC<{
 
   const textColors = {
     blue: 'text-[var(--primary)] dark:text-[var(--primary)]',
-    purple: 'text-purple-800 dark:text-purple-300',
-    green: 'text-green-800 dark:text-green-300',
-    orange: 'text-orange-800 dark:text-orange-300',
-    red: 'text-red-800 dark:text-red-300',
+    purple: 'text-[var(--clr-info-strong)]',
+    green: 'text-[var(--clr-success-strong)]',
+    orange: 'text-[var(--clr-warning-strong)]',
+    red: 'text-[var(--clr-danger-strong)]',
     cyan: 'text-cyan-800 dark:text-cyan-300',
     pink: 'text-pink-800 dark:text-pink-300',
     yellow: 'text-yellow-800 dark:text-yellow-300',
@@ -429,7 +429,7 @@ export const SystemMetricsPanel: React.FC = () => {
       </div>
 
       {/* Lien vers Grafana */}
-      <Card className="p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border-orange-200 dark:border-orange-800">
+      <Card className="p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border-[var(--clr-warning-border)]">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-bold text-[var(--text-primary)]">

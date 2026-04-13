@@ -74,7 +74,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
           {editMode && onToggleHidden && (
             <button
               onClick={() => onToggleHidden(id)}
-              className={`p-1 rounded-md transition-colors ${hidden ? 'text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50'}`}
+              className={`p-1 rounded-md transition-colors ${hidden ? 'text-red-400 hover:text-red-500 hover:bg-[var(--clr-danger-dim)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50'}`}
               title={hidden ? 'Afficher cette section' : 'Masquer cette section'}
             >
               {hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

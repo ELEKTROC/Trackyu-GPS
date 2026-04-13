@@ -356,12 +356,12 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Total TTC</p>
                         <p className="text-lg font-bold text-[var(--text-primary)]">{formatPrice(totalTTC)}</p>
                       </div>
-                      <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-emerald-100 dark:border-emerald-800 shadow-sm">
+                      <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--clr-emerald-border)] shadow-sm">
                         <p className="text-[10px] font-bold text-emerald-500 uppercase mb-1">Payé</p>
                         <p className="text-lg font-bold text-emerald-600">{formatPrice(totalPaid)}</p>
                       </div>
                       <div
-                        className={`bg-[var(--bg-elevated)] p-3 rounded-lg border shadow-sm ${totalBalance > 0 ? 'border-red-100 dark:border-red-800' : 'border-[var(--border)] border-[var(--border)]'}`}
+                        className={`bg-[var(--bg-elevated)] p-3 rounded-lg border shadow-sm ${totalBalance > 0 ? 'border-[var(--clr-danger-border)]' : 'border-[var(--border)] border-[var(--border)]'}`}
                       >
                         <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1 flex items-center gap-1">
                           Solde restant{' '}
@@ -918,7 +918,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   }
                 }
               }}
-              className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+              className="w-full py-2 flex items-center justify-center gap-2 text-xs font-bold text-red-500 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
             >
               <Trash2 className="w-4 h-4" /> Supprimer
             </button>
@@ -951,7 +951,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               )}
               <button
                 onClick={() => handleQuickAction('ticket')}
-                className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg text-[var(--text-muted)] hover:text-purple-600 transition-colors"
+                className="p-2 hover:bg-[var(--clr-info-dim)] rounded-lg text-[var(--text-muted)] hover:text-purple-600 transition-colors"
                 title="Créer un ticket"
               >
                 <LifeBuoy className="w-4 h-4" />
@@ -965,21 +965,21 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               </button>
               <button
                 onClick={() => handleQuickAction('facture')}
-                className="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg text-[var(--text-muted)] hover:text-emerald-600 transition-colors"
+                className="p-2 hover:bg-[var(--clr-emerald-dim)] rounded-lg text-[var(--text-muted)] hover:text-emerald-600 transition-colors"
                 title="Créer une facture"
               >
                 <Receipt className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleQuickAction('intervention')}
-                className="p-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg text-[var(--text-muted)] hover:text-orange-600 transition-colors"
+                className="p-2 hover:bg-[var(--clr-warning-dim)] rounded-lg text-[var(--text-muted)] hover:text-orange-600 transition-colors"
                 title="Créer une intervention"
               >
                 <Wrench className="w-4 h-4" />
               </button>
               <button
                 onClick={() => handleQuickAction('paiement')}
-                className="p-2 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg text-[var(--text-muted)] hover:text-green-600 transition-colors"
+                className="p-2 hover:bg-[var(--clr-success-dim)] rounded-lg text-[var(--text-muted)] hover:text-green-600 transition-colors"
                 title="Enregistrer un paiement"
               >
                 <CreditCard className="w-4 h-4" />
@@ -994,7 +994,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <div className="w-px h-6 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] mx-1" />
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-muted)] hover:text-red-500 transition-colors"
+                className="p-2 hover:bg-[var(--clr-danger-dim)] rounded-lg text-[var(--text-muted)] hover:text-red-500 transition-colors"
                 title="Fermer"
               >
                 <X className="w-5 h-5" />

@@ -463,10 +463,10 @@ export const SupportSettingsPanel: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Critical */}
-        <div className="p-4 border border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/20">
+        <div className="p-4 border border-[var(--clr-danger-border)] rounded-lg bg-[var(--clr-danger-dim)]">
           <div className="flex items-center gap-2 mb-2">
-            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-            <span className="font-medium text-red-700 dark:text-red-400">CRITIQUE</span>
+            <AlertCircle className="w-5 h-5 text-[var(--clr-danger)]" />
+            <span className="font-medium text-[var(--clr-danger-strong)]">CRITIQUE</span>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -487,10 +487,10 @@ export const SupportSettingsPanel: React.FC = () => {
         </div>
 
         {/* High */}
-        <div className="p-4 border border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50 dark:bg-orange-900/20">
+        <div className="p-4 border border-[var(--clr-warning-border)] rounded-lg bg-[var(--clr-warning-dim)]">
           <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-            <span className="font-medium text-orange-700 dark:text-orange-400">HAUTE</span>
+            <AlertTriangle className="w-5 h-5 text-[var(--clr-warning)]" />
+            <span className="font-medium text-[var(--clr-warning-strong)]">HAUTE</span>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -531,10 +531,10 @@ export const SupportSettingsPanel: React.FC = () => {
         </div>
 
         {/* Low */}
-        <div className="p-4 border border-green-200 dark:border-green-800 rounded-lg bg-green-50 dark:bg-green-900/20">
+        <div className="p-4 border border-[var(--clr-success-border)] rounded-lg bg-[var(--clr-success-dim)]">
           <div className="flex items-center gap-2 mb-2">
-            <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
-            <span className="font-medium text-green-700 dark:text-green-400">BASSE</span>
+            <Check className="w-5 h-5 text-[var(--clr-success)]" />
+            <span className="font-medium text-[var(--clr-success-strong)]">BASSE</span>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -689,12 +689,12 @@ export const SupportSettingsPanel: React.FC = () => {
                       </span>
                     )}
                     {!category.is_active && (
-                      <span className="text-xs px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full">
+                      <span className="text-xs px-2 py-1 bg-[var(--clr-danger-muted)] text-[var(--clr-danger)] rounded-full">
                         Désactivée
                       </span>
                     )}
                     {category.is_hidden && (
-                      <span className="text-xs px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full">
+                      <span className="text-xs px-2 py-1 bg-[var(--clr-warning-muted)] text-[var(--clr-warning)] rounded-full">
                         Masquée
                       </span>
                     )}
@@ -995,12 +995,12 @@ export const SupportSettingsPanel: React.FC = () => {
                               </span>
                               <span className="text-xs text-[var(--text-secondary)]">SLA: {subcat.sla_hours}h</span>
                               {!subcat.is_active && (
-                                <span className="text-xs px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full">
+                                <span className="text-xs px-2 py-0.5 bg-[var(--clr-danger-muted)] text-red-600 rounded-full">
                                   Désactivée
                                 </span>
                               )}
                               {subcat.is_hidden && (
-                                <span className="text-xs px-2 py-0.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 rounded-full">
+                                <span className="text-xs px-2 py-0.5 bg-[var(--clr-warning-muted)] text-orange-600 rounded-full">
                                   Masquée
                                 </span>
                               )}
@@ -1177,7 +1177,7 @@ export const SupportSettingsPanel: React.FC = () => {
                   {!type.isSystem && (
                     <button
                       onClick={() => deleteIntType(type.id)}
-                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-red-400"
+                      className="p-2 hover:bg-[var(--clr-danger-dim)] rounded-lg text-red-400"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -1258,7 +1258,7 @@ export const SupportSettingsPanel: React.FC = () => {
                                 {!nature.isSystem && (
                                   <button
                                     onClick={() => deleteIntNature(nature.id)}
-                                    className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded text-red-400 group"
+                                    className="p-1.5 hover:bg-[var(--clr-danger-dim)] rounded text-red-400 group"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>

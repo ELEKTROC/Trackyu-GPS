@@ -47,10 +47,10 @@ export const ViolationsBlock: React.FC<ViolationsBlockProps> = ({
               isHidden={hiddenFields.has(`vid-${i}`)}
               onToggle={() => toggleFieldVisibility(`vid-${i}`)}
             >
-              <div className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg">
+              <div className="flex items-start gap-3 p-3 bg-[var(--clr-danger-dim)] border border-red-100 dark:border-red-900/30 rounded-lg">
                 <div className="shrink-0 mt-0.5">{getVideoIcon(event.type)}</div>
                 <div className="min-w-0">
-                  <div className="text-xs font-bold text-red-700 dark:text-red-400 truncate">
+                  <div className="text-xs font-bold text-[var(--clr-danger-strong)] truncate">
                     {event.label || event.type}
                   </div>
                   <div className="text-[10px] text-red-600/70 dark:text-red-400/50">

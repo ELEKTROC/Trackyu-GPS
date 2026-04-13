@@ -92,7 +92,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <Card className="p-4 flex items-center gap-4 border-l-4 border-l-orange-500">
-        <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl text-orange-600">
+        <div className="p-3 bg-[var(--clr-warning-muted)] rounded-xl text-orange-600">
           <Wrench className="w-6 h-6" />
         </div>
         <div>
@@ -116,7 +116,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
       </Card>
 
       <Card className="p-4 flex items-center gap-4 border-l-4 border-l-emerald-500">
-        <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600">
+        <div className="p-3 bg-[var(--clr-emerald-muted)] rounded-xl text-emerald-600">
           <Clock className="w-6 h-6" />
         </div>
         <div>
@@ -129,7 +129,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
       </Card>
 
       <Card className="p-4 flex items-center gap-4 border-l-4 border-l-purple-500">
-        <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl text-purple-600">
+        <div className="p-3 bg-[var(--clr-info-muted)] rounded-xl text-purple-600">
           <Users className="w-6 h-6" />
         </div>
         <div>

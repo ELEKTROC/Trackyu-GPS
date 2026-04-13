@@ -39,11 +39,18 @@
   --color-status-alert: var(--status-alert);
   --color-status-offline: var(--status-offline);
 
-  /* Couleurs fonctionnelles */
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-  --color-error: var(--color-error);
-  --color-info: var(--color-info);
+  /* Couleurs sémantiques — texte */
+  --color-clr-success: var(--clr-success);
+  --color-clr-success-strong: var(--clr-success-strong);
+  --color-clr-danger: var(--clr-danger);
+  --color-clr-danger-strong: var(--clr-danger-strong);
+  --color-clr-warning: var(--clr-warning);
+  --color-clr-warning-strong: var(--clr-warning-strong);
+  --color-clr-caution: var(--clr-caution);
+  --color-clr-caution-strong: var(--clr-caution-strong);
+  --color-clr-info: var(--clr-info);
+  --color-clr-info-strong: var(--clr-info-strong);
+  --color-clr-emerald: var(--clr-emerald);
 
   /* Typographie (échelle mobile — tokens.ts) */
   --font-size-display: 2rem; /* 32px — titres majeurs */
@@ -193,9 +200,57 @@ textarea:focus {
   --brand-primary: #e8771a;
   --brand-secondary: #f5943a;
 
+  /* ── Couleurs sémantiques — dark theme ──────────────────────────────── */
+  /* success (green) */
+  --clr-success: #4ade80; /* green-400 */
+  --clr-success-strong: #86efac; /* green-300 */
+  --clr-success-dim: rgba(20, 83, 45, 0.2); /* green-900/20 */
+  --clr-success-muted: rgba(20, 83, 45, 0.3); /* green-900/30 */
+  --clr-success-border: #166534; /* green-800 */
+  --clr-success-badge: #14532d; /* green-900 — badge solid bg */
+  --clr-success-badge-text: #bbf7d0; /* green-200 — badge solid text */
+  /* danger (red) */
+  --clr-danger: #f87171; /* red-400 */
+  --clr-danger-strong: #fca5a5; /* red-300 */
+  --clr-danger-dim: rgba(127, 29, 29, 0.2); /* red-900/20 */
+  --clr-danger-muted: rgba(127, 29, 29, 0.3); /* red-900/30 */
+  --clr-danger-border: #991b1b; /* red-800 */
+  --clr-danger-badge: #7f1d1d; /* red-900 */
+  --clr-danger-badge-text: #fecaca; /* red-200 */
+  /* warning (orange) */
+  --clr-warning: #fb923c; /* orange-400 */
+  --clr-warning-strong: #fdba74; /* orange-300 */
+  --clr-warning-dim: rgba(124, 45, 18, 0.2); /* orange-900/20 */
+  --clr-warning-muted: rgba(124, 45, 18, 0.3); /* orange-900/30 */
+  --clr-warning-border: #9a3412; /* orange-800 */
+  --clr-warning-badge: #7c2d12; /* orange-900 */
+  --clr-warning-badge-text: #fed7aa; /* orange-200 */
+  /* caution (amber) */
+  --clr-caution: #fbbf24; /* amber-400 */
+  --clr-caution-strong: #fcd34d; /* amber-300 */
+  --clr-caution-dim: rgba(120, 53, 15, 0.2); /* amber-900/20 */
+  --clr-caution-muted: rgba(120, 53, 15, 0.3); /* amber-900/30 */
+  --clr-caution-border: #92400e; /* amber-800 */
+  --clr-caution-badge: #78350f; /* amber-900 */
+  --clr-caution-badge-text: #fde68a; /* amber-200 */
+  /* info (purple) */
+  --clr-info: #c084fc; /* purple-400 */
+  --clr-info-strong: #d8b4fe; /* purple-300 */
+  --clr-info-dim: rgba(88, 28, 135, 0.2); /* purple-900/20 */
+  --clr-info-muted: rgba(88, 28, 135, 0.3); /* purple-900/30 */
+  --clr-info-border: #6b21a8; /* purple-800 */
+  --clr-info-badge: #581c87; /* purple-900 */
+  --clr-info-badge-text: #e9d5ff; /* purple-200 */
+  /* emerald */
+  --clr-emerald: #34d399; /* emerald-400 */
+  --clr-emerald-strong: #6ee7b7; /* emerald-300 */
+  --clr-emerald-dim: rgba(6, 78, 59, 0.2); /* emerald-900/20 */
+  --clr-emerald-muted: rgba(6, 78, 59, 0.3); /* emerald-900/30 */
+  --clr-emerald-border: #065f46; /* emerald-800 */
+  --clr-emerald-badge: #064e3b; /* emerald-900 */
+  --clr-emerald-badge-text: #a7f3d0; /* emerald-200 */
+
   /* ── Remap Tailwind slate/gray → theme tokens ──────────────────────── */
-  /* NOTE : slate-950 uniquement — slate-900/800 affectent aussi text-* (risque)   */
-  /* Les backgrounds dark:bg-slate-9xx sont corrigés fichier par fichier           */
   --color-slate-950: var(--bg-primary);
   --color-gray-950: var(--bg-primary);
 }
@@ -237,6 +292,50 @@ textarea:focus {
   --color-gray-900: var(--bg-surface);
   --color-gray-800: var(--bg-elevated);
   --color-gray-700: var(--bg-elevated);
+
+  /* ── Couleurs sémantiques — ocean (identiques à dark) ───────────────── */
+  --clr-success: #4ade80;
+  --clr-success-strong: #86efac;
+  --clr-success-dim: rgba(20, 83, 45, 0.2);
+  --clr-success-muted: rgba(20, 83, 45, 0.3);
+  --clr-success-border: #166534;
+  --clr-success-badge: #14532d;
+  --clr-success-badge-text: #bbf7d0;
+  --clr-danger: #f87171;
+  --clr-danger-strong: #fca5a5;
+  --clr-danger-dim: rgba(127, 29, 29, 0.2);
+  --clr-danger-muted: rgba(127, 29, 29, 0.3);
+  --clr-danger-border: #991b1b;
+  --clr-danger-badge: #7f1d1d;
+  --clr-danger-badge-text: #fecaca;
+  --clr-warning: #fb923c;
+  --clr-warning-strong: #fdba74;
+  --clr-warning-dim: rgba(124, 45, 18, 0.2);
+  --clr-warning-muted: rgba(124, 45, 18, 0.3);
+  --clr-warning-border: #9a3412;
+  --clr-warning-badge: #7c2d12;
+  --clr-warning-badge-text: #fed7aa;
+  --clr-caution: #fbbf24;
+  --clr-caution-strong: #fcd34d;
+  --clr-caution-dim: rgba(120, 53, 15, 0.2);
+  --clr-caution-muted: rgba(120, 53, 15, 0.3);
+  --clr-caution-border: #92400e;
+  --clr-caution-badge: #78350f;
+  --clr-caution-badge-text: #fde68a;
+  --clr-info: #c084fc;
+  --clr-info-strong: #d8b4fe;
+  --clr-info-dim: rgba(88, 28, 135, 0.2);
+  --clr-info-muted: rgba(88, 28, 135, 0.3);
+  --clr-info-border: #6b21a8;
+  --clr-info-badge: #581c87;
+  --clr-info-badge-text: #e9d5ff;
+  --clr-emerald: #34d399;
+  --clr-emerald-strong: #6ee7b7;
+  --clr-emerald-dim: rgba(6, 78, 59, 0.2);
+  --clr-emerald-muted: rgba(6, 78, 59, 0.3);
+  --clr-emerald-border: #065f46;
+  --clr-emerald-badge: #064e3b;
+  --clr-emerald-badge-text: #a7f3d0;
 }
 
 /* ── Thème 3 : Light Pro ─────────────────────────────────────────────────── */
@@ -266,6 +365,50 @@ textarea:focus {
 
   --brand-primary: #e8771a;
   --brand-secondary: #f5943a;
+
+  /* ── Couleurs sémantiques — light theme ──────────────────────────────── */
+  --clr-success: #16a34a; /* green-600 */
+  --clr-success-strong: #15803d; /* green-700 */
+  --clr-success-dim: #f0fdf4; /* green-50 */
+  --clr-success-muted: #dcfce7; /* green-100 */
+  --clr-success-border: #bbf7d0; /* green-200 */
+  --clr-success-badge: #dcfce7; /* green-100 */
+  --clr-success-badge-text: #166534; /* green-800 */
+  --clr-danger: #dc2626; /* red-600 */
+  --clr-danger-strong: #b91c1c; /* red-700 */
+  --clr-danger-dim: #fef2f2; /* red-50 */
+  --clr-danger-muted: #fee2e2; /* red-100 */
+  --clr-danger-border: #fecaca; /* red-200 */
+  --clr-danger-badge: #fee2e2; /* red-100 */
+  --clr-danger-badge-text: #991b1b; /* red-800 */
+  --clr-warning: #ea580c; /* orange-600 */
+  --clr-warning-strong: #c2410c; /* orange-700 */
+  --clr-warning-dim: #fff7ed; /* orange-50 */
+  --clr-warning-muted: #ffedd5; /* orange-100 */
+  --clr-warning-border: #fed7aa; /* orange-200 */
+  --clr-warning-badge: #ffedd5; /* orange-100 */
+  --clr-warning-badge-text: #9a3412; /* orange-800 */
+  --clr-caution: #d97706; /* amber-600 */
+  --clr-caution-strong: #b45309; /* amber-700 */
+  --clr-caution-dim: #fffbeb; /* amber-50 */
+  --clr-caution-muted: #fef3c7; /* amber-100 */
+  --clr-caution-border: #fde68a; /* amber-200 */
+  --clr-caution-badge: #fef3c7; /* amber-100 */
+  --clr-caution-badge-text: #92400e; /* amber-800 */
+  --clr-info: #9333ea; /* purple-600 */
+  --clr-info-strong: #7e22ce; /* purple-700 */
+  --clr-info-dim: #faf5ff; /* purple-50 */
+  --clr-info-muted: #f3e8ff; /* purple-100 */
+  --clr-info-border: #e9d5ff; /* purple-200 */
+  --clr-info-badge: #f3e8ff; /* purple-100 */
+  --clr-info-badge-text: #6b21a8; /* purple-800 */
+  --clr-emerald: #059669; /* emerald-600 */
+  --clr-emerald-strong: #047857; /* emerald-700 */
+  --clr-emerald-dim: #ecfdf5; /* emerald-50 */
+  --clr-emerald-muted: #d1fae5; /* emerald-100 */
+  --clr-emerald-border: #a7f3d0; /* emerald-200 */
+  --clr-emerald-badge: #d1fae5; /* emerald-100 */
+  --clr-emerald-badge-text: #065f46; /* emerald-800 */
 }
 
 /* Custom styles from index.html */

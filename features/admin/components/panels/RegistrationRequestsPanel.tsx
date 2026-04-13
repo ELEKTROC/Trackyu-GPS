@@ -313,20 +313,20 @@ export const RegistrationRequestsPanel: React.FC = () => {
   const StatusBadge = ({ status }: { status: string }) => {
     const configs = {
       pending: {
-        bg: 'bg-amber-100 dark:bg-amber-900/30',
-        text: 'text-amber-700 dark:text-amber-400',
+        bg: 'bg-[var(--clr-caution-muted)]',
+        text: 'text-[var(--clr-caution-strong)]',
         icon: Clock,
         label: 'En attente',
       },
       approved: {
-        bg: 'bg-green-100 dark:bg-green-900/30',
-        text: 'text-green-700 dark:text-green-400',
+        bg: 'bg-[var(--clr-success-muted)]',
+        text: 'text-[var(--clr-success-strong)]',
         icon: CheckCircle,
         label: 'Approuvée',
       },
       rejected: {
-        bg: 'bg-red-100 dark:bg-red-900/30',
-        text: 'text-red-700 dark:text-red-400',
+        bg: 'bg-[var(--clr-danger-muted)]',
+        text: 'text-[var(--clr-danger-strong)]',
         icon: XCircle,
         label: 'Rejetée',
       },
@@ -368,36 +368,36 @@ export const RegistrationRequestsPanel: React.FC = () => {
       {/* KPIs */}
       {!isMobile && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+          <Card className="bg-[var(--clr-caution-dim)] border-[var(--clr-caution-border)]">
             <div className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600 dark:text-amber-400">En attente</p>
-                  <p className="text-3xl font-bold text-amber-700 dark:text-amber-300">{stats?.pending_count || 0}</p>
+                  <p className="text-sm text-[var(--clr-caution)]">En attente</p>
+                  <p className="text-3xl font-bold text-[var(--clr-caution-strong)]">{stats?.pending_count || 0}</p>
                 </div>
                 <Clock className="text-amber-500" size={32} />
               </div>
             </div>
           </Card>
 
-          <Card className="bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+          <Card className="bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]">
             <div className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-green-600 dark:text-green-400">Approuvées</p>
-                  <p className="text-3xl font-bold text-green-700 dark:text-green-300">{stats?.approved_count || 0}</p>
+                  <p className="text-sm text-[var(--clr-success)]">Approuvées</p>
+                  <p className="text-3xl font-bold text-[var(--clr-success-strong)]">{stats?.approved_count || 0}</p>
                 </div>
                 <CheckCircle className="text-green-500" size={32} />
               </div>
             </div>
           </Card>
 
-          <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+          <Card className="bg-[var(--clr-danger-dim)] border-[var(--clr-danger-border)]">
             <div className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-red-600 dark:text-red-400">Rejetées</p>
-                  <p className="text-3xl font-bold text-red-700 dark:text-red-300">{stats?.rejected_count || 0}</p>
+                  <p className="text-sm text-[var(--clr-danger)]">Rejetées</p>
+                  <p className="text-3xl font-bold text-[var(--clr-danger-strong)]">{stats?.rejected_count || 0}</p>
                 </div>
                 <XCircle className="text-red-500" size={32} />
               </div>
@@ -663,14 +663,14 @@ export const RegistrationRequestsPanel: React.FC = () => {
                           <>
                             <button
                               onClick={() => openApproveModal(request)}
-                              className="p-1.5 rounded-lg text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors"
+                              className="p-1.5 rounded-lg text-green-500 hover:bg-[var(--clr-success-dim)] transition-colors"
                               title="Approuver"
                             >
                               <Check size={16} />
                             </button>
                             <button
                               onClick={() => openRejectModal(request)}
-                              className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                              className="p-1.5 rounded-lg text-red-500 hover:bg-[var(--clr-danger-dim)] transition-colors"
                               title="Rejeter"
                             >
                               <X size={16} />
@@ -691,9 +691,9 @@ export const RegistrationRequestsPanel: React.FC = () => {
       <Modal isOpen={approveModalOpen} onClose={() => setApproveModalOpen(false)} title="Approuver l'inscription">
         <div className="space-y-4">
           {selectedRequest && (
-            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+            <div className="bg-[var(--clr-success-dim)] p-4 rounded-lg">
               <p className="font-medium text-green-800 dark:text-green-200">{selectedRequest.name}</p>
-              <p className="text-sm text-green-600 dark:text-green-400">{selectedRequest.email}</p>
+              <p className="text-sm text-[var(--clr-success)]">{selectedRequest.email}</p>
             </div>
           )}
 
@@ -743,9 +743,9 @@ export const RegistrationRequestsPanel: React.FC = () => {
       <Modal isOpen={rejectModalOpen} onClose={() => setRejectModalOpen(false)} title="Rejeter la demande">
         <div className="space-y-4">
           {selectedRequest && (
-            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+            <div className="bg-[var(--clr-danger-dim)] p-4 rounded-lg">
               <p className="font-medium text-red-800 dark:text-red-200">{selectedRequest.name}</p>
-              <p className="text-sm text-red-600 dark:text-red-400">{selectedRequest.email}</p>
+              <p className="text-sm text-[var(--clr-danger)]">{selectedRequest.email}</p>
             </div>
           )}
 
@@ -845,7 +845,7 @@ export const RegistrationRequestsPanel: React.FC = () => {
                     <span className="font-medium">Le:</span> {formatDate(selectedRequest.reviewed_at)}
                   </p>
                   {selectedRequest.rejection_reason && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+                    <p className="text-sm text-[var(--clr-danger)] mt-2">
                       <span className="font-medium">Motif:</span> {selectedRequest.rejection_reason}
                     </p>
                   )}
@@ -972,8 +972,8 @@ export const RegistrationRequestsPanel: React.FC = () => {
         maxWidth="max-w-xl"
       >
         <div className="space-y-4">
-          <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-200 dark:border-green-800">
-            <p className="text-xs text-green-600 dark:text-green-400 font-medium mb-1">📱 Destinataire</p>
+          <div className="bg-[var(--clr-success-dim)] p-3 rounded-lg border border-[var(--clr-success-border)]">
+            <p className="text-xs text-[var(--clr-success)] font-medium mb-1">📱 Destinataire</p>
             <p className="text-[var(--text-primary)] font-medium">{selectedRequest?.phone}</p>
           </div>
 

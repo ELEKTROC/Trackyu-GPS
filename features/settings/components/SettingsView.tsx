@@ -1086,7 +1086,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                               e.stopPropagation();
                               setStatusMenuOpen(statusMenuOpen === item.id ? null : item.id);
                             }}
-                            className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+                            className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-[var(--clr-info-dim)] rounded transition-colors"
                             title="Changer le statut"
                           >
                             <Power className="w-4 h-4" />
@@ -1118,7 +1118,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors">
+                      <button className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded transition-colors">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>

@@ -438,11 +438,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           {/* Sprint 2: Approval Warning */}
           {needsApproval && (
-            <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+            <div className="p-4 bg-[var(--clr-warning-dim)] border border-[var(--clr-warning-border)] rounded-lg">
               <div className="flex items-start gap-3">
                 <Shield className="w-5 h-5 text-orange-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-bold text-orange-700 dark:text-orange-400">Double validation requise</p>
+                  <p className="font-bold text-[var(--clr-warning-strong)]">Double validation requise</p>
                   <p className="text-sm text-orange-600 dark:text-orange-500 mt-1">
                     Ce paiement de <strong>{formatPrice(paymentForm.amount)}</strong> dépasse le seuil de{' '}
                     {formatPrice(approvalConfig.threshold)}. Il devra être approuvé par un responsable avant d'être

@@ -5,8 +5,8 @@ export const PrivacyView: React.FC = () => {
   return (
     <div className="p-6 w-full space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
-          <Shield className="w-8 h-8 text-green-600 dark:text-green-400" />
+        <div className="p-3 bg-[var(--clr-success-muted)] rounded-xl">
+          <Shield className="w-8 h-8 text-[var(--clr-success)]" />
         </div>
         <div>
           <h2 className="page-title">Politique de Confidentialité</h2>

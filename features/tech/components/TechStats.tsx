@@ -432,7 +432,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">En Cours</p>
               <p className="text-2xl font-bold text-orange-600 mt-1">{stats.inProgress.length}</p>
             </div>
-            <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded text-orange-600">
+            <div className="p-2 bg-[var(--clr-warning-dim)] rounded text-orange-600">
               <Clock className="w-5 h-5" />
             </div>
           </div>
@@ -443,7 +443,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Terminées</p>
               <p className="text-2xl font-bold text-green-600 mt-1">{stats.completed}</p>
             </div>
-            <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded text-green-600">
+            <div className="p-2 bg-[var(--clr-success-dim)] rounded text-green-600">
               <CheckCircle className="w-5 h-5" />
             </div>
           </div>
@@ -459,7 +459,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                 </p>
               )}
             </div>
-            <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded text-red-500">
+            <div className="p-2 bg-[var(--clr-danger-dim)] rounded text-red-500">
               <Ban className="w-5 h-5" />
             </div>
           </div>
@@ -470,7 +470,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Taux Succès</p>
               <p className="text-2xl font-bold text-purple-600 mt-1">{stats.successRate}%</p>
             </div>
-            <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded text-purple-600">
+            <div className="p-2 bg-[var(--clr-info-dim)] rounded text-purple-600">
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
@@ -527,7 +527,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
               </p>
               <p className="text-[10px] text-[var(--text-muted)] mt-0.5">{currency}</p>
             </div>
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded text-emerald-600">
+            <div className="p-2 bg-[var(--clr-emerald-dim)] rounded text-emerald-600">
               <Banknote className="w-5 h-5" />
             </div>
           </div>
@@ -538,19 +538,19 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
       {(stats.overdue.length > 0 || stats.atRisk.length > 0 || stats.unassigned.length > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {stats.overdue.length > 0 && (
-            <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-xl border border-red-200 dark:border-red-800">
+            <div className="bg-[var(--clr-danger-dim)] p-4 rounded-xl border border-[var(--clr-danger-border)]">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-red-100 dark:bg-red-900/40 rounded-lg">
                   <XCircle className="w-6 h-6 text-red-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-red-700 dark:text-red-400">{stats.overdue.length}</p>
+                  <p className="text-2xl font-bold text-[var(--clr-danger-strong)]">{stats.overdue.length}</p>
                   <p className="text-xs font-bold text-red-600 dark:text-red-300 uppercase">En Retard</p>
                 </div>
               </div>
               <div className="mt-3 space-y-1 max-h-20 overflow-y-auto">
                 {stats.overdue.slice(0, 3).map((i) => (
-                  <p key={i.id} className="text-xs text-red-700 dark:text-red-300 truncate">
+                  <p key={i.id} className="text-xs text-[var(--clr-danger-strong)] truncate">
                     {getClientName(i.clientId)} - {i.nature || i.type}
                   </p>
                 ))}
@@ -561,19 +561,19 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
             </div>
           )}
           {stats.atRisk.length > 0 && (
-            <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-200 dark:border-amber-800">
+            <div className="bg-[var(--clr-caution-dim)] p-4 rounded-xl border border-[var(--clr-caution-border)]">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-lg">
                   <AlertTriangle className="w-6 h-6 text-amber-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-amber-700 dark:text-amber-400">{stats.atRisk.length}</p>
+                  <p className="text-2xl font-bold text-[var(--clr-caution-strong)]">{stats.atRisk.length}</p>
                   <p className="text-xs font-bold text-amber-600 dark:text-amber-300 uppercase">À Risque (24h)</p>
                 </div>
               </div>
               <div className="mt-3 space-y-1 max-h-20 overflow-y-auto">
                 {stats.atRisk.slice(0, 3).map((i) => (
-                  <p key={i.id} className="text-xs text-amber-700 dark:text-amber-300 truncate">
+                  <p key={i.id} className="text-xs text-[var(--clr-caution-strong)] truncate">
                     {i.id} -{' '}
                     {new Date(i.scheduledDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                   </p>

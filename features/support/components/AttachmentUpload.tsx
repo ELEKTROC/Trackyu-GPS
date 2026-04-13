@@ -203,7 +203,7 @@ export const AttachmentUpload: React.FC<AttachmentUploadProps> = ({ ticketId }) 
                 </a>
                 <button
                   onClick={() => handleDelete(attachment.id)}
-                  className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+                  className="p-2 hover:bg-[var(--clr-danger-muted)] rounded transition-colors"
                   title="Supprimer"
                 >
                   <Trash2 className="w-4 h-4 text-red-600" />

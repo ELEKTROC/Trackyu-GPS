@@ -297,7 +297,7 @@ export const MyTicketsView: React.FC = () => {
               </button>
             </div>
             {selectedTicket.status === 'WAITING_CLIENT' && (
-              <p className="mt-2 text-xs text-purple-600 dark:text-purple-400 flex items-center gap-1">
+              <p className="mt-2 text-xs text-[var(--clr-info)] flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" />
                 L'équipe support attend votre réponse
               </p>

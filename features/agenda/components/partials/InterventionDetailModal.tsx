@@ -209,7 +209,7 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
         {/* Header - Fixed at top */}
         <div className="flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 border-b border-[var(--border)] flex justify-between items-center bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-t-2xl sm:rounded-t-xl">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+            <div className="p-2 bg-[var(--clr-warning-muted)] rounded-lg">
               <Wrench className="w-5 h-5 text-orange-600" />
             </div>
             <div>
@@ -483,27 +483,25 @@ export const InterventionDetailModal: React.FC<InterventionDetailModalProps> = (
 
           {/* Result / Outcome */}
           {intervention.status === 'COMPLETED' && (
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
-              <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+            <div className="bg-[var(--clr-success-dim)] rounded-xl p-4 border border-[var(--clr-success-border)]">
+              <div className="flex items-center gap-2 text-[var(--clr-success-strong)]">
                 <CheckCircle className="w-5 h-5" />
                 <span className="font-bold">Intervention terminée avec succès</span>
               </div>
               {intervention.testResult && (
-                <p className="text-sm text-green-600 dark:text-green-400 mt-2">
-                  Résultat du test: {intervention.testResult}
-                </p>
+                <p className="text-sm text-[var(--clr-success)] mt-2">Résultat du test: {intervention.testResult}</p>
               )}
             </div>
           )}
 
           {intervention.status === 'CANCELLED' && (
-            <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 border border-red-200 dark:border-red-800">
-              <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
+            <div className="bg-[var(--clr-danger-dim)] rounded-xl p-4 border border-[var(--clr-danger-border)]">
+              <div className="flex items-center gap-2 text-[var(--clr-danger-strong)]">
                 <AlertCircle className="w-5 h-5" />
                 <span className="font-bold">Intervention annulée</span>
               </div>
               {intervention.cancellationReason && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-2">Raison: {intervention.cancellationReason}</p>
+                <p className="text-sm text-[var(--clr-danger)] mt-2">Raison: {intervention.cancellationReason}</p>
               )}
             </div>
           )}

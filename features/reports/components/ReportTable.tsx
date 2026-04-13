@@ -440,7 +440,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({ title, columns, data, 
               {/* Bouton IA */}
               <button
                 onClick={() => onAiAnalysis(visibleColumns, filteredRows)}
-                className="flex items-center gap-2 px-3 py-2 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors shadow-sm"
+                className="flex items-center gap-2 px-3 py-2 bg-[var(--clr-info-dim)] text-[var(--clr-info-strong)] border border-[var(--clr-info-border)] rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors shadow-sm"
               >
                 <Sparkles className="w-4 h-4" />
                 <span className="hidden sm:inline text-sm font-medium">Analyser</span>

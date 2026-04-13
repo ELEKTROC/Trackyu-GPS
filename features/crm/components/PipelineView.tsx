@@ -236,7 +236,7 @@ export const PipelineView: React.FC = () => {
             flex flex-col min-w-[200px] w-[210px] flex-shrink-0 rounded-xl transition-all
             ${
               dragOverStage === 'WON'
-                ? 'bg-green-50 dark:bg-green-900/20 ring-2 ring-green-400'
+                ? 'bg-[var(--clr-success-dim)] ring-2 ring-green-400'
                 : 'bg-green-50/30 dark:bg-green-900/10'
             }
           `}
@@ -244,7 +244,7 @@ export const PipelineView: React.FC = () => {
           onDrop={(e) => handleDrop(e, 'WON')}
           onDragLeave={() => setDragOverStage(null)}
         >
-          <div className="px-3 py-2.5 border-b border-green-200 dark:border-green-800 flex items-center justify-between">
+          <div className="px-3 py-2.5 border-b border-[var(--clr-success-border)] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500" />
               <span className="text-xs font-bold uppercase text-green-600">Gagnés</span>
@@ -280,7 +280,7 @@ export const PipelineView: React.FC = () => {
           <span className="flex items-center gap-2">
             <X className="w-4 h-4 text-red-500" />
             <span className="font-semibold text-red-500 text-xs">Leads Perdus</span>
-            <span className="text-xs bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full px-1.5 py-0.5 font-bold">
+            <span className="text-xs bg-[var(--clr-danger-muted)] text-red-600 rounded-full px-1.5 py-0.5 font-bold">
               {leadsByStage.LOST.length}
             </span>
           </span>
@@ -295,7 +295,7 @@ export const PipelineView: React.FC = () => {
             {leadsByStage.LOST.map((lead) => (
               <div
                 key={lead.id}
-                className="bg-[var(--bg-elevated)] border border-red-200 dark:border-red-800 rounded-lg px-3 py-2 text-xs flex items-center gap-2"
+                className="bg-[var(--bg-elevated)] border border-[var(--clr-danger-border)] rounded-lg px-3 py-2 text-xs flex items-center gap-2"
               >
                 <span className="font-semibold text-[var(--text-primary)]">{lead.companyName}</span>
                 {lead.estimatedValue || lead.potentialValue ? (
@@ -493,7 +493,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
                     onMarkLost();
                   }}
                   title="Marquer comme perdu"
-                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-red-500 hover:bg-[var(--clr-danger-dim)] transition-colors"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -505,7 +505,7 @@ const LeadCard: React.FC<LeadCardProps> = ({
                     onAdvance();
                   }}
                   title="Avancer dans le pipeline"
-                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors"
+                  className="p-0.5 rounded text-[var(--text-muted)] hover:text-green-500 hover:bg-[var(--clr-success-dim)] transition-colors"
                 >
                   <ArrowRight className="w-3 h-3" />
                 </button>

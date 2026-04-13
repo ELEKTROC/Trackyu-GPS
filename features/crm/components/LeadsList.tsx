@@ -536,7 +536,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                 e.stopPropagation();
                                 onConvertToClient(lead);
                               }}
-                              className="p-1.5 text-[var(--text-muted)] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                              className="p-1.5 text-[var(--text-muted)] hover:text-green-600 hover:bg-[var(--clr-success-dim)] rounded transition-colors"
                               title="Convertir en Client"
                             >
                               <CheckCircle className="w-4 h-4" />
@@ -548,7 +548,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                                 e.stopPropagation();
                                 onCreateQuote(lead);
                               }}
-                              className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors"
+                              className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-[var(--clr-info-dim)] rounded transition-colors"
                               title="Créer un devis"
                             >
                               <FileText className="w-4 h-4" />
@@ -567,7 +567,7 @@ export const LeadsList: React.FC<LeadsListProps> = ({
                               )
                                 onDeleteLead(lead.id);
                             }}
-                            className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                            className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

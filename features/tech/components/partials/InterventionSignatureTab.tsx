@@ -48,14 +48,14 @@ export const InterventionSignatureTab: React.FC<SignatureTabProps> = ({
               Mise à jour Contrat
             </span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer bg-green-50 dark:bg-green-900/20 px-3 py-1 rounded-full border border-green-100 dark:border-green-800">
+          <label className="flex items-center gap-2 cursor-pointer bg-[var(--clr-success-dim)] px-3 py-1 rounded-full border border-[var(--clr-success-border)]">
             <input
               type="checkbox"
               checked={formData.generateInvoice || false}
               onChange={(e) => setFormData({ ...formData, generateInvoice: e.target.checked })}
               className="w-4 h-4 text-green-600 rounded border-[var(--border)] focus:ring-green-500"
             />
-            <span className="text-xs font-bold text-green-600 dark:text-green-400 uppercase">Générer Facture</span>
+            <span className="text-xs font-bold text-[var(--clr-success)] uppercase">Générer Facture</span>
           </label>
         </div>
 

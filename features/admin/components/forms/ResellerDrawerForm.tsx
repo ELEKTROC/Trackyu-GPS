@@ -399,7 +399,7 @@ export function ResellerDrawerForm({
                   }}
                 />
                 {!isCreateMode && (
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-amber-600 dark:text-amber-400">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--clr-caution)]">
                     🔒 Non modifiable
                   </span>
                 )}
@@ -569,7 +569,7 @@ export function ResellerDrawerForm({
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
                               client.status === 'active'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                                ? 'bg-[var(--clr-success-badge)] text-[var(--clr-success-badge-text)]'
                                 : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                             }`}
                           >
@@ -628,15 +628,15 @@ export function ResellerDrawerForm({
             <p className="text-2xl font-bold text-[var(--primary)]">{mockClients.length}</p>
             <p className="text-sm text-[var(--text-secondary)]">Clients</p>
           </div>
-          <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 text-center">
+          <div className="bg-[var(--clr-success-dim)] rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-green-600">{activeClients}</p>
             <p className="text-sm text-[var(--text-secondary)]">Actifs</p>
           </div>
-          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 text-center">
+          <div className="bg-[var(--clr-info-dim)] rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-purple-600">{totalVehicles}</p>
             <p className="text-sm text-[var(--text-secondary)]">Véhicules</p>
           </div>
-          <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 text-center">
+          <div className="bg-[var(--clr-warning-dim)] rounded-lg p-4 text-center">
             <p className="text-2xl font-bold text-orange-600">{totalUsers}</p>
             <p className="text-sm text-[var(--text-secondary)]">Utilisateurs</p>
           </div>
@@ -684,9 +684,9 @@ export function ResellerDrawerForm({
     const paginatedInvoices = mockInvoices.slice((invoicePage - 1) * pageSize, invoicePage * pageSize);
 
     const statusColors = {
-      paid: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      paid: 'bg-[var(--clr-success-badge)] text-[var(--clr-success-badge-text)]',
       pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-      overdue: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      overdue: 'bg-[var(--clr-danger-badge)] text-[var(--clr-danger-badge-text)]',
     };
 
     const statusLabels = {

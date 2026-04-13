@@ -111,9 +111,9 @@ const CATALOG: ReportSection[] = [
     tab: 'technical',
     description: 'Geofencing, maintenance, alertes et données capteurs',
     color: 'bg-red-500',
-    textColor: 'text-red-600 dark:text-red-400',
-    borderColor: 'border-red-200 dark:border-red-800',
-    bgLight: 'bg-red-50 dark:bg-red-900/10',
+    textColor: 'text-[var(--clr-danger)]',
+    borderColor: 'border-[var(--clr-danger-border)]',
+    bgLight: 'bg-[var(--clr-danger-dim)]',
     sectionIcon: Wrench,
     items: [
       {
@@ -146,9 +146,9 @@ const CATALOG: ReportSection[] = [
     tab: 'fuel',
     description: 'Consommation, ravitaillements, pertes et efficacité',
     color: 'bg-orange-500',
-    textColor: 'text-orange-600 dark:text-orange-400',
-    borderColor: 'border-orange-200 dark:border-orange-800',
-    bgLight: 'bg-orange-50 dark:bg-orange-900/10',
+    textColor: 'text-[var(--clr-warning)]',
+    borderColor: 'border-[var(--clr-warning-border)]',
+    bgLight: 'bg-[var(--clr-warning-dim)]',
     sectionIcon: Droplet,
     items: [
       { id: 'summary', label: 'Synthèse carburant', description: 'Coûts totaux, volume, alertes vol', icon: Activity },
@@ -170,9 +170,9 @@ const CATALOG: ReportSection[] = [
     tab: 'performance',
     description: 'Productivité, éco-conduite, heures moteur et dépenses',
     color: 'bg-green-500',
-    textColor: 'text-green-600 dark:text-green-400',
-    borderColor: 'border-green-200 dark:border-green-800',
-    bgLight: 'bg-green-50 dark:bg-green-900/10',
+    textColor: 'text-[var(--clr-success)]',
+    borderColor: 'border-[var(--clr-success-border)]',
+    bgLight: 'bg-[var(--clr-success-dim)]',
     sectionIcon: Zap,
     items: [
       {
@@ -194,9 +194,9 @@ const CATALOG: ReportSection[] = [
     tab: 'logs',
     description: "Logs système, événements, erreurs et piste d'audit",
     color: 'bg-purple-500',
-    textColor: 'text-purple-600 dark:text-purple-400',
-    borderColor: 'border-purple-200 dark:border-purple-800',
-    bgLight: 'bg-purple-50 dark:bg-purple-900/10',
+    textColor: 'text-[var(--clr-info)]',
+    borderColor: 'border-[var(--clr-info-border)]',
+    bgLight: 'bg-[var(--clr-info-dim)]',
     sectionIcon: FileText,
     items: [
       { id: 'summary', label: 'Synthèse journaux', description: 'Erreurs, actions admin, connexions', icon: Activity },
@@ -483,7 +483,7 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
             setIsAnalyzing(false);
             setAnalysisResult('');
           }}
-          className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors text-xs font-semibold"
+          className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[var(--clr-info-dim)] text-[var(--clr-info-strong)] border border-[var(--clr-info-border)] rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors text-xs font-semibold"
         >
           <Sparkles className="w-3.5 h-3.5" />
           <span className="hidden sm:inline">Analyser avec l'IA</span>

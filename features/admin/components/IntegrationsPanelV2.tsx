@@ -222,7 +222,7 @@ const PROVIDERS: IntegrationProvider[] = [
     icon: <MessageCircle className="w-6 h-6" />,
     category: 'messaging',
     color: 'text-green-500',
-    bgColor: 'bg-green-50 dark:bg-green-900/20',
+    bgColor: 'bg-[var(--clr-success-dim)]',
     docsUrl: 'https://developers.facebook.com/docs/whatsapp/cloud-api',
     isConfigured: () => whatsappService.isConfigured(),
     getConfig: () => whatsappService.getConfig(),
@@ -266,7 +266,7 @@ const PROVIDERS: IntegrationProvider[] = [
     icon: <Smartphone className="w-6 h-6" />,
     category: 'sms',
     color: 'text-orange-500',
-    bgColor: 'bg-orange-50 dark:bg-orange-900/20',
+    bgColor: 'bg-[var(--clr-warning-dim)]',
     docsUrl: 'https://developer.orange.com/apis/sms-ci',
     isConfigured: () => orangeSmsService.isConfigured(),
     getConfig: () => orangeSmsService.getConfig(),
@@ -624,7 +624,7 @@ export const IntegrationsPanelV2: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             {isConfigured ? (
-              <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+              <span className="flex items-center gap-1 text-sm text-[var(--clr-success)]">
                 <Wifi className="w-4 h-4" />
                 Connecté
               </span>
@@ -683,7 +683,7 @@ export const IntegrationsPanelV2: React.FC = () => {
               </button>
               <button
                 onClick={() => handleDisconnect(provider)}
-                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                className="p-2 text-red-500 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
                 title="Déconnecter"
               >
                 <Trash2 className="w-4 h-4" />
@@ -755,7 +755,7 @@ export const IntegrationsPanelV2: React.FC = () => {
               key={status.provider}
               className={`p-3 rounded-lg ${
                 status.configured && status.active
-                  ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+                  ? 'bg-[var(--clr-success-muted)] border border-[var(--clr-success-border)]'
                   : status.configured
                     ? 'bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800'
                     : 'bg-[var(--bg-elevated)] border border-[var(--border)]'
@@ -764,7 +764,7 @@ export const IntegrationsPanelV2: React.FC = () => {
               <div className="flex items-center justify-between mb-1">
                 <span className="font-medium text-sm capitalize text-[var(--text-primary)]">{status.provider}</span>
                 {status.configured && status.active ? (
-                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <CheckCircle className="w-4 h-4 text-[var(--clr-success)]" />
                 ) : status.configured ? (
                   <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
                 ) : (
@@ -957,7 +957,7 @@ export const IntegrationsPanelV2: React.FC = () => {
             </div>
           ) : testResult ? (
             <div
-              className={`p-4 rounded-lg ${testResult.success ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'}`}
+              className={`p-4 rounded-lg ${testResult.success ? 'bg-[var(--clr-success-dim)]' : 'bg-[var(--clr-danger-dim)]'}`}
             >
               <div className="flex items-center gap-3">
                 {testResult.success ? (
@@ -967,13 +967,11 @@ export const IntegrationsPanelV2: React.FC = () => {
                 )}
                 <div>
                   <p
-                    className={`font-medium ${testResult.success ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}
+                    className={`font-medium ${testResult.success ? 'text-[var(--clr-success-strong)]' : 'text-[var(--clr-danger-strong)]'}`}
                   >
                     {testResult.success ? 'Connexion réussie!' : 'Échec de connexion'}
                   </p>
-                  {testResult.error && (
-                    <p className="text-sm text-red-600 dark:text-red-400 mt-1">{testResult.error}</p>
-                  )}
+                  {testResult.error && <p className="text-sm text-[var(--clr-danger)] mt-1">{testResult.error}</p>}
                 </div>
               </div>
             </div>
@@ -1036,7 +1034,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-sm text-amber-700 dark:text-amber-300">
+                  <div className="p-4 bg-[var(--clr-caution-dim)] rounded-lg text-sm text-[var(--clr-caution-strong)]">
                     <AlertTriangle className="w-4 h-4 inline mr-1" />
                     Aucun chat trouvé. Envoyez d'abord un message au bot @{botInfo?.username} pour le démarrer.
                   </div>
@@ -1151,8 +1149,8 @@ export const IntegrationsPanelV2: React.FC = () => {
                     </div>
                     <div className="text-xs text-[var(--text-secondary)]">Transactions</div>
                   </div>
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  <div className="p-4 bg-[var(--clr-success-dim)] rounded-lg text-center">
+                    <div className="text-2xl font-bold text-[var(--clr-success)]">
                       {waveStats.completedAmount.toLocaleString()}
                     </div>
                     <div className="text-xs text-[var(--text-secondary)]">{currency} reçus</div>
@@ -1212,8 +1210,8 @@ export const IntegrationsPanelV2: React.FC = () => {
             <div className="space-y-4">
               {/* Phone Number Info */}
               {whatsappPhoneNumber && (
-                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <h4 className="font-medium text-green-700 dark:text-green-300 mb-2">Numéro WhatsApp connecté</h4>
+                <div className="p-4 bg-[var(--clr-success-dim)] rounded-lg">
+                  <h4 className="font-medium text-[var(--clr-success-strong)] mb-2">Numéro WhatsApp connecté</h4>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white">
                       <MessageCircle className="w-5 h-5" />
@@ -1260,7 +1258,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                 Envoyer via WhatsApp
               </button>
 
-              <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-sm text-amber-700 dark:text-amber-300">
+              <div className="p-3 bg-[var(--clr-caution-dim)] rounded-lg text-sm text-[var(--clr-caution-strong)]">
                 <AlertTriangle className="w-4 h-4 inline mr-1" />
                 <strong>Note:</strong> Le destinataire doit avoir accepté les messages de votre numéro WhatsApp Business
                 (conversation initiée dans les 24h).
@@ -1272,9 +1270,9 @@ export const IntegrationsPanelV2: React.FC = () => {
           {selectedProvider?.id === 'orange_sms' && testResult?.success && (
             <div className="space-y-4">
               {/* Account Info */}
-              <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+              <div className="p-4 bg-[var(--clr-warning-dim)] rounded-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-orange-700 dark:text-orange-300">Compte Orange SMS</h4>
+                  <h4 className="font-medium text-[var(--clr-warning-strong)]">Compte Orange SMS</h4>
                   <button
                     onClick={async () => {
                       setIsLoading(true);
@@ -1298,11 +1296,9 @@ export const IntegrationsPanelV2: React.FC = () => {
 
                 {/* Sender Address (auto-retrieved from API) */}
                 {orangeSenderAddress && (
-                  <div className="flex items-center justify-between mb-3 pb-3 border-b border-orange-200 dark:border-orange-800">
+                  <div className="flex items-center justify-between mb-3 pb-3 border-b border-[var(--clr-warning-border)]">
                     <span className="text-[var(--text-secondary)]">Nom expéditeur:</span>
-                    <span className="font-mono font-medium text-orange-600 dark:text-orange-400">
-                      {orangeSenderAddress}
-                    </span>
+                    <span className="font-mono font-medium text-[var(--clr-warning)]">{orangeSenderAddress}</span>
                   </div>
                 )}
 
@@ -1312,7 +1308,7 @@ export const IntegrationsPanelV2: React.FC = () => {
                     <span className="text-[var(--text-secondary)]">Solde SMS disponible:</span>
                     <div className="text-right">
                       <span
-                        className={`text-2xl font-bold ${orangeBalance < 100 ? 'text-red-600 dark:text-red-400' : orangeBalance < 500 ? 'text-amber-600 dark:text-amber-400' : 'text-orange-600 dark:text-orange-400'}`}
+                        className={`text-2xl font-bold ${orangeBalance < 100 ? 'text-[var(--clr-danger)]' : orangeBalance < 500 ? 'text-[var(--clr-caution)]' : 'text-[var(--clr-warning)]'}`}
                       >
                         {orangeBalance.toLocaleString()}
                       </span>
@@ -1323,14 +1319,14 @@ export const IntegrationsPanelV2: React.FC = () => {
 
                 {/* Low balance warning */}
                 {orangeBalance !== null && orangeBalance < 100 && (
-                  <div className="mt-3 p-2 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center gap-2 text-red-700 dark:text-red-300 text-sm">
+                  <div className="mt-3 p-2 bg-[var(--clr-danger-muted)] rounded-lg flex items-center gap-2 text-[var(--clr-danger-strong)] text-sm">
                     <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                     <span>Solde faible ! Pensez à recharger votre forfait SMS Orange.</span>
                   </div>
                 )}
 
                 {orangeBalance !== null && orangeBalance >= 100 && orangeBalance < 500 && (
-                  <div className="mt-3 p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center gap-2 text-amber-700 dark:text-amber-300 text-sm">
+                  <div className="mt-3 p-2 bg-[var(--clr-caution-muted)] rounded-lg flex items-center gap-2 text-[var(--clr-caution-strong)] text-sm">
                     <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                     <span>Solde modéré. Prévoyez un rechargement bientôt.</span>
                   </div>

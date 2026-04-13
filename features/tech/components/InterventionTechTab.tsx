@@ -304,8 +304,8 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({ formDa
 
       {/* Mise à jour Contrat (pour Retrait) */}
       {formData.nature === 'Retrait' && (
-        <div className="bg-red-50 dark:bg-red-900/20 p-6 rounded-xl border border-red-200 dark:border-red-800 shadow-sm">
-          <h4 className="text-xs font-bold text-red-700 dark:text-red-400 uppercase mb-4 flex items-center gap-2">
+        <div className="bg-[var(--clr-danger-dim)] p-6 rounded-xl border border-[var(--clr-danger-border)] shadow-sm">
+          <h4 className="text-xs font-bold text-[var(--clr-danger-strong)] uppercase mb-4 flex items-center gap-2">
             <AlertCircle className="w-4 h-4" /> Mise à jour Contrat
           </h4>
           <div className="space-y-4">
@@ -325,7 +325,7 @@ export const InterventionTechTab: React.FC<InterventionTechTabProps> = ({ formDa
               <div className="space-y-1 animate-in fade-in slide-in-from-top-2">
                 <label className="text-xs font-bold text-red-600 uppercase">Motif du retrait (Obligatoire)</label>
                 <input
-                  className="w-full p-2.5 border border-red-200 dark:border-red-800 rounded-lg bg-[var(--bg-surface)] text-sm"
+                  className="w-full p-2.5 border border-[var(--clr-danger-border)] rounded-lg bg-[var(--bg-surface)] text-sm"
                   value={formData.contractRemovalReason || ''}
                   onChange={(e) => setFormData({ ...formData, contractRemovalReason: e.target.value })}
                   placeholder="Ex: Vente du véhicule, Fin de contrat..."

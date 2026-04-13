@@ -177,7 +177,7 @@ export const TierList: React.FC<TierListProps> = ({
       action: 'ticket',
       label: 'Créer un ticket',
       icon: LifeBuoy,
-      color: 'text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20',
+      color: 'text-purple-600 hover:bg-[var(--clr-info-dim)]',
     },
     {
       action: 'devis',
@@ -189,19 +189,19 @@ export const TierList: React.FC<TierListProps> = ({
       action: 'facture',
       label: 'Créer une facture',
       icon: Receipt,
-      color: 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
+      color: 'text-emerald-600 hover:bg-[var(--clr-emerald-dim)]',
     },
     {
       action: 'intervention',
       label: 'Créer une intervention',
       icon: Wrench,
-      color: 'text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20',
+      color: 'text-orange-600 hover:bg-[var(--clr-warning-dim)]',
     },
     {
       action: 'paiement',
       label: 'Enregistrer un paiement',
       icon: CreditCard,
-      color: 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20',
+      color: 'text-green-600 hover:bg-[var(--clr-success-dim)]',
     },
     {
       action: 'mail',
@@ -381,7 +381,7 @@ export const TierList: React.FC<TierListProps> = ({
             </button>
             <button
               onClick={() => handleBulkAction('delete')}
-              className="text-xs bg-[var(--bg-elevated)] border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 px-3 py-1.5 rounded shadow-sm hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1.5"
+              className="text-xs bg-[var(--bg-elevated)] border border-red-200 dark:border-red-900 text-[var(--clr-danger)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--clr-danger-dim)] transition-colors flex items-center gap-1.5"
             >
               <Trash2 className="w-3 h-3" /> Supprimer
             </button>

@@ -188,8 +188,8 @@ export const MyOperationsView: React.FC = () => {
   if (!_user?.clientId && _user?.role !== 'CLIENT') {
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center space-y-4 min-h-[400px]">
-        <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-full">
-          <AlertCircle className="w-12 h-12 text-orange-600 dark:text-orange-400" />
+        <div className="p-4 bg-[var(--clr-warning-dim)] rounded-full">
+          <AlertCircle className="w-12 h-12 text-[var(--clr-warning)]" />
         </div>
         <h3 className="page-title">Espace réservé aux clients</h3>
         <p className="text-[var(--text-secondary)] max-w-md">
@@ -293,7 +293,7 @@ export const MyOperationsView: React.FC = () => {
         </Card>
         <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-purple-600 dark:text-purple-400">
+            <div className="p-3 bg-[var(--clr-info-dim)] rounded-xl text-[var(--clr-info)]">
               <Wrench className="w-6 h-6" />
             </div>
             <div>
@@ -306,7 +306,7 @@ export const MyOperationsView: React.FC = () => {
         </Card>
         <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-orange-600 dark:text-orange-400">
+            <div className="p-3 bg-[var(--clr-warning-dim)] rounded-xl text-[var(--clr-warning)]">
               <Ticket className="w-6 h-6" />
             </div>
             <div>
@@ -319,7 +319,7 @@ export const MyOperationsView: React.FC = () => {
         </Card>
         <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl text-green-600 dark:text-green-400">
+            <div className="p-3 bg-[var(--clr-success-dim)] rounded-xl text-[var(--clr-success)]">
               <Receipt className="w-6 h-6" />
             </div>
             <div>
@@ -597,7 +597,7 @@ export const MyOperationsView: React.FC = () => {
                     key={payment.id}
                     className="bg-[var(--bg-elevated)] rounded-2xl p-5 border border-[var(--border)] shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center"
                   >
-                    <div className="w-12 h-12 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4 text-green-600 dark:text-green-400">
+                    <div className="w-12 h-12 bg-[var(--clr-success-dim)] rounded-full flex items-center justify-center mb-4 text-[var(--clr-success)]">
                       {payment.method === 'MOBILE_MONEY' ? (
                         <Smartphone className="w-6 h-6" />
                       ) : payment.method === 'BANK_TRANSFER' ? (

@@ -395,9 +395,9 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
           {/* Pool à planifier */}
           {unplannedInterventions.length > 0 && (
             <div>
-              <div className="px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border-t border-b border-amber-200 dark:border-amber-800 flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                <span className="text-xs font-bold text-amber-700 dark:text-amber-300">
+              <div className="px-4 py-2 bg-[var(--clr-caution-dim)] border-t border-b border-[var(--clr-caution-border)] flex items-center gap-2">
+                <Clock className="w-3.5 h-3.5 text-[var(--clr-caution)]" />
+                <span className="text-xs font-bold text-[var(--clr-caution-strong)]">
                   À planifier ({unplannedInterventions.length})
                 </span>
               </div>
@@ -486,7 +486,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
         <div className="flex items-center gap-2">
           {/* Compteur non planifiées */}
           {unplannedInterventions.length > 0 && (
-            <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-md">
+            <span className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 border border-[var(--clr-caution-border)] rounded-md">
               <Clock className="w-3 h-3" />
               {unplannedInterventions.length} à planifier
             </span>
@@ -697,9 +697,9 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
 
       {/* ======== POOL : INTERVENTIONS À PLANIFIER (drag & drop) ======== */}
       {unplannedInterventions.length > 0 && (
-        <div className="border-t-2 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10">
+        <div className="border-t-2 border-[var(--clr-caution-border)] bg-amber-50/50 dark:bg-amber-900/10">
           <div className="px-3 py-2 flex items-center justify-between border-b border-amber-200/60 dark:border-amber-800/40">
-            <span className="flex items-center gap-2 text-xs font-bold text-amber-700 dark:text-amber-300">
+            <span className="flex items-center gap-2 text-xs font-bold text-[var(--clr-caution-strong)]">
               <Clock className="w-3.5 h-3.5" />À planifier ({unplannedInterventions.length})
             </span>
             <span className="text-[10px] text-amber-600/70 dark:text-amber-400/70">

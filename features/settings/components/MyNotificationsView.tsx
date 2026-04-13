@@ -53,9 +53,9 @@ export const MyNotificationsView: React.FC = () => {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'CRITICAL':
-        return 'text-red-600 bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-900/30';
+        return 'text-red-600 bg-[var(--clr-danger-dim)] border-red-100 dark:border-red-900/30';
       case 'HIGH':
-        return 'text-orange-600 bg-orange-50 dark:bg-orange-900/20 border-orange-100 dark:border-orange-900/30';
+        return 'text-orange-600 bg-[var(--clr-warning-dim)] border-orange-100 dark:border-orange-900/30';
       case 'MEDIUM':
         return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-900/30';
       default:
@@ -336,7 +336,7 @@ export const MyNotificationsView: React.FC = () => {
                 />
               ) : selectedMessageId === 'ai-chat' ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-                  <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 bg-[var(--clr-info-muted)] rounded-full flex items-center justify-center mb-4">
                     <Bot className="w-8 h-8 text-purple-600" />
                   </div>
                   <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">Assistant IA</h3>
@@ -368,13 +368,13 @@ export const MyNotificationsView: React.FC = () => {
             <div className="w-full space-y-6">
               {/* Permission Banner */}
               {notifContext.permission !== 'granted' && (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-center gap-4">
+                <div className="bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-xl p-4 flex items-center gap-4">
                   <div className="p-3 bg-amber-100 dark:bg-amber-800 rounded-full">
-                    <BellOff className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                    <BellOff className="w-6 h-6 text-[var(--clr-caution)]" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-amber-800 dark:text-amber-200">Notifications désactivées</h4>
-                    <p className="text-sm text-amber-600 dark:text-amber-400">
+                    <p className="text-sm text-[var(--clr-caution)]">
                       Activez les notifications pour recevoir les alertes en temps réel
                     </p>
                   </div>
@@ -388,15 +388,13 @@ export const MyNotificationsView: React.FC = () => {
               )}
 
               {notifContext.permission === 'granted' && (
-                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-4">
+                <div className="bg-[var(--clr-success-dim)] border border-[var(--clr-success-border)] rounded-xl p-4 flex items-center gap-4">
                   <div className="p-3 bg-green-100 dark:bg-green-800 rounded-full">
-                    <BellRing className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    <BellRing className="w-6 h-6 text-[var(--clr-success)]" />
                   </div>
                   <div className="flex-1">
                     <h4 className="font-bold text-green-800 dark:text-green-200">Notifications activées</h4>
-                    <p className="text-sm text-green-600 dark:text-green-400">
-                      Vous recevrez les alertes push en temps réel
-                    </p>
+                    <p className="text-sm text-[var(--clr-success)]">Vous recevrez les alertes push en temps réel</p>
                   </div>
                   <CheckCircle className="w-6 h-6 text-green-600" />
                 </div>
@@ -436,11 +434,11 @@ export const MyNotificationsView: React.FC = () => {
                   {/* Sound Toggle */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                      <div className="p-2 bg-[var(--clr-info-muted)] rounded-lg">
                         {notifContext.preferences.soundEnabled ? (
-                          <Volume2 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          <Volume2 className="w-5 h-5 text-[var(--clr-info)]" />
                         ) : (
-                          <VolumeX className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          <VolumeX className="w-5 h-5 text-[var(--clr-info)]" />
                         )}
                       </div>
                       <div>
@@ -483,8 +481,8 @@ export const MyNotificationsView: React.FC = () => {
                   {/* Vibration Toggle */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                        <Vibrate className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                      <div className="p-2 bg-[var(--clr-warning-muted)] rounded-lg">
+                        <Vibrate className="w-5 h-5 text-[var(--clr-warning)]" />
                       </div>
                       <div>
                         <h4 className="font-medium text-[var(--text-primary)]">Vibration</h4>
@@ -519,8 +517,8 @@ export const MyNotificationsView: React.FC = () => {
                   {/* Speeding */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                        <Zap className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg">
+                        <Zap className="w-5 h-5 text-[var(--clr-danger)]" />
                       </div>
                       <div>
                         <h4 className="font-medium text-[var(--text-primary)]">Excès de vitesse</h4>
@@ -561,8 +559,8 @@ export const MyNotificationsView: React.FC = () => {
                   {/* Fuel Level */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
-                        <Fuel className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      <div className="p-2 bg-[var(--clr-caution-muted)] rounded-lg">
+                        <Fuel className="w-5 h-5 text-[var(--clr-caution)]" />
                       </div>
                       <div>
                         <h4 className="font-medium text-[var(--text-primary)]">Niveau carburant</h4>
@@ -582,8 +580,8 @@ export const MyNotificationsView: React.FC = () => {
                   {/* Fuel Theft */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                        <Fuel className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg">
+                        <Fuel className="w-5 h-5 text-[var(--clr-danger)]" />
                       </div>
                       <div>
                         <h4 className="font-medium text-[var(--text-primary)]">Vol de carburant</h4>
@@ -603,8 +601,8 @@ export const MyNotificationsView: React.FC = () => {
                   {/* Maintenance */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                        <Wrench className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <div className="p-2 bg-[var(--clr-success-muted)] rounded-lg">
+                        <Wrench className="w-5 h-5 text-[var(--clr-success)]" />
                       </div>
                       <div>
                         <h4 className="font-medium text-[var(--text-primary)]">Maintenance</h4>
@@ -624,8 +622,8 @@ export const MyNotificationsView: React.FC = () => {
                   {/* SOS */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg animate-pulse">
-                        <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg animate-pulse">
+                        <AlertTriangle className="w-5 h-5 text-[var(--clr-danger)]" />
                       </div>
                       <div>
                         <h4 className="font-medium text-[var(--text-primary)]">SOS / Urgence</h4>

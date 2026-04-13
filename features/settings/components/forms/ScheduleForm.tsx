@@ -221,12 +221,12 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
         {/* IMMOBILISATION PROGRAMMÉE */}
         {ruleType === 'SCHEDULED_IMMOBILIZATION' && (
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg space-y-4">
-            <div className="flex items-center gap-2 text-red-700 dark:text-red-300 font-bold">
+          <div className="p-4 bg-[var(--clr-danger-dim)] border border-[var(--clr-danger-border)] rounded-lg space-y-4">
+            <div className="flex items-center gap-2 text-[var(--clr-danger-strong)] font-bold">
               <Lock className="w-5 h-5" />
               Configuration Immobilisation Programmée
             </div>
-            <p className="text-xs text-red-600 dark:text-red-400">
+            <p className="text-xs text-[var(--clr-danger)]">
               Le véhicule sera automatiquement immobilisé pendant la plage horaire définie. L'immobilisation s'active à
               l'heure de début et se désactive à l'heure de fin.
             </p>
@@ -283,10 +283,10 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         {/* HEURES DE TRAVAIL / INTERDITES */}
         {(ruleType === 'WORKING_HOURS' || ruleType === 'FORBIDDEN_HOURS') && (
           <div
-            className={`p-4 ${ruleType === 'WORKING_HOURS' ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800'} border rounded-lg space-y-4`}
+            className={`p-4 ${ruleType === 'WORKING_HOURS' ? 'bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]' : 'bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)]'} border rounded-lg space-y-4`}
           >
             <div
-              className={`flex items-center gap-2 ${ruleType === 'WORKING_HOURS' ? 'text-green-700 dark:text-green-300' : 'text-orange-700 dark:text-orange-300'} font-bold`}
+              className={`flex items-center gap-2 ${ruleType === 'WORKING_HOURS' ? 'text-[var(--clr-success-strong)]' : 'text-[var(--clr-warning-strong)]'} font-bold`}
             >
               <Clock className="w-5 h-5" />
               {ruleType === 'WORKING_HOURS' ? 'Heures de Travail Autorisées' : 'Heures Interdites'}
@@ -326,8 +326,8 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
         {/* LIMITE DE VITESSE */}
         {ruleType === 'SPEED_LIMIT' && (
-          <div className="p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg space-y-4">
-            <div className="flex items-center gap-2 text-orange-700 dark:text-orange-300 font-bold">
+          <div className="p-4 bg-[var(--clr-warning-dim)] border border-[var(--clr-warning-border)] rounded-lg space-y-4">
+            <div className="flex items-center gap-2 text-[var(--clr-warning-strong)] font-bold">
               <Gauge className="w-5 h-5" />
               Configuration Limite de Vitesse
             </div>
@@ -401,8 +401,8 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
         {/* LIMITE HEURES MOTEUR */}
         {ruleType === 'ENGINE_HOURS_LIMIT' && (
-          <div className="p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg space-y-4">
-            <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-bold">
+          <div className="p-4 bg-[var(--clr-info-dim)] border border-[var(--clr-info-border)] rounded-lg space-y-4">
+            <div className="flex items-center gap-2 text-[var(--clr-info-strong)] font-bold">
               <Timer className="w-5 h-5" />
               Configuration Limite Heures Moteur
             </div>
@@ -576,8 +576,8 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                 placeholder="Décrivez la règle à appliquer..."
               />
             </div>
-            <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 rounded">
-              <p className="text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
+            <div className="p-3 bg-[var(--clr-caution-dim)] border border-amber-200 rounded">
+              <p className="text-xs text-[var(--clr-caution-strong)] flex items-start gap-2">
                 <Info className="w-4 h-4 shrink-0 mt-0.5" />
                 Les règles personnalisées nécessitent une configuration manuelle côté serveur.
               </p>

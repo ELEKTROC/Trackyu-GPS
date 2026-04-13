@@ -613,9 +613,9 @@ export const StaffPanelV2: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const config: Record<string, { bg: string; text: string; icon: typeof CheckCircle }> = {
-      Actif: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', icon: CheckCircle },
+      Actif: { bg: 'bg-[var(--clr-success-muted)]', text: 'text-[var(--clr-success-strong)]', icon: CheckCircle },
       Inactif: { bg: 'bg-[var(--bg-elevated)]', text: 'text-[var(--text-secondary)]', icon: XCircle },
-      Suspendu: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', icon: AlertTriangle },
+      Suspendu: { bg: 'bg-[var(--clr-danger-muted)]', text: 'text-[var(--clr-danger-strong)]', icon: AlertTriangle },
     };
     const c = config[status] || config['Inactif'];
     return (
@@ -703,7 +703,7 @@ export const StaffPanelV2: React.FC = () => {
                     {stats.total > 0 ? ((stats.active / stats.total) * 100).toFixed(0) : 0}% du total
                   </p>
                 </div>
-                <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <div className="p-3 bg-[var(--clr-success-muted)] rounded-lg">
                   <UserCheck className="w-6 h-6 text-green-600" />
                 </div>
               </div>
@@ -715,7 +715,7 @@ export const StaffPanelV2: React.FC = () => {
                   <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Connectés (24h)</p>
                   <p className="text-2xl font-bold text-purple-600">{stats.recentLogins}</p>
                 </div>
-                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <div className="p-3 bg-[var(--clr-info-muted)] rounded-lg">
                   <Activity className="w-6 h-6 text-purple-600" />
                 </div>
               </div>
@@ -1033,7 +1033,7 @@ export const StaffPanelV2: React.FC = () => {
                                 </button>
                                 <button
                                   onClick={() => handleResetPassword(user)}
-                                  className="p-1.5 text-[var(--text-muted)] hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded"
+                                  className="p-1.5 text-[var(--text-muted)] hover:text-amber-600 hover:bg-[var(--clr-caution-dim)] rounded"
                                   title="Réinitialiser mot de passe"
                                 >
                                   <Key className="w-4 h-4" />
@@ -1045,8 +1045,8 @@ export const StaffPanelV2: React.FC = () => {
                                     }
                                     className={`p-1.5 rounded ${
                                       user.status === 'Actif'
-                                        ? 'text-[var(--text-muted)] hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20'
-                                        : 'text-[var(--text-muted)] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'
+                                        ? 'text-[var(--text-muted)] hover:text-orange-600 hover:bg-[var(--clr-warning-dim)]'
+                                        : 'text-[var(--text-muted)] hover:text-green-600 hover:bg-[var(--clr-success-dim)]'
                                     }`}
                                     title={user.status === 'Actif' ? 'Désactiver' : 'Activer'}
                                   >
@@ -1060,7 +1060,7 @@ export const StaffPanelV2: React.FC = () => {
                                 {user.role !== 'SUPERADMIN' && (
                                   <button
                                     onClick={() => handleDelete(user.id)}
-                                    className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                    className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded"
                                     title="Supprimer"
                                   >
                                     <Trash2 className="w-4 h-4" />
@@ -2177,8 +2177,8 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
 
           {/* Section Technicien */}
           {user.role === 'TECH' && (
-            <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
-              <h4 className="font-bold text-sm text-orange-700 dark:text-orange-300 mb-3 flex items-center gap-2">
+            <div className="p-4 bg-[var(--clr-warning-dim)] rounded-lg border border-[var(--clr-warning-border)]">
+              <h4 className="font-bold text-sm text-[var(--clr-warning-strong)] mb-3 flex items-center gap-2">
                 <Settings className="w-4 h-4" />
                 Profil Technicien
               </h4>

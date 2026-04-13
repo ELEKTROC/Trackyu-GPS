@@ -356,7 +356,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
                   isUser
                     ? 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                     : isSupport
-                      ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
+                      ? 'bg-[var(--clr-success-badge)] text-[var(--clr-success)]'
                       : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
                 }`}
               >
@@ -370,7 +370,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
               </div>
               <div className={`flex flex-col max-w-[80%] ${isUser ? 'items-end' : 'items-start'}`}>
                 {isSupport && msg.senderName && (
-                  <span className="text-[10px] text-green-600 dark:text-green-400 font-medium mb-0.5 px-1">
+                  <span className="text-[10px] text-[var(--clr-success)] font-medium mb-0.5 px-1">
                     {msg.senderName}
                   </span>
                 )}
@@ -403,7 +403,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ vehicles }) => {
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center ${
                 mode === 'human'
-                  ? 'bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400'
+                  ? 'bg-[var(--clr-success-badge)] text-[var(--clr-success)]'
                   : 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)]'
               }`}
             >

@@ -433,7 +433,7 @@ export const AlertsConsole: React.FC = () => {
             </div>
           </>}
           <div className="flex items-center gap-2 ml-auto">
-            {hasActiveFilters && <button onClick={resetFilters} className="px-2 py-1 text-[10px] text-red-600 hover:text-red-800 flex items-center gap-1 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"><X className="w-3 h-3" /> Réinitialiser</button>}
+            {hasActiveFilters && <button onClick={resetFilters} className="px-2 py-1 text-[10px] text-red-600 hover:text-red-800 flex items-center gap-1 hover:bg-[var(--clr-danger-dim)] rounded transition-colors"><X className="w-3 h-3" /> Réinitialiser</button>}
             <span className="text-[10px] text-[var(--text-muted)] whitespace-nowrap">{totalCount} alerte{totalCount !== 1 ? 's' : ''} · {unreadCount} non lue{unreadCount !== 1 ? 's' : ''} · {treatedCount} traitée{treatedCount !== 1 ? 's' : ''}</span>
           </div>
         </div>
@@ -467,7 +467,7 @@ export const AlertsConsole: React.FC = () => {
                       </div>
                       <p className="text-[var(--text-primary)] mt-1 text-sm">{alert.message}</p>
                       {alert.comment && (
-                        <div className="mt-1.5 px-2 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded text-xs text-amber-800 dark:text-amber-200 flex items-start gap-1.5">
+                        <div className="mt-1.5 px-2 py-1 bg-[var(--clr-caution-dim)] border border-amber-200 dark:border-amber-700 rounded text-xs text-amber-800 dark:text-amber-200 flex items-start gap-1.5">
                           <MessageCircle className="w-3 h-3 mt-0.5 shrink-0" /><span>{alert.comment}</span>
                         </div>
                       )}
@@ -538,7 +538,7 @@ export const AlertsConsole: React.FC = () => {
                 </div>
                 <div className="flex gap-1 shrink-0 ml-2">
                   <button onClick={() => { setEditingConfig(config); setShowAlertConfigModal(true); }} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Modifier"><Edit className="w-4 h-4" /></button>
-                  <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-secondary)] hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-[var(--clr-danger-dim)] rounded-lg text-[var(--text-secondary)] hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </Card>
             ))
@@ -611,7 +611,7 @@ export const AlertsConsole: React.FC = () => {
                           <span className="flex gap-1">
                             {config.notifyWeb && <span className="px-1 py-0.5 bg-[var(--bg-elevated)] rounded text-[9px]">Web</span>}
                             {config.notifyEmail && <span className="px-1 py-0.5 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded text-[9px] text-[var(--primary)]">Email</span>}
-                            {config.notifySms && <span className="px-1 py-0.5 bg-green-50 dark:bg-green-900/20 rounded text-[9px] text-green-600">SMS</span>}
+                            {config.notifySms && <span className="px-1 py-0.5 bg-[var(--clr-success-dim)] rounded text-[9px] text-green-600">SMS</span>}
                             {!config.notifyWeb && !config.notifyEmail && !config.notifySms && <span className="text-[var(--text-muted)]">Aucune notification</span>}
                           </span>
                         </div>
@@ -630,7 +630,7 @@ export const AlertsConsole: React.FC = () => {
                     </div>
                     <div className="flex gap-1 shrink-0">
                       <button onClick={() => { setEditingConfig(config); setShowAlertConfigModal(true); }} className="p-2 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Modifier"><Edit className="w-4 h-4" /></button>
-                      <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-[var(--text-secondary)] hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => handleDeleteAlertConfig(config)} className="p-2 hover:bg-[var(--clr-danger-dim)] rounded-lg text-[var(--text-secondary)] hover:text-red-600 transition-colors" title="Supprimer"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
                 </Card>

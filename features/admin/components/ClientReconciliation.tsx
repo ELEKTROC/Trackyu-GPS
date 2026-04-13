@@ -406,16 +406,16 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
           <p className="text-2xl font-bold text-[var(--primary)] dark:text-[var(--primary)]">{trakzeeClients.length}</p>
           <p className="text-xs text-[var(--primary)]">clients</p>
         </div>
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-green-700 dark:text-green-300 font-medium mb-1">
+        <div className="bg-[var(--clr-success-dim)] border border-[var(--clr-success-border)] rounded-lg p-4">
+          <div className="flex items-center gap-2 text-[var(--clr-success-strong)] font-medium mb-1">
             <Building2 className="w-4 h-4" />
             Zoho Books (ABIDJAN GPS)
           </div>
           <p className="text-2xl font-bold text-green-900 dark:text-green-100">{zohoBooksClients.length}</p>
           <p className="text-xs text-green-600">contacts</p>
         </div>
-        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-medium mb-1">
+        <div className="bg-[var(--clr-info-dim)] border border-[var(--clr-info-border)] rounded-lg p-4">
+          <div className="flex items-center gap-2 text-[var(--clr-info-strong)] font-medium mb-1">
             <Building2 className="w-4 h-4" />
             Zoho Invoice (SMARTRACK)
           </div>

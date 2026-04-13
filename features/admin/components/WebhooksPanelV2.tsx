@@ -396,7 +396,7 @@ export const WebhooksPanelV2 = () => {
                 <CheckCircle className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-green-700 dark:text-green-300">
+                <p className="text-2xl font-bold text-[var(--clr-success-strong)]">
                   {webhooks.filter((w) => w.status === 'ACTIVE').length}
                 </p>
                 <p className="text-xs text-green-600">Actifs</p>
@@ -409,7 +409,7 @@ export const WebhooksPanelV2 = () => {
                 <Zap className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+                <p className="text-2xl font-bold text-[var(--clr-info-strong)]">
                   {webhooks.reduce((acc, w) => acc + w.events.length, 0)}
                 </p>
                 <p className="text-xs text-purple-600">Événements surveillés</p>
@@ -422,7 +422,7 @@ export const WebhooksPanelV2 = () => {
                 <BarChart3 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">98%</p>
+                <p className="text-2xl font-bold text-[var(--clr-warning-strong)]">98%</p>
                 <p className="text-xs text-orange-600">Taux de succès</p>
               </div>
             </div>
@@ -520,7 +520,7 @@ export const WebhooksPanelV2 = () => {
                   </button>
                   <button
                     onClick={() => handleDelete(webhook.id)}
-                    className="p-2 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                    className="p-2 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
                     title="Supprimer"
                   >
                     <Trash2 className="w-4 h-4 text-red-600" />
@@ -782,7 +782,7 @@ export const WebhooksPanelV2 = () => {
                     )}
                   </div>
                   {delivery.error_message && (
-                    <p className="mt-2 text-xs text-red-600 dark:text-red-400">{delivery.error_message}</p>
+                    <p className="mt-2 text-xs text-[var(--clr-danger)]">{delivery.error_message}</p>
                   )}
                 </div>
               ))

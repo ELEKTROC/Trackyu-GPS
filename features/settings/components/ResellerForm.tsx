@@ -382,7 +382,7 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
 
                 <div className="p-4 border border-[var(--border)] rounded-xl bg-[var(--bg-surface)]">
                   <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
-                    <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                    <div className="p-1.5 bg-[var(--clr-info-muted)] rounded-lg">
                       <Share2 className="w-4 h-4 text-purple-600" />
                     </div>
                     Réseaux Sociaux
@@ -480,7 +480,7 @@ export const ResellerForm = React.forwardRef<HTMLFormElement, ResellerFormProps>
                             <button
                               type="button"
                               onClick={() => handleRemoveStaff(idx)}
-                              className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                              className="p-1.5 text-red-500 hover:text-red-700 hover:bg-[var(--clr-danger-dim)] rounded-lg transition-colors"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>

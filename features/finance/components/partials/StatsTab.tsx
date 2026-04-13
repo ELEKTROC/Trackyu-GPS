@@ -143,7 +143,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
         {/* Encaissements */}
         <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start mb-1.5">
-            <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/20 rounded-lg text-emerald-600">
+            <div className="p-1.5 bg-[var(--clr-emerald-muted)] rounded-lg text-emerald-600">
               <Banknote className="w-4 h-4" />
             </div>
             <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase">Encaissé</span>
@@ -157,7 +157,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
         {/* Charges */}
         <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start mb-1.5">
-            <div className="p-1.5 bg-red-100 dark:bg-red-900/20 rounded-lg text-red-600">
+            <div className="p-1.5 bg-[var(--clr-danger-muted)] rounded-lg text-red-600">
               <TrendingUp className="w-4 h-4 transform rotate-180" />
             </div>
             <span className="text-[9px] font-bold text-[var(--text-muted)] uppercase">Charges</span>
@@ -170,7 +170,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
         <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] shadow-sm hover:shadow-md transition-shadow">
           <div className="flex justify-between items-start mb-1.5">
             <div
-              className={`p-1.5 rounded-lg ${financeKPIs.resultatNet >= 0 ? 'bg-green-100 dark:bg-green-900/20 text-green-600' : 'bg-red-100 dark:bg-red-900/20 text-red-600'}`}
+              className={`p-1.5 rounded-lg ${financeKPIs.resultatNet >= 0 ? 'bg-[var(--clr-success-muted)] text-green-600' : 'bg-[var(--clr-danger-muted)] text-red-600'}`}
             >
               <DollarSign className="w-4 h-4" />
             </div>
@@ -420,7 +420,7 @@ export const StatsTab: React.FC<StatsTabProps> = ({
                     key={client.clientId}
                     className={`flex items-center justify-between p-2 rounded-lg ${
                       index === 0
-                        ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                        ? 'bg-[var(--clr-danger-dim)] border border-[var(--clr-danger-border)]'
                         : 'bg-[var(--bg-elevated)]/50'
                     }`}
                   >

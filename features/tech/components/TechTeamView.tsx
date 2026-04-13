@@ -183,7 +183,7 @@ export const TechTeamView: React.FC = () => {
           </div>
           <button
             onClick={handleExport}
-            className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 text-sm font-bold rounded-lg border border-green-200 text-green-600 bg-green-50 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors"
+            className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 text-sm font-bold rounded-lg border border-green-200 text-green-600 bg-[var(--clr-success-dim)] dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors"
           >
             <Download className="w-4 h-4" /> Exporter CSV
           </button>
@@ -310,7 +310,7 @@ export const TechTeamView: React.FC = () => {
 
           {/* TABLE 3: SAV / DEPANNAGE */}
           <Card className="p-0 border-[var(--border)] overflow-hidden h-fit">
-            <div className="p-3 bg-orange-50 dark:bg-orange-900/20 border-b border-orange-100 dark:border-orange-800 font-bold text-orange-800 dark:text-orange-200 flex items-center gap-2">
+            <div className="p-3 bg-[var(--clr-warning-dim)] border-b border-[var(--clr-warning-border)] font-bold text-orange-800 dark:text-orange-200 flex items-center gap-2">
               <Wrench className="w-4 h-4" /> SAV & Dépannages
             </div>
             <div className="overflow-x-auto">
@@ -348,7 +348,7 @@ export const TechTeamView: React.FC = () => {
 
           {/* TABLE 4: TEMPS MOYENS */}
           <Card className="p-0 border-[var(--border)] overflow-hidden h-fit">
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border-b border-purple-100 dark:border-purple-800 font-bold text-purple-800 dark:text-purple-200 flex items-center gap-2">
+            <div className="p-3 bg-[var(--clr-info-dim)] border-b border-[var(--clr-info-border)] font-bold text-purple-800 dark:text-purple-200 flex items-center gap-2">
               <Clock className="w-4 h-4" /> Temps Moyens (min)
             </div>
             <div className="overflow-x-auto">

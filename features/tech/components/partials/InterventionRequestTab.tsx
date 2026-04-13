@@ -366,12 +366,12 @@ export const InterventionRequestTab: React.FC<RequestTabProps> = ({
 
         {/* Motif du Retrait (Conditional) - Full width */}
         {((formData.nature as string) === 'Retrait' || (formData.type as string) === 'RETRAIT') && (
-          <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-            <label className="text-xs font-bold text-red-600 dark:text-red-400 uppercase mb-2 block">
+          <div className="mt-4 p-3 bg-[var(--clr-danger-dim)] rounded-lg border border-[var(--clr-danger-border)]">
+            <label className="text-xs font-bold text-[var(--clr-danger)] uppercase mb-2 block">
               Motif du Retrait <span className="text-red-500">*</span>
             </label>
             <select
-              className="w-full max-w-md p-2 border border-red-200 dark:border-red-800 rounded-lg bg-[var(--bg-surface)] text-sm font-bold"
+              className="w-full max-w-md p-2 border border-[var(--clr-danger-border)] rounded-lg bg-[var(--bg-surface)] text-sm font-bold"
               value={formData.removalReason || ''}
               onChange={(e) => {
                 const reason = e.target.value;
@@ -636,7 +636,7 @@ export const InterventionRequestTab: React.FC<RequestTabProps> = ({
                 État Matériel Retiré
               </label>
               <select
-                className="w-full p-2 border border-orange-200 dark:border-orange-800 rounded-lg bg-orange-50 dark:bg-orange-900/20 text-sm font-bold text-orange-800 dark:text-orange-200"
+                className="w-full p-2 border border-[var(--clr-warning-border)] rounded-lg bg-[var(--clr-warning-dim)] text-sm font-bold text-orange-800 dark:text-orange-200"
                 value={formData.removedMaterialStatus || 'UNKNOWN'}
                 onChange={(e) =>
                   setFormData({
@@ -663,7 +663,7 @@ export const InterventionRequestTab: React.FC<RequestTabProps> = ({
                 </label>
                 <input
                   type="text"
-                  className="w-full p-2 border border-purple-200 dark:border-purple-800 rounded-lg bg-purple-50 dark:bg-purple-900/20 text-sm font-bold font-mono uppercase text-purple-800 dark:text-purple-200"
+                  className="w-full p-2 border border-[var(--clr-info-border)] rounded-lg bg-[var(--clr-info-dim)] text-sm font-bold font-mono uppercase text-purple-800 dark:text-purple-200"
                   value={formData.newLicensePlate || ''}
                   onChange={(e) =>
                     setFormData({

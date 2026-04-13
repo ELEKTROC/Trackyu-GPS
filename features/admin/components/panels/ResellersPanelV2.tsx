@@ -335,16 +335,16 @@ export const ResellersPanelV2: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const config = {
       ACTIVE: {
-        bg: 'bg-green-100 dark:bg-green-900/30',
-        text: 'text-green-700 dark:text-green-400',
+        bg: 'bg-[var(--clr-success-muted)]',
+        text: 'text-[var(--clr-success-strong)]',
         icon: CheckCircle,
       },
       SUSPENDED: {
-        bg: 'bg-orange-100 dark:bg-orange-900/30',
-        text: 'text-orange-700 dark:text-orange-400',
+        bg: 'bg-[var(--clr-warning-muted)]',
+        text: 'text-[var(--clr-warning-strong)]',
         icon: Pause,
       },
-      INACTIVE: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', icon: XCircle },
+      INACTIVE: { bg: 'bg-[var(--clr-danger-muted)]', text: 'text-[var(--clr-danger-strong)]', icon: XCircle },
     };
     const c = config[status as keyof typeof config] || config.INACTIVE;
     return (
@@ -405,7 +405,7 @@ export const ResellersPanelV2: React.FC = () => {
                 </>
               )}
             </div>
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg">
+            <div className="p-3 bg-[var(--clr-info-muted)] text-[var(--clr-info)] rounded-lg">
               <Users className="w-6 h-6" />
             </div>
           </div>
@@ -423,7 +423,7 @@ export const ResellersPanelV2: React.FC = () => {
                 </>
               )}
             </div>
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg">
+            <div className="p-3 bg-[var(--clr-success-muted)] text-[var(--clr-success)] rounded-lg">
               <Car className="w-6 h-6" />
             </div>
           </div>
@@ -442,7 +442,7 @@ export const ResellersPanelV2: React.FC = () => {
                 </>
               )}
             </div>
-            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-lg">
+            <div className="p-3 bg-[var(--clr-caution-muted)] text-[var(--clr-caution)] rounded-lg">
               <DollarSign className="w-6 h-6" />
             </div>
           </div>
@@ -692,7 +692,7 @@ export const ResellersPanelV2: React.FC = () => {
                             {reseller.status === 'ACTIVE' ? (
                               <button
                                 onClick={() => handleStatusChange(reseller, 'SUSPENDED')}
-                                className="p-1.5 text-[var(--text-muted)] hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors"
+                                className="p-1.5 text-[var(--text-muted)] hover:text-orange-600 hover:bg-[var(--clr-warning-dim)] rounded transition-colors"
                                 title="Suspendre"
                               >
                                 <Pause className="w-4 h-4" />
@@ -700,7 +700,7 @@ export const ResellersPanelV2: React.FC = () => {
                             ) : (
                               <button
                                 onClick={() => handleStatusChange(reseller, 'ACTIVE')}
-                                className="p-1.5 text-[var(--text-muted)] hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                                className="p-1.5 text-[var(--text-muted)] hover:text-green-600 hover:bg-[var(--clr-success-dim)] rounded transition-colors"
                                 title="Réactiver"
                               >
                                 <Play className="w-4 h-4" />

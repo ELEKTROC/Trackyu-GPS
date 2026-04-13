@@ -94,13 +94,13 @@ export const EscalateTicketModal: React.FC<EscalateTicketModalProps> = ({
     <Modal isOpen={isOpen} onClose={handleClose} title="Escalader le Ticket">
       <div className="space-y-4">
         {/* Warning Banner */}
-        <div className="flex items-start gap-3 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+        <div className="flex items-start gap-3 p-4 bg-[var(--clr-warning-dim)] border border-[var(--clr-warning-border)] rounded-lg">
           <AlertTriangle className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-sm font-medium text-orange-900 dark:text-orange-200">
               L'escalade augmentera automatiquement la priorité
             </p>
-            <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+            <p className="text-xs text-[var(--clr-warning-strong)] mt-1">
               Priorité actuelle: <span className="font-bold">{currentPriority}</span> →{' '}
               <span className="font-bold">{getNextPriority()}</span>
             </p>

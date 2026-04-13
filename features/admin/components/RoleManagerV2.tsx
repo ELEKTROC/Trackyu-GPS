@@ -120,7 +120,7 @@ const MOBILE_ICON_MAP: Record<string, React.ElementType> = {
 const COLOR_CLASSES: Record<string, { dot: string; bg: string; text: string; badge: string }> = {
   purple: {
     dot: 'bg-purple-500',
-    bg: 'bg-purple-100 dark:bg-purple-900/30',
+    bg: 'bg-[var(--clr-info-muted)]',
     text: 'text-purple-600',
     badge: 'bg-purple-100 text-purple-700',
   },
@@ -132,13 +132,13 @@ const COLOR_CLASSES: Record<string, { dot: string; bg: string; text: string; bad
   },
   green: {
     dot: 'bg-green-500',
-    bg: 'bg-green-100 dark:bg-green-900/30',
+    bg: 'bg-[var(--clr-success-muted)]',
     text: 'text-green-600',
     badge: 'bg-green-100 text-green-700',
   },
   orange: {
     dot: 'bg-orange-500',
-    bg: 'bg-orange-100 dark:bg-orange-900/30',
+    bg: 'bg-[var(--clr-warning-muted)]',
     text: 'text-orange-600',
     badge: 'bg-orange-100 text-orange-700',
   },
@@ -150,13 +150,13 @@ const COLOR_CLASSES: Record<string, { dot: string; bg: string; text: string; bad
   },
   red: {
     dot: 'bg-red-500',
-    bg: 'bg-red-100 dark:bg-red-900/30',
+    bg: 'bg-[var(--clr-danger-muted)]',
     text: 'text-red-600',
     badge: 'bg-red-100 text-red-700',
   },
   amber: {
     dot: 'bg-amber-500',
-    bg: 'bg-amber-100 dark:bg-amber-900/30',
+    bg: 'bg-[var(--clr-caution-muted)]',
     text: 'text-amber-600',
     badge: 'bg-amber-100 text-amber-700',
   },
@@ -928,25 +928,25 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                   Voir
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <div className="w-4 h-4 rounded bg-[var(--clr-success-muted)] flex items-center justify-center">
                     <Check className="w-3 h-3 text-green-600" />
                   </div>
                   Créer
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                  <div className="w-4 h-4 rounded bg-[var(--clr-caution-muted)] flex items-center justify-center">
                     <Check className="w-3 h-3 text-amber-600" />
                   </div>
                   Modifier
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <div className="w-4 h-4 rounded bg-[var(--clr-danger-muted)] flex items-center justify-center">
                     <Check className="w-3 h-3 text-red-600" />
                   </div>
                   Supprimer
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                  <div className="w-4 h-4 rounded bg-[var(--clr-info-muted)] flex items-center justify-center">
                     <Check className="w-3 h-3 text-purple-600" />
                   </div>
                   Exporter
@@ -1274,7 +1274,7 @@ export const RoleManagerV2: React.FC<RoleManagerV2Props> = ({ onRoleSelect }) =>
                       </div>
                     )}
                     {selected.length === 0 && (
-                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                      <p className="text-xs text-[var(--clr-caution)]">
                         Aucun onglet sélectionné — la configuration par défaut sera utilisée.
                       </p>
                     )}

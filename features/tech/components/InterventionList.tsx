@@ -663,15 +663,15 @@ export const InterventionList: React.FC<InterventionListProps> = ({
   };
 
   const STATUS_COLORS: Record<string, string> = {
-    PENDING: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800',
+    PENDING: 'bg-[var(--clr-caution-dim)] border-[var(--clr-caution-border)]',
     SCHEDULED:
       'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)]',
-    EN_ROUTE: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800',
+    EN_ROUTE: 'bg-[var(--clr-info-dim)] border-[var(--clr-info-border)]',
     IN_PROGRESS:
       'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--primary)] dark:border-[var(--primary)]',
-    COMPLETED: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
+    COMPLETED: 'bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]',
     CANCELLED: 'bg-[var(--bg-elevated)] border-[var(--border)]',
-    POSTPONED: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
+    POSTPONED: 'bg-[var(--clr-warning-dim)] border-[var(--clr-warning-border)]',
   };
 
   const MOBILE_STATUS_LABELS: Record<string, string> = {
@@ -729,13 +729,13 @@ export const InterventionList: React.FC<InterventionListProps> = ({
             <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wide">Exporter :</span>
             <button
               onClick={handleExport}
-              className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold rounded border border-red-200 text-red-600 bg-red-50 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold rounded border border-red-200 text-red-600 bg-[var(--clr-danger-dim)] dark:border-red-800 dark:text-red-400 hover:bg-red-100 transition-colors"
             >
               <FileText className="w-3 h-3" /> PDF
             </button>
             <button
               onClick={handleExportExcel}
-              className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold rounded border border-green-200 text-green-600 bg-green-50 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors"
+              className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold rounded border border-green-200 text-green-600 bg-[var(--clr-success-dim)] dark:border-green-800 dark:text-green-400 hover:bg-green-100 transition-colors"
             >
               <FileSpreadsheet className="w-3 h-3" /> XLS
             </button>
@@ -1222,7 +1222,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
           <div className="flex gap-2">
             <button
               onClick={handleDelete}
-              className="text-xs text-red-600 flex items-center gap-1.5 bg-[var(--bg-elevated)] px-3 py-1.5 rounded border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/20"
+              className="text-xs text-red-600 flex items-center gap-1.5 bg-[var(--bg-elevated)] px-3 py-1.5 rounded border border-red-200 dark:border-red-900 hover:bg-[var(--clr-danger-dim)]"
             >
               <Trash2 className="w-3 h-3" /> Supprimer
             </button>

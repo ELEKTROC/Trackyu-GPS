@@ -258,12 +258,12 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
 
       {/* ── Prochaine facturation ── */}
       {!isEdit && previewNextBilling && (
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-800">
+        <div className="bg-[var(--clr-success-dim)] rounded-lg p-3 border border-[var(--clr-success-border)]">
           <p className="text-[10px] font-bold text-green-500 uppercase tracking-wide mb-1 flex items-center gap-1">
             <CalendarDays className="w-3 h-3" />
             Prochaine fact. estimée
           </p>
-          <p className="font-bold text-green-700 dark:text-green-300 text-sm">{formatDate(previewNextBilling)}</p>
+          <p className="font-bold text-[var(--clr-success-strong)] text-sm">{formatDate(previewNextBilling)}</p>
         </div>
       )}
 
@@ -401,7 +401,7 @@ export const SubscriptionForm: React.FC<SubscriptionFormProps> = ({
         />
       </div>
 
-      {error && <p className="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded-lg px-3 py-2">{error}</p>}
+      {error && <p className="text-sm text-red-600 bg-[var(--clr-danger-dim)] rounded-lg px-3 py-2">{error}</p>}
 
       <div className="flex gap-3 pt-2">
         <button
