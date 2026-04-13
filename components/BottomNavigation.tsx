@@ -15,6 +15,7 @@ import {
   X,
   Sun,
   Moon,
+  Waves,
   Calculator,
   Activity,
   ShieldCheck,
@@ -56,7 +57,7 @@ interface BottomNavigationProps {
 
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavigate }) => {
   const { hasPermission, user, logout } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isMoreOpen, setIsMoreOpen] = React.useState(false);
 
   // Tous les items du menu depuis le registre central, triés
@@ -155,15 +156,30 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">Plus d'options</h3>
               <div className="flex items-center gap-2">
-                {/* Theme Toggle Button */}
-                <button
-                  onClick={toggleTheme}
-                  className="p-2.5 text-[var(--text-muted)] rounded-full hover:bg-[var(--bg-elevated)] touch-target haptic-feedback"
-                  title={isDarkMode ? 'Mode Clair' : 'Mode Sombre'}
-                  aria-label={isDarkMode ? 'Activer le mode clair' : 'Activer le mode sombre'}
-                >
-                  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                </button>
+                {/* Theme switcher — dark / ocean / light */}
+                <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-full p-0.5 gap-0.5">
+                  {(
+                    [
+                      { id: 'dark', Icon: Moon, label: 'Sombre' },
+                      { id: 'ocean', Icon: Waves, label: 'Océan' },
+                      { id: 'light', Icon: Sun, label: 'Clair' },
+                    ] as const
+                  ).map(({ id, Icon, label }) => (
+                    <button
+                      key={id}
+                      onClick={() => setTheme(id)}
+                      title={label}
+                      aria-label={label}
+                      className={`p-2 rounded-full transition-colors haptic-feedback ${
+                        theme === id
+                          ? 'bg-[var(--primary)] text-white'
+                          : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </button>
+                  ))}
+                </div>
                 <button
                   onClick={() => setIsMoreOpen(false)}
                   className="p-2 text-[var(--text-muted)] rounded-full hover:bg-[var(--bg-elevated)] touch-target haptic-feedback"

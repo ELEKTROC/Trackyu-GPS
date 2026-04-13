@@ -27,7 +27,7 @@ import {
   LazyFleetTable,
 } from './LazyViews';
 
-import { Menu, Bell, MessageCircle, X, Search, Moon, Sun, RefreshCw } from 'lucide-react';
+import { Menu, Bell, MessageCircle, X, Search, Moon, Sun, Waves, RefreshCw } from 'lucide-react';
 import { Drawer } from './components/Drawer';
 import { useAuth } from './contexts/AuthContext';
 import { LoginView } from './features/auth/components/LoginView';
@@ -59,7 +59,7 @@ import { InstallPrompt } from './components/InstallPrompt';
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading, hasPermission, logout, user, stopImpersonation, requirePasswordChange } =
     useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { vehicles, zones, alerts, markAlertAsRead, refreshData } = useDataContext(); // DATA FROM CONTEXT
 
   const prevUserIdRef = useRef<string | null>(null);
@@ -627,21 +627,29 @@ const AppContent: React.FC = () => {
             <div className="h-8 w-px mx-1 hidden sm:block" style={{ backgroundColor: 'var(--border)' }}></div>
 
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Theme toggle - visible on all screen sizes */}
-              <button
-                onClick={toggleTheme}
-                className="flex p-2.5 min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-colors haptic-feedback"
-                style={{ color: 'var(--text-muted)' }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-elevated)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                }}
-                title={isDarkMode ? 'Mode Clair' : 'Mode Sombre'}
-              >
-                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
+              {/* Theme switcher — dark / ocean / light */}
+              <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-full p-0.5 gap-0.5">
+                {(
+                  [
+                    { id: 'dark', Icon: Moon, label: 'Sombre' },
+                    { id: 'ocean', Icon: Waves, label: 'Océan' },
+                    { id: 'light', Icon: Sun, label: 'Clair' },
+                  ] as const
+                ).map(({ id, Icon, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => setTheme(id)}
+                    title={label}
+                    className={`p-2 rounded-full transition-colors haptic-feedback ${
+                      theme === id
+                        ? 'bg-[var(--primary)] text-white'
+                        : 'text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </button>
+                ))}
+              </div>
               <button
                 onClick={handleGlobalRefresh}
                 disabled={isRefreshing}
