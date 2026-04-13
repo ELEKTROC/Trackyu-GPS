@@ -318,8 +318,8 @@ export const HelpArticlesPanelV2: React.FC = () => {
             isPublished: a.is_published ?? true,
             isFeatured: a.is_featured ?? false,
             views: a.view_count || 0,
-            createdAt: a.created_at,
-            updatedAt: a.updated_at,
+            createdAt: a.created_at ?? '',
+            updatedAt: a.updated_at ?? '',
             videoUrl: a.video_url,
             duration: a.duration,
           })

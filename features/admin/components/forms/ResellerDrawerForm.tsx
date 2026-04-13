@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useForm, type Path } from 'react-hook-form';
+import { useForm, type Path, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '../../../../services/apiLazy';
 import { Drawer } from '../../../../components/Drawer';
@@ -114,7 +114,7 @@ export function ResellerDrawerForm({
   const isCreateMode = mode === 'create';
 
   const form = useForm<ResellerFormData>({
-    resolver: zodResolver(resellerSchema),
+    resolver: zodResolver(resellerSchema) as Resolver<ResellerFormData>,
     defaultValues: {
       name: '',
       slug: '',
