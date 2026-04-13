@@ -1007,7 +1007,7 @@ export const StaffPanelV2: React.FC = () => {
                                       </button>
                                       <button
                                         onClick={() => {
-                                          navigator.clipboard.writeText((user as StaffUser).plainPassword);
+                                          navigator.clipboard.writeText((user as StaffUser).plainPassword ?? '');
                                           showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success');
                                         }}
                                         className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"

@@ -985,6 +985,9 @@ export interface CatalogItem {
   subscriptionDuration?: number; // Durée en mois
   stockReference?: string; // Référence matériel à déstocker (ex: 'FMB920')
 
+  taxRate?: number;
+  minPrice?: number;
+  maxPrice?: number;
   status: 'ACTIVE' | 'INACTIVE';
   resellerId?: string; // Added
   resellerName?: string; // Added

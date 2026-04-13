@@ -251,10 +251,10 @@ export const TrashPanelV2: React.FC = () => {
                     </span>
                   </td>
                   <td className="py-3 px-4 hidden md:table-cell text-sm text-[var(--text-secondary)]">
-                    {formatDate(u.deleted_at)}
+                    {formatDate(u.deleted_at ?? null)}
                   </td>
                   <td className="py-3 px-4">
-                    <ActionButtons entityType="user" id={u.id} label={u.name || u.email} />
+                    <ActionButtons entityType="user" id={u.id} label={u.name || u.email || ''} />
                   </td>
                 </tr>
               ))}
@@ -313,7 +313,7 @@ export const TrashPanelV2: React.FC = () => {
                     {c.vehicle_plate || '-'}
                   </td>
                   <td className="py-3 px-4 hidden md:table-cell text-sm text-[var(--text-secondary)]">
-                    {formatDate(c.deleted_at)}
+                    {formatDate(c.deleted_at ?? null)}
                   </td>
                   <td className="py-3 px-4">
                     <ActionButtons
@@ -386,10 +386,10 @@ export const TrashPanelV2: React.FC = () => {
                     {t.contact_email || '-'}
                   </td>
                   <td className="py-3 px-4 hidden md:table-cell text-sm text-[var(--text-secondary)]">
-                    {formatDate(t.deleted_at)}
+                    {formatDate(t.deleted_at ?? null)}
                   </td>
                   <td className="py-3 px-4">
-                    <ActionButtons entityType="tenant" id={t.id} label={t.name || t.slug} />
+                    <ActionButtons entityType="tenant" id={t.id} label={t.name || t.slug || ''} />
                   </td>
                 </tr>
               ))}

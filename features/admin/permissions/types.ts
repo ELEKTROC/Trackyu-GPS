@@ -1,6 +1,6 @@
 /**
  * Système de Permissions Granulaires
- * 
+ *
  * Structure hiérarchique:
  * MODULE → ONGLET → CHAMP → ACTION (VIEW/CREATE/EDIT/DELETE)
  */
@@ -27,6 +27,7 @@ export interface TabPermission {
   label: string;
   description?: string;
   icon?: string;
+  staffOnly?: boolean;
   fields: FieldPermission[];
   actions: PermissionAction[];
 }

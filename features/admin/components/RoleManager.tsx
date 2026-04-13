@@ -81,7 +81,7 @@ export const RoleManager: React.FC = () => {
 
   // Convertir les permissions granulaires en format simple pour l'UI
   const roles = React.useMemo(() => {
-    return rawRoles.map((role) => ({
+    return rawRoles.map((role: any) => ({
       ...role,
       permissions: convertFromGranularFormat(role.permissions),
     }));
@@ -147,7 +147,7 @@ export const RoleManager: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
       showToast('Rôle supprimé', 'info');
-      if (selectedRole && roles.find((r) => r.id === selectedRole.id)) {
+      if (selectedRole && roles.find((r: any) => r.id === selectedRole.id)) {
         setSelectedRole(null);
       }
     },
@@ -188,7 +188,7 @@ export const RoleManager: React.FC = () => {
       permissions: editedRole.permissions, // ← AUCUNE CONVERSION, on envoie tel quel
     };
 
-    if (roles.some((r) => r.id === editedRole.id)) {
+    if (roles.some((r: any) => r.id === editedRole.id)) {
       updateMutation.mutate({ id: editedRole.id, data: dataToSend });
     } else {
       createMutation.mutate(dataToSend);
@@ -293,7 +293,7 @@ export const RoleManager: React.FC = () => {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-2">
-          {roles.map((role) => (
+          {roles.map((role: any) => (
             <div
               key={role.id}
               onClick={() => {
