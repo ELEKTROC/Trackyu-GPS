@@ -220,7 +220,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
     <div className="space-y-6 h-full flex flex-col">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <div className="min-w-0">
-          <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Tiers & Partenaires</h2>
+          <h2 className="text-xl sm:page-title">Tiers & Partenaires</h2>
           <p className="text-[var(--text-secondary)] text-sm hidden sm:block">
             Gestion unifiée des Clients, Revendeurs et Fournisseurs
           </p>
@@ -370,7 +370,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">Clients Actifs</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+                <p className="page-title mt-1">
                   {kpis.activeClients}{' '}
                   <span className="text-xs font-normal text-[var(--text-muted)]">/ {kpis.totalClients}</span>
                 </p>
@@ -384,7 +384,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">Nouveaux (Mois)</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">+{kpis.newClients}</p>
+                <p className="page-title mt-1">+{kpis.newClients}</p>
               </div>
               <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
                 <UserCheck className="w-6 h-6" />
@@ -395,7 +395,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">Revendeurs</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.resellers}</p>
+                <p className="page-title mt-1">{kpis.resellers}</p>
               </div>
               <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
                 <Briefcase className="w-6 h-6" />
@@ -406,7 +406,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">Fournisseurs</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.suppliers}</p>
+                <p className="page-title mt-1">{kpis.suppliers}</p>
               </div>
               <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
                 <LayoutTemplate className="w-6 h-6" />

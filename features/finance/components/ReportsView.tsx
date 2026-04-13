@@ -602,7 +602,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-[var(--text-primary)]">Rapports & États Financiers</h2>
+        <h2 className="page-title">Rapports & États Financiers</h2>
         <div className="flex gap-2">
           <div className="flex items-center bg-[var(--bg-elevated)] rounded-lg p-1 border border-[var(--border)]">
             <Calendar className="w-4 h-4 text-[var(--text-secondary)] ml-2" />

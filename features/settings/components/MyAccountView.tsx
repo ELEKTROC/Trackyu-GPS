@@ -247,7 +247,7 @@ export const MyAccountView: React.FC = () => {
 
         <div className="flex-1 text-center md:text-left space-y-2">
           <div>
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">{user?.name}</h1>
+            <h1 className="page-title">{user?.name}</h1>
             <p className="text-[var(--text-secondary)] flex items-center justify-center md:justify-start gap-2">
               <Mail className="w-4 h-4" /> {user?.email}
             </p>

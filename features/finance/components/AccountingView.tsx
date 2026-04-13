@@ -922,9 +922,7 @@ export const AccountingView: React.FC = () => {
             <Calculator className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] truncate">
-              Gestion Financière & Comptable
-            </h2>
+            <h2 className="text-lg sm:page-title truncate">Gestion Financière & Comptable</h2>
             <p className="text-xs text-[var(--text-secondary)] hidden sm:block">Pilotage, Trésorerie et Comptabilité</p>
           </div>
         </div>

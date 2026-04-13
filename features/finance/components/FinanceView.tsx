@@ -1358,7 +1358,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
         <div className="flex flex-col gap-2 shrink-0">
           {/* Row 1: Title + New button */}
           <div className="flex justify-between items-center">
-            <h2 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
+            <h2 className="text-lg sm:page-title flex items-center gap-2">
               <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--primary)]" />{' '}
               {mode === 'INVOICES' ? 'Facturation' : 'Devis'}
             </h2>
@@ -1619,9 +1619,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Factures Émises</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
-                        {(Array.isArray(invoices) ? invoices : []).length}
-                      </p>
+                      <p className="page-title mt-1">{(Array.isArray(invoices) ? invoices : []).length}</p>
                     </div>
                     <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                       <FileText className="w-6 h-6" />
@@ -1632,7 +1630,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Factures Payées</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+                      <p className="page-title mt-1">
                         {(Array.isArray(invoices) ? invoices : []).filter((i) => i.status === 'PAID').length}
                       </p>
                     </div>
@@ -1645,7 +1643,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">En Retard</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+                      <p className="page-title mt-1">
                         {(Array.isArray(invoices) ? invoices : []).filter((i) => i.status === 'OVERDUE').length}
                       </p>
                     </div>
@@ -1658,7 +1656,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Taux Recouvrement</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+                      <p className="page-title mt-1">
                         {((kpis as Record<string, number>).collectionRate || 0).toFixed(1)} %
                       </p>
                     </div>
@@ -1674,9 +1672,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Total Devis</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
-                        {(Array.isArray(quotes) ? quotes : []).length}
-                      </p>
+                      <p className="page-title mt-1">{(Array.isArray(quotes) ? quotes : []).length}</p>
                     </div>
                     <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                       <FileText className="w-6 h-6" />
@@ -1687,7 +1683,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Devis Acceptés</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+                      <p className="page-title mt-1">
                         {(Array.isArray(quotes) ? quotes : []).filter((q) => q.status === 'ACCEPTED').length}
                       </p>
                     </div>
@@ -1700,7 +1696,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Taux Transformation</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+                      <p className="page-title mt-1">
                         {((kpis as Record<string, number>).conversionRate || 0).toFixed(1)} %
                       </p>
                     </div>

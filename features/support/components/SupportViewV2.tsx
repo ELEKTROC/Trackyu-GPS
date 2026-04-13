@@ -1232,7 +1232,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="section-title">Ouverts</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)]">{ticketCounts.OPEN || 0}</p>
+                    <p className="page-title">{ticketCounts.OPEN || 0}</p>
                   </div>
                   <MessageSquare className="w-8 h-8 text-[var(--primary)] opacity-50" />
                 </div>
@@ -1241,7 +1241,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="section-title">En Cours</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)]">{ticketCounts.IN_PROGRESS || 0}</p>
+                    <p className="page-title">{ticketCounts.IN_PROGRESS || 0}</p>
                   </div>
                   <Clock className="w-8 h-8 text-orange-500 opacity-50" />
                 </div>
@@ -1250,7 +1250,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="section-title">Résolus</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)]">{ticketCounts.RESOLVED || 0}</p>
+                    <p className="page-title">{ticketCounts.RESOLVED || 0}</p>
                     <p className="text-[10px] text-[var(--text-muted)]">
                       {(() => {
                         const now = new Date();

@@ -408,7 +408,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Total</p>
-              <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{stats.totalInterventions}</p>
+              <p className="page-title mt-1">{stats.totalInterventions}</p>
             </div>
             <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded text-[var(--primary)]">
               <Wrench className="w-5 h-5" />
@@ -588,7 +588,7 @@ export const TechStats: React.FC<TechStatsProps> = ({ interventions, technicians
                   <AlertCircle className="w-6 h-6 text-[var(--text-secondary)]" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.unassigned.length}</p>
+                  <p className="page-title">{stats.unassigned.length}</p>
                   <p className="text-xs font-bold text-[var(--text-secondary)] uppercase">Non Assignées</p>
                 </div>
               </div>

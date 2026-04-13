@@ -262,7 +262,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
               </div>
               <div>
                 <p className="text-sm text-[var(--text-secondary)] font-medium">Total Entrées (Mois)</p>
-                <h3 className="text-2xl font-bold text-[var(--text-primary)]">
+                <h3 className="page-title">
                   {formatPrice(
                     cashEntries
                       .filter((e) => e.debit > 0 && e.date.startsWith(new Date().toISOString().slice(0, 7)))
@@ -280,7 +280,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
               </div>
               <div>
                 <p className="text-sm text-[var(--text-secondary)] font-medium">Total Sorties (Mois)</p>
-                <h3 className="text-2xl font-bold text-[var(--text-primary)]">
+                <h3 className="page-title">
                   {formatPrice(
                     cashEntries
                       .filter((e) => e.credit > 0 && e.date.startsWith(new Date().toISOString().slice(0, 7)))

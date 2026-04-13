@@ -211,7 +211,7 @@ export const BankReconciliationView: React.FC<BankReconciliationViewProps> = ({
               <span className="section-title">Rapprochement</span>
             </div>
             <div className="flex items-baseline gap-2">
-              <p className="text-2xl font-bold text-[var(--text-primary)]">{bankBalance.reconciledCount}</p>
+              <p className="page-title">{bankBalance.reconciledCount}</p>
               <span className="text-sm text-[var(--text-secondary)]">
                 / {bankBalance.reconciledCount + bankBalance.pendingCount}
               </span>

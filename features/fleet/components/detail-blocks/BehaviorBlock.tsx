@@ -34,7 +34,7 @@ export const BehaviorBlock: React.FC<BehaviorBlockProps> = ({
             />
           </svg>
           <div className="absolute text-center">
-            <span className="text-2xl font-bold text-[var(--text-primary)]">{mockData.safetyScore}</span>
+            <span className="page-title">{mockData.safetyScore}</span>
             <span className="block text-[8px] text-[var(--text-muted)] uppercase">Score</span>
           </div>
         </div>

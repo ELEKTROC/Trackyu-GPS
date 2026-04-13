@@ -195,7 +195,7 @@ export const TechTeamView: React.FC = () => {
         <Card className="p-3 md:p-4 border-l-4 border-l-blue-500 flex items-center justify-between">
           <div>
             <p className="text-[10px] md:text-xs font-bold text-[var(--text-secondary)] uppercase">Total</p>
-            <p className="text-xl md:text-2xl font-bold text-[var(--text-primary)]">{globalStats.total}</p>
+            <p className="text-xl md:page-title">{globalStats.total}</p>
           </div>
           <Briefcase className="w-6 h-6 md:w-8 md:h-8 text-[var(--primary)] dark:text-[var(--primary)]" />
         </Card>
@@ -214,16 +214,14 @@ export const TechTeamView: React.FC = () => {
         <Card className="p-3 md:p-4 border-l-4 border-l-purple-500 flex items-center justify-between">
           <div>
             <p className="text-[10px] md:text-xs font-bold text-[var(--text-secondary)] uppercase">Moy / Tech</p>
-            <p className="text-xl md:text-2xl font-bold text-[var(--text-primary)]">{globalStats.avgPerTech}</p>
+            <p className="text-xl md:page-title">{globalStats.avgPerTech}</p>
           </div>
           <Users className="w-6 h-6 md:w-8 md:h-8 text-purple-400 dark:text-purple-600" />
         </Card>
         <Card className="p-3 md:p-4 border-l-4 border-l-green-500 flex items-center justify-between">
           <div>
             <p className="text-[10px] md:text-xs font-bold text-[var(--text-secondary)] uppercase">Tps Moyen</p>
-            <p className="text-xl md:text-2xl font-bold text-[var(--text-primary)]">
-              {formatTime(globalStats.avgTimeGlobal)}
-            </p>
+            <p className="text-xl md:page-title">{formatTime(globalStats.avgTimeGlobal)}</p>
           </div>
           <Clock className="w-6 h-6 md:w-8 md:h-8 text-green-400 dark:text-green-600" />
         </Card>

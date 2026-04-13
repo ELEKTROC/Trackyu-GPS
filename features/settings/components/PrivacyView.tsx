@@ -9,7 +9,7 @@ export const PrivacyView: React.FC = () => {
           <Shield className="w-8 h-8 text-green-600 dark:text-green-400" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Politique de Confidentialité</h2>
+          <h2 className="page-title">Politique de Confidentialité</h2>
           <p className="text-[var(--text-secondary)]">Dernière mise à jour : 1er Décembre 2025</p>
         </div>
       </div>

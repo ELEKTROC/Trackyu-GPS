@@ -1017,7 +1017,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     <div className="relative z-10">
                       <div className="flex items-start justify-between mb-6">
                         <div>
-                          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-1">Informations Générales</h3>
+                          <h3 className="page-title mb-1">Informations Générales</h3>
                           <p className="text-sm text-[var(--text-secondary)]">Données administratives et légales</p>
                         </div>
                         <button

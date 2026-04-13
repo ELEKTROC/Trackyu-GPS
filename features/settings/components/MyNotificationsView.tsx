@@ -95,7 +95,7 @@ export const MyNotificationsView: React.FC = () => {
       {/* Header */}
       <div className="p-6 border-b border-[var(--border)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Centre de Notifications</h2>
+          <h2 className="page-title">Centre de Notifications</h2>
           <p className="text-[var(--text-secondary)]">Gérez vos alertes et vos échanges avec le support</p>
         </div>
 

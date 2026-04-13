@@ -815,26 +815,22 @@ export const IntegrationsPanelV2: React.FC = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
-          <div className="text-2xl font-bold text-[var(--text-primary)]">
+          <div className="page-title">
             {backendStatus.filter((s) => s.configured && s.active).length ||
               PROVIDERS.filter((p) => p.isConfigured()).length}
           </div>
           <div className="text-sm text-[var(--text-secondary)]">Actives</div>
         </div>
         <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
-          <div className="text-2xl font-bold text-[var(--text-primary)]">
-            {PROVIDERS.filter((p) => p.category === 'messaging').length}
-          </div>
+          <div className="page-title">{PROVIDERS.filter((p) => p.category === 'messaging').length}</div>
           <div className="text-sm text-[var(--text-secondary)]">Messagerie</div>
         </div>
         <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
-          <div className="text-2xl font-bold text-[var(--text-primary)]">
-            {PROVIDERS.filter((p) => p.category === 'email').length}
-          </div>
+          <div className="page-title">{PROVIDERS.filter((p) => p.category === 'email').length}</div>
           <div className="text-sm text-[var(--text-secondary)]">Email</div>
         </div>
         <div className="bg-[var(--bg-elevated)] rounded-xl p-4">
-          <div className="text-2xl font-bold text-[var(--text-primary)]">{PROVIDERS.length}</div>
+          <div className="page-title">{PROVIDERS.length}</div>
           <div className="text-sm text-[var(--text-secondary)]">Total Disponibles</div>
         </div>
       </div>

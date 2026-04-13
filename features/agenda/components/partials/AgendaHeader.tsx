@@ -39,7 +39,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div className="shrink-0">
-        <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Agenda Unifié</h2>
+        <h2 className="text-xl sm:page-title">Agenda Unifié</h2>
         <p className="text-xs sm:text-sm text-[var(--text-secondary)] hidden sm:block">
           Planification des interventions et rendez-vous commerciaux
         </p>

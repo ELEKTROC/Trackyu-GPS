@@ -170,7 +170,7 @@ export const UserMonitoring: React.FC = () => {
           <div className="text-xs text-orange-600 dark:text-orange-500 flex items-center justify-center gap-1"><AlertCircle className="w-3 h-3" /> Erreurs MDP</div>
         </div>
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-[var(--text-primary)]">{stats.neverLoggedIn}</div>
+          <div className="page-title">{stats.neverLoggedIn}</div>
           <div className="text-xs text-[var(--text-secondary)] flex items-center justify-center gap-1"><XCircle className="w-3 h-3" /> Jamais connecté</div>
         </div>
       </div>

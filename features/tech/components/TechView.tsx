@@ -1089,7 +1089,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <div className="flex items-center justify-between">
                 <div>
                   <p className="section-title">Total Interventions</p>
-                  <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.total}</p>
+                  <p className="page-title mt-1">{kpis.total}</p>
                 </div>
                 <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                   <Wrench className="w-6 h-6" />
@@ -1100,7 +1100,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <div className="flex items-center justify-between">
                 <div>
                   <p className="section-title">Terminées</p>
-                  <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.completed}</p>
+                  <p className="page-title mt-1">{kpis.completed}</p>
                 </div>
                 <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
                   <CheckCircle className="w-6 h-6" />
@@ -1111,7 +1111,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <div className="flex items-center justify-between">
                 <div>
                   <p className="section-title">En Attente</p>
-                  <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.pending}</p>
+                  <p className="page-title mt-1">{kpis.pending}</p>
                 </div>
                 <div className="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-full text-amber-600">
                   <Clock className="w-6 h-6" />
@@ -1122,7 +1122,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <div className="flex items-center justify-between">
                 <div>
                   <p className="section-title">En Cours</p>
-                  <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.inProgress}</p>
+                  <p className="page-title mt-1">{kpis.inProgress}</p>
                 </div>
                 <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
                   <Activity className="w-6 h-6" />
@@ -1133,7 +1133,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               <div className="flex items-center justify-between">
                 <div>
                   <p className="section-title">Temps Moyen</p>
-                  <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.avgTime}</p>
+                  <p className="page-title mt-1">{kpis.avgTime}</p>
                 </div>
                 <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
                   <Activity className="w-6 h-6" />

@@ -160,7 +160,7 @@ const KPICard: React.FC<{
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{displayValue}</p>
+      <p className="page-title tabular-nums">{displayValue}</p>
       <p className="text-xs text-[var(--text-muted)] mt-0.5 leading-tight">{label}</p>
       {subtitle && <p className="text-[10px] text-[var(--text-muted)] mt-1 leading-tight">{subtitle}</p>}
     </div>

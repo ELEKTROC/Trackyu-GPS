@@ -444,7 +444,7 @@ export const HelpCenterPanelV2: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Articles</p>
-              <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.totalArticles}</p>
+              <p className="page-title">{stats.totalArticles}</p>
               <p className="text-xs text-green-600">{stats.publishedArticles} publiés</p>
             </div>
             <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">

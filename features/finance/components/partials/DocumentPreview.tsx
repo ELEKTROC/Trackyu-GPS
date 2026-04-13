@@ -228,7 +228,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, 
           </div>
         </div>
         <div className="text-left md:text-right w-full md:w-auto">
-          <h1 className="text-xl md:text-2xl font-bold text-[var(--text-primary)] mb-1">
+          <h1 className="text-xl md:page-title mb-1">
             {isInvoice ? (item as Invoice).invoiceType || 'FACTURE' : 'DEVIS'}
           </h1>
           <p className="text-base md:text-lg font-mono text-[var(--primary)]">

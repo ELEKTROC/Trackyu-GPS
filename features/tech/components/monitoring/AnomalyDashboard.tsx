@@ -110,7 +110,7 @@ export const AnomalyDashboard: React.FC = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="section-title">Anomalies Critiques</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+              <h3 className="page-title mt-1">
                 {displayAnomalies.filter(a => a.severity === 'CRITICAL').length}
               </h3>
             </div>
@@ -123,7 +123,7 @@ export const AnomalyDashboard: React.FC = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="section-title">Batteries Faibles</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+              <h3 className="page-title mt-1">
                 {displayAnomalies.filter(a => a.code === 'BATTERY_LOW').length}
               </h3>
             </div>
@@ -136,7 +136,7 @@ export const AnomalyDashboard: React.FC = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="section-title">Alim. Instable</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+              <h3 className="page-title mt-1">
                 {displayAnomalies.filter(a => a.code === 'POWER_CUT').length}
               </h3>
             </div>
@@ -149,7 +149,7 @@ export const AnomalyDashboard: React.FC = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="section-title">Sauts GPS</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)] mt-1">
+              <h3 className="page-title mt-1">
                 {displayAnomalies.filter(a => a.code === 'GPS_JUMP').length}
               </h3>
             </div>

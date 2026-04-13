@@ -686,7 +686,7 @@ export const StaffPanelV2: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-xs text-[var(--text-secondary)] uppercase font-bold">Total Équipe</p>
-                  <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</p>
+                  <p className="page-title">{stats.total}</p>
                 </div>
                 <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
                   <Users className="w-6 h-6 text-[var(--primary)]" />
@@ -2118,7 +2118,7 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
               <span className="absolute bottom-2 right-2 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
             )}
           </div>
-          <h2 className="text-xl font-bold text-[var(--text-primary)] mt-4">{user.name}</h2>
+          <h2 className="page-title mt-4">{user.name}</h2>
           <p className="text-[var(--text-secondary)]">{user.email}</p>
           <div className="flex items-center justify-center gap-2 mt-2">
             <span

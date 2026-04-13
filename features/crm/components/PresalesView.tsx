@@ -250,7 +250,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
   return (
     <div className="h-full flex flex-col space-y-3 sm:space-y-4 animate-in fade-in duration-500">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Prévente & Leads</h1>
+        <h1 className="text-xl sm:page-title">Prévente & Leads</h1>
         <DateRangeSelector
           periodPreset={periodPreset}
           setPeriodPreset={setPeriodPreset}
@@ -274,7 +274,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Total Leads</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.totalLeads}</p>
+                      <p className="page-title mt-1">{kpis.totalLeads}</p>
                     </div>
                     <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                       <Users className="w-5 h-5" />
@@ -506,7 +506,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="section-title">Total Leads</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.totalLeads}</p>
+                    <p className="page-title mt-1">{kpis.totalLeads}</p>
                   </div>
                   <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                     <Users className="w-6 h-6" />
@@ -517,7 +517,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="section-title">Nouveaux (Mois)</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">+{kpis.newLeads}</p>
+                    <p className="page-title mt-1">+{kpis.newLeads}</p>
                   </div>
                   <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
                     <TrendingUp className="w-6 h-6" />
@@ -528,7 +528,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="section-title">Qualifiés</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.qualifiedLeads}</p>
+                    <p className="page-title mt-1">{kpis.qualifiedLeads}</p>
                   </div>
                   <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
                     <CheckCircle className="w-6 h-6" />
@@ -539,9 +539,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="section-title">Taux Conversion</p>
-                    <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
-                      {kpis.conversionRate.toFixed(1)}%
-                    </p>
+                    <p className="page-title mt-1">{kpis.conversionRate.toFixed(1)}%</p>
                   </div>
                   <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
                     <Briefcase className="w-6 h-6" />
@@ -559,7 +557,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Total Articles</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{catalogKpis.totalItems}</p>
+                      <p className="page-title mt-1">{catalogKpis.totalItems}</p>
                     </div>
                     <div className="p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-full text-indigo-600">
                       <BookOpen className="w-6 h-6" />
@@ -570,7 +568,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Catégories</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{catalogKpis.categories}</p>
+                      <p className="page-title mt-1">{catalogKpis.categories}</p>
                     </div>
                     <div className="p-3 bg-pink-50 dark:bg-pink-900/30 rounded-full text-pink-600">
                       <FileDigit className="w-6 h-6" />
@@ -581,7 +579,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Actifs</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{catalogKpis.activeItems}</p>
+                      <p className="page-title mt-1">{catalogKpis.activeItems}</p>
                     </div>
                     <div className="p-3 bg-teal-50 dark:bg-teal-900/30 rounded-full text-teal-600">
                       <CheckCircle className="w-6 h-6" />
@@ -592,9 +590,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="section-title">Prix Moyen</p>
-                      <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">
-                        {catalogKpis.avgPrice.toFixed(2)}
-                      </p>
+                      <p className="page-title mt-1">{catalogKpis.avgPrice.toFixed(2)}</p>
                     </div>
                     <div className="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-full text-amber-600">
                       <Briefcase className="w-6 h-6" />

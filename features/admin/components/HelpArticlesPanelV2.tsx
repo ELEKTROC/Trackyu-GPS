@@ -870,7 +870,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
               </div>
               <h3 className="font-bold text-[var(--text-primary)]">{cat.label}</h3>
               <p className="text-sm text-[var(--text-secondary)] mb-2">{cat.description}</p>
-              <p className="text-2xl font-bold text-[var(--text-primary)]">{cat.count}</p>
+              <p className="page-title">{cat.count}</p>
               <p className="text-xs text-[var(--text-secondary)]">articles</p>
             </Card>
           ))}

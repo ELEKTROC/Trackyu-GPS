@@ -52,7 +52,7 @@ export const SyncView: React.FC = () => {
     <div className="p-6 w-full space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Synchronisation Système</h2>
+          <h2 className="page-title">Synchronisation Système</h2>
           <p className="text-[var(--text-secondary)]">Gérez la synchronisation des données et l'état du cache local.</p>
         </div>
         <button

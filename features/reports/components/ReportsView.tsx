@@ -354,7 +354,7 @@ export const ReportsView: React.FC<{ vehicles: Vehicle[] }> = ({ vehicles }) => 
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="shrink-0 bg-[var(--bg-surface)] border-b border-[var(--border)] px-6 py-5">
-        <h1 className="text-xl font-bold text-[var(--text-primary)] mb-4">Rapports & Analyses</h1>
+        <h1 className="page-title mb-4">Rapports & Analyses</h1>
 
         {/* Search */}
         <div className="relative max-w-md">

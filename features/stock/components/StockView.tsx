@@ -898,7 +898,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
     <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 sm:h-[calc(100vh-140px)] sm:flex sm:flex-col">
       {/* ACTION BUTTONS - Outside tabs */}
       <div className="flex items-center justify-between shrink-0">
-        <h1 className="hidden sm:block text-xl sm:text-2xl font-bold text-[var(--text-primary)]">Gestion du Stock</h1>
+        <h1 className="hidden sm:block text-xl sm:page-title">Gestion du Stock</h1>
         <div className="hidden sm:flex items-center gap-2">
           <button
             onClick={() => setIsBulkImportModalOpen(true)}

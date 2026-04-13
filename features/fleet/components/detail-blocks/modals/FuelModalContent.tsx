@@ -74,7 +74,7 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({ history = []
             <Droplet className="w-4 h-4" />
             <span className="text-sm font-bold">Conso. Moyenne</span>
           </div>
-          <div className="text-2xl font-bold text-[var(--text-primary)]">
+          <div className="page-title">
             {stats?.avgConsumption || 0} L
             <span className="text-sm text-[var(--text-secondary)] font-normal">/100km</span>
           </div>
@@ -84,14 +84,14 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({ history = []
             <DollarSign className="w-4 h-4" />
             <span className="text-sm font-bold">Coût Total</span>
           </div>
-          <div className="text-2xl font-bold text-[var(--text-primary)]">{stats?.totalCost || 0}</div>
+          <div className="page-title">{stats?.totalCost || 0}</div>
         </div>
         <div className="bg-purple-50 p-4 rounded-xl border border-purple-100">
           <div className="flex items-center gap-2 text-purple-600 mb-1">
             <TrendingUp className="w-4 h-4" />
             <span className="text-sm font-bold">Gaspillage</span>
           </div>
-          <div className="text-2xl font-bold text-[var(--text-primary)]">{stats?.idlingWaste || 0} L</div>
+          <div className="page-title">{stats?.idlingWaste || 0} L</div>
         </div>
       </div>
 

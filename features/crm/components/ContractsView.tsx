@@ -691,7 +691,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       {!externalDateRange && (
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-[var(--text-primary)]">Abonnements & Contrats</h2>
+            <h2 className="page-title">Abonnements & Contrats</h2>
             <p className="page-subtitle">Gestion centralisée des revenus récurrents (SaaS)</p>
           </div>
           <div className="flex items-center gap-4">
@@ -719,7 +719,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">Contrats Actifs</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.activeCount}</p>
+                <p className="page-title mt-1">{kpis.activeCount}</p>
               </div>
               <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-full text-[var(--primary)]">
                 <FileText className="w-6 h-6" />
@@ -730,7 +730,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">MRR</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{formatPrice(kpis.mrr)}</p>
+                <p className="page-title mt-1">{formatPrice(kpis.mrr)}</p>
               </div>
               <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-full text-green-600">
                 <DollarSign className="w-6 h-6" />
@@ -741,7 +741,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">Véhicules Couverts</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.vehiclesCovered}</p>
+                <p className="page-title mt-1">{kpis.vehiclesCovered}</p>
               </div>
               <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-full text-purple-600">
                 <Users className="w-6 h-6" />
@@ -752,7 +752,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
             <div className="flex items-center justify-between">
               <div>
                 <p className="section-title">Renouvellements (30j)</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)] mt-1">{kpis.renewalsUpcoming}</p>
+                <p className="page-title mt-1">{kpis.renewalsUpcoming}</p>
               </div>
               <div className="p-3 bg-orange-50 dark:bg-orange-900/30 rounded-full text-orange-600">
                 <RefreshCw className="w-6 h-6" />

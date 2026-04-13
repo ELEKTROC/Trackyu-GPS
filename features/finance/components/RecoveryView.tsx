@@ -588,7 +588,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-red-600 dark:text-red-400">Total En Souffrance</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{formatPrice(kpis.totalOverdue)}</p>
+                <p className="page-title">{formatPrice(kpis.totalOverdue)}</p>
               </div>
               <AlertTriangle className="w-8 h-8 text-red-500 opacity-50" />
             </div>
@@ -597,7 +597,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-[var(--text-secondary)]">Factures en Retard</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{kpis.count}</p>
+                <p className="page-title">{kpis.count}</p>
               </div>
               <FileWarning className="w-8 h-8 text-orange-500 opacity-50" />
             </div>
@@ -606,7 +606,7 @@ export const RecoveryView: React.FC<RecoveryViewProps> = ({
             <div className="flex justify-between items-center">
               <div>
                 <p className="text-sm font-medium text-[var(--text-secondary)]">Dossiers Critiques (&gt;60j)</p>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{kpis.criticalCount}</p>
+                <p className="page-title">{kpis.criticalCount}</p>
               </div>
               <ShieldAlert className="w-8 h-8 text-[var(--text-secondary)] opacity-50" />
             </div>

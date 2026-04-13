@@ -204,7 +204,7 @@ export const MyOperationsView: React.FC = () => {
     <div className="space-y-6 p-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Mes Opérations</h2>
+          <h2 className="page-title">Mes Opérations</h2>
           <p className="text-[var(--text-secondary)]">Suivez vos contrats, interventions et tickets de support</p>
         </div>
         <div className="flex gap-2">
@@ -287,9 +287,7 @@ export const MyOperationsView: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-[var(--text-secondary)]">Abonnements Actifs</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)]">
-                {contracts.filter((c) => c.status === 'ACTIVE').length}
-              </h3>
+              <h3 className="page-title">{contracts.filter((c) => c.status === 'ACTIVE').length}</h3>
             </div>
           </div>
         </Card>
@@ -300,7 +298,7 @@ export const MyOperationsView: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-[var(--text-secondary)]">Interventions en cours</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)]">
+              <h3 className="page-title">
                 {interventions.filter((i) => ['SCHEDULED', 'EN_ROUTE', 'IN_PROGRESS'].includes(i.status)).length}
               </h3>
             </div>
@@ -313,7 +311,7 @@ export const MyOperationsView: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-[var(--text-secondary)]">Tickets Ouverts</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)]">
+              <h3 className="page-title">
                 {tickets.filter((t) => ['OPEN', 'IN_PROGRESS', 'WAITING_CLIENT'].includes(t.status)).length}
               </h3>
             </div>
@@ -326,7 +324,7 @@ export const MyOperationsView: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-[var(--text-secondary)]">Paiements enregistrés</p>
-              <h3 className="text-2xl font-bold text-[var(--text-primary)]">{payments.length}</h3>
+              <h3 className="page-title">{payments.length}</h3>
             </div>
           </div>
         </Card>

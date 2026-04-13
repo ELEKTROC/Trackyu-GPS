@@ -284,9 +284,7 @@ export const SalesDashboard: React.FC<{
             </div>
           </div>
           <p className="text-xs text-[var(--text-secondary)] font-medium uppercase">MRR</p>
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">
-            {(stats.mrr ?? 0).toLocaleString('fr-FR')}
-          </h3>
+          <h3 className="page-title mt-1">{(stats.mrr ?? 0).toLocaleString('fr-FR')}</h3>
           <p className="text-[10px] text-[var(--text-muted)]">Revenu mensuel récurrent</p>
         </Card>
 
@@ -297,9 +295,7 @@ export const SalesDashboard: React.FC<{
             </div>
           </div>
           <p className="text-xs text-[var(--text-secondary)] font-medium uppercase">ARR</p>
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">
-            {(stats.arr ?? 0).toLocaleString('fr-FR')}
-          </h3>
+          <h3 className="page-title mt-1">{(stats.arr ?? 0).toLocaleString('fr-FR')}</h3>
           <p className="text-[10px] text-[var(--text-muted)]">Revenu annuel récurrent</p>
         </Card>
 
@@ -310,9 +306,7 @@ export const SalesDashboard: React.FC<{
             </div>
           </div>
           <p className="text-xs text-[var(--text-secondary)] font-medium uppercase">Facturé</p>
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">
-            {(stats.totalInvoiced ?? 0).toLocaleString('fr-FR')}
-          </h3>
+          <h3 className="page-title mt-1">{(stats.totalInvoiced ?? 0).toLocaleString('fr-FR')}</h3>
           <p className="text-[10px] text-[var(--text-muted)]">Période sélectionnée</p>
         </Card>
 
@@ -344,7 +338,7 @@ export const SalesDashboard: React.FC<{
             </span>
           </div>
           <p className="text-xs text-[var(--text-secondary)] font-medium uppercase">Clients</p>
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">
+          <h3 className="page-title mt-1">
             {stats.activeClients}{' '}
             <span className="text-sm font-normal text-[var(--text-muted)]">/ {stats.totalClients}</span>
           </h3>
@@ -358,9 +352,7 @@ export const SalesDashboard: React.FC<{
             </div>
           </div>
           <p className="text-xs text-[var(--text-secondary)] font-medium uppercase">LTV Client</p>
-          <h3 className="text-xl font-bold text-[var(--text-primary)] mt-1">
-            {(stats.ltv ?? 0).toLocaleString('fr-FR')}
-          </h3>
+          <h3 className="page-title mt-1">{(stats.ltv ?? 0).toLocaleString('fr-FR')}</h3>
           <p className="text-[10px] text-[var(--text-muted)]">~{stats.avgContractDuration} mois moy.</p>
         </Card>
       </div>

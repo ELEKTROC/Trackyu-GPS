@@ -312,7 +312,7 @@ export const FAQView: React.FC = () => {
         <div className="flex items-center gap-3">
           <BookOpen className="w-8 h-8 text-[var(--primary)]" />
           <div>
-            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Base de Connaissances (FAQ)</h1>
+            <h1 className="page-title">Base de Connaissances (FAQ)</h1>
             <p className="text-sm text-[var(--text-secondary)]">
               {articles.filter((a) => a.is_published).length} articles publiés
             </p>

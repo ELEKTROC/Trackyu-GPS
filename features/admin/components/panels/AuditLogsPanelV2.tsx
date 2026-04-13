@@ -636,7 +636,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <Activity className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.total}</p>
+                <p className="page-title">{stats.total}</p>
                 <p className="text-xs text-[var(--text-secondary)]">Total</p>
               </div>
             </div>
@@ -647,7 +647,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <Clock className="w-5 h-5 text-[var(--primary)]" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.today}</p>
+                <p className="page-title">{stats.today}</p>
                 <p className="text-xs text-[var(--text-secondary)]">Aujourd'hui</p>
               </div>
             </div>
@@ -658,7 +658,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <Users className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.uniqueUsers}</p>
+                <p className="page-title">{stats.uniqueUsers}</p>
                 <p className="text-xs text-[var(--text-secondary)]">Utilisateurs</p>
               </div>
             </div>
@@ -669,7 +669,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <AlertTriangle className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.warnings}</p>
+                <p className="page-title">{stats.warnings}</p>
                 <p className="text-xs text-[var(--text-secondary)]">Avertissements</p>
               </div>
             </div>
@@ -680,7 +680,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                 <X className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[var(--text-primary)]">{stats.failures}</p>
+                <p className="page-title">{stats.failures}</p>
                 <p className="text-xs text-[var(--text-secondary)]">Échecs</p>
               </div>
             </div>

@@ -382,7 +382,7 @@ export const ResellersPanelV2: React.FC = () => {
                 <div className="h-8 w-16 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-[var(--text-primary)]">{globalStats.activeResellers}</p>
+                  <p className="page-title">{globalStats.activeResellers}</p>
                   <p className="text-xs text-[var(--text-secondary)]">sur {resellers.length} total</p>
                 </>
               )}
@@ -401,9 +401,7 @@ export const ResellersPanelV2: React.FC = () => {
                 <div className="h-8 w-16 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-[var(--text-primary)]">
-                    {globalStats.totalClients.toLocaleString('fr-FR')}
-                  </p>
+                  <p className="page-title">{globalStats.totalClients.toLocaleString('fr-FR')}</p>
                 </>
               )}
             </div>
@@ -421,9 +419,7 @@ export const ResellersPanelV2: React.FC = () => {
                 <div className="h-8 w-16 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-[var(--text-primary)]">
-                    {globalStats.totalVehicles.toLocaleString('fr-FR')}
-                  </p>
+                  <p className="page-title">{globalStats.totalVehicles.toLocaleString('fr-FR')}</p>
                 </>
               )}
             </div>
@@ -441,9 +437,7 @@ export const ResellersPanelV2: React.FC = () => {
                 <div className="h-8 w-20 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] animate-pulse rounded" />
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-[var(--text-primary)]">
-                    {(globalStats.totalMRR / 1000000).toFixed(1)}M
-                  </p>
+                  <p className="page-title">{(globalStats.totalMRR / 1000000).toFixed(1)}M</p>
                   <p className="text-xs text-[var(--text-secondary)]">Récurrent</p>
                 </>
               )}

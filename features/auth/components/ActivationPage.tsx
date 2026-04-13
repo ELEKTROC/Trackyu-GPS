@@ -164,7 +164,7 @@ export const ActivationPage: React.FC = () => {
                   <div className="p-4 bg-red-100 rounded-full">
                     <AlertCircle className="w-12 h-12 text-red-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">Lien invalide</h2>
+                  <h2 className="page-title">Lien invalide</h2>
                   <p className="text-[var(--text-secondary)] text-center max-w-sm">{errorMessage}</p>
                 </div>
                 <button
@@ -187,7 +187,7 @@ export const ActivationPage: React.FC = () => {
                   <div className="p-4 bg-green-100 rounded-full">
                     <CheckCircle className="w-12 h-12 text-green-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-[var(--text-primary)]">Compte activé !</h2>
+                  <h2 className="page-title">Compte activé !</h2>
                   <p className="text-[var(--text-secondary)] text-center max-w-sm">
                     Votre compte a été activé avec succès. Vous pouvez maintenant vous connecter avec votre email et le
                     mot de passe que vous venez de définir.

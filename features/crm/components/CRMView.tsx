@@ -479,7 +479,7 @@ export const CRMView: React.FC<CRMViewProps> = ({ mode = 'LEADS', onNavigate, on
     <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-500 sm:h-[calc(100vh-140px)] sm:flex sm:flex-col">
       {/* HEADER CONTROLS */}
       <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center shrink-0">
-        <h2 className="hidden sm:flex text-xl font-bold text-[var(--text-primary)] items-center gap-2">
+        <h2 className="hidden sm:flex page-title items-center gap-2">
           {mode === 'LEADS' ? (
             <Users className="w-6 h-6 text-[var(--primary)]" />
           ) : mode === 'CLIENTS' ? (

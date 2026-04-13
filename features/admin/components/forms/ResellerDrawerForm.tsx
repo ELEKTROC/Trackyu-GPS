@@ -704,7 +704,7 @@ export function ResellerDrawerForm({
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-[var(--text-secondary)]">Montant dû</p>
-              <p className="text-2xl font-bold text-[var(--text-primary)]">{totalDue}</p>
+              <p className="page-title">{totalDue}</p>
             </div>
             <Receipt className="w-8 h-8 text-[var(--text-muted)]" />
           </div>
