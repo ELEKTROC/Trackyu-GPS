@@ -89,6 +89,8 @@ type FinanceDoc = Invoice &
     invoice_number?: string;
     license_plate?: string;
     items?: Array<{ quantity: number; price: number }>;
+    contractNumber?: string;
+    paymentMethod?: string;
   };
 
 interface ContractOption {
@@ -523,7 +525,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   const availableResellers = useMemo(() => {
     const resellers = new Set<string>();
     (data || []).forEach((i) => {
-      if ((i as FinanceDoc).resellerName) resellers.add((i as FinanceDoc).resellerName);
+      if ((i as FinanceDoc).resellerName) resellers.add((i as FinanceDoc).resellerName!);
     });
     return Array.from(resellers).sort();
   }, [data]);
@@ -543,7 +545,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   const availableCategories = useMemo(() => {
     const cats = new Set<string>();
     (data || []).forEach((i) => {
-      if ((i as FinanceDoc).category) cats.add((i as FinanceDoc).category);
+      if ((i as FinanceDoc).category) cats.add((i as FinanceDoc).category!);
     });
     return Array.from(cats).sort();
   }, [data]);
@@ -551,7 +553,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   const availablePlates = useMemo(() => {
     const plates = new Set<string>();
     (data || []).forEach((i) => {
-      if ((i as FinanceDoc).licensePlate) plates.add((i as FinanceDoc).licensePlate);
+      if ((i as FinanceDoc).licensePlate) plates.add((i as FinanceDoc).licensePlate!);
     });
     return Array.from(plates).sort();
   }, [data]);
@@ -795,7 +797,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
         method: paymentForm.method as Payment['method'],
         reference: paymentForm.reference,
         notes: paymentForm.notes,
-      } as Partial<Payment>);
+      } as unknown as Payment);
 
       if (result) {
         // Calculer le nouveau solde
@@ -1167,7 +1169,12 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
 
     return {
       number: isInvoice ? inv.number : (item as Quote).id,
-      date: typeof item.date === 'string' ? item.date : new Date(item.date).toISOString(),
+      date:
+        typeof item.date === 'string'
+          ? item.date
+          : item.date
+            ? new Date(item.date).toISOString()
+            : new Date().toISOString(),
       dueDate: inv.dueDate || new Date().toISOString(),
       clientId: item.clientId,
       currency: (inv as FinanceDoc).currency || 'XOF',
@@ -1657,7 +1664,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                     <div>
                       <p className="section-title">Taux Recouvrement</p>
                       <p className="page-title mt-1">
-                        {((kpis as Record<string, number>).collectionRate || 0).toFixed(1)} %
+                        {((kpis as unknown as Record<string, number>).collectionRate || 0).toFixed(1)} %
                       </p>
                     </div>
                     <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
@@ -1697,7 +1704,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                     <div>
                       <p className="section-title">Taux Transformation</p>
                       <p className="page-title mt-1">
-                        {((kpis as Record<string, number>).conversionRate || 0).toFixed(1)} %
+                        {((kpis as unknown as Record<string, number>).conversionRate || 0).toFixed(1)} %
                       </p>
                     </div>
                     <div className="p-3 bg-[var(--clr-info-dim)] rounded-full text-purple-600">
@@ -1997,7 +2004,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                               return (
                                 <td key={col.id} className="px-6 py-4 text-[var(--text-secondary)]">
                                   {(item as Quote).validUntil
-                                    ? new Date((item as Quote).validUntil).toLocaleDateString('fr-FR')
+                                    ? new Date((item as Quote).validUntil as Date).toLocaleDateString('fr-FR')
                                     : '-'}
                                 </td>
                               );
@@ -2334,7 +2341,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
               tenants={tenants}
               vehicles={vehicles}
               catalogItems={catalogItems}
-              onSave={handleSave as unknown as (item: Invoice) => void}
+              onSave={handleSave as unknown as (item: any) => void}
               onCancel={() => {
                 setIsFormOpen(false);
                 setIsFormDirty(false);
@@ -2839,7 +2846,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
           >
             <ContractForm
               initialData={contractInitialData || {}}
-              onSubmit={handleContractSubmit}
+              onSubmit={handleContractSubmit as unknown as (data: Partial<Contract>) => void}
               onCancel={() => setIsContractModalOpen(false)}
             />
           </Modal>

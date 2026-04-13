@@ -19,6 +19,7 @@
 //   types/audit.ts        — AuditEntry, AuditAction (pre-existing)
 
 export * from './types/index';
+import type { VehicleStatus } from './types/enums';
 
 // ---- LEGACY CONTENT BELOW (kept as reference, all definitions moved to types/) ----
 // This section is intentionally left empty.
@@ -402,6 +403,7 @@ export interface Contract {
   history?: ContractHistoryEvent[]; // Historique structuré
   notes?: string; // Notes (Legacy)
   createdAt?: string;
+  subscriptionNumber?: string; // Numéro d'abonnement lié
 }
 
 export interface ContractHistoryEvent {
@@ -434,7 +436,8 @@ export interface Invoice {
     | 'CANCELLED'
     | 'paid'
     | 'pending'
-    | 'cancelled';
+    | 'cancelled'
+    | 'PAYÉ';
   items: { description: string; quantity: number; price: number }[];
   // New fields
   paymentTerms?: string;
@@ -462,6 +465,11 @@ export interface Invoice {
   paidAmount?: number; // Montant déjà payé
   amountTVA?: number; // Montant TVA
   amountTTC?: number; // Montant TTC
+  isDisputed?: boolean; // Litige en cours
+  promiseToPayDate?: string; // Date de promesse de paiement
+  accountingStatus?: string; // Statut comptable
+  paidDate?: string; // Date de paiement (alias de paymentDate)
+  contractNumber?: string; // Numéro de contrat lié
 }
 
 export interface TicketMessage {
@@ -515,7 +523,18 @@ export interface Ticket {
 }
 
 // Types d'intervention (alignés avec le schéma Zod interventionSchema)
-export type InterventionType = 'INSTALLATION' | 'DEPANNAGE';
+export type InterventionType =
+  | 'INSTALLATION'
+  | 'DEPANNAGE'
+  | 'RETRAIT'
+  | 'TRANSFERT'
+  | 'REINSTALLATION'
+  | 'REMPLACEMENT'
+  | 'SIM'
+  | 'BALISE'
+  | 'JAUGE'
+  | 'ACCESSOIRES'
+  | 'AUTRES';
 // Natures d'intervention (sous-catégories)
 export type InterventionNature =
   | 'Installation'
@@ -658,6 +677,13 @@ export interface Intervention {
   invoiceId?: string; // Lien vers la facture générée
   paymentReceived?: number; // Montant reçu par le technicien
   paymentDeposited?: boolean; // Argent déposé à la caisse
+  // Legacy compat aliases
+  interventionType?: string; // Alias de type (vue TierDetailModal)
+  date?: string; // Alias de scheduledDate pour compatibilité
+  technicianName?: string; // Nom du technicien (calculé)
+  assignedTo?: string; // Alias de technicianId pour compatibilité
+  siteContactName?: string; // Alias de contactName (InterventionRequestTab)
+  siteContactPhone?: string; // Alias de contactPhone (InterventionRequestTab)
 }
 
 export interface InterventionHistoryLog {
@@ -705,7 +731,7 @@ export interface DeviceStock {
   notes?: string; // Notes additionnelles
 
   // Stock Management
-  location: 'CENTRAL' | 'SIEGE' | 'TECH'; // Localisation physique
+  location: 'CENTRAL' | 'SIEGE' | 'TECH' | 'CLIENT'; // Localisation physique
   technicianId?: string; // Si location === 'TECH'
   transferStatus?: 'NONE' | 'PENDING_RECEIPT' | 'PENDING_RETURN'; // État du transfert
 
@@ -958,6 +984,13 @@ export interface Vehicle extends TrackedObject {
 
   // Override odometerSource to also accept legacy 'CANBUS' value
   odometerSource?: 'GPS' | 'CAN' | 'SENSOR' | 'CANBUS';
+
+  // Extended display fields
+  address?: string; // Adresse textuelle de la position actuelle
+  lastTripDistance?: number; // Distance du dernier trajet (km)
+  canData?: Record<string, string | number | boolean | null>; // Données CAN bus brutes
+  tpms?: Record<number | string, { pressure: number; temperature: number }>; // Pression pneus
+  videoEvents?: unknown[]; // Événements vidéo (dashcam)
 }
 
 export interface FleetMetrics {
@@ -1002,9 +1035,10 @@ export interface CatalogItem {
 }
 
 export interface Alert {
-  id: number;
+  id: number | string;
   vehicleId: string;
   vehicleName?: string;
+  vehiclePlate?: string; // Plaque du véhicule
   clientId?: string;
   clientName?: string;
   type: AlertType;
@@ -1018,6 +1052,9 @@ export interface Alert {
   treatedBy?: string | null;
   createdAt: string;
   timestamp?: string; // Alias pour compatibilité
+  latitude?: number; // Position de l'alerte
+  longitude?: number;
+  value?: number | string; // Valeur associée (vitesse, niveau, etc.)
 }
 
 // Types d'alertes système
@@ -1150,6 +1187,9 @@ export interface Payment {
   notes?: string;
   error?: string; // Error message from API
   createdAt: string;
+  tierId?: string; // Lien Tier (client/fournisseur)
+  ref?: string; // Référence alternative (alias de reference)
+  paymentReference?: string; // Référence de paiement fournisseur
 }
 
 export interface SupplierInvoice {
@@ -1174,6 +1214,12 @@ export interface SupplierInvoice {
   isRecurring?: boolean; // Added: Dépense récurrente
   recurrencePeriod?: 'MONTHLY' | 'QUARTERLY' | 'YEARLY'; // Added: Périodicité
   createdAt: string;
+  vatRate?: number; // Taux de TVA (%)
+  invoiceNumber?: string; // Numéro de facture fournisseur
+  category?: string; // Catégorie de dépense
+  paymentReference?: string; // Référence de paiement
+  supplierId?: string; // ID fournisseur lié
+  paymentTerms?: string; // Conditions de paiement
 }
 
 export interface BankTransaction {
@@ -1187,6 +1233,11 @@ export interface BankTransaction {
   reference?: string;
   matchedEntryId?: string;
   accountCode?: string; // Added for automatic accounting
+  paymentMethod?: string; // Moyen de paiement
+  tierId?: string; // Lien Tier
+  category?: string; // Catégorie de transaction
+  notes?: string; // Notes
+  resellerId?: string; // Revendeur lié
 }
 
 export interface Budget {
@@ -1197,6 +1248,7 @@ export interface Budget {
   accountPrefix: string; // e.g., "64", "623" - used to match journal entries
   allocatedAmount: number;
   notes?: string;
+  monthlyAmounts?: number[]; // Montants mensuels (12 valeurs, index 0=Jan)
 }
 
 export interface Supplier {
@@ -1295,6 +1347,10 @@ export interface Tier {
   contactName?: string;
   secondContactName?: string;
   createUserAccount?: boolean;
+  // Application fields (prospect/lead workflow)
+  application?: string; // Type d'application (suivi, carburant, etc.)
+  applicationDetail?: string; // Détail de l'application
+  taxId?: string; // NIF / SIRET (alias de supplierData.taxId)
 }
 
 export interface Subscription {
@@ -1441,6 +1497,7 @@ export interface TicketCategory {
 export interface TicketSubCategory {
   id: number;
   categoryId: number;
+  category_id?: number; // Legacy alias
   name: string;
   defaultPriority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   slaHours: number;

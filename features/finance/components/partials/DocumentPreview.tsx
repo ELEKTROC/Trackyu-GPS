@@ -65,7 +65,8 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 };
 
 // Champs backend enrichis non présents dans les types TS de base
-type DocItem = Invoice & Quote & { companyLogo?: string; companyDetails?: string; paymentMethod?: string };
+type DocItem = Invoice &
+  Quote & { companyLogo?: string; companyDetails?: string; paymentMethod?: string; contractNumber?: string };
 
 export const DocumentPreview: React.FC<DocumentPreviewProps> = ({ item, onEdit, onAction }) => {
   const doc = item as DocItem;

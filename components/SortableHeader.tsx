@@ -5,8 +5,8 @@ import type { SortDirection } from '../hooks/useTableSort';
 interface SortableHeaderProps {
   label: string;
   sortKey: string;
-  currentSortKey: string;
-  currentDirection: SortDirection;
+  currentSortKey?: string | null;
+  currentDirection?: SortDirection;
   onSort: (key: string) => void;
   className?: string;
 }

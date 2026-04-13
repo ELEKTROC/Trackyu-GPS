@@ -457,10 +457,12 @@ export const SalesDashboard: React.FC<{
                     border: 'none',
                     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                   }}
-                  formatter={(value: number, _name: string, props: { payload?: { forecast?: boolean } }) => [
-                    formatPrice(value),
-                    props.payload.forecast ? 'Prévision' : 'CA Réalisé',
-                  ]}
+                  formatter={(value: unknown, _name: unknown, props: { payload?: { forecast?: boolean } }) =>
+                    [formatPrice(value as number), props.payload?.forecast ? 'Prévision' : 'CA Réalisé'] as [
+                      string,
+                      string,
+                    ]
+                  }
                 />
                 <Area
                   type="monotone"
@@ -500,7 +502,7 @@ export const SalesDashboard: React.FC<{
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: number) => [value, 'Contrats']} />
+                <Tooltip formatter={(value: unknown) => [value as number, 'Contrats'] as [number, string]} />
                 <Legend
                   layout="horizontal"
                   verticalAlign="bottom"

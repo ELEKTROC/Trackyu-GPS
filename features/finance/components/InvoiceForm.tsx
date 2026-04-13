@@ -42,6 +42,7 @@ interface InvoiceFormState
   invoiceType?: string;
   status?: any;
   category?: any;
+  contractNumber?: string;
 }
 
 interface InvoiceFormProps {

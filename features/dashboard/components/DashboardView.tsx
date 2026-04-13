@@ -267,6 +267,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   } = useDataContext();
 
   const { periodPreset, setPeriodPreset, customDateRange, setCustomDateRange, dateRange } = useDateRange();
+  // Fallback when dateRange is null (preset ALL) — uses a very wide range to skip filtering
+  const effectiveDateRange = dateRange ?? { start: '1900-01-01', end: '2999-12-31' };
   const { formatPrice } = useCurrency();
 
   // Backend stats (polled)
@@ -323,7 +325,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   };
   const tooltipItemStyle = { color: 'var(--text-primary)' };
 
-  const nav = (view: string, params?: Record<string, unknown>) => onNavigate?.(view, params);
+  const nav = (view: View, params?: Record<string, string>) => onNavigate?.(view, params);
 
   // --- DnD Layout ---
   const { sections, sectionOrder, hiddenCount, reorderSections, toggleCollapse, toggleHidden, resetLayout } =
@@ -390,7 +392,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
 
     const periodInvoices = invoices.filter((inv: Invoice) => {
       const d = safeToISODate(inv.date);
-      return d && d >= dateRange.start && d <= dateRange.end;
+      return d && d >= effectiveDateRange.start && d <= effectiveDateRange.end;
     });
     const revenue = periodInvoices
       .filter((i: Invoice) => i.status === 'PAID' || i.status === 'paid')
@@ -410,7 +412,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     const activeLeads = leads.filter((l: Lead) => !['WON', 'LOST'].includes(l.status)).length;
     const wonLeads = leads.filter((l: Lead) => {
       const d = safeToISODate(l.createdAt);
-      return l.status === 'WON' && d && d >= dateRange.start && d <= dateRange.end;
+      return l.status === 'WON' && d && d >= effectiveDateRange.start && d <= effectiveDateRange.end;
     }).length;
 
     return {
@@ -434,7 +436,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     const waiting = tickets.filter((t: Ticket) => t.status === 'WAITING_CLIENT').length;
     const resolved = tickets.filter((t: Ticket) => {
       const d = safeToISODate(t.resolvedAt || t.updatedAt);
-      return (t.status === 'RESOLVED' || t.status === 'CLOSED') && d && d >= dateRange.start && d <= dateRange.end;
+      return (
+        (t.status === 'RESOLVED' || t.status === 'CLOSED') &&
+        d &&
+        d >= effectiveDateRange.start &&
+        d <= effectiveDateRange.end
+      );
     }).length;
     const critical = tickets.filter(
       (t: Ticket) => t.priority === 'CRITICAL' && t.status !== 'RESOLVED' && t.status !== 'CLOSED'
@@ -457,7 +464,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   const tech = useMemo(() => {
     const periodInterventions = interventions.filter((i: Intervention) => {
       const d = safeToISODate(i.scheduledDate || i.createdAt);
-      return d && d >= dateRange.start && d <= dateRange.end;
+      return d && d >= effectiveDateRange.start && d <= effectiveDateRange.end;
     });
     const total = periodInterventions.length;
     const pending = periodInterventions.filter(
@@ -490,7 +497,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   // --- CHARTS DATA ---
 
   const statusDonut = useMemo(() => {
-    const data = stats?.statusDistribution || {};
+    const data = (stats?.statusDistribution || {}) as Record<string, number>;
     return [
       { name: 'En mouvement', value: data[VehicleStatus.MOVING] || fleet.moving, color: '#22c55e' },
       { name: 'Ralenti', value: data[VehicleStatus.IDLE] || fleet.idle, color: '#f97316' },
@@ -501,15 +508,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
 
   const activityData = useMemo(() => {
     if (!vehicles || vehicles.length === 0) return [];
-    const start = new Date(dateRange.start);
-    const end = new Date(dateRange.end);
+    const start = new Date(effectiveDateRange.start);
+    const end = new Date(effectiveDateRange.end);
     const days: Date[] = [];
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) days.push(new Date(d));
 
+    const activityByDay = (stats?.activityByDay || {}) as Record<string, { avgSpeed: number; activeCount: number }>;
     if (stats?.activityByDay && Object.keys(stats.activityByDay).length > 0) {
       return days.map((date) => {
         const ds = date.toISOString().split('T')[0];
-        const s = stats.activityByDay[ds] || { avgSpeed: 0, activeCount: 0 };
+        const s = activityByDay[ds] || { avgSpeed: 0, activeCount: 0 };
         return {
           time: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
           speed: Math.round(s.avgSpeed || 0),
@@ -549,7 +557,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     const filtered = (alerts || []).filter((a: Alert) => {
       if (!a.createdAt) return false;
       const d = safeToISODate(a.createdAt);
-      return d && d >= dateRange.start && d <= dateRange.end;
+      return d && d >= effectiveDateRange.start && d <= effectiveDateRange.end;
     });
     const counts = filtered.reduce(
       (acc: Record<string, number>, a: Alert) => {
@@ -580,7 +588,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     return (alerts || [])
       .filter((a: Alert) => {
         const d = safeToISODate(a.createdAt);
-        return d && d >= dateRange.start && d <= dateRange.end;
+        return d && d >= effectiveDateRange.start && d <= effectiveDateRange.end;
       })
       .sort((a: Alert, b: Alert) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 6);
@@ -589,8 +597,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   // CSV export
   const handleExport = () => {
     const periodStr =
-      dateRange.start && dateRange.end
-        ? `Période: ${new Date(dateRange.start).toLocaleDateString('fr-FR')} - ${new Date(dateRange.end).toLocaleDateString('fr-FR')}`
+      effectiveDateRange.start && effectiveDateRange.end
+        ? `Période: ${new Date(effectiveDateRange.start).toLocaleDateString('fr-FR')} - ${new Date(effectiveDateRange.end).toLocaleDateString('fr-FR')}`
         : `Période: ${periodPreset}`;
     const csv =
       'data:text/csv;charset=utf-8,' +
@@ -985,8 +993,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                 ))}
               </Pie>
               <Tooltip
-                formatter={(_value: number, _name: string, props: { payload: { value: number } }) =>
-                  `${props.payload.value} véhicule${props.payload.value > 1 ? 's' : ''}`
+                formatter={(_value: unknown, _name: unknown, props: { payload: { value: number } }) =>
+                  `${props.payload.value} véhicule${props.payload.value > 1 ? 's' : ''}` as unknown as string
                 }
                 contentStyle={tooltipStyle}
                 itemStyle={tooltipItemStyle}
@@ -1230,7 +1238,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                 <Tooltip
                   contentStyle={tooltipStyle}
                   itemStyle={tooltipItemStyle}
-                  formatter={(value: number) => formatPrice(value)}
+                  formatter={(value: unknown) => formatPrice(value as number)}
                 />
                 <Bar dataKey="revenue" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16} name="Encaissé" />
                 <Bar dataKey="invoiced" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={16} name="Facturé" />
@@ -1286,7 +1294,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                 <Tooltip
                   contentStyle={tooltipStyle}
                   itemStyle={tooltipItemStyle}
-                  formatter={(value: number, name: string) => (name === 'Coût' ? formatPrice(value) : value)}
+                  formatter={(value: unknown, name: unknown) =>
+                    name === 'Coût' ? formatPrice(value as number) : (value as number)
+                  }
                 />
                 <Area
                   type="monotone"

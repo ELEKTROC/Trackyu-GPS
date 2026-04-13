@@ -429,7 +429,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                         <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                         <XAxis type="number" />
                         <YAxis type="category" dataKey="name" axisLine={false} tickLine={false} />
-                        <Tooltip formatter={(value: number) => [value, 'Leads']} />
+                        <Tooltip formatter={(value: unknown) => [value as number, 'Leads']} />
                         <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                           {funnelData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -602,7 +602,9 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
             </div>
           )}
 
-          {activeTab === 'LEADS' && <CRMView mode="LEADS" onCreateQuote={handleCreateQuote} dateRange={dateRange} />}
+          {activeTab === 'LEADS' && (
+            <CRMView mode="LEADS" onCreateQuote={handleCreateQuote} dateRange={dateRange ?? undefined} />
+          )}
           {activeTab === 'PIPELINE' && (
             <div className="h-full overflow-y-auto pb-4">
               <PipelineView />
@@ -612,7 +614,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
             <FinanceView
               mode="QUOTES"
               initialData={quoteDraft}
-              dateRange={dateRange}
+              dateRange={dateRange ?? undefined}
               onSaveSuccess={handleQuoteSaved}
             />
           )}

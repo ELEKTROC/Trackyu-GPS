@@ -1089,7 +1089,7 @@ export function createFinanceApi() {
           const entries = db.get(DB_KEYS.JOURNAL, []);
           const updated = entries.map((e: JournalEntry) => (e.id === id ? { ...e, ...entry } : e));
           db.set(DB_KEYS.JOURNAL, updated);
-          return updated.find((e: JournalEntry) => e.id === id);
+          return updated.find((e: JournalEntry) => e.id === id) as JournalEntry;
         }
         const response = await fetch(`${API_URL}/finance/journal-entries/${id}`, {
           method: 'PUT',
@@ -1363,7 +1363,7 @@ export function createFinanceApi() {
           const payments = db.get(DB_KEYS.PAYMENTS, []);
           const updated = payments.map((p: Payment) => (p.id === id ? { ...p, ...payment } : p));
           db.set(DB_KEYS.PAYMENTS, updated);
-          return updated.find((p: Payment) => p.id === id);
+          return updated.find((p: Payment) => p.id === id) as Payment;
         }
         try {
           const response = await fetch(`${API_URL}/finance/payments/${id}`, {
@@ -1408,7 +1408,7 @@ export function createFinanceApi() {
           const invoices = db.get(DB_KEYS.INVOICES, []);
           const invoice = invoices.find((i: any) => i.id === invoiceId);
           const totalPaid = payments.reduce((sum: number, p: Payment) => sum + (p.amount || 0), 0);
-          return { invoice, history: payments, totalPaid, balance: (invoice?.amount || 0) - totalPaid };
+          return { invoice, history: payments, totalPaid, balance: ((invoice as any)?.amount || 0) - totalPaid };
         }
         try {
           const response = await fetch(`${API_URL}/finance/invoices/${invoiceId}/payment-history`, {

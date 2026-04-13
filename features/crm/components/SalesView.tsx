@@ -82,11 +82,13 @@ export const SalesView: React.FC<SalesViewProps> = ({ initialTab, onNavigate }) 
         {/* Content Area */}
         <div className="sm:flex-1 sm:min-h-0 sm:overflow-hidden">
           {activeTab === 'DASHBOARD' && (
-            <SalesDashboard onNavigate={(tab) => setActiveTab(tab as Tab)} dateRange={dateRange} />
+            <SalesDashboard onNavigate={(tab) => setActiveTab(tab as Tab)} dateRange={dateRange ?? undefined} />
           )}
-          {activeTab === 'TIERS' && <TiersView onNavigate={onNavigate} dateRange={dateRange} />}
-          {activeTab === 'INVOICES' && <FinanceView mode="INVOICES" dateRange={dateRange} />}
-          {activeTab === 'CONTRACTS' && <ContractTabs dateRange={dateRange} onNavigate={onNavigate} />}
+          {activeTab === 'TIERS' && <TiersView onNavigate={onNavigate} dateRange={dateRange ?? undefined} />}
+          {activeTab === 'INVOICES' && <FinanceView mode="INVOICES" dateRange={dateRange ?? undefined} />}
+          {activeTab === 'CONTRACTS' && (
+            <ContractTabs dateRange={dateRange ?? undefined} onNavigate={onNavigate as any} />
+          )}
         </div>
       </MobileTabLayout>
     </div>

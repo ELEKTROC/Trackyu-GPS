@@ -368,7 +368,7 @@ const AppContent: React.FC = () => {
         return hasPermission('VIEW_FLEET') ? (
           <LazyFleetTable
             vehicles={vehicles}
-            onVehicleClick={(vehicle) => {
+            onVehicleClick={(vehicle: Vehicle) => {
               // On mobile: navigate to Map + open bottom sheet (via focusedVehicle)
               if (window.innerWidth < 1024) {
                 handleLocationClick(vehicle);
@@ -377,7 +377,7 @@ const AppContent: React.FC = () => {
               }
             }}
             onLocationClick={handleLocationClick}
-            onEditVehicle={(vehicle) =>
+            onEditVehicle={(vehicle: Vehicle) =>
               handleNavigate(View.SETTINGS, { action: 'edit_vehicle', id: vehicle.id, tab: 'objects' })
             }
           />

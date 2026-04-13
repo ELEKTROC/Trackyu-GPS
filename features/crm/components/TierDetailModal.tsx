@@ -97,7 +97,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
   const [activeDetailTab, setActiveDetailTab] = useState('OVERVIEW');
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
-  const [trxData, setTrxData] = useState<Record<string, unknown[]>>({});
+  const [trxData, setTrxData] = useState<Record<string, any[]>>({});
   const [activeTrxSubTab, setActiveTrxSubTab] = useState('INVOICES');
   const [trxPage, setTrxPage] = useState(1);
   const [trxSearchTerm, setTrxSearchTerm] = useState('');
@@ -1289,7 +1289,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                               border: 'none',
                               boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
                             }}
-                            formatter={(value: number) => [formatPrice(value), 'CA HT']}
+                            formatter={(value: unknown) => [formatPrice(value as number), 'CA HT'] as [string, string]}
                           />
                           <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={30} />
                         </BarChart>

@@ -302,7 +302,7 @@ export const InterventionRequestTab: React.FC<RequestTabProps> = ({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  scheduledDate: e.target.value ? new Date(e.target.value).toISOString() : null,
+                  scheduledDate: e.target.value ? new Date(e.target.value).toISOString() : undefined,
                 })
               }
             />
