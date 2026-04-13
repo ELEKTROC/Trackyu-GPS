@@ -463,7 +463,7 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
+              <tbody className="divide-y divide-[var(--border)] text-sm">
                 {sortedPayments.map((payment, i) => {
                   const client =
                     tiers.find((t) => t.id === payment.clientId) || clients.find((c) => c.id === payment.clientId);

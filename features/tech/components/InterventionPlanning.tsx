@@ -349,7 +349,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                   {ints.length} intervention{ints.length > 1 ? 's' : ''}
                 </span>
               </div>
-              <div className="divide-y divide-[var(--border)] dark:divide-slate-800">
+              <div className="divide-y divide-[var(--border)]">
                 {[...ints]
                   .sort((a, b) => new Date(a.scheduledDate || 0).getTime() - new Date(b.scheduledDate || 0).getTime())
                   .map((int) => {
@@ -401,7 +401,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                   À planifier ({unplannedInterventions.length})
                 </span>
               </div>
-              <div className="divide-y divide-[var(--border)] dark:divide-slate-800">
+              <div className="divide-y divide-[var(--border)]">
                 {unplannedInterventions.map((int) => (
                   <div
                     key={int.id}

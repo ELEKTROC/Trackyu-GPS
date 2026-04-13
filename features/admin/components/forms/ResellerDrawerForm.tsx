@@ -547,7 +547,7 @@ export function ResellerDrawerForm({
                     <th className="px-4 py-2 text-center">Statut</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y dark:divide-gray-700">
+                <tbody className="divide-y ">
                   {paginatedClients.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="px-4 py-8 text-center text-[var(--text-secondary)]">
@@ -722,7 +722,7 @@ export function ResellerDrawerForm({
                 <th className="px-4 py-2 text-center">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y dark:divide-gray-700">
+            <tbody className="divide-y ">
               {paginatedInvoices.map((invoice) => (
                 <tr key={invoice.id} className="tr-hover">
                   <td className="px-4 py-3 font-medium text-[var(--primary)]">{invoice.number}</td>

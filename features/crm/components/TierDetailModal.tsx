@@ -386,7 +386,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-center">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((inv: Invoice) => {
                   const effectiveStatus = getEffectiveStatus(inv);
                   const balance = Number(inv.amount || 0) - Number(inv.paidAmount || 0);
@@ -448,7 +448,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="text-right">Montant</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((p: Payment) => (
                   <tr key={p.id} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-[var(--text-secondary)]">{p.ref}</td>
@@ -472,7 +472,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((q: Quote) => {
                   const qStatusMap: Record<string, string> = {
                     DRAFT: 'Brouillon',
@@ -514,7 +514,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((c: Contract) => {
                   const cStatusMap: Record<string, string> = {
                     ACTIVE: 'Actif',
@@ -567,7 +567,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((itv: Intervention) => {
                   const itvStatusMap: Record<string, string> = {
                     COMPLETED: 'Terminée',
@@ -619,7 +619,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                   <th className="py-3 px-4 text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((t: Ticket) => {
                   const tStatusMap: Record<string, string> = {
                     OPEN: 'Ouvert',
@@ -692,7 +692,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                     ))}
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((item: any, i: number) => (
                   <tr key={i} className="tr-hover/50">
                     {Object.values(item)
@@ -1432,7 +1432,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                 <th className="py-3 px-4 text-right">Paiement</th>
                               </tr>
                             </thead>
-                            <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+                            <tbody className="text-sm divide-y divide-[var(--border)]">
                               {tierVehicles.map((vehicle: Vehicle) => {
                                 const contract = getVehicleContract(vehicle);
                                 const payStatus = getVehicleInvoiceStatus(vehicle);

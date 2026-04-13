@@ -1697,7 +1697,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     techs: 'bg-teal-600',
     reseller: 'bg-indigo-600',
     sync: 'bg-[var(--text-secondary)]',
-    support_settings: 'bg-gray-500',
+    support_settings: 'bg-[var(--bg-surface)]0',
     about: 'bg-cyan-500',
     privacy: 'bg-[var(--text-secondary)]',
   };

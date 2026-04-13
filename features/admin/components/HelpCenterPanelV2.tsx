@@ -646,7 +646,7 @@ export const HelpCenterPanelV2: React.FC = () => {
 
         {/* FAQ */}
         {activeTab === 'faq' && (
-          <Card className="divide-y dark:divide-slate-700">
+          <Card className="divide-y">
             {filteredFaqs.length === 0 ? (
               <div className="text-center py-12">
                 <HelpCircle className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />

@@ -95,7 +95,7 @@ const SIGNAL_COLORS: Record<string, string> = {
   GOOD: 'text-[var(--primary)] bg-[var(--primary-dim)]',
   FAIR: 'text-yellow-600 bg-yellow-50',
   POOR: 'text-red-600 bg-red-50',
-  UNKNOWN: 'text-[var(--text-secondary)] bg-gray-50',
+  UNKNOWN: 'text-[var(--text-secondary)] bg-[var(--bg-surface)]',
 };
 
 // ─── Onglet Dashboard ─────────────────────────────────────────────────────────
@@ -254,7 +254,7 @@ function DeviceHealthTab() {
             value={imeiInput}
             onChange={(e) => setImeiInput(e.target.value.replace(/\D/g, '').slice(0, 16))}
             onKeyDown={(e) => e.key === 'Enter' && fetchDiagnostic()}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono"
+            className="flex-1 border border-[var(--border)] rounded-lg px-3 py-2 text-sm font-mono"
             maxLength={16}
           />
           <button
@@ -273,7 +273,7 @@ function DeviceHealthTab() {
       {diagnostic && (
         <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
           {/* En-tête */}
-          <div className="px-4 py-3 bg-gray-50 border-b flex items-center justify-between">
+          <div className="px-4 py-3 bg-[var(--bg-surface)] border-b flex items-center justify-between">
             <div>
               <div className="font-mono text-sm font-bold text-[var(--text-primary)]">{diagnostic.imei}</div>
               <div className="text-xs text-[var(--text-secondary)]">
@@ -300,7 +300,7 @@ function DeviceHealthTab() {
           </div>
 
           {/* Variant GT06 */}
-          <div className="px-4 py-3 border-b bg-gray-50">
+          <div className="px-4 py-3 border-b bg-[var(--bg-surface)]">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 flex-1">
                 <Cpu className="h-4 w-4 text-[var(--text-secondary)] shrink-0" />
@@ -336,7 +336,7 @@ function DeviceHealthTab() {
                 <select
                   value={variantEdit}
                   onChange={(e) => setVariantEdit(e.target.value as GT06Variant)}
-                  className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm"
+                  className="flex-1 border border-[var(--border)] rounded px-2 py-1.5 text-sm"
                 >
                   {(Object.keys(GT06_VARIANT_LABELS) as GT06Variant[]).map((v) => (
                     <option key={v} value={v}>
@@ -394,7 +394,7 @@ function DeviceHealthTab() {
 
           {/* Position */}
           {diagnostic.lastPosition && (
-            <div className="px-4 py-3 border-t bg-gray-50 text-xs text-[var(--text-secondary)] font-mono">
+            <div className="px-4 py-3 border-t bg-[var(--bg-surface)] text-xs text-[var(--text-secondary)] font-mono">
               📍 {diagnostic.lastPosition.lat.toFixed(6)}, {diagnostic.lastPosition.lng.toFixed(6)}
             </div>
           )}
@@ -415,7 +415,7 @@ function DeviceHealthTab() {
                 <select
                   value={commandType}
                   onChange={(e) => setCommandType(e.target.value)}
-                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+                  className="flex-1 border border-[var(--border)] rounded-lg px-3 py-2 text-sm"
                 >
                   <option value="PING">PING — Demande de statut</option>
                   <option value="CUT_ENGINE">COUPE MOTEUR — Immobiliser</option>
@@ -431,7 +431,9 @@ function DeviceHealthTab() {
                 </button>
               </div>
               {commandStatus && (
-                <p className="text-sm text-[var(--text-primary)] bg-gray-50 rounded px-3 py-2">{commandStatus}</p>
+                <p className="text-sm text-[var(--text-primary)] bg-[var(--bg-surface)] rounded px-3 py-2">
+                  {commandStatus}
+                </p>
               )}
             </div>
           )}
@@ -487,7 +489,7 @@ function GlobalConfigTab() {
               step={step}
               value={(config as any)[key]}
               onChange={(e) => setConfig((c) => ({ ...c, [key]: parseInt(e.target.value) }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-sm"
             />
           </div>
         ))}
@@ -496,7 +498,7 @@ function GlobalConfigTab() {
           <select
             value={config.gpsAccuracy}
             onChange={(e) => setConfig((c) => ({ ...c, gpsAccuracy: e.target.value as any }))}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-sm"
           >
             <option value="high">Haute (HDOP ≤ 2)</option>
             <option value="medium">Moyenne (HDOP ≤ 5)</option>
@@ -578,7 +580,7 @@ export default function DeviceConfigPanelV2() {
       </div>
 
       {/* Contenu */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4 bg-[var(--bg-surface)]">
         {activeTab === 'DASHBOARD' && <DashboardTab stats={stats} />}
         {activeTab === 'DEVICE_HEALTH' && <DeviceHealthTab />}
         {activeTab === 'GLOBAL_CONFIG' && <GlobalConfigTab />}

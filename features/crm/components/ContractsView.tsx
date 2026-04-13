@@ -1296,7 +1296,7 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
               Les véhicules suivants sont déjà assignés à des contrats actifs. Retirez-les du contrat ou résiliez les
               contrats existants avant de continuer.
             </p>
-            <div className="divide-y divide-[var(--border)] dark:divide-slate-800 border border-[var(--border)] rounded-lg overflow-hidden">
+            <div className="divide-y divide-[var(--border)] border border-[var(--border)] rounded-lg overflow-hidden">
               {vehicleConflicts.map((c, i) => {
                 const veh = vehicles.find((v) => v.id === c.vehicleId);
                 return (

@@ -110,7 +110,7 @@ function PipelineGpsTab() {
         </h3>
         <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
           {lastRefresh && <span>Mis à jour {lastRefresh.toLocaleTimeString('fr-FR')}</span>}
-          <button onClick={fetchStats} className="p-1 hover:bg-gray-100 rounded">
+          <button onClick={fetchStats} className="p-1 hover:bg-[var(--bg-elevated)] rounded">
             <RefreshCw className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -124,7 +124,7 @@ function PipelineGpsTab() {
             value: stats.pipeline.activeConnections,
             icon: Wifi,
             color: stats.pipeline.activeConnections > 0 ? 'text-green-600' : 'text-[var(--text-muted)]',
-            bg: stats.pipeline.activeConnections > 0 ? 'bg-green-50' : 'bg-gray-50',
+            bg: stats.pipeline.activeConnections > 0 ? 'bg-green-50' : 'bg-[var(--bg-surface)]',
           },
           {
             label: 'Taux de succès',
@@ -168,7 +168,7 @@ function PipelineGpsTab() {
           </span>
           <span className="font-bold text-[var(--text-primary)]">{successRate}%</span>
         </div>
-        <div className="h-2 bg-gray-100 rounded-full overflow-hidden flex">
+        <div className="h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden flex">
           <div
             className="h-full bg-green-500 transition-all"
             style={{ width: `${successRate}%` }}
@@ -181,13 +181,13 @@ function PipelineGpsTab() {
         <div className="flex gap-4 mt-1.5 text-xs text-[var(--text-secondary)]">
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" />Valides</span>
           <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" />Erreurs CRC</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-300" />Rejetés (bornes)</span>
+          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[var(--border)]" />Rejetés (bornes)</span>
         </div>
       </div>
 
       {/* Par protocole */}
       <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
-        <div className="px-4 py-3 bg-gray-50 border-b">
+        <div className="px-4 py-3 bg-[var(--bg-surface)] border-b">
           <h4 className="text-sm font-semibold text-[var(--text-primary)]">Statistiques par protocole</h4>
         </div>
         {stats.parsers.length === 0 ? (
@@ -196,16 +196,16 @@ function PipelineGpsTab() {
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-[var(--bg-surface)]">
               <tr>
                 {['Protocole', 'Total', 'Valides', 'Rejetés', 'CRC err.', 'Succès', 'Dernier fix'].map(h => (
                   <th key={h} className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[var(--border)]">
               {stats.parsers.map(p => (
-                <tr key={p.name} className="hover:bg-gray-50">
+                <tr key={p.name} className="hover:bg-[var(--bg-surface)]">
                   <td className="px-3 py-2.5">
                     <span className="px-2 py-0.5 bg-[var(--primary-dim)] text-[var(--primary)] text-xs font-mono rounded">
                       {p.name}
@@ -339,7 +339,7 @@ export function MonitoringView() {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-[var(--bg-surface)]">
       {/* Header */}
       <div className="px-4 py-3 border-b bg-[var(--bg-elevated)]">
         <h2 className="text-base font-semibold text-[var(--text-primary)]">Monitoring Technique</h2>

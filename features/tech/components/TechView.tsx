@@ -619,7 +619,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
+              <tbody className="divide-y divide-[var(--border)] text-sm">
                 {paginatedStock.map((item) => (
                   <tr key={item.id} className="density-row tr-hover/50">
                     <td className="px-4 py-2">
@@ -823,7 +823,7 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
                 />
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
+            <tbody className="divide-y divide-[var(--border)] text-sm">
               {paginatedHistory.map((log) => (
                 <tr key={log.id} className="density-row tr-hover/50">
                   <td className="px-4 py-2 text-[var(--text-secondary)] text-xs">

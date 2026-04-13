@@ -1274,7 +1274,7 @@ export const InterventionList: React.FC<InterventionListProps> = ({
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm bg-[var(--bg-surface)]">
+          <tbody className="divide-y divide-[var(--border)] text-sm bg-[var(--bg-surface)]">
             {paginatedInterventions.map((int) => (
               <tr
                 key={int.id}

@@ -251,7 +251,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((i: Record<string, unknown>) => (
                   <tr key={i.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-[var(--primary)]">{i.id as string}</td>
@@ -281,7 +281,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Montant</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((p: Record<string, unknown>) => (
                   <tr key={p.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-[var(--text-secondary)]">{p.ref as string}</td>
@@ -305,7 +305,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Statut</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((int: Record<string, unknown>) => (
                   <tr key={int.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 font-mono text-purple-600">{int.id as string}</td>
@@ -334,7 +334,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                   <th className="text-right">Crédit</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((j: Record<string, unknown>) => (
                   <tr key={j.id as string} className="tr-hover/50">
                     <td className="py-3 px-4 text-[var(--text-secondary)]">{j.date as string}</td>
@@ -366,7 +366,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                     ))}
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="text-sm divide-y divide-[var(--border)]">
                 {paginatedData.map((item: any, i: number) => (
                   <tr key={i} className="tr-hover/50">
                     {(item ? Object.values(item).slice(0, 5) : []).map((val: any, idx) => (
@@ -1088,7 +1088,7 @@ export const ClientDetailModal: React.FC<ClientDetailModalProps> = ({
                             <th className="px-4 py-3 border-b border-[var(--border)] text-right">Solde</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
+                        <tbody className="divide-y divide-[var(--border)]">
                           {MOCK_STATEMENT_LINES.map((line, i) => (
                             <tr key={i} className="tr-hover/50">
                               <td className="px-4 py-3 text-[var(--text-secondary)]">{line.date}</td>

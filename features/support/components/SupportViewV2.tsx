@@ -1763,7 +1763,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
               {/* Ticket List */}
               <div className="flex-1 overflow-y-auto pb-4 lg:pb-0">
                 {loadingTicketList ? (
-                  <div className="divide-y divide-[var(--border)] dark:divide-slate-800">
+                  <div className="divide-y divide-[var(--border)]">
                     {Array.from({ length: 8 }).map((_, i) => (
                       <ListItemSkeleton key={i} />
                     ))}

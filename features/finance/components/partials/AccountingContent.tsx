@@ -335,7 +335,7 @@ export const AccountingContent: React.FC<AccountingContentProps> = ({
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800 text-sm">
+            <tbody className="divide-y divide-[var(--border)] text-sm">
               {sortedEntries.length === 0 && (
                 <tr>
                   <td

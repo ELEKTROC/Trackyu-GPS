@@ -350,7 +350,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
       case 'ZOHO_INVOICE':
         return 'bg-purple-100 text-purple-700';
       default:
-        return 'bg-gray-100 text-[var(--text-primary)]';
+        return 'bg-[var(--bg-elevated)] text-[var(--text-primary)]';
     }
   };
 
@@ -520,7 +520,7 @@ export const ClientReconciliation: React.FC<ClientReconciliationProps> = ({
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border)] dark:divide-slate-800">
+              <tbody className="divide-y divide-[var(--border)]">
                 {filteredMatches.map((match) => {
                   const isExpanded = expandedIds.has(match.id);
                   return (
