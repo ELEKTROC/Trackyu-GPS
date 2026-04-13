@@ -96,7 +96,7 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({ history = []
       </div>
 
       {/* Graphique */}
-      <section className="h-64 w-full bg-white border border-[var(--border)] rounded-xl p-4 shadow-sm">
+      <section className="h-64 w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-4 shadow-sm">
         <h3 className="text-sm font-bold text-[var(--text-secondary)] mb-4">Évolution de la consommation</h3>
         <ResponsiveContainer
           width="100%"

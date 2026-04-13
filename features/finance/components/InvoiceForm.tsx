@@ -896,7 +896,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               type="number"
               value={formState.discount || 0}
               onChange={(e) => setFormState({ ...formState, discount: parseFloat(e.target.value) })}
-              className="w-20 p-1.5 text-right border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] bg-white text-xs"
+              className="w-20 p-1.5 text-right border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-xs"
             />
           </div>
           <div className="flex justify-between items-center">
@@ -908,7 +908,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 const v = parseFloat(e.target.value);
                 setFormState({ ...formState, vatRate: isNaN(v) ? 0 : v });
               }}
-              className="w-20 p-1.5 text-right border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] bg-white text-xs"
+              className="w-20 p-1.5 text-right border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-xs"
             />
           </div>
           <div className="flex justify-between pt-2 border-t border-[var(--border)]">

@@ -23,7 +23,7 @@ export const ConfigurableRow: React.FC<{
             e.stopPropagation();
             onToggle();
           }}
-          className="absolute -top-2 -right-2 bg-white shadow-md rounded-full p-1 text-[var(--text-secondary)] hover:text-[var(--primary)] border border-[var(--border)] z-10"
+          className="absolute -top-2 -right-2 bg-[var(--bg-elevated)] shadow-md rounded-full p-1 text-[var(--text-secondary)] hover:text-[var(--primary)] border border-[var(--border)] z-10"
           title={isHidden ? 'Afficher' : 'Masquer'}
         >
           {isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
@@ -62,7 +62,7 @@ export const CollapsibleSection: React.FC<{
   if (isConfigMode) {
     return (
       <div
-        className={`border rounded-lg mb-3 p-3 flex flex-col transition-colors ${isVisible ? 'bg-white border-[var(--border)]' : 'bg-[var(--bg-elevated)] border-[var(--border)]'}`}
+        className={`border rounded-lg mb-3 p-3 flex flex-col transition-colors ${isVisible ? 'bg-[var(--bg-elevated)] border-[var(--border)]' : 'bg-[var(--bg-surface)] border-[var(--border)]'}`}
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3">
@@ -107,7 +107,7 @@ export const CollapsibleSection: React.FC<{
   if (!isVisible) return null;
 
   return (
-    <div className="border border-[var(--border)] rounded-lg bg-white overflow-hidden shadow-sm mb-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] overflow-hidden shadow-sm mb-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between px-4 py-3 bg-[var(--bg-elevated)] border-b border-[var(--border)] hover:bg-[var(--bg-elevated)] transition-colors"

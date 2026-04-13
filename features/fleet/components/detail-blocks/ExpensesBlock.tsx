@@ -23,7 +23,7 @@ export const ExpensesBlock: React.FC<ExpensesBlockProps> = ({
         isHidden={hiddenFields.has('expMonth')}
         onToggle={() => toggleFieldVisibility('expMonth')}
       >
-        <div className="p-3 bg-white border border-[var(--border)] rounded shadow-sm">
+        <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-sm">
           <div className="text-[10px] text-[var(--text-muted)] uppercase font-bold mb-1">Ce Mois</div>
           <div className="text-lg font-bold text-[var(--text-primary)]">{mockData.expenses.month}</div>
           <div className="text-[9px] text-green-500 flex items-center gap-0.5">
@@ -37,7 +37,7 @@ export const ExpensesBlock: React.FC<ExpensesBlockProps> = ({
         isHidden={hiddenFields.has('expYear')}
         onToggle={() => toggleFieldVisibility('expYear')}
       >
-        <div className="p-3 bg-white border border-[var(--border)] rounded shadow-sm">
+        <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-sm">
           <div className="text-[10px] text-[var(--text-muted)] uppercase font-bold mb-1">Cette Année</div>
           <div className="text-lg font-bold text-[var(--text-primary)]">
             {(mockData.expenses.year / 1000).toFixed(1)} k

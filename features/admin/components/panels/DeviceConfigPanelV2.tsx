@@ -86,7 +86,7 @@ const GT06_VARIANT_LABELS: Record<GT06Variant, { label: string; color: string; d
   SINOTRACK: { label: 'Sinotrack', color: 'bg-indigo-100 text-indigo-700', desc: 'CRC IBM · proto 0x22' },
   V4: { label: 'GT06 V4 (4G)', color: 'bg-cyan-100 text-cyan-700', desc: 'CRC ISO-HDLC · proto 0xA0' },
   TELTONIKA: { label: 'Teltonika', color: 'bg-green-100 text-green-700', desc: 'Codec 8/8E' },
-  GENERIC: { label: 'Générique', color: 'bg-gray-100 text-[var(--text-secondary)]', desc: 'Détection auto' },
+  GENERIC: { label: 'Générique', color: 'bg-[var(--bg-surface)] text-[var(--text-secondary)]', desc: 'Détection auto' },
   OTHER: { label: 'Autre', color: 'bg-yellow-100 text-yellow-700', desc: 'Manuel' },
 };
 
@@ -116,7 +116,7 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
           { label: 'IMEI inconnus', value: stats.unknownImeis.length, icon: AlertTriangle, color: 'text-orange-600' },
           { label: 'Erreurs CRC', value: stats.totals.crcErrors, icon: Shield, color: 'text-red-600' },
         ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white border border-gray-200 rounded-lg p-4">
+          <div key={label} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
             <div className="flex items-center gap-2 mb-1">
               <Icon className={`h-4 w-4 ${color}`} />
               <span className="text-xs text-[var(--text-secondary)]">{label}</span>
@@ -127,7 +127,7 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
       </div>
 
       {/* Taux de succès global */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
         <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">Taux de succès global</h3>
         {(() => {
           const rate = stats.totals.packets > 0 ? Math.round((stats.totals.valid / stats.totals.packets) * 100) : 0;
@@ -140,7 +140,7 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
                 </span>
                 <span className="font-bold">{rate}%</span>
               </div>
-              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-2 bg-[var(--bg-surface)] rounded-full overflow-hidden">
                 <div className={`h-full ${color} transition-all`} style={{ width: `${rate}%` }} />
               </div>
             </div>
@@ -149,7 +149,7 @@ function DashboardTab({ stats }: { stats: GpsPipelineStats | null }) {
       </div>
 
       {/* Protocoles actifs */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
         <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">Protocoles actifs</h3>
         <div className="flex flex-wrap gap-2">
           {stats.pipeline.activeParsers.map((p) => (
@@ -242,7 +242,7 @@ function DeviceHealthTab() {
   return (
     <div className="space-y-4">
       {/* Recherche par IMEI */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
         <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3 flex items-center gap-2">
           <Cpu className="h-4 w-4 text-[var(--primary)]" />
           Diagnostic boîtier par IMEI
@@ -271,7 +271,7 @@ function DeviceHealthTab() {
 
       {/* Résultat diagnostic */}
       {diagnostic && (
-        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
           {/* En-tête */}
           <div className="px-4 py-3 bg-gray-50 border-b flex items-center justify-between">
             <div>
@@ -313,7 +313,7 @@ function DeviceHealthTab() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.color || 'bg-gray-100 text-[var(--text-secondary)]'}`}
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.color || 'bg-[var(--bg-surface)] text-[var(--text-secondary)]'}`}
                     >
                       {GT06_VARIANT_LABELS[diagnostic.gt06Variant]?.label || diagnostic.gt06Variant}
                     </span>
@@ -357,7 +357,7 @@ function DeviceHealthTab() {
           </div>
 
           {/* Métriques */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-gray-100">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-[var(--bg-surface)]">
             {[
               { label: 'Protocole', value: diagnostic.protocol || '—', icon: Radio },
               { label: "Paquets aujourd'hui", value: diagnostic.packetsToday.toLocaleString(), icon: Activity },
@@ -382,7 +382,7 @@ function DeviceHealthTab() {
                 icon: Activity,
               },
             ].map(({ label, value, icon: Icon }) => (
-              <div key={label} className="bg-white px-4 py-3">
+              <div key={label} className="bg-[var(--bg-elevated)] px-4 py-3">
                 <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)] mb-0.5">
                   <Icon className="h-3 w-3" />
                   {label}
@@ -467,7 +467,7 @@ function GlobalConfigTab() {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-4">
+    <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4 space-y-4">
       <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
         <Settings className="h-4 w-4" /> Configuration globale du pipeline GPS
       </h3>
@@ -547,12 +547,12 @@ export default function DeviceConfigPanelV2() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b bg-white">
+      <div className="flex items-center justify-between px-4 py-3 border-b bg-[var(--bg-elevated)]">
         <h2 className="text-base font-semibold text-[var(--text-primary)]">Paramètres Boîtiers GPS</h2>
         <button
           onClick={fetchStats}
           disabled={loadingStats}
-          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-lg hover:bg-gray-100"
+          className="p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] rounded-lg hover:bg-[var(--bg-surface)]"
           title="Rafraîchir"
         >
           <RefreshCw className={`h-4 w-4 ${loadingStats ? 'animate-spin' : ''}`} />
@@ -560,7 +560,7 @@ export default function DeviceConfigPanelV2() {
       </div>
 
       {/* Onglets */}
-      <div className="flex border-b bg-white px-4">
+      <div className="flex border-b bg-[var(--bg-elevated)] px-4">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button
             key={id}

@@ -271,7 +271,7 @@ export const AnomalyDashboard: React.FC = () => {
 
       {/* Recommendations Panel - Dynamique */}
       <Card className="p-0 flex flex-col overflow-hidden bg-[var(--bg-elevated)] border-[var(--border)]">
-        <div className="p-4 border-b border-[var(--border)] bg-white">
+        <div className="p-4 border-b border-[var(--border)] bg-[var(--bg-elevated)]">
           <h3 className="font-bold text-[var(--text-primary)]">Recommandations IA</h3>
         </div>
         <div className="p-4 space-y-4 overflow-auto">

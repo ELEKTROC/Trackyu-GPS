@@ -31,7 +31,7 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
           <button
             key={tab}
             onClick={() => setActiveFuelTab(tab)}
-            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${activeFuelTab === tab ? 'bg-white text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${activeFuelTab === tab ? 'bg-[var(--bg-elevated)] text-[var(--primary)] shadow-sm' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
             {tab}
           </button>

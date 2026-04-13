@@ -324,7 +324,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
             </div>
             <button
               onClick={() => setShowMyPlanningOnly(!showMyPlanningOnly)}
-              className={`p-2 rounded-lg border transition-colors ${showMyPlanningOnly ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-white border-[var(--border)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)]'}`}
+              className={`p-2 rounded-lg border transition-colors ${showMyPlanningOnly ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)]'}`}
             >
               {showMyPlanningOnly ? <User className="w-4 h-4" /> : <Users className="w-4 h-4" />}
             </button>
@@ -495,7 +495,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
           {/* Mon planning / Tous */}
           <button
             onClick={() => setShowMyPlanningOnly(!showMyPlanningOnly)}
-            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${showMyPlanningOnly ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-white border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)]'}`}
+            className={`flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-md border transition-colors ${showMyPlanningOnly ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'}`}
           >
             {showMyPlanningOnly ? <User className="w-3 h-3" /> : <Users className="w-3 h-3" />}
             {showMyPlanningOnly ? 'Mon Planning' : 'Tous'}

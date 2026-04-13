@@ -85,7 +85,7 @@ export const ViolationsModalContent: React.FC = () => {
           {violations.map((violation) => (
             <div
               key={violation.id}
-              className="bg-white border border-[var(--border)] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-3">

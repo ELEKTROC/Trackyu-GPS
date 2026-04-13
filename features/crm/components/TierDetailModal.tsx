@@ -1568,7 +1568,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors border ${
                           commentType === 'note'
                             ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]'
-                            : 'bg-white text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] border-[var(--border)]'
+                            : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-surface)]'
                         }`}
                       >
                         <StickyNote className="w-3.5 h-3.5" /> Note / Commentaire
@@ -1578,7 +1578,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors border ${
                           commentType === 'appel'
                             ? 'bg-green-50 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700'
-                            : 'bg-white text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-elevated)] border-[var(--border)]'
+                            : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-surface)]'
                         }`}
                       >
                         <PhoneIncoming className="w-3.5 h-3.5" /> Note d&apos;appel

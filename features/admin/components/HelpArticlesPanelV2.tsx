@@ -618,14 +618,14 @@ export const HelpArticlesPanelV2: React.FC = () => {
               <div className="flex border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-[var(--text-secondary)]'}`}
+                  className={`p-2 ${viewMode === 'grid' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                   title="Vue grille"
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 ${viewMode === 'list' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-white text-[var(--text-secondary)]'}`}
+                  className={`p-2 ${viewMode === 'list' ? 'bg-[var(--primary-dim)] text-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
                   title="Vue liste"
                 >
                   <List className="w-4 h-4" />

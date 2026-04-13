@@ -385,7 +385,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                   return (
                     <tr
                       key={entry.id}
-                      className="bg-white border-b bg-[var(--bg-elevated)] border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50"
+                      className="bg-[var(--bg-elevated)] border-b border-[var(--border)] hover:bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)]/50"
                     >
                       <td className="px-6 py-4">{entry.date}</td>
                       <td className="px-6 py-4 font-mono text-xs">{entry.ref}</td>
@@ -443,7 +443,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
               <div className="space-y-6 max-w-3xl mx-auto">
                 <div className="flex gap-4 p-1 bg-[var(--bg-elevated)] rounded-lg">
                   <button
-                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'WITHDRAWAL' ? 'bg-white bg-[var(--bg-elevated)] shadow text-red-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'WITHDRAWAL' ? 'bg-[var(--bg-elevated)] shadow text-red-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                     onClick={() => {
                       setTransactionType('WITHDRAWAL');
                       setCounterpartAccount('606000');
@@ -452,7 +452,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
                     Sortie (Dépense)
                   </button>
                   <button
-                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'DEPOSIT' ? 'bg-white bg-[var(--bg-elevated)] shadow text-emerald-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                    className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors ${transactionType === 'DEPOSIT' ? 'bg-[var(--bg-elevated)] shadow text-emerald-600' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                     onClick={() => {
                       setTransactionType('DEPOSIT');
                       setCounterpartAccount('411100');

@@ -528,7 +528,9 @@ export const NotificationComposer: React.FC<NotificationComposerProps> = ({ isOp
 
           <div>
             <p className="text-sm text-[var(--text-secondary)] mb-1">Message :</p>
-            <div className="bg-white p-3 rounded border border-[var(--border)] text-sm whitespace-pre-wrap">{body}</div>
+            <div className="bg-[var(--bg-elevated)] p-3 rounded border border-[var(--border)] text-sm whitespace-pre-wrap">
+              {body}
+            </div>
           </div>
         </div>
 

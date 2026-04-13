@@ -371,7 +371,7 @@ export const UserMonitoring: React.FC = () => {
       {/* Confirm Reset Password Modal */}
       {confirmReset && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setConfirmReset(null)}>
-          <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6" onClick={e => e.stopPropagation()}>
+          <div className="bg-[var(--bg-elevated)] rounded-xl shadow-xl max-w-sm w-full p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-orange-100 rounded-full"><Lock className="w-5 h-5 text-orange-600" /></div>
               <h3 className="font-bold text-[var(--text-primary)]">Réinitialiser le mot de passe</h3>

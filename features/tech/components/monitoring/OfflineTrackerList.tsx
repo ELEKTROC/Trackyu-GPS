@@ -368,7 +368,7 @@ export const OfflineTrackerList: React.FC = () => {
           </div>
           <button
             onClick={handleExport}
-            className="p-2 bg-white border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] transition-colors"
+            className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)] transition-colors"
             title={selectedIds.size > 0 ? `Exporter ${selectedIds.size} sélectionné(s)` : 'Exporter tout en CSV'}
           >
             <Download className="w-4 h-4" />
@@ -395,7 +395,7 @@ export const OfflineTrackerList: React.FC = () => {
             </button>
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="px-3 py-1 bg-white text-[var(--text-secondary)] border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-elevated)]"
+              className="px-3 py-1 bg-[var(--bg-elevated)] text-[var(--text-secondary)] border border-[var(--border)] rounded text-xs font-medium hover:bg-[var(--bg-surface)]"
             >
               Tout désélectionner
             </button>
@@ -574,7 +574,7 @@ export const OfflineTrackerList: React.FC = () => {
             <select
               value={itemsPerPage}
               onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-              className="bg-white border border-[var(--border)] rounded px-2 py-1 text-xs"
+              className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded px-2 py-1 text-xs"
               aria-label="Nombre d'éléments par page"
             >
               {ITEMS_PER_PAGE_OPTIONS.map(n => (
@@ -600,7 +600,7 @@ export const OfflineTrackerList: React.FC = () => {
           ═══════════════════════════════════════════════════ */}
       {commentModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setCommentModal(null)}>
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+          <div className="bg-[var(--bg-elevated)] rounded-xl shadow-xl w-full max-w-lg max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4 border-b">
               <h3 className="font-semibold text-[var(--text-primary)]">
                 <PenLine className="w-4 h-4 inline mr-2 text-emerald-600" />
@@ -664,7 +664,7 @@ export const OfflineTrackerList: React.FC = () => {
 
         return (
           <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setInactivityModal(null)}>
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="bg-[var(--bg-elevated)] rounded-xl shadow-xl w-full max-w-xl max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4 border-b">
                 <h3 className="font-semibold text-[var(--text-primary)]">
                   <Clock className="w-4 h-4 inline mr-2 text-purple-600" />

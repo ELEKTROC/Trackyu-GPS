@@ -156,7 +156,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ journalEntries, isSupe
             <tbody>
               {sortedAccountRows.map((row) => {
                 return (
-                  <tr key={row.account} className="bg-white border-b bg-[var(--bg-elevated)] border-[var(--border)]">
+                  <tr key={row.account} className="bg-[var(--bg-elevated)] border-b border-[var(--border)]">
                     <td className="px-4 py-3 font-medium text-[var(--text-primary)]">{row.account}</td>
                     <td className="px-4 py-3 text-right">{formatPrice(row.debit)}</td>
                     <td className="px-4 py-3 text-right">{formatPrice(row.credit)}</td>

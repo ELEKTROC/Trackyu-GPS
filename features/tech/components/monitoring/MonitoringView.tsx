@@ -145,10 +145,10 @@ function PipelineGpsTab() {
             value: stats.unknownImeis.length,
             icon: AlertTriangle,
             color: stats.unknownImeis.length > 0 ? 'text-orange-600' : 'text-[var(--text-muted)]',
-            bg: stats.unknownImeis.length > 0 ? 'bg-orange-50' : 'bg-gray-50',
+            bg: stats.unknownImeis.length > 0 ? 'bg-orange-50' : 'bg-[var(--bg-elevated)]',
           },
         ].map(({ label, value, icon: Icon, color, bg }) => (
-          <div key={label} className={`${bg} border border-gray-200 rounded-lg p-3`}>
+          <div key={label} className={`${bg} border border-[var(--border)] rounded-lg p-3`}>
             <div className="flex items-center gap-1.5 mb-1">
               <Icon className={`h-4 w-4 ${color}`} />
               <span className="text-xs text-[var(--text-secondary)]">{label}</span>
@@ -159,7 +159,7 @@ function PipelineGpsTab() {
       </div>
 
       {/* Barre progression globale */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
         <div className="flex justify-between text-sm mb-2">
           <span className="text-[var(--text-secondary)]">
             {stats.totals.valid.toLocaleString('fr-FR')} valides ·{' '}
@@ -186,7 +186,7 @@ function PipelineGpsTab() {
       </div>
 
       {/* Par protocole */}
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
         <div className="px-4 py-3 bg-gray-50 border-b">
           <h4 className="text-sm font-semibold text-[var(--text-primary)]">Statistiques par protocole</h4>
         </div>
@@ -255,7 +255,7 @@ function PipelineGpsTab() {
       )}
 
       {/* Rate limiting */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
         <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
           <Shield className="h-4 w-4 text-[var(--primary)]" />
           Rate Limiting IMEI
@@ -311,7 +311,7 @@ function OverviewTab() {
           { label: 'Alertes aujourd\'hui', value: fleet.alertsToday, icon: AlertTriangle, color: 'text-orange-600' },
           { label: 'Alertes non lues', value: fleet.unreadAlerts, icon: AlertTriangle, color: fleet.unreadAlerts > 0 ? 'text-red-600' : 'text-[var(--text-muted)]' },
         ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white border border-gray-200 rounded-lg p-4">
+          <div key={label} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
             <div className="flex items-center gap-2 mb-1">
               <Icon className={`h-4 w-4 ${color}`} />
               <span className="text-xs text-[var(--text-secondary)]">{label}</span>
@@ -341,13 +341,13 @@ export function MonitoringView() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       {/* Header */}
-      <div className="px-4 py-3 border-b bg-white">
+      <div className="px-4 py-3 border-b bg-[var(--bg-elevated)]">
         <h2 className="text-base font-semibold text-[var(--text-primary)]">Monitoring Technique</h2>
         <p className="text-xs text-[var(--text-secondary)] mt-0.5">Surveillance temps réel du pipeline GPS et de la flotte</p>
       </div>
 
       {/* Onglets */}
-      <div className="flex border-b bg-white px-4 overflow-x-auto">
+      <div className="flex border-b bg-[var(--bg-elevated)] px-4 overflow-x-auto">
         {tabs.map(({ id, label, icon: Icon, badge }) => (
           <button
             key={id}

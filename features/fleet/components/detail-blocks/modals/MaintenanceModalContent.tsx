@@ -53,7 +53,7 @@ export const MaintenanceModalContent: React.FC = () => {
           {upcomingMaintenance.map((item) => (
             <div
               key={item.id}
-              className="bg-white border border-[var(--border)] rounded-lg p-4 shadow-sm flex justify-between items-center"
+              className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4 shadow-sm flex justify-between items-center"
             >
               <div className="flex items-start gap-4">
                 <div

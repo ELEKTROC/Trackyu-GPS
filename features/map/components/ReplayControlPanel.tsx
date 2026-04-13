@@ -708,7 +708,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       className="absolute inset-0 pointer-events-none z-[1000] flex flex-col justify-between print:relative print:z-0"
     >
       {/* TOP TOOLBAR */}
-      <div className="pointer-events-auto bg-white/95 backdrop-blur-sm shadow-md p-4 m-4 rounded-lg border border-[var(--border)] flex flex-wrap items-center gap-4 justify-between print:hidden">
+      <div className="pointer-events-auto bg-[var(--bg-elevated)]/95 backdrop-blur-sm shadow-md p-4 m-4 rounded-lg border border-[var(--border)] flex flex-wrap items-center gap-4 justify-between print:hidden">
         <div className="flex items-center gap-4">
           <button
             onClick={onClose}
@@ -742,7 +742,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
             </div>
 
             {isVehicleDropdownOpen && (
-              <div className="absolute top-full left-0 mt-1 w-[350px] bg-white border border-[var(--border)] rounded-lg shadow-xl z-50 max-h-[400px] overflow-y-auto">
+              <div className="absolute top-full left-0 mt-1 w-[350px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 max-h-[400px] overflow-y-auto">
                 {Object.entries(vehiclesByClient).length === 0 ? (
                   <div className="p-4 text-center text-[var(--text-secondary)] text-sm">Aucun véhicule trouvé</div>
                 ) : (
@@ -876,7 +876,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       {/* BOTTOM PANEL */}
       <div className="pointer-events-auto m-4 flex flex-col items-center print:m-0">
         {/* Playback Controls */}
-        <div className="bg-white shadow-lg rounded-full px-6 py-2 mb-4 flex items-center gap-6 border border-[var(--border)] print:hidden">
+        <div className="bg-[var(--bg-elevated)] shadow-lg rounded-full px-6 py-2 mb-4 flex items-center gap-6 border border-[var(--border)] print:hidden">
           <button
             className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
             onClick={() => onProgressChange(Math.max(0, progress - 10))}
@@ -929,7 +929,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
         {/* Data Panel */}
         <div
-          className={`w-full max-w-6xl bg-white rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] border border-[var(--border)] transition-all duration-300 ease-in-out flex flex-col print:shadow-none print:border-0 ${isBottomPanelOpen ? 'h-96' : 'h-12'}`}
+          className={`w-full max-w-6xl bg-[var(--bg-elevated)] rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] border border-[var(--border)] transition-all duration-300 ease-in-out flex flex-col print:shadow-none print:border-0 ${isBottomPanelOpen ? 'h-96' : 'h-12'}`}
         >
           {/* Tabs */}
           <div
@@ -1031,7 +1031,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                 </div>
 
                 {/* Mini speed chart */}
-                <div className="mt-4 h-32 bg-white rounded-lg border border-[var(--border)] p-2">
+                <div className="mt-4 h-32 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] p-2">
                   <ResponsiveContainer
                     width="100%"
                     height="100%"
@@ -1253,7 +1253,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
             {/* SPEED TAB */}
             {activeTab === 'SPEED' && (
-              <div className="h-full w-full bg-white p-2 rounded-lg border border-[var(--border)]">
+              <div className="h-full w-full bg-[var(--bg-elevated)] p-2 rounded-lg border border-[var(--border)]">
                 <ResponsiveContainer
                   width="100%"
                   height="100%"
@@ -1293,7 +1293,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
             {/* FUEL TAB */}
             {activeTab === 'FUEL' && (
-              <div className="h-full w-full bg-white p-2 rounded-lg border border-[var(--border)] overflow-hidden">
+              <div className="h-full w-full bg-[var(--bg-elevated)] p-2 rounded-lg border border-[var(--border)] overflow-hidden">
                 <div className="h-full flex flex-col">
                   {/* Header with stats and controls */}
                   <div className="flex items-center justify-between mb-2 px-2 flex-wrap gap-2">
@@ -1556,7 +1556,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                             <th className="px-4 py-2">Position</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[var(--border)] bg-white">
+                        <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-elevated)]">
                           {idleEvents.map((event, index) => (
                             <tr key={event.id} className="hover:bg-orange-50/50">
                               <td className="px-4 py-2 font-medium text-[var(--text-primary)]">{index + 1}</td>

@@ -45,7 +45,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
               <button
                 onClick={copyLocationLink}
                 title="Copier Lien"
-                className="p-1 hover:bg-white rounded text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+                className="p-1 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
               >
                 <Copy className="w-3 h-3" />
               </button>
@@ -54,7 +54,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
                 target="_blank"
                 rel="noreferrer"
                 title="Ouvrir Maps"
-                className="p-1 hover:bg-white rounded text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+                className="p-1 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
               >
                 <ExternalLink className="w-3 h-3" />
               </a>
@@ -96,7 +96,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           isHidden={hiddenFields.has('currentTrip')}
           onToggle={() => toggleFieldVisibility('currentTrip')}
         >
-          <div className="p-2 bg-white border border-[var(--border)] rounded shadow-sm h-full">
+          <div className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-sm h-full">
             <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold block mb-1">Dernier trajet</span>
             <span className="text-lg font-bold text-[var(--primary)]">
               {(vehicle.lastTripDistance ?? 0).toFixed(1)} km
@@ -109,7 +109,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           isHidden={hiddenFields.has('dailyDist')}
           onToggle={() => toggleFieldVisibility('dailyDist')}
         >
-          <div className="p-2 bg-white border border-[var(--border)] rounded shadow-sm h-full">
+          <div className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-sm h-full">
             <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold block mb-1">Distance (Jour)</span>
             <span className="text-lg font-bold text-[var(--text-primary)]">
               {(vehicle.dailyMileage ?? 0).toFixed(1)} km
