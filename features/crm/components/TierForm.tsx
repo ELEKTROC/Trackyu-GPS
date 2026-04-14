@@ -392,7 +392,8 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
                     </Select>
                   </FormField>
                   <FormField label="Secteur d'activité">
-                    <Input
+                    <Select
+                      title="Secteur d'activité"
                       value={formData.clientData?.sector || ''}
                       onChange={(e) =>
                         setFormData({
@@ -400,8 +401,24 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
                           clientData: { ...formData.clientData, sector: e.target.value },
                         })
                       }
-                      placeholder="Ex: Transport, BTP..."
-                    />
+                    >
+                      <option value="">— Sélectionner —</option>
+                      <option value="Transport & Logistique">Transport &amp; Logistique</option>
+                      <option value="BTP / Construction">BTP / Construction</option>
+                      <option value="Agriculture / Agro-alimentaire">Agriculture / Agro-alimentaire</option>
+                      <option value="Mines & Carrières">Mines &amp; Carrières</option>
+                      <option value="Distribution / Commerce">Distribution / Commerce</option>
+                      <option value="Industrie & Production">Industrie &amp; Production</option>
+                      <option value="Énergie / Pétrole & Gaz">Énergie / Pétrole &amp; Gaz</option>
+                      <option value="Administration / ONG">Administration / ONG</option>
+                      <option value="Santé">Santé</option>
+                      <option value="Sécurité">Sécurité</option>
+                      <option value="Télécommunications">Télécommunications</option>
+                      <option value="Immobilier">Immobilier</option>
+                      <option value="Éducation">Éducation</option>
+                      <option value="Hôtellerie / Restauration">Hôtellerie / Restauration</option>
+                      <option value="Autre">Autre</option>
+                    </Select>
                   </FormField>
                   <FormField label="Segment">
                     <Select

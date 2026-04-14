@@ -472,6 +472,7 @@ export interface Invoice {
   accountingStatus?: string; // Statut comptable
   paidDate?: string; // Date de paiement (alias de paymentDate)
   contractNumber?: string; // Numéro de contrat lié
+  subscriptionNumber?: string; // Numéro d'abonnement lié (ABO-XXXXX)
 }
 
 export interface TicketMessage {

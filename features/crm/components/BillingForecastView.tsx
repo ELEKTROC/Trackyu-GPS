@@ -318,66 +318,75 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     }
 
     // ── Supplément factures pour années passées ────────────────────────────────
-    // Si le backend ne retourne que les abonnements ACTIFS, les contrats expirés
-    // n'apparaissent pas dans rawSubs. On complète depuis les factures existantes :
-    // tout contrat ayant des factures pour l'année sélectionnée génère une ligne.
+    // Approche : partir des factures ABONNEMENT (pas des vehicules ni rawSubs)
+    // pour ne manquer aucune facture, même sans plaque mappée.
     if (isPastYear) {
-      const coveredContractIds = new Set(byContract.keys());
-
-      // Indexer les factures de l'année par contractId
-      const invByContract = new Map<string, InvoiceRaw[]>();
+      // Grouper toutes les factures ABONNEMENT de l'année par clientId → groupKey
+      // groupKey = plaque > n° abonnement > id facture (pour sous-grouper par véhicule)
+      const aboInvsByClient = new Map<string, Map<string, InvoiceRaw[]>>();
       for (const inv of invoices as InvoiceRaw[]) {
         if (!inv.date) continue;
         const d = new Date(inv.date as string);
         if (isNaN(d.getTime()) || d.getFullYear() !== year) continue;
-        const cId = String(inv.contractId ?? (inv as any).contract_id ?? '');
-        if (!cId || coveredContractIds.has(cId)) continue;
-        if (!invByContract.has(cId)) invByContract.set(cId, []);
-        invByContract.get(cId)!.push(inv as InvoiceRaw);
+        if (inv.category !== 'ABONNEMENT') continue;
+        const clientId = inv.clientId || '';
+        if (!clientId) continue;
+        const groupKey = inv.licensePlate || inv.subscriptionNumber || inv.id;
+        if (!aboInvsByClient.has(clientId)) aboInvsByClient.set(clientId, new Map());
+        const clientMap = aboInvsByClient.get(clientId)!;
+        if (!clientMap.has(groupKey)) clientMap.set(groupKey, []);
+        clientMap.get(groupKey)!.push(inv);
       }
 
-      for (const [cId, cInvoices] of invByContract) {
-        const contract = contracts.find((c) => c.id === cId);
-        const clientId = cInvoices[0].clientId || contract?.clientId || '';
-        const clientName = cInvoices[0].clientName || contract?.clientName || '—';
-        const resellerName = contract?.resellerName || '—';
-        const contractNumber = contract?.contractNumber || cId;
-
-        // Un groupe par subscriptionId distinct (ou par contrat si pas de subId)
-        const subGroups = new Map<string, InvoiceRaw[]>();
-        for (const inv of cInvoices) {
-          const subId = (inv as any).subscriptionId ?? (inv as any).subscription_id ?? `c:${cId}`;
-          if (!subGroups.has(subId)) subGroups.set(subId, []);
-          subGroups.get(subId)!.push(inv);
-        }
+      for (const [clientId, invsByKey] of aboInvsByClient) {
+        const contract = contracts.find((c) => c.clientId === clientId);
+        const contractId = contract?.id || `client:${clientId}`;
+        // Sauter si déjà couvert par rawSubs
+        if (byContract.has(contractId)) continue;
 
         const subs: SubForecast[] = [];
-        for (const [subId, subInvs] of subGroups) {
-          const months = [...new Set(subInvs.map((inv) => new Date(inv.date as string).getMonth()))];
+        for (const [groupKey, invs] of invsByKey) {
+          const plate = invs[0].licensePlate || '';
+          const vehicle = plate ? vehicles.find((v) => v.licensePlate === plate) : null;
+
+          const monthSet = new Map<number, number>();
+          for (const inv of invs) {
+            const m = new Date(inv.date as string).getMonth();
+            monthSet.set(m, (monthSet.get(m) ?? 0) + inv.amount);
+          }
+          const months = [...monthSet.keys()].sort((a, b) => a - b);
+          const avgFee = Math.round([...monthSet.values()].reduce((a, b) => a + b, 0) / months.length);
+          const branchName = vehicle ? branches.find((b) => b.id === vehicle.branchId)?.name || '—' : '—';
+          const vehicleName = vehicle
+            ? [vehicle.brand, vehicle.model].filter(Boolean).join(' ') || vehicle.name || ''
+            : invs[0].subscriptionNumber || '';
+
           subs.push({
-            id: subId,
-            subscriptionId: subId,
-            plate: '—',
-            name: '',
-            branchName: '—',
+            id: `t:${clientId}:${groupKey}`,
+            subscriptionId: `t:${clientId}:${groupKey}`,
+            plate: plate || invs[0].subscriptionNumber || '—',
+            name: vehicleName,
+            branchName,
             cycle: 'ANNUAL',
-            fee: subInvs[0].amount || 0,
+            fee: avgFee,
             billingMonths: months,
             status: 'EXPIRED',
             autoRenew: false,
-            startDate: contract?.startDate || '',
-            endDate: contract?.endDate ?? null,
+            startDate: '',
+            endDate: null,
             nextBillingDate: null,
           });
         }
 
-        byContract.set(cId, {
-          contractId: cId,
-          contractNumber,
+        if (subs.length === 0) continue;
+        const tier = tiers.find((t) => t.id === clientId);
+        byContract.set(contractId, {
+          contractId,
+          contractNumber: contract?.contractNumber || '—',
           clientId,
-          clientName,
-          resellerName,
-          branches: [],
+          clientName: tier?.name || contract?.clientName || '—',
+          resellerName: contract?.resellerName || '—',
+          branches: [...new Set(subs.map((s) => s.branchName).filter((b) => b !== '—'))],
           subs,
         });
       }
@@ -386,7 +395,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     return Array.from(byContract.values())
       .filter((c) => c.subs.length > 0)
       .sort((a, b) => a.clientName.localeCompare(b.clientName));
-  }, [rawSubs, contracts, invoices, vehicles, branches, year, currentYear]);
+  }, [rawSubs, contracts, invoices, tiers, vehicles, branches, year, currentYear]);
 
   // Options filtres dynamiques
   const clientOptions = useMemo(() => [...new Set(allForecastData.map((c) => c.clientName))].sort(), [allForecastData]);
@@ -435,7 +444,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
   const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
   const pagedData = filteredData.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  // ─── Index factures par (sub|contract) × année × mois ──────────────────────
+  // ─── Index factures par (sub|contract|client) × année × mois ───────────────
   const { invoiceStatusByKey, invoiceByKey } = useMemo(() => {
     const statusMap = new Map<string, string>();
     const objMap = new Map<string, any>();
@@ -447,7 +456,8 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
       const m = d.getMonth();
       const raw = inv as InvoiceRaw;
       const subId = raw.subscriptionId ?? raw.subscription_id;
-      const cId = String(inv.contractId ?? raw.contract_id ?? '');
+      const cId = String(inv.contractId ?? (raw as any).contract_id ?? '');
+      const clientId = inv.clientId || '';
       if (subId) {
         const k = `s:${subId}:${y}:${m}`;
         if (!statusMap.has(k)) {
@@ -462,18 +472,32 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
           objMap.set(k, inv);
         }
       }
+      // Index par (clientId × groupKey) pour les lignes supplément
+      // groupKey = plaque > n° abonnement (même logique que le supplement)
+      const plate = inv.licensePlate || '';
+      const subNum = (inv as InvoiceRaw).subscriptionNumber || '';
+      const gk = plate || subNum;
+      if (clientId && gk) {
+        const k = `s:t:${clientId}:${gk}:${y}:${m}`;
+        if (!statusMap.has(k)) {
+          statusMap.set(k, inv.status);
+          objMap.set(k, inv);
+        }
+      }
     }
     return { invoiceStatusByKey: statusMap, invoiceByKey: objMap };
   }, [invoices]);
 
-  const getInvoiceStatus = (subId: string, contractId: string, monthIdx: number): string | null =>
+  const getInvoiceStatus = (subId: string, contractId: string, clientId: string, monthIdx: number): string | null =>
     invoiceStatusByKey.get(`s:${subId}:${year}:${monthIdx}`) ??
     invoiceStatusByKey.get(`c:${contractId}:${year}:${monthIdx}`) ??
+    invoiceStatusByKey.get(`t:${clientId}:${year}:${monthIdx}`) ??
     null;
 
-  const getInvoice = (subId: string, contractId: string, monthIdx: number): any | null =>
+  const getInvoice = (subId: string, contractId: string, clientId: string, monthIdx: number): any | null =>
     invoiceByKey.get(`s:${subId}:${year}:${monthIdx}`) ??
     invoiceByKey.get(`c:${contractId}:${year}:${monthIdx}`) ??
+    invoiceByKey.get(`t:${clientId}:${year}:${monthIdx}`) ??
     null;
 
   const handleCellClick = (
@@ -491,7 +515,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     }
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const flipUp = rect.bottom + 260 > window.innerHeight;
-    const invoice = getInvoice(sub.subscriptionId, contractId, monthIdx);
+    const invoice = getInvoice(sub.subscriptionId, contractId, clientId, monthIdx);
     setPreviewPopup({
       x: rect.left,
       y: flipUp ? rect.top - 4 : rect.bottom + 4,
@@ -1056,17 +1080,20 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                               {MONTHS.map((_, i) => {
                                 const has = sub.billingMonths.includes(i);
                                 const invStatus = has
-                                  ? getInvoiceStatus(sub.subscriptionId, contract.contractId, i)
+                                  ? getInvoiceStatus(sub.subscriptionId, contract.contractId, contract.clientId, i)
+                                  : null;
+                                const actualInv = invStatus
+                                  ? getInvoice(sub.subscriptionId, contract.contractId, contract.clientId, i)
                                   : null;
                                 // Mois passé = avant le mois courant (année ou mois)
                                 const isPastMonth = year < currentYear || (year === currentYear && i < currentMonth);
                                 const cellColor = invStatus
                                   ? (INVOICE_CELL_COLORS[invStatus] ?? INVOICE_CELL_DEFAULT)
                                   : has && isPastMonth
-                                    ? INVOICE_CELL_MISSING // échéance passée sans facture
-                                    : INVOICE_CELL_DEFAULT; // prévision future
+                                    ? INVOICE_CELL_MISSING
+                                    : INVOICE_CELL_DEFAULT;
                                 const cellLabel = invStatus
-                                  ? format(sub.fee)
+                                  ? format(actualInv?.amount ?? sub.fee)
                                   : has && isPastMonth
                                     ? 'Non émis'
                                     : format(sub.fee);
@@ -1242,13 +1269,25 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                     </span>
                   </div>
                 </div>
-                <div className="px-4 pb-3">
+                <div className="px-4 pb-3 flex flex-col gap-2">
+                  {onNavigate && (
+                    <button
+                      onClick={() => {
+                        setPreviewPopup(null);
+                        onNavigate('INVOICES' as View, { invoiceId: previewPopup.invoice.id });
+                      }}
+                      className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[var(--primary)] text-white text-xs font-bold hover:bg-[var(--primary-light)] transition-colors"
+                    >
+                      <FileText className="w-3.5 h-3.5" />
+                      Modifier la facture
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       setPreviewPopup(null);
                       setSelectedContractId(previewPopup.contractId);
                     }}
-                    className="w-full text-center text-[11px] text-[var(--primary)] dark:text-[var(--primary)] hover:underline font-medium"
+                    className="w-full text-center text-[11px] text-[var(--text-secondary)] hover:text-[var(--primary)] hover:underline font-medium"
                   >
                     Voir le contrat →
                   </button>

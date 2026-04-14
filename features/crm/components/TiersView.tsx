@@ -21,7 +21,9 @@ import {
   UserCheck,
   UserX,
   Briefcase,
+  BookOpen,
 } from 'lucide-react';
+import { AnnuaireView } from './AnnuaireView';
 import { TierDetailModal } from './TierDetailModal';
 import { useDateRange } from '../../../hooks/useDateRange';
 import { DateRangeSelector } from '../../../components/DateRangeSelector';
@@ -60,6 +62,59 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
   const [editingTier, setEditingTier] = useState<Tier | undefined>(undefined);
   const [selectedTier, setSelectedTier] = useState<Tier | null>(null);
   const [showDetail, setShowDetail] = useState(false);
+  const [showAnnuaire, setShowAnnuaire] = useState(false);
+
+  // ── Gestion des colonnes visibles ──────────────────────────────────────────
+  // Définition des colonnes par type (doit rester synchronisée avec TierList.getHeaders)
+  const COLUMN_DEFS: Record<string, { key: string; label: string }[]> = {
+    ALL: [
+      { key: 'contactName', label: 'Contact' },
+      { key: 'email', label: 'Email' },
+      { key: 'status', label: 'Statut' },
+    ],
+    CLIENT: [
+      { key: 'contactName', label: 'Contact' },
+      { key: 'email', label: 'Email' },
+      { key: 'status', label: 'Statut' },
+      { key: 'phone', label: 'Téléphone' },
+      { key: 'clientData.fleetSize', label: 'Véhicules' },
+      { key: 'clientData.segment', label: 'Segment' },
+      { key: 'application', label: 'Application' },
+      { key: 'clientData.balance', label: 'Solde' },
+    ],
+    RESELLER: [
+      { key: 'contactName', label: 'Contact' },
+      { key: 'email', label: 'Email' },
+      { key: 'status', label: 'Statut' },
+      { key: 'resellerData.domain', label: 'Domaine' },
+      { key: 'resellerData.activeClients', label: 'Clients actifs' },
+    ],
+    SUPPLIER: [
+      { key: 'contactName', label: 'Contact' },
+      { key: 'email', label: 'Email' },
+      { key: 'status', label: 'Statut' },
+      { key: 'supplierData.category', label: 'Catégorie' },
+      { key: 'supplierData.balance', label: 'Solde' },
+    ],
+    PROSPECT: [
+      { key: 'contactName', label: 'Contact' },
+      { key: 'email', label: 'Email' },
+      { key: 'status', label: 'Statut' },
+    ],
+  };
+
+  const currentCols = COLUMN_DEFS[filterType] ?? COLUMN_DEFS.ALL;
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => currentCols.map((c) => c.key));
+
+  // Réinitialise les colonnes visibles quand le type change
+  useEffect(() => {
+    const cols = COLUMN_DEFS[filterType] ?? COLUMN_DEFS.ALL;
+    setVisibleColumns(cols.map((c) => c.key));
+  }, [filterType]);
+
+  const toggleColumn = (key: string) => {
+    setVisibleColumns((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+  };
 
   // --- KPIs Calculation ---
   const kpis = useMemo(() => {
@@ -282,21 +337,27 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
             </button>
             {isColumnMenuOpen && (
               <div className="absolute top-full right-0 mt-2 w-56 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="p-2 bg-[var(--bg-elevated)] border-b border-[var(--border)] border-[var(--border)] text-[10px] font-bold text-[var(--text-secondary)] uppercase">
+                <div className="p-2 bg-[var(--bg-elevated)] border-b border-[var(--border)] text-[10px] font-bold text-[var(--text-secondary)] uppercase">
                   Colonnes Visibles
                 </div>
-                <div className="p-1 max-h-48 overflow-y-auto custom-scrollbar">
-                  {['Nom', 'Type', 'Email', 'Téléphone', 'Ville', 'Statut', 'Date Création'].map((col) => (
+                <div className="p-1 max-h-56 overflow-y-auto custom-scrollbar">
+                  {/* Nom est toujours visible */}
+                  <label className="flex items-center gap-2 px-3 py-2 opacity-50 cursor-not-allowed">
+                    <input type="checkbox" checked readOnly className="rounded border-[var(--border)]" />
+                    <span className="text-sm text-[var(--text-secondary)]">Nom / Société</span>
+                  </label>
+                  {currentCols.map((col) => (
                     <label
-                      key={col}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-elevated)] rounded cursor-pointer"
+                      key={col.key}
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--bg-surface)] rounded cursor-pointer"
                     >
                       <input
                         type="checkbox"
-                        defaultChecked
+                        checked={visibleColumns.includes(col.key)}
+                        onChange={() => toggleColumn(col.key)}
                         className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                       />
-                      <span className="text-sm text-[var(--text-secondary)]">{col}</span>
+                      <span className="text-sm text-[var(--text-secondary)]">{col.label}</span>
                     </label>
                   ))}
                 </div>
@@ -353,6 +414,20 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
             )}
           </div>
 
+          {/* TOGGLE ANNUAIRE */}
+          <button
+            onClick={() => setShowAnnuaire((v) => !v)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
+              showAnnuaire
+                ? 'bg-[var(--primary)] text-white border-[var(--primary)]'
+                : 'border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
+            }`}
+            title="Annuaire des contacts"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline text-sm">Annuaire</span>
+          </button>
+
           <button
             onClick={handleCreate}
             className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors ml-2 shadow-sm shadow-blue-200 dark:shadow-none"
@@ -363,8 +438,15 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
         </div>
       </div>
 
+      {/* ── Mode Annuaire ──────────────────────────────────── */}
+      {showAnnuaire && (
+        <div className="flex-1 min-h-0">
+          <AnnuaireView />
+        </div>
+      )}
+
       {/* KPI CARDS - Hidden on mobile */}
-      {!isMobile && (
+      {!showAnnuaire && !isMobile && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-4 border-l-4 border-l-blue-500">
             <div className="flex items-center justify-between">
@@ -416,42 +498,47 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
         </div>
       )}
 
-      <Card className="p-3 sm:p-4 border-[var(--border)] flex flex-col sm:flex-row gap-3 items-stretch sm:items-center shrink-0">
-        <div className="relative flex-1 sm:max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
-          <input
-            type="text"
-            placeholder="Rechercher un tiers..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+      {!showAnnuaire && (
+        <>
+          <Card className="p-3 sm:p-4 border-[var(--border)] flex flex-col sm:flex-row gap-3 items-stretch sm:items-center shrink-0">
+            <div className="relative flex-1 sm:max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+              <input
+                type="text"
+                placeholder="Rechercher un tiers..."
+                className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-primary)]"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="flex gap-1.5 overflow-x-auto pb-0.5 sm:pb-0 shrink-0">
+              {(['ALL', 'CLIENT', 'RESELLER', 'SUPPLIER', 'PROSPECT'] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setFilterType(type)}
+                  className={`filter-chip ${filterType === type ? 'active' : ''}`}
+                >
+                  {type === 'ALL' ? 'Tous' : type}
+                </button>
+              ))}
+            </div>
+          </Card>
+
+          <TierList
+            type={filterType}
+            searchTerm={searchTerm}
+            onEdit={handleEdit}
+            onViewDetail={(tier) => {
+              setSelectedTier(tier);
+              setShowDetail(true);
+            }}
+            dateRange={dateRange ?? undefined}
+            filter={getFilterFunction}
+            visibleColumns={visibleColumns}
           />
-        </div>
-
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5 sm:pb-0 shrink-0">
-          {(['ALL', 'CLIENT', 'RESELLER', 'SUPPLIER', 'PROSPECT'] as const).map((type) => (
-            <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              className={`filter-chip ${filterType === type ? 'active' : ''}`}
-            >
-              {type === 'ALL' ? 'Tous' : type}
-            </button>
-          ))}
-        </div>
-      </Card>
-
-      <TierList
-        type={filterType}
-        searchTerm={searchTerm}
-        onEdit={handleEdit}
-        onViewDetail={(tier) => {
-          setSelectedTier(tier);
-          setShowDetail(true);
-        }}
-        dateRange={dateRange ?? undefined}
-        filter={getFilterFunction}
-      />
+        </>
+      )}
 
       <TierForm
         isOpen={showForm}

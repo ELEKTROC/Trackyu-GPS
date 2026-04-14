@@ -31,7 +31,7 @@ export const ContractTabs: React.FC<ContractTabsProps> = ({ dateRange, onNavigat
       <div className="flex-1 min-h-0">
         {activeSubTab === 'LIST' && <ContractsView dateRange={dateRange} />}
         {activeSubTab === 'SUBSCRIPTIONS' && <SubscriptionsView dateRange={dateRange} onNavigate={onNavigate} />}
-        {activeSubTab === 'FORECAST' && <BillingForecastView />}
+        {activeSubTab === 'FORECAST' && <BillingForecastView onNavigate={onNavigate} />}
       </div>
     </div>
   );

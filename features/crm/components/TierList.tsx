@@ -45,6 +45,7 @@ interface TierListProps {
   filter?: (tier: Tier) => boolean;
   readOnly?: boolean;
   dateRange?: { start: string; end: string };
+  visibleColumns?: string[];
 }
 
 export const TierList: React.FC<TierListProps> = ({
@@ -56,12 +57,45 @@ export const TierList: React.FC<TierListProps> = ({
   filter,
   readOnly = false,
   dateRange,
+  visibleColumns,
 }) => {
   const isMobile = useIsMobile();
-  const { tiers, deleteTier, updateTier } = useDataContext();
+  const { tiers, deleteTier, updateTier, invoices } = useDataContext();
   const { showToast } = useToast();
   const { formatPrice } = useCurrency();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
+
+  // ── Montants impayés calculés depuis les factures (fiable) ─────────────────
+  // Statuts soldés : tout le reste est considéré impayé
+  const PAID_STATUSES = useMemo(() => new Set(['PAID', 'PAYÉ', 'CANCELLED', 'CANCELED', 'DRAFT']), []);
+
+  const impayes = useMemo(() => {
+    // byId  : clientId (= tier_id de l'API) → montant total impayé
+    // byName: clientName normalisé → montant total impayé (fallback si clientId absent)
+    const byId = new Map<string, number>();
+    const byName = new Map<string, number>();
+
+    for (const inv of invoices) {
+      const st = (inv.status || '').toUpperCase();
+      if (PAID_STATUSES.has(st)) continue;
+
+      const amount = typeof inv.amount === 'number' ? inv.amount : parseFloat((inv.amount as any) || '0');
+
+      const ref = inv.clientId || (inv as any).tier_id || (inv as any).client_id || '';
+      if (ref) byId.set(ref, (byId.get(ref) || 0) + amount);
+
+      const nm = (inv.clientName || (inv as any).tier_name || '').toLowerCase().trim();
+      if (nm) byName.set(nm, (byName.get(nm) || 0) + amount);
+    }
+    return { byId, byName };
+  }, [invoices, PAID_STATUSES]);
+
+  // Retourne le montant impayé d'un tier (0 = à jour)
+  const getTierUnpaid = (tier: Tier): number => {
+    const byIdVal = impayes.byId.get(tier.id);
+    if (byIdVal !== undefined) return byIdVal;
+    return impayes.byName.get(tier.name.toLowerCase().trim()) || 0;
+  };
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = useState(1);
@@ -238,6 +272,9 @@ export const TierList: React.FC<TierListProps> = ({
     },
   };
 
+  // Helper: colonne visible ?
+  const isColVisible = (key: string) => !visibleColumns || visibleColumns.includes(key);
+
   // Dynamic Columns based on Type
   const renderSpecificColumns = (tier: Tier) => {
     switch (type) {
@@ -246,83 +283,111 @@ export const TierList: React.FC<TierListProps> = ({
         const appBadge = APP_BADGE[appKey] ?? APP_BADGE['AUTRES'];
         return (
           <>
-            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.phone || '-'}</td>
-            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm text-center font-bold">
-              {tier.clientData?.fleetSize || 0}
-            </td>
-            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                  tier.clientData?.segment === 'VIP'
-                    ? 'bg-purple-100 text-purple-700'
-                    : tier.clientData?.segment === 'Grand Compte'
-                      ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
-                      : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
-                }`}
-              >
-                {tier.clientData?.segment || 'Standard'}
-              </span>
-            </td>
-            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">
-              <span
-                className={`px-2 py-1 rounded-full text-xs font-semibold ${appBadge.className}`}
-                title={appKey === 'AUTRES' && tier.applicationDetail ? tier.applicationDetail : undefined}
-              >
-                {appKey === 'AUTRES' && tier.applicationDetail ? tier.applicationDetail : appBadge.label}
-              </span>
-            </td>
-            <td className="px-6 py-4 text-sm text-right">
-              <div className="flex flex-col items-end gap-1">
+            {isColVisible('phone') && (
+              <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.phone || '-'}</td>
+            )}
+            {isColVisible('clientData.fleetSize') && (
+              <td className="px-6 py-4 text-[var(--text-secondary)] text-sm text-center font-bold">
+                {tier.clientData?.fleetSize || 0}
+              </td>
+            )}
+            {isColVisible('clientData.segment') && (
+              <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">
                 <span
-                  className={`font-mono font-semibold ${(tier.clientData?.balance || 0) < 0 ? 'text-red-600' : 'text-[var(--text-primary)]'}`}
-                >
-                  {formatPrice(tier.clientData?.balance || 0)}
-                </span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
-                    (tier.clientData?.balance || 0) < 0
-                      ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                      : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                  className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    tier.clientData?.segment === 'VIP'
+                      ? 'bg-purple-100 text-purple-700'
+                      : tier.clientData?.segment === 'Grand Compte'
+                        ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
+                        : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
                   }`}
                 >
-                  {(tier.clientData?.balance || 0) < 0 ? 'Impayés' : 'A jour'}
+                  {tier.clientData?.segment || 'Standard'}
                 </span>
-              </div>
-            </td>
+              </td>
+            )}
+            {isColVisible('application') && (
+              <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-semibold ${appBadge.className}`}
+                  title={appKey === 'AUTRES' && tier.applicationDetail ? tier.applicationDetail : undefined}
+                >
+                  {appKey === 'AUTRES' && tier.applicationDetail ? tier.applicationDetail : appBadge.label}
+                </span>
+              </td>
+            )}
+            {isColVisible('clientData.balance') &&
+              (() => {
+                const unpaid = getTierUnpaid(tier);
+                const isImpaye = unpaid > 0;
+                return (
+                  <td className="px-6 py-4 text-sm text-right">
+                    <div className="flex flex-col items-end gap-1">
+                      <span
+                        className={`font-mono font-semibold ${isImpaye ? 'text-red-600' : 'text-[var(--text-secondary)]'}`}
+                      >
+                        {isImpaye ? formatPrice(unpaid) : '—'}
+                      </span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase ${
+                          isImpaye
+                            ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        }`}
+                      >
+                        {isImpaye ? 'Impayés' : 'À jour'}
+                      </span>
+                    </div>
+                  </td>
+                );
+              })()}
           </>
         );
       }
       case 'RESELLER':
         return (
           <>
-            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.resellerData?.domain || '-'}</td>
-            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm text-center font-semibold">
-              {tier.resellerData?.activeClients || 0}
-            </td>
+            {isColVisible('resellerData.domain') && (
+              <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.resellerData?.domain || '-'}</td>
+            )}
+            {isColVisible('resellerData.activeClients') && (
+              <td className="px-6 py-4 text-[var(--text-secondary)] text-sm text-center font-semibold">
+                {tier.resellerData?.activeClients || 0}
+              </td>
+            )}
           </>
         );
       case 'SUPPLIER':
         return (
           <>
-            <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.supplierData?.category || '-'}</td>
-            <td className="px-6 py-4 text-sm text-right">
-              <div className="flex flex-col items-end gap-1">
-                <span
-                  className={`font-mono font-semibold ${(tier.supplierData?.balance || 0) < 0 ? 'text-orange-600' : 'text-[var(--text-primary)]'}`}
-                >
-                  {formatPrice(tier.supplierData?.balance || 0)}
-                </span>
-                <span
-                  className={`text-xs px-1.5 py-0.5 rounded-full font-semibold uppercase ${
-                    (tier.supplierData?.balance || 0) < 0
-                      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                      : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                  }`}
-                >
-                  {(tier.supplierData?.balance || 0) < 0 ? 'Solde Dû' : 'A jour'}
-                </span>
-              </div>
-            </td>
+            {isColVisible('supplierData.category') && (
+              <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.supplierData?.category || '-'}</td>
+            )}
+            {isColVisible('supplierData.balance') &&
+              (() => {
+                const unpaid = getTierUnpaid(tier);
+                const isImpaye = unpaid > 0;
+                return (
+                  <td className="px-6 py-4 text-sm text-right">
+                    <div className="flex flex-col items-end gap-1">
+                      <span
+                        className={`font-mono font-semibold ${isImpaye ? 'text-orange-600' : 'text-[var(--text-secondary)]'}`}
+                      >
+                        {isImpaye ? formatPrice(unpaid) : '—'}
+                      </span>
+                      <span
+                        className={`text-xs px-1.5 py-0.5 rounded-full font-semibold uppercase ${
+                          isImpaye
+                            ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                            : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        }`}
+                      >
+                        {isImpaye ? 'Solde Dû' : 'À jour'}
+                      </span>
+                    </div>
+                  </td>
+                );
+              })()}
           </>
         );
       default:
@@ -332,36 +397,40 @@ export const TierList: React.FC<TierListProps> = ({
 
   const getHeaders = () => {
     const common = [
-      { key: 'name', label: 'Nom / Société', width: 'w-1/4' },
+      { key: 'name', label: 'Nom / Société', width: 'w-1/4', alwaysVisible: true },
       { key: 'contactName', label: 'Contact', width: 'w-1/6' },
       { key: 'email', label: 'Email', width: 'w-1/6' },
+      { key: 'status', label: 'Statut', width: 'w-1/12' },
     ];
 
+    let specific: { key: string; label: string; width: string; alwaysVisible?: boolean }[] = [];
     switch (type) {
       case 'CLIENT':
-        return [
-          ...common,
+        specific = [
           { key: 'phone', label: 'Téléphone', width: 'w-1/12' },
           { key: 'clientData.fleetSize', label: 'Véhicules', width: 'w-1/12' },
           { key: 'clientData.segment', label: 'Segment', width: 'w-1/12' },
           { key: 'application', label: 'Application', width: 'w-1/12' },
           { key: 'clientData.balance', label: 'Solde', width: 'w-1/12' },
         ];
+        break;
       case 'RESELLER':
-        return [
-          ...common,
+        specific = [
           { key: 'resellerData.domain', label: 'Domaine', width: 'w-1/6' },
           { key: 'resellerData.activeClients', label: 'Clients', width: 'w-1/12' },
         ];
+        break;
       case 'SUPPLIER':
-        return [
-          ...common,
+        specific = [
           { key: 'supplierData.category', label: 'Catégorie', width: 'w-1/6' },
           { key: 'supplierData.balance', label: 'Solde', width: 'w-1/12' },
         ];
-      default:
-        return common;
+        break;
     }
+
+    const all = [...common, ...specific];
+    if (!visibleColumns || visibleColumns.length === 0) return all;
+    return all.filter((c) => c.alwaysVisible || visibleColumns.includes(c.key));
   };
 
   return (
@@ -425,12 +494,8 @@ export const TierList: React.FC<TierListProps> = ({
                     : tier.type === 'SUPPLIER'
                       ? 'Fournisseur'
                       : 'Prospect';
-              const balance =
-                tier.type === 'CLIENT'
-                  ? (tier.clientData?.balance ?? null)
-                  : tier.type === 'SUPPLIER'
-                    ? (tier.supplierData?.balance ?? null)
-                    : null;
+              const unpaidMobile = tier.type === 'CLIENT' || tier.type === 'SUPPLIER' ? getTierUnpaid(tier) : null;
+              const balance = unpaidMobile !== null && unpaidMobile > 0 ? unpaidMobile : null;
               return (
                 <MobileCard
                   key={tier.id}
@@ -471,10 +536,8 @@ export const TierList: React.FC<TierListProps> = ({
                       <span className="text-[var(--text-secondary)]">{tier.resellerData.activeClients} clients</span>
                     )}
                     {balance !== null && (
-                      <span
-                        className={`font-mono font-semibold ${balance < 0 ? 'text-red-500' : 'text-[var(--text-secondary)]'}`}
-                      >
-                        {formatPrice(balance)}
+                      <span className="font-mono font-semibold text-red-500">
+                        {formatPrice(balance)} impayé{balance > 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
@@ -555,6 +618,7 @@ export const TierList: React.FC<TierListProps> = ({
                   </td>
 
                   {/* Common Columns */}
+                  {/* Nom — always visible */}
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div
@@ -574,8 +638,34 @@ export const TierList: React.FC<TierListProps> = ({
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.contactName || '-'}</td>
-                  <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.email || '-'}</td>
+                  {/* Contact */}
+                  {(!visibleColumns || visibleColumns.includes('contactName')) && (
+                    <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.contactName || '-'}</td>
+                  )}
+                  {/* Email */}
+                  {(!visibleColumns || visibleColumns.includes('email')) && (
+                    <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.email || '-'}</td>
+                  )}
+                  {/* Statut */}
+                  {(!visibleColumns || visibleColumns.includes('status')) && (
+                    <td className="px-6 py-4">
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          tier.status === 'ACTIVE'
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            : tier.status === 'SUSPENDED'
+                              ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                              : tier.status === 'CHURNED'
+                                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
+                        }`}
+                      >
+                        {{ ACTIVE: 'Actif', INACTIVE: 'Inactif', SUSPENDED: 'Suspendu', CHURNED: 'Churné' }[
+                          tier.status
+                        ] || tier.status}
+                      </span>
+                    </td>
+                  )}
 
                   {/* Specific Columns */}
                   {renderSpecificColumns(tier)}

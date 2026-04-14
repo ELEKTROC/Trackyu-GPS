@@ -105,16 +105,18 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
   const client = useMemo(() => (contract ? tiers.find((t) => t.id === contract.clientId) : null), [tiers, contract]);
   const device = useMemo(() => (vehicle?.imei ? stock.find((d) => d.imei === vehicle.imei) : null), [stock, vehicle]);
 
-  // Get invoices for this vehicle (by contractId or vehicle plate)
+  // Factures liées à cet abonnement : filtre par plaque OU par numéro d'abonnement.
+  // Sans les deux → aucune facture (pas de fallback contractId qui ramènerait
+  // toutes les factures du client).
   const vehicleInvoices = useMemo(() => {
+    const plate = vehicle?.licensePlate;
     return invoices
       .filter(
         (inv) =>
-          inv.contractId === contractId ||
-          (contract && inv.clientId === contract.clientId && inv.licensePlate === vehicle?.licensePlate)
+          (plate && inv.licensePlate === plate) || (subscriptionNumber && inv.subscriptionNumber === subscriptionNumber)
       )
       .sort((a, b) => new Date(b.date || '').getTime() - new Date(a.date || '').getTime());
-  }, [invoices, contractId, contract, vehicle]);
+  }, [invoices, vehicle, subscriptionNumber]);
 
   // Calculate renewal count from subscription's own start date + billing cycle
   const renewalCount = useMemo(() => {
@@ -431,8 +433,12 @@ export const SubscriptionDetailModal: React.FC<SubscriptionDetailModalProps> = (
               {vehicleInvoices.length === 0 ? (
                 <div className="text-center py-12 text-[var(--text-secondary)]">
                   <FileText className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                  <p className="font-medium">Aucune facture trouvée</p>
-                  <p className="text-sm">Les factures liées à cet abonnement apparaîtront ici</p>
+                  <p className="font-medium">Aucune facture disponible</p>
+                  <p className="text-sm">
+                    {vehicle?.licensePlate
+                      ? 'Les factures liées à cet abonnement apparaîtront ici'
+                      : 'Aucune plaque enregistrée pour ce véhicule'}
+                  </p>
                 </div>
               ) : (
                 <>

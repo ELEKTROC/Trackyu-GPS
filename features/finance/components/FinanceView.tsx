@@ -358,6 +358,17 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
     setVisibleColumns(columns.map((c) => c.id));
   }, [mode]);
 
+  // Ouverture directe d'une facture existante depuis une navigation externe (ex: Planning → Modifier facture)
+  useEffect(() => {
+    if (!navParams?.invoiceId || navParams.action === 'create') return;
+    const inv = invoices.find((i) => i.id === navParams.invoiceId);
+    if (!inv) return;
+    setEditingItem(inv as Partial<Invoice>);
+    setIsFormDirty(false);
+    setIsFormOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navParams?.invoiceId]);
+
   // Ouverture automatique du formulaire depuis une navigation externe (ex: Planning → Créer facture)
   useEffect(() => {
     if (!navParams || navParams.action !== 'create') return;
