@@ -107,23 +107,31 @@ export const CollapsibleSection: React.FC<{
   if (!isVisible) return null;
 
   return (
-    <div className="border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] overflow-hidden shadow-sm mb-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div
+      className="border border-[var(--border-strong)] rounded-lg overflow-hidden shadow mb-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
+      style={{ backgroundColor: 'var(--bg-elevated)' }}
+    >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-[var(--bg-elevated)] border-b border-[var(--border)] hover:bg-[var(--bg-elevated)] transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-[var(--border-strong)] transition-colors hover:brightness-95"
+        style={{ backgroundColor: 'var(--bg-surface)' }}
       >
-        <div className="flex items-center gap-2 font-bold text-[var(--text-primary)] text-sm uppercase tracking-wide">
-          {Icon && <Icon className="w-4 h-4 text-[var(--text-muted)]" />}
+        <div className="flex items-center gap-2 font-semibold text-[var(--text-primary)] text-xs uppercase tracking-wider">
+          {Icon && <Icon className="w-3.5 h-3.5 text-[var(--primary)]" />}
           {title}
         </div>
         {isOpen ? (
-          <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" />
+          <ChevronUp className="w-3.5 h-3.5 text-[var(--text-muted)]" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />
+          <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
         )}
       </button>
 
-      {isOpen && <div className="p-4">{children}</div>}
+      {isOpen && (
+        <div className="p-3" style={{ backgroundColor: 'var(--bg-surface)' }}>
+          {children}
+        </div>
+      )}
     </div>
   );
 };

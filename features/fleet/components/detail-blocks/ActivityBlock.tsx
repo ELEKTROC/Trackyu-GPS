@@ -80,9 +80,9 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           {onReplay && (
             <button
               onClick={onReplay}
-              className="w-full mt-3 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white text-xs font-bold rounded flex items-center justify-center gap-2 transition-colors shadow-sm"
+              className="mt-2 px-2.5 py-1 bg-[var(--primary-dim)] hover:bg-[var(--primary)] hover:text-white text-[var(--primary)] text-xs font-semibold rounded flex items-center gap-1.5 transition-colors border border-[var(--primary)]/30"
             >
-              <PlayCircle className="w-4 h-4" /> Rejouer l'historique
+              <PlayCircle className="w-3 h-3" /> Rejouer
             </button>
           )}
         </div>

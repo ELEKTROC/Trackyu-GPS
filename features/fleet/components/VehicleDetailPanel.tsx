@@ -743,12 +743,13 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       )}
 
       {/* --- CONTENU DÉFILANT (BLOCS) --- */}
-      <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-[var(--bg-elevated)]/50 bg-[var(--bg-surface)]/50">
+      <div className="flex-1 overflow-y-auto p-3 custom-scrollbar" style={{ backgroundColor: 'var(--bg-elevated)' }}>
         {blocks.map((block, index) => (
           <CollapsibleSection
             key={block.id}
             title={block.label}
             icon={block.icon}
+            defaultOpen={block.id !== 'photo'}
             isVisible={block.visible}
             isConfigMode={isConfigMode}
             onToggleVisibility={() => toggleBlockVisibility(index)}

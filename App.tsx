@@ -406,7 +406,7 @@ const AppContent: React.FC = () => {
         );
       case View.INVOICES:
         return hasPermission('VIEW_FINANCE') ? (
-          <LazySalesView initialTab="INVOICES" onNavigate={handleNavigate} />
+          <LazySalesView initialTab="INVOICES" navParams={viewParams} onNavigate={handleNavigate} />
         ) : (
           AccessDenied
         );
@@ -701,11 +701,13 @@ const AppContent: React.FC = () => {
         {/* Main Content Area with Pull-to-Refresh */}
         <PullToRefresh
           onRefresh={handlePullToRefresh}
-          disabled={currentView === View.MAP}
-          className={`flex-1 overflow-y-auto scroll-smooth-ios ${currentView === View.MAP ? '' : ''}`}
+          disabled={currentView === View.MAP || currentView === View.FLEET}
+          className={`flex-1 ${currentView === View.MAP || currentView === View.FLEET ? 'overflow-hidden' : 'overflow-y-auto scroll-smooth-ios'}`}
         >
-          <main className={`h-full ${currentView === View.MAP ? 'p-0' : 'p-3 sm:p-4 lg:p-6 pb-24 lg:pb-6'}`}>
-            <div className={currentView === View.MAP ? 'h-full' : ''}>
+          <main
+            className={`h-full ${currentView === View.MAP || currentView === View.FLEET ? 'p-0' : 'p-3 sm:p-4 lg:p-6 pb-24 lg:pb-6'}`}
+          >
+            <div className={currentView === View.MAP || currentView === View.FLEET ? 'h-full' : ''}>
               <ErrorBoundary variant="module">{renderContent()}</ErrorBoundary>
             </div>
           </main>

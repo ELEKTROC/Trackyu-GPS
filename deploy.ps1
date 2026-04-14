@@ -53,13 +53,15 @@ param(
     [switch]$force,
     [switch]$rebuild,
     [switch]$migrate,
-    [switch]$verbose
+    [switch]$verbose,
+    [switch]$staging  # Déployer en staging (sync depuis prod après build)
 )
 
 # ============= CONFIGURATION =============
 $VPS_IP = "148.230.126.62"
 $SERVER = "root@$VPS_IP"
 $REMOTE_PATH = "/var/www/trackyu-gps"
+$REMOTE_PATH_STAGING = "/var/www/trackyu-gps-staging"
 $LOCAL_DIST = "c:\Users\ADMIN\Desktop\TRACKING\dist"
 $LOCAL_BACKEND = "c:\Users\ADMIN\Desktop\TRACKING\backend\dist"
 $LOCAL_BACKEND_ROOT = "c:\Users\ADMIN\Desktop\TRACKING\backend"
@@ -305,7 +307,7 @@ if ($frontend -or $all) {
                 Remove-Item $deltaTar -Force -ErrorAction SilentlyContinue
 
                 Push-Location $tempDelta
-                & tar -czf $deltaTar * 2>&1 | Out-Null
+                & "$env:SystemRoot\System32\tar.exe" -czf $deltaTar * 2>&1 | Out-Null
                 Pop-Location
 
                 Remove-Item $tempDelta -Recurse -Force -ErrorAction SilentlyContinue
@@ -396,7 +398,7 @@ if ($frontend -or $all) {
             }
 
             Push-Location $LOCAL_DIST
-            & tar -czf $tarPath @tarExcludes * 2>&1 | Out-Null
+            & "$env:SystemRoot\System32\tar.exe" -czf $tarPath @tarExcludes * 2>&1 | Out-Null
             Pop-Location
 
             if (-not (Test-Path $tarPath)) {
@@ -460,6 +462,17 @@ if ($frontend -or $all) {
             }
 
             Write-Success "Frontend déployé (COMPLET) - $remoteJsCount JS [$(Get-ElapsedTime)]"
+        }
+
+        # Sync vers staging si demandé
+        if ($staging) {
+            Write-Info "Sync prod → staging..."
+            $syncResult = Invoke-SSH "rsync -a --delete $REMOTE_PATH/dist/ $REMOTE_PATH_STAGING/dist/ && echo SYNC_OK"
+            if ("$syncResult" -notlike "*SYNC_OK*") {
+                Write-Err "Sync staging échoué: $syncResult"
+            } else {
+                Write-Success "Staging synchronisé [$REMOTE_PATH_STAGING]"
+            }
         }
     }
 }
@@ -528,7 +541,7 @@ if ($backend -or $all) {
         Remove-Item $tarPath -Force -ErrorAction SilentlyContinue
 
         Push-Location $LOCAL_BACKEND
-        & tar -czf $tarPath * 2>&1 | Out-Null
+        & "$env:SystemRoot\System32\tar.exe" -czf $tarPath * 2>&1 | Out-Null
         Pop-Location
 
         if (-not (Test-Path $tarPath)) {

@@ -68,10 +68,9 @@ interface FleetTableProps {
 // Définition des colonnes disponibles
 const ALL_COLUMNS = [
   { id: 'vehicle', label: 'Objet / Véhicule', minWidth: 220, locked: true },
-  { id: 'abo', label: 'Code ABO', minWidth: 120 },
-  { id: 'client', label: 'Client', minWidth: 130, filterable: true },
+  { id: 'client', label: 'Client', minWidth: 130 },
   { id: 'branch', label: 'Branche', minWidth: 120 },
-  { id: 'group', label: 'Groupe', minWidth: 100, filterable: true },
+  { id: 'group', label: 'Groupe', minWidth: 100 },
   { id: 'driver', label: 'Conducteur', minWidth: 130 },
   { id: 'status', label: 'Statut', minWidth: 110 },
   { id: 'speed', label: 'Vitesse', minWidth: 90 },
@@ -103,7 +102,6 @@ const DEFAULT_DESKTOP_COLUMNS = [
   'vehicle',
   'client',
   'branch',
-  'abo',
   'group',
   'status',
   'speed',
@@ -796,35 +794,22 @@ export const FleetTable: React.FC<FleetTableProps> = ({
     const idle = vehicles.filter((v) => v.status === VehicleStatus.IDLE).length;
     const stopped = vehicles.filter((v) => v.status === VehicleStatus.STOPPED).length;
     const offline = vehicles.filter((v) => v.status === VehicleStatus.OFFLINE).length;
-
-    // KPIs enrichis
-    const totalKmToday = vehicles.reduce((sum, v) => sum + (v.dailyMileage || 0), 0);
-    const avgConsumption =
-      vehicles.length > 0 ? vehicles.reduce((sum, v) => sum + (v.consumption || 0), 0) / vehicles.length : 0;
-    const totalFuelCost = vehicles.reduce((sum, v) => sum + (v.fuelQuantity || 0) * 1.8, 0); // ~1.8€/L
-    const utilizationRate = vehicles.length > 0 ? Math.round(((moving + idle) / vehicles.length) * 100) : 0;
     const alertsCount = vehicles.filter((v) => (v.violationsCount || 0) > 0 || (v.suspectLoss || 0) > 0).length;
-    const maintenanceDue = vehicles.filter((v) => {
-      if (!v.nextMaintenance) return false;
-      const dueDate = new Date(v.nextMaintenance);
-      const daysUntil = Math.ceil((dueDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-      return daysUntil <= 7;
-    }).length;
 
-    return {
-      total: vehicles.length,
-      moving,
-      idle,
-      stopped,
-      offline,
-      totalKmToday,
-      avgConsumption: avgConsumption.toFixed(1),
-      totalFuelCost: Math.round(totalFuelCost),
-      utilizationRate,
-      alertsCount,
-      maintenanceDue,
-    };
+    return { total: vehicles.length, moving, idle, stopped, offline, alertsCount };
   }, [vehicles]);
+
+  // Agrégats calculés sur les véhicules filtrés (reflètent la sélection courante)
+  const aggregates = useMemo(() => {
+    const fv = filteredVehicles;
+    const totalKm = fv.reduce((s, v) => s + (v.mileage || 0), 0);
+    const totalDailyKm = fv.reduce((s, v) => s + (v.dailyMileage || 0), 0);
+    const maxSpeed = fv.length > 0 ? Math.max(...fv.map((v) => v.speed || 0)) : 0;
+    const totalFuelQty = fv.reduce((s, v) => s + (v.fuelQuantity || 0), 0);
+    const totalRefuel = fv.reduce((s, v) => s + (v.refuelAmount || 0), 0);
+    const totalSuspectLoss = fv.reduce((s, v) => s + (v.suspectLoss || 0), 0);
+    return { totalKm, totalDailyKm, maxSpeed, totalFuelQty, totalRefuel, totalSuspectLoss };
+  }, [filteredVehicles]);
 
   const handleExport = async () => {
     try {
@@ -970,8 +955,8 @@ export const FleetTable: React.FC<FleetTableProps> = ({
     [filteredVehicles, groupByClient, selectedIds, activeColumns, onVehicleClick, onLocationClick]
   );
 
-  // Enable virtualization for large datasets (>200 vehicles)
-  const useVirtualization = filteredVehicles.length > 200;
+  // Enable virtualization only if the current page has >200 items (pagination always takes priority)
+  const useVirtualization = paginatedVehicles.length > 200;
 
   // KPI pills config (fixed, clickable by status)
   const kpiPills = useMemo(
@@ -1033,48 +1018,83 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   }
 
   return (
-    <div className="h-full flex flex-col gap-4">
+    <div className="h-full flex flex-col gap-4 p-3 sm:p-4 lg:p-6 pb-3 lg:pb-6">
       <Card className="flex-1 flex flex-col" title={isMobileView ? undefined : 'Liste des Véhicules'}>
-        {/* KPI Bar — fixed 6 stats, clickable to filter by status */}
+        {/* KPI Bar — une seule ligne, deux groupes */}
         {!isMobileView && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {kpiPills.map((pill) => {
-              const isActive =
-                pill.statusFilter !== null && statusFilter.length === 1 && statusFilter[0] === pill.statusFilter;
-              return (
+          <div className="flex items-center gap-0 mb-4 overflow-x-auto custom-scrollbar pb-1">
+            {/* Groupe 1 : statuts (cliquables) */}
+            <div className="flex items-center gap-2 shrink-0">
+              {kpiPills.map((pill) => {
+                const isActive =
+                  pill.statusFilter !== null && statusFilter.length === 1 && statusFilter[0] === pill.statusFilter;
+                return (
+                  <button
+                    key={pill.label}
+                    type="button"
+                    onClick={() => {
+                      if (!pill.statusFilter) return;
+                      setStatusFilter(isActive ? [] : [pill.statusFilter]);
+                    }}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all whitespace-nowrap ${
+                      isActive
+                        ? `${pill.activeBg} ${pill.activeFg} shadow-sm`
+                        : pill.statusFilter
+                          ? 'border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]'
+                          : 'border-[var(--border)] cursor-default'
+                    }`}
+                    style={
+                      isActive ? undefined : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }
+                    }
+                  >
+                    <span className={`font-bold ${isActive ? pill.activeFg : pill.color}`}>{pill.value}</span>
+                    <span className="text-xs">{pill.label}</span>
+                  </button>
+                );
+              })}
+              {statusFilter.length > 0 && (
                 <button
-                  key={pill.label}
                   type="button"
-                  onClick={() => {
-                    if (!pill.statusFilter) return;
-                    setStatusFilter(isActive ? [] : [pill.statusFilter]);
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${
-                    isActive
-                      ? `${pill.activeBg} ${pill.activeFg} shadow-sm`
-                      : pill.statusFilter
-                        ? 'border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]'
-                        : 'border-[var(--border)] cursor-default'
-                  }`}
-                  style={
-                    isActive ? undefined : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }
-                  }
+                  onClick={() => setStatusFilter([])}
+                  className="flex items-center gap-1 px-2 py-1.5 rounded-full border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors whitespace-nowrap"
+                  style={{ backgroundColor: 'var(--bg-surface)' }}
                 >
-                  <span className={`text-base font-bold ${isActive ? pill.activeFg : pill.color}`}>{pill.value}</span>
-                  <span className="text-xs">{pill.label}</span>
+                  <X className="w-3 h-3" /> Tout
                 </button>
-              );
-            })}
-            {statusFilter.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setStatusFilter([])}
-                className="flex items-center gap-1 px-3 py-2 rounded-full border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
-                style={{ backgroundColor: 'var(--bg-surface)' }}
-              >
-                <X className="w-3 h-3" /> Tout
-              </button>
-            )}
+              )}
+            </div>
+
+            {/* Séparateur vertical */}
+            <div className="w-px self-stretch bg-[var(--border)] mx-3 shrink-0" />
+
+            {/* Groupe 2 : agrégats (info, non-cliquables) */}
+            <div className="flex items-center gap-2 shrink-0">
+              {(() => {
+                const fmtKm = (n: number) => {
+                  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+                  if (n >= 1_000) return Math.round(n / 1_000) + 'k';
+                  return Math.round(n).toString();
+                };
+                return [
+                  { label: 'Km total', value: fmtKm(aggregates.totalKm) + ' km' },
+                  { label: 'Distance (j)', value: fmtKm(aggregates.totalDailyKm) + ' km' },
+                  { label: 'Vit. max', value: aggregates.maxSpeed + ' km/h' },
+                  { label: 'Alertes', value: stats.alertsCount.toString() },
+                  { label: 'Carburant', value: Math.round(aggregates.totalFuelQty) + ' L' },
+                  { label: 'Recharges', value: Math.round(aggregates.totalRefuel) + ' L' },
+                  { label: 'Baisses', value: Math.round(aggregates.totalSuspectLoss) + ' L' },
+                ].map((kpi) => (
+                  <div
+                    key={kpi.label}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border)] whitespace-nowrap"
+                    style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
+                  >
+                    <span className="font-bold text-sm text-[var(--text-primary)]">{kpi.value}</span>
+                    <span className="text-xs text-[var(--text-muted)]">{kpi.label}</span>
+                  </div>
+                ));
+              })()}
+            </div>
           </div>
         )}
 
@@ -1751,7 +1771,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       )}
                       <div
                         onClick={() => onVehicleClick && onVehicleClick(vehicle)}
-                        className={`group flex items-center border-b border-[var(--border)] hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)]/50 transition-colors cursor-pointer ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
+                        className={`group relative flex items-center border-b border-[var(--border)] hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)]/50 transition-colors cursor-pointer ${selectedIds.has(vehicle.id) ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]' : ''}`}
                         style={{ height: ROW_HEIGHT }}
                       >
                         {/* Checkbox Row */}
@@ -1776,9 +1796,9 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                             {renderCell(vehicle, col.id)}
                           </div>
                         ))}
-                        {/* Inline row actions */}
+                        {/* Inline row actions — absolute pour ne pas décaler les colonnes */}
                         <div
-                          className="flex items-center gap-1 px-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {onLocationClick && (
