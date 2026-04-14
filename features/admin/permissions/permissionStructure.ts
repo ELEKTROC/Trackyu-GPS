@@ -1,6 +1,6 @@
 /**
  * Structure Complète des Permissions TrackYu
- * 
+ *
  * Définition hiérarchique: Module → Onglet → Champ
  * avec actions disponibles pour chaque niveau
  */
@@ -19,7 +19,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
   {
     id: 'dashboard',
     label: 'Tableau de Bord',
-    description: 'Vue d\'ensemble et KPIs',
+    description: "Vue d'ensemble et KPIs",
     icon: 'LayoutDashboard',
     category: 'general',
     globalActions: ['VIEW', 'EXPORT'],
@@ -31,21 +31,33 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'dashboard.overview.kpi_vehicles', label: 'KPI Véhicules', type: 'number', actions: VIEW_ONLY },
           { id: 'dashboard.overview.kpi_clients', label: 'KPI Clients', type: 'number', actions: VIEW_ONLY },
-          { id: 'dashboard.overview.kpi_revenue', label: 'KPI Revenus', type: 'number', actions: VIEW_ONLY, sensitive: true },
+          {
+            id: 'dashboard.overview.kpi_revenue',
+            label: 'KPI Revenus',
+            type: 'number',
+            actions: VIEW_ONLY,
+            sensitive: true,
+          },
           { id: 'dashboard.overview.kpi_alerts', label: 'KPI Alertes', type: 'number', actions: VIEW_ONLY },
-        ]
+        ],
       },
       {
         id: 'dashboard.charts',
         label: 'Graphiques',
         actions: VIEW_ONLY,
         fields: [
-          { id: 'dashboard.charts.revenue_trend', label: 'Tendance Revenus', type: 'number', actions: VIEW_ONLY, sensitive: true },
+          {
+            id: 'dashboard.charts.revenue_trend',
+            label: 'Tendance Revenus',
+            type: 'number',
+            actions: VIEW_ONLY,
+            sensitive: true,
+          },
           { id: 'dashboard.charts.vehicle_status', label: 'Statut Véhicules', type: 'number', actions: VIEW_ONLY },
           { id: 'dashboard.charts.interventions', label: 'Interventions', type: 'number', actions: VIEW_ONLY },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -68,7 +80,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'map.realtime.speed', label: 'Vitesse', type: 'number', actions: VIEW_ONLY },
           { id: 'map.realtime.direction', label: 'Direction', type: 'text', actions: VIEW_ONLY },
           { id: 'map.realtime.ignition', label: 'Contact', type: 'boolean', actions: VIEW_ONLY },
-        ]
+        ],
       },
       {
         id: 'map.history',
@@ -78,7 +90,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'map.history.trajets', label: 'Trajets', type: 'text', actions: ['VIEW', 'EXPORT'] },
           { id: 'map.history.stops', label: 'Arrêts', type: 'text', actions: ['VIEW', 'EXPORT'] },
           { id: 'map.history.events', label: 'Événements', type: 'text', actions: ['VIEW', 'EXPORT'] },
-        ]
+        ],
       },
       {
         id: 'map.geofences',
@@ -89,9 +101,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'map.geofences.type', label: 'Type', type: 'select', actions: CRUD },
           { id: 'map.geofences.coordinates', label: 'Coordonnées', type: 'text', actions: CRUD },
           { id: 'map.geofences.alerts', label: 'Alertes', type: 'boolean', actions: CRUD },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -116,7 +128,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'vehicles.general.annee', label: 'Année', type: 'number', actions: CRUD },
           { id: 'vehicles.general.couleur', label: 'Couleur', type: 'text', actions: CRUD },
           { id: 'vehicles.general.vin', label: 'VIN/Châssis', type: 'text', actions: CRUD, sensitive: true },
-        ]
+        ],
       },
       {
         id: 'vehicles.device',
@@ -129,7 +141,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'vehicles.device.model', label: 'Modèle Boîtier', type: 'select', actions: CRUD },
           { id: 'vehicles.device.installation_date', label: 'Date Installation', type: 'date', actions: CRUD },
           { id: 'vehicles.device.status', label: 'Statut Boîtier', type: 'select', actions: ['VIEW', 'EDIT'] },
-        ]
+        ],
       },
       {
         id: 'vehicles.client',
@@ -139,8 +151,14 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'vehicles.client.client_id', label: 'Client', type: 'relation', actions: ['VIEW', 'EDIT'] },
           { id: 'vehicles.client.contract_id', label: 'Contrat', type: 'relation', actions: ['VIEW'] },
           { id: 'vehicles.client.subscription', label: 'Abonnement', type: 'text', actions: ['VIEW'] },
-          { id: 'vehicles.client.monthly_fee', label: 'Mensualité', type: 'number', actions: ['VIEW'], sensitive: true },
-        ]
+          {
+            id: 'vehicles.client.monthly_fee',
+            label: 'Mensualité',
+            type: 'number',
+            actions: ['VIEW'],
+            sensitive: true,
+          },
+        ],
       },
       {
         id: 'vehicles.maintenance',
@@ -151,7 +169,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'vehicles.maintenance.next_service', label: 'Prochain Entretien', type: 'date', actions: CRUD },
           { id: 'vehicles.maintenance.km_next', label: 'KM Prochain', type: 'number', actions: CRUD },
           { id: 'vehicles.maintenance.notes', label: 'Notes', type: 'text', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'vehicles.documents',
@@ -162,7 +180,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'vehicles.documents.assurance', label: 'Assurance', type: 'file', actions: CRUD },
           { id: 'vehicles.documents.visite_technique', label: 'Visite Technique', type: 'file', actions: CRUD },
           { id: 'vehicles.documents.photos', label: 'Photos', type: 'file', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'vehicles.alerts',
@@ -173,9 +191,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'vehicles.alerts.geofence_alerts', label: 'Alertes Géofence', type: 'boolean', actions: CRUD },
           { id: 'vehicles.alerts.ignition_alerts', label: 'Alertes Contact', type: 'boolean', actions: CRUD },
           { id: 'vehicles.alerts.fuel_alerts', label: 'Alertes Carburant', type: 'boolean', actions: CRUD },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -200,7 +218,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'drivers.info.email', label: 'Email', type: 'text', actions: CRUD },
           { id: 'drivers.info.cni', label: 'N° CNI', type: 'text', actions: CRUD, sensitive: true },
           { id: 'drivers.info.photo', label: 'Photo', type: 'file', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'drivers.license',
@@ -212,17 +230,27 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'drivers.license.date_obtention', label: 'Date Obtention', type: 'date', actions: CRUD },
           { id: 'drivers.license.date_expiration', label: 'Date Expiration', type: 'date', actions: CRUD },
           { id: 'drivers.license.document', label: 'Scan Permis', type: 'file', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'drivers.assignment',
         label: 'Affectation',
         actions: ['VIEW', 'EDIT'],
         fields: [
-          { id: 'drivers.assignment.vehicle_id', label: 'Véhicule Assigné', type: 'relation', actions: ['VIEW', 'EDIT'] },
+          {
+            id: 'drivers.assignment.vehicle_id',
+            label: 'Véhicule Assigné',
+            type: 'relation',
+            actions: ['VIEW', 'EDIT'],
+          },
           { id: 'drivers.assignment.client_id', label: 'Client', type: 'relation', actions: ['VIEW'] },
-          { id: 'drivers.assignment.date_affectation', label: 'Date Affectation', type: 'date', actions: ['VIEW', 'EDIT'] },
-        ]
+          {
+            id: 'drivers.assignment.date_affectation',
+            label: 'Date Affectation',
+            type: 'date',
+            actions: ['VIEW', 'EDIT'],
+          },
+        ],
       },
       {
         id: 'drivers.stats',
@@ -233,9 +261,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'drivers.stats.trajets_count', label: 'Nombre Trajets', type: 'number', actions: VIEW_ONLY },
           { id: 'drivers.stats.score_conduite', label: 'Score Conduite', type: 'number', actions: VIEW_ONLY },
           { id: 'drivers.stats.infractions', label: 'Infractions', type: 'number', actions: VIEW_ONLY },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -260,7 +288,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'clients.company.taille', label: 'Taille Flotte', type: 'number', actions: CRUD },
           { id: 'clients.company.ninea', label: 'NINEA', type: 'text', actions: CRUD, sensitive: true },
           { id: 'clients.company.rccm', label: 'RCCM', type: 'text', actions: CRUD, sensitive: true },
-        ]
+        ],
       },
       {
         id: 'clients.contact',
@@ -272,7 +300,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'clients.contact.telephone', label: 'Téléphone', type: 'text', actions: CRUD },
           { id: 'clients.contact.email', label: 'Email', type: 'text', actions: CRUD },
           { id: 'clients.contact.adresse', label: 'Adresse', type: 'text', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'clients.billing',
@@ -283,7 +311,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'clients.billing.echeance', label: 'Échéance (jours)', type: 'number', actions: ['VIEW', 'EDIT'] },
           { id: 'clients.billing.rib', label: 'RIB', type: 'text', actions: ['VIEW', 'EDIT'], sensitive: true },
           { id: 'clients.billing.solde', label: 'Solde', type: 'number', actions: VIEW_ONLY, sensitive: true },
-        ]
+        ],
       },
       {
         id: 'clients.vehicles',
@@ -292,7 +320,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'clients.vehicles.list', label: 'Liste Véhicules', type: 'relation', actions: VIEW_ONLY },
           { id: 'clients.vehicles.count', label: 'Nombre Véhicules', type: 'number', actions: VIEW_ONLY },
-        ]
+        ],
       },
       {
         id: 'clients.contracts',
@@ -301,7 +329,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'clients.contracts.list', label: 'Liste Contrats', type: 'relation', actions: ['VIEW', 'CREATE'] },
           { id: 'clients.contracts.actif', label: 'Contrat Actif', type: 'relation', actions: VIEW_ONLY },
-        ]
+        ],
       },
       {
         id: 'clients.invoices',
@@ -311,7 +339,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'clients.invoices.list', label: 'Historique Factures', type: 'relation', actions: VIEW_ONLY },
           { id: 'clients.invoices.impayees', label: 'Factures Impayées', type: 'relation', actions: VIEW_ONLY },
           { id: 'clients.invoices.total_du', label: 'Total Dû', type: 'number', actions: VIEW_ONLY, sensitive: true },
-        ]
+        ],
       },
       {
         id: 'clients.access',
@@ -322,9 +350,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'clients.access.password_reset', label: 'Reset Mot de Passe', type: 'boolean', actions: ['EDIT'] },
           { id: 'clients.access.active', label: 'Compte Actif', type: 'boolean', actions: ['VIEW', 'EDIT'] },
           { id: 'clients.access.last_login', label: 'Dernière Connexion', type: 'date', actions: VIEW_ONLY },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -348,7 +376,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'leads.info.telephone', label: 'Téléphone', type: 'text', actions: CRUD },
           { id: 'leads.info.email', label: 'Email', type: 'text', actions: CRUD },
           { id: 'leads.info.source', label: 'Source', type: 'select', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'leads.qualification',
@@ -360,7 +388,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'leads.qualification.taille_flotte', label: 'Taille Flotte', type: 'number', actions: CRUD },
           { id: 'leads.qualification.budget', label: 'Budget', type: 'number', actions: CRUD, sensitive: true },
           { id: 'leads.qualification.decision_date', label: 'Date Décision', type: 'date', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'leads.commercial',
@@ -371,9 +399,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'leads.commercial.notes', label: 'Notes', type: 'text', actions: CRUD },
           { id: 'leads.commercial.next_action', label: 'Prochaine Action', type: 'text', actions: CRUD },
           { id: 'leads.commercial.next_date', label: 'Date Relance', type: 'date', actions: CRUD },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -398,18 +426,36 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'contracts.general.date_debut', label: 'Date Début', type: 'date', actions: CRUD },
           { id: 'contracts.general.date_fin', label: 'Date Fin', type: 'date', actions: CRUD },
           { id: 'contracts.general.statut', label: 'Statut', type: 'select', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'contracts.terms',
         label: 'Conditions',
         actions: ['VIEW', 'EDIT'],
         fields: [
-          { id: 'contracts.terms.mensualite', label: 'Mensualité', type: 'number', actions: ['VIEW', 'EDIT'], sensitive: true },
+          {
+            id: 'contracts.terms.mensualite',
+            label: 'Mensualité',
+            type: 'number',
+            actions: ['VIEW', 'EDIT'],
+            sensitive: true,
+          },
           { id: 'contracts.terms.engagement', label: 'Engagement (mois)', type: 'number', actions: ['VIEW', 'EDIT'] },
-          { id: 'contracts.terms.caution', label: 'Caution', type: 'number', actions: ['VIEW', 'EDIT'], sensitive: true },
-          { id: 'contracts.terms.frais_installation', label: 'Frais Installation', type: 'number', actions: ['VIEW', 'EDIT'], sensitive: true },
-        ]
+          {
+            id: 'contracts.terms.caution',
+            label: 'Caution',
+            type: 'number',
+            actions: ['VIEW', 'EDIT'],
+            sensitive: true,
+          },
+          {
+            id: 'contracts.terms.frais_installation',
+            label: 'Frais Installation',
+            type: 'number',
+            actions: ['VIEW', 'EDIT'],
+            sensitive: true,
+          },
+        ],
       },
       {
         id: 'contracts.vehicles',
@@ -418,7 +464,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'contracts.vehicles.list', label: 'Liste Véhicules', type: 'relation', actions: CRUD },
           { id: 'contracts.vehicles.count', label: 'Nombre Véhicules', type: 'number', actions: VIEW_ONLY },
-        ]
+        ],
       },
       {
         id: 'contracts.documents',
@@ -427,9 +473,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'contracts.documents.contrat_signe', label: 'Contrat Signé', type: 'file', actions: CRUD },
           { id: 'contracts.documents.annexes', label: 'Annexes', type: 'file', actions: CRUD },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -453,27 +499,31 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'invoices.info.date_emission', label: 'Date Émission', type: 'date', actions: CRUD },
           { id: 'invoices.info.date_echeance', label: 'Date Échéance', type: 'date', actions: CRUD },
           { id: 'invoices.info.statut', label: 'Statut', type: 'select', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'invoices.amounts',
         label: 'Montants',
         actions: ['VIEW', 'EDIT'],
         fields: [
-          { id: 'invoices.amounts.ht', label: 'Montant HT', type: 'number', actions: ['VIEW', 'EDIT'], sensitive: true },
+          {
+            id: 'invoices.amounts.ht',
+            label: 'Montant HT',
+            type: 'number',
+            actions: ['VIEW', 'EDIT'],
+            sensitive: true,
+          },
           { id: 'invoices.amounts.tva', label: 'TVA', type: 'number', actions: ['VIEW', 'EDIT'], sensitive: true },
           { id: 'invoices.amounts.ttc', label: 'Montant TTC', type: 'number', actions: VIEW_ONLY, sensitive: true },
           { id: 'invoices.amounts.paye', label: 'Montant Payé', type: 'number', actions: VIEW_ONLY, sensitive: true },
           { id: 'invoices.amounts.reste', label: 'Reste à Payer', type: 'number', actions: VIEW_ONLY, sensitive: true },
-        ]
+        ],
       },
       {
         id: 'invoices.lines',
         label: 'Lignes',
         actions: CRUD,
-        fields: [
-          { id: 'invoices.lines.items', label: 'Lignes de Facture', type: 'relation', actions: CRUD },
-        ]
+        fields: [{ id: 'invoices.lines.items', label: 'Lignes de Facture', type: 'relation', actions: CRUD }],
       },
       {
         id: 'invoices.payments',
@@ -481,9 +531,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         actions: ['VIEW', 'CREATE'],
         fields: [
           { id: 'invoices.payments.list', label: 'Liste Paiements', type: 'relation', actions: ['VIEW', 'CREATE'] },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -506,11 +556,17 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'payments.info.invoice_id', label: 'Facture', type: 'relation', actions: ['VIEW', 'CREATE'] },
           { id: 'payments.info.client_id', label: 'Client', type: 'relation', actions: ['VIEW'] },
           { id: 'payments.info.date', label: 'Date Paiement', type: 'date', actions: ['VIEW', 'CREATE'] },
-          { id: 'payments.info.montant', label: 'Montant', type: 'number', actions: ['VIEW', 'CREATE'], sensitive: true },
+          {
+            id: 'payments.info.montant',
+            label: 'Montant',
+            type: 'number',
+            actions: ['VIEW', 'CREATE'],
+            sensitive: true,
+          },
           { id: 'payments.info.mode', label: 'Mode Paiement', type: 'select', actions: ['VIEW', 'CREATE'] },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -534,7 +590,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'interventions.info.client_id', label: 'Client', type: 'relation', actions: CRUD },
           { id: 'interventions.info.vehicle_id', label: 'Véhicule', type: 'relation', actions: CRUD },
           { id: 'interventions.info.priority', label: 'Priorité', type: 'select', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'interventions.planning',
@@ -545,7 +601,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'interventions.planning.technicien_id', label: 'Technicien', type: 'relation', actions: CRUD },
           { id: 'interventions.planning.duree_estimee', label: 'Durée Estimée', type: 'number', actions: CRUD },
           { id: 'interventions.planning.lieu', label: 'Lieu', type: 'text', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'interventions.execution',
@@ -557,7 +613,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'interventions.execution.date_fin', label: 'Date Fin', type: 'date', actions: ['VIEW', 'EDIT'] },
           { id: 'interventions.execution.rapport', label: 'Rapport', type: 'text', actions: ['VIEW', 'EDIT'] },
           { id: 'interventions.execution.photos', label: 'Photos', type: 'file', actions: ['VIEW', 'EDIT'] },
-        ]
+        ],
       },
       {
         id: 'interventions.stock',
@@ -565,21 +621,41 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         actions: ['VIEW', 'EDIT'],
         fields: [
           { id: 'interventions.stock.pieces', label: 'Pièces', type: 'relation', actions: ['VIEW', 'EDIT'] },
-          { id: 'interventions.stock.boitier_pose', label: 'Boîtier Posé', type: 'relation', actions: ['VIEW', 'EDIT'] },
-          { id: 'interventions.stock.boitier_depose', label: 'Boîtier Déposé', type: 'relation', actions: ['VIEW', 'EDIT'] },
-        ]
+          {
+            id: 'interventions.stock.boitier_pose',
+            label: 'Boîtier Posé',
+            type: 'relation',
+            actions: ['VIEW', 'EDIT'],
+          },
+          {
+            id: 'interventions.stock.boitier_depose',
+            label: 'Boîtier Déposé',
+            type: 'relation',
+            actions: ['VIEW', 'EDIT'],
+          },
+        ],
       },
       {
         id: 'interventions.signature',
         label: 'Signature',
         actions: ['VIEW', 'EDIT'],
         fields: [
-          { id: 'interventions.signature.signature', label: 'Signature Client', type: 'file', actions: ['VIEW', 'EDIT'] },
-          { id: 'interventions.signature.nom_signataire', label: 'Nom Signataire', type: 'text', actions: ['VIEW', 'EDIT'] },
+          {
+            id: 'interventions.signature.signature',
+            label: 'Signature Client',
+            type: 'file',
+            actions: ['VIEW', 'EDIT'],
+          },
+          {
+            id: 'interventions.signature.nom_signataire',
+            label: 'Nom Signataire',
+            type: 'text',
+            actions: ['VIEW', 'EDIT'],
+          },
           { id: 'interventions.signature.date_signature', label: 'Date Signature', type: 'date', actions: ['VIEW'] },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -603,17 +679,29 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'stock.inventory.categorie', label: 'Catégorie', type: 'select', actions: CRUD },
           { id: 'stock.inventory.quantite', label: 'Quantité', type: 'number', actions: CRUD },
           { id: 'stock.inventory.seuil_alerte', label: 'Seuil Alerte', type: 'number', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'stock.pricing',
         label: 'Tarification',
         actions: ['VIEW', 'EDIT'],
         fields: [
-          { id: 'stock.pricing.prix_achat', label: 'Prix Achat', type: 'number', actions: ['VIEW', 'EDIT'], sensitive: true },
-          { id: 'stock.pricing.prix_vente', label: 'Prix Vente', type: 'number', actions: ['VIEW', 'EDIT'], sensitive: true },
+          {
+            id: 'stock.pricing.prix_achat',
+            label: 'Prix Achat',
+            type: 'number',
+            actions: ['VIEW', 'EDIT'],
+            sensitive: true,
+          },
+          {
+            id: 'stock.pricing.prix_vente',
+            label: 'Prix Vente',
+            type: 'number',
+            actions: ['VIEW', 'EDIT'],
+            sensitive: true,
+          },
           { id: 'stock.pricing.marge', label: 'Marge', type: 'number', actions: VIEW_ONLY, sensitive: true },
-        ]
+        ],
       },
       {
         id: 'stock.movements',
@@ -623,9 +711,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'stock.movements.entries', label: 'Entrées', type: 'relation', actions: ['VIEW', 'CREATE'] },
           { id: 'stock.movements.exits', label: 'Sorties', type: 'relation', actions: ['VIEW', 'CREATE'] },
           { id: 'stock.movements.transfers', label: 'Transferts', type: 'relation', actions: ['VIEW', 'CREATE'] },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -649,7 +737,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'tickets.info.client_id', label: 'Client', type: 'relation', actions: CRUD },
           { id: 'tickets.info.categorie', label: 'Catégorie', type: 'select', actions: CRUD },
           { id: 'tickets.info.priorite', label: 'Priorité', type: 'select', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'tickets.treatment',
@@ -658,8 +746,13 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'tickets.treatment.statut', label: 'Statut', type: 'select', actions: ['VIEW', 'EDIT'] },
           { id: 'tickets.treatment.assignee_id', label: 'Assigné à', type: 'relation', actions: ['VIEW', 'EDIT'] },
-          { id: 'tickets.treatment.date_resolution', label: 'Date Résolution', type: 'date', actions: ['VIEW', 'EDIT'] },
-        ]
+          {
+            id: 'tickets.treatment.date_resolution',
+            label: 'Date Résolution',
+            type: 'date',
+            actions: ['VIEW', 'EDIT'],
+          },
+        ],
       },
       {
         id: 'tickets.conversation',
@@ -667,9 +760,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         actions: ['VIEW', 'CREATE'],
         fields: [
           { id: 'tickets.conversation.messages', label: 'Messages', type: 'relation', actions: ['VIEW', 'CREATE'] },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -689,30 +782,57 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         actions: ['VIEW', 'CREATE', 'EXPORT'],
         fields: [
           { id: 'reports.fleet.trajets', label: 'Rapport Trajets', type: 'text', actions: ['VIEW', 'EXPORT'] },
-          { id: 'reports.fleet.consommation', label: 'Rapport Consommation', type: 'text', actions: ['VIEW', 'EXPORT'] },
+          {
+            id: 'reports.fleet.consommation',
+            label: 'Rapport Consommation',
+            type: 'text',
+            actions: ['VIEW', 'EXPORT'],
+          },
           { id: 'reports.fleet.alertes', label: 'Rapport Alertes', type: 'text', actions: ['VIEW', 'EXPORT'] },
-        ]
+        ],
       },
       {
         id: 'reports.finance',
         label: 'Rapports Financiers',
         actions: ['VIEW', 'EXPORT'],
         fields: [
-          { id: 'reports.finance.ca', label: 'Chiffre d\'Affaires', type: 'text', actions: ['VIEW', 'EXPORT'], sensitive: true },
-          { id: 'reports.finance.creances', label: 'Créances', type: 'text', actions: ['VIEW', 'EXPORT'], sensitive: true },
+          {
+            id: 'reports.finance.ca',
+            label: "Chiffre d'Affaires",
+            type: 'text',
+            actions: ['VIEW', 'EXPORT'],
+            sensitive: true,
+          },
+          {
+            id: 'reports.finance.creances',
+            label: 'Créances',
+            type: 'text',
+            actions: ['VIEW', 'EXPORT'],
+            sensitive: true,
+          },
           { id: 'reports.finance.mrr', label: 'MRR', type: 'text', actions: ['VIEW', 'EXPORT'], sensitive: true },
-        ]
+        ],
       },
       {
         id: 'reports.activity',
         label: 'Rapports Activité',
         actions: ['VIEW', 'EXPORT'],
         fields: [
-          { id: 'reports.activity.interventions', label: 'Rapport Interventions', type: 'text', actions: ['VIEW', 'EXPORT'] },
-          { id: 'reports.activity.installations', label: 'Rapport Installations', type: 'text', actions: ['VIEW', 'EXPORT'] },
-        ]
-      }
-    ]
+          {
+            id: 'reports.activity.interventions',
+            label: 'Rapport Interventions',
+            type: 'text',
+            actions: ['VIEW', 'EXPORT'],
+          },
+          {
+            id: 'reports.activity.installations',
+            label: 'Rapport Installations',
+            type: 'text',
+            actions: ['VIEW', 'EXPORT'],
+          },
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -734,7 +854,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'admin.users.list', label: 'Liste Utilisateurs', type: 'relation', actions: CRUD },
           { id: 'admin.users.invite', label: 'Inviter Utilisateur', type: 'boolean', actions: ['CREATE'] },
           { id: 'admin.users.reset_password', label: 'Reset Mot de Passe', type: 'boolean', actions: ['EDIT'] },
-        ]
+        ],
       },
       {
         id: 'admin.roles',
@@ -743,7 +863,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'admin.roles.list', label: 'Liste Rôles', type: 'relation', actions: CRUD },
           { id: 'admin.roles.permissions', label: 'Permissions', type: 'relation', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'admin.resellers',
@@ -752,7 +872,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'admin.resellers.list', label: 'Liste Revendeurs', type: 'relation', actions: CRUD },
           { id: 'admin.resellers.quotas', label: 'Quotas', type: 'number', actions: CRUD },
-        ]
+        ],
       },
       {
         id: 'admin.settings',
@@ -762,7 +882,7 @@ export const PERMISSION_MODULES: ModulePermission[] = [
           { id: 'admin.settings.general', label: 'Paramètres Généraux', type: 'text', actions: ['VIEW', 'EDIT'] },
           { id: 'admin.settings.branding', label: 'Marque Blanche', type: 'text', actions: ['VIEW', 'EDIT'] },
           { id: 'admin.settings.integrations', label: 'Intégrations', type: 'text', actions: ['VIEW', 'EDIT'] },
-        ]
+        ],
       },
       {
         id: 'admin.logs',
@@ -771,9 +891,9 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'admin.logs.audit', label: 'Logs Audit', type: 'text', actions: VIEW_ONLY },
           { id: 'admin.logs.errors', label: 'Logs Erreurs', type: 'text', actions: VIEW_ONLY },
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
 
   // ============================================
@@ -794,19 +914,19 @@ export const PERMISSION_MODULES: ModulePermission[] = [
         fields: [
           { id: 'alerts.list.all', label: 'Toutes les Alertes', type: 'relation', actions: ['VIEW', 'DELETE'] },
           { id: 'alerts.list.unread', label: 'Non Lues', type: 'relation', actions: ['VIEW', 'EDIT'] },
-        ]
+        ],
       },
       {
         id: 'alerts.config',
         label: 'Configuration',
         actions: ['VIEW', 'EDIT'],
         fields: [
-          { id: 'alerts.config.rules', label: 'Règles d\'Alerte', type: 'relation', actions: ['VIEW', 'EDIT'] },
+          { id: 'alerts.config.rules', label: "Règles d'Alerte", type: 'relation', actions: ['VIEW', 'EDIT'] },
           { id: 'alerts.config.notifications', label: 'Notifications', type: 'boolean', actions: ['VIEW', 'EDIT'] },
-        ]
-      }
-    ]
-  }
+        ],
+      },
+    ],
+  },
 ];
 
 // Catégories pour le groupement
@@ -831,19 +951,18 @@ export const PERMISSION_ACTIONS: Record<string, { label: string; icon: string; c
 };
 
 // Fonction utilitaire pour obtenir un module par ID
-export const getModuleById = (moduleId: string) => 
-  PERMISSION_MODULES.find(m => m.id === moduleId);
+export const getModuleById = (moduleId: string) => PERMISSION_MODULES.find((m) => m.id === moduleId);
 
 // Fonction utilitaire pour obtenir un onglet
 export const getTabById = (moduleId: string, tabId: string) => {
   const module = getModuleById(moduleId);
-  return module?.tabs.find(t => t.id === tabId);
+  return module?.tabs.find((t) => t.id === tabId);
 };
 
 // Fonction utilitaire pour obtenir un champ
 export const getFieldById = (moduleId: string, tabId: string, fieldId: string) => {
   const tab = getTabById(moduleId, tabId);
-  return tab?.fields.find(f => f.id === fieldId);
+  return tab?.fields.find((f) => f.id === fieldId);
 };
 
 // ============================================
@@ -854,14 +973,15 @@ export const getFieldById = (moduleId: string, tabId: string, fieldId: string) =
 export type SidebarGroup = 'operations' | 'business' | 'technique' | 'support' | 'admin';
 
 export interface SidebarMenuItem {
-  id: string;              // Correspond à View enum
-  label: string;           // Label affiché
-  mobileLabel?: string;    // Label court pour bottom nav (sinon label tronqué)
-  icon: string;            // Nom de l'icône Lucide
-  moduleId?: string;       // ID du module de permissions (optionnel si toujours visible)
-  permission?: string;     // Permission requise (générée depuis moduleId si non spécifiée)
-  order: number;           // Ordre d'affichage dans le groupe
+  id: string; // Correspond à View enum
+  label: string; // Label affiché
+  mobileLabel?: string; // Label court pour bottom nav (sinon label tronqué)
+  icon: string; // Nom de l'icône Lucide
+  moduleId?: string; // ID du module de permissions (optionnel si toujours visible)
+  permission?: string; // Permission requise (générée depuis moduleId si non spécifiée)
+  order: number; // Ordre d'affichage dans le groupe
   alwaysVisible?: boolean; // true = visible sans permission
+  hiddenForRoles?: string[]; // Masqué pour ces rôles spécifiques
 }
 
 export interface SidebarMenuGroup {
@@ -873,7 +993,7 @@ export interface SidebarMenuGroup {
 
 /**
  * SIDEBAR_MENU - Registre centralisé des menus
- * 
+ *
  * Pour ajouter un nouveau menu :
  * 1. Ajouter le module dans PERMISSION_MODULES ci-dessus (si contrôle d'accès requis)
  * 2. Ajouter l'entrée ici avec moduleId correspondant
@@ -885,50 +1005,158 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
     title: 'Opérations',
     order: 1,
     items: [
-      { id: 'DASHBOARD', label: 'Tableau de bord', mobileLabel: 'Accueil', icon: 'LayoutDashboard', moduleId: 'dashboard', permission: 'VIEW_DASHBOARD', order: 1 },
-      { id: 'MAP', label: 'Carte en direct', mobileLabel: 'Carte', icon: 'Map', moduleId: 'map', permission: 'VIEW_MAP', order: 2 },
-      { id: 'FLEET', label: 'Véhicules', mobileLabel: 'Flotte', icon: 'Truck', moduleId: 'vehicles', permission: 'VIEW_FLEET', order: 3 },
-      { id: 'AGENDA', label: 'Agenda', icon: 'Calendar', alwaysVisible: true, order: 4 },
-      { id: 'REPORTS', label: 'Rapports IA', mobileLabel: 'Rapports', icon: 'FileText', moduleId: 'reports', permission: 'VIEW_REPORTS', order: 5 },
-    ]
+      {
+        id: 'DASHBOARD',
+        label: 'Tableau de bord',
+        mobileLabel: 'Accueil',
+        icon: 'LayoutDashboard',
+        moduleId: 'dashboard',
+        permission: 'VIEW_DASHBOARD',
+        order: 1,
+      },
+      {
+        id: 'MAP',
+        label: 'Carte en direct',
+        mobileLabel: 'Carte',
+        icon: 'Map',
+        moduleId: 'map',
+        permission: 'VIEW_MAP',
+        order: 2,
+        hiddenForRoles: ['TECH'],
+      },
+      {
+        id: 'FLEET',
+        label: 'Véhicules',
+        mobileLabel: 'Flotte',
+        icon: 'Truck',
+        moduleId: 'vehicles',
+        permission: 'VIEW_FLEET',
+        order: 3,
+        hiddenForRoles: ['TECH'],
+      },
+      {
+        id: 'AGENDA',
+        label: 'Agenda',
+        icon: 'Calendar',
+        alwaysVisible: true,
+        order: 4,
+        hiddenForRoles: ['CLIENT', 'SOUS_COMPTE', 'SUB_ACCOUNT'],
+      },
+      {
+        id: 'REPORTS',
+        label: 'Rapports',
+        mobileLabel: 'Rapports',
+        icon: 'FileText',
+        moduleId: 'reports',
+        permission: 'VIEW_REPORTS',
+        order: 5,
+      },
+    ],
   },
   {
     id: 'business',
     title: 'Business',
     order: 2,
     items: [
-      { id: 'PRESALES', label: 'Prévente', mobileLabel: 'Prévente', icon: 'Briefcase', moduleId: 'leads', permission: 'VIEW_CRM', order: 1 },
-      { id: 'SALES', label: 'Vente', mobileLabel: 'Ventes', icon: 'ShoppingCart', moduleId: 'clients', permission: 'MANAGE_CLIENTS', order: 2 },
-      { id: 'ACCOUNTING', label: 'Comptabilité', mobileLabel: 'Compta', icon: 'Calculator', moduleId: 'payments', permission: 'VIEW_FINANCE', order: 3 },
-    ]
+      {
+        id: 'PRESALES',
+        label: 'Prévente',
+        mobileLabel: 'Prévente',
+        icon: 'Briefcase',
+        moduleId: 'leads',
+        permission: 'VIEW_CRM',
+        order: 1,
+        hiddenForRoles: ['TECH', 'CLIENT', 'SOUS_COMPTE', 'SUB_ACCOUNT'],
+      },
+      {
+        id: 'SALES',
+        label: 'Vente',
+        mobileLabel: 'Ventes',
+        icon: 'ShoppingCart',
+        moduleId: 'clients',
+        permission: 'MANAGE_CLIENTS',
+        order: 2,
+        hiddenForRoles: ['TECH', 'CLIENT', 'SOUS_COMPTE', 'SUB_ACCOUNT'],
+      },
+      {
+        id: 'ACCOUNTING',
+        label: 'Comptabilité',
+        mobileLabel: 'Compta',
+        icon: 'Calculator',
+        moduleId: 'payments',
+        permission: 'VIEW_FINANCE',
+        order: 3,
+        hiddenForRoles: ['TECH', 'CLIENT', 'SOUS_COMPTE', 'SUB_ACCOUNT'],
+      },
+    ],
   },
   {
     id: 'technique',
     title: 'Technique',
     order: 3,
     items: [
-      { id: 'TECH', label: 'Interventions', mobileLabel: 'Tech', icon: 'Wrench', moduleId: 'interventions', permission: 'VIEW_TECH', order: 1 },
-      { id: 'MONITORING', label: 'Monitoring', icon: 'Activity', moduleId: 'interventions', permission: 'VIEW_TECH', order: 2 },
-      { id: 'STOCK', label: 'Matériel & Stock', mobileLabel: 'Stock', icon: 'Package', moduleId: 'stock', permission: 'MANAGE_STOCK', order: 3 },
-    ]
+      {
+        id: 'TECH',
+        label: 'Interventions',
+        mobileLabel: 'Tech',
+        icon: 'Wrench',
+        moduleId: 'interventions',
+        permission: 'VIEW_TECH',
+        order: 1,
+      },
+      {
+        id: 'MONITORING',
+        label: 'Monitoring',
+        icon: 'Activity',
+        moduleId: 'interventions',
+        permission: 'VIEW_TECH',
+        order: 2,
+        hiddenForRoles: ['TECH'],
+      },
+      {
+        id: 'STOCK',
+        label: 'Matériel & Stock',
+        mobileLabel: 'Stock',
+        icon: 'Package',
+        moduleId: 'stock',
+        permission: 'MANAGE_STOCK',
+        order: 3,
+      },
+    ],
   },
   {
     id: 'support',
     title: 'Support',
     order: 4,
     items: [
-      { id: 'SUPPORT', label: 'Tickets', mobileLabel: 'Tickets', icon: 'Headset', moduleId: 'tickets', permission: 'VIEW_SUPPORT', order: 1 },
-    ]
+      {
+        id: 'SUPPORT',
+        label: 'Tickets',
+        mobileLabel: 'Tickets',
+        icon: 'Headset',
+        moduleId: 'tickets',
+        permission: 'VIEW_SUPPORT',
+        order: 1,
+        hiddenForRoles: ['TECH', 'CLIENT', 'SOUS_COMPTE', 'SUB_ACCOUNT'],
+      },
+    ],
   },
   {
     id: 'admin',
     title: 'Admin',
     order: 5,
     items: [
-      { id: 'ADMIN', label: 'Administration', icon: 'ShieldCheck', moduleId: 'admin', permission: 'VIEW_ADMIN', order: 1 },
+      {
+        id: 'ADMIN',
+        label: 'Administration',
+        icon: 'ShieldCheck',
+        moduleId: 'admin',
+        permission: 'VIEW_ADMIN',
+        order: 1,
+      },
       { id: 'SETTINGS', label: 'Paramètres', icon: 'Settings', alwaysVisible: true, order: 2 },
-    ]
-  }
+    ],
+  },
 ];
 
 /**
@@ -1017,9 +1245,7 @@ export const MOBILE_DEFAULT_TABS = ['DASHBOARD', 'MAP', 'FLEET', 'TECH'];
 /** Retourne le profil mobile pour un rôle donné */
 export function getMobileProfileForRole(role: string): MobileTabProfile | undefined {
   const normalized = role?.toUpperCase().replace(/_/g, '');
-  return MOBILE_TAB_PROFILES.find(p =>
-    p.roles.some(r => r.toUpperCase().replace(/_/g, '') === normalized)
-  );
+  return MOBILE_TAB_PROFILES.find((p) => p.roles.some((r) => r.toUpperCase().replace(/_/g, '') === normalized));
 }
 
 /** Retourne la vue de démarrage pour un rôle donné */
@@ -1031,15 +1257,13 @@ export function getDefaultViewForRole(role: string): string {
  * Retourne tous les items du menu aplatis (toutes catégories confondues), triés par groupe puis order.
  */
 export const getAllMenuItems = (): (SidebarMenuItem & { groupTitle: string })[] => {
-  return getSortedSidebarMenu().flatMap(group =>
-    group.items.map(item => ({ ...item, groupTitle: group.title }))
-  );
+  return getSortedSidebarMenu().flatMap((group) => group.items.map((item) => ({ ...item, groupTitle: group.title })));
 };
 
 // Helper pour obtenir la permission requise pour un menu
 export const getMenuPermission = (menuId: string): string | null => {
   for (const group of SIDEBAR_MENU) {
-    const item = group.items.find(i => i.id === menuId);
+    const item = group.items.find((i) => i.id === menuId);
     if (item) {
       if (item.alwaysVisible) return null;
       return item.permission || null;
@@ -1052,8 +1276,8 @@ export const getMenuPermission = (menuId: string): string | null => {
 export const getSortedSidebarMenu = (): SidebarMenuGroup[] => {
   return [...SIDEBAR_MENU]
     .sort((a, b) => a.order - b.order)
-    .map(group => ({
+    .map((group) => ({
       ...group,
-      items: [...group.items].sort((a, b) => a.order - b.order)
+      items: [...group.items].sort((a, b) => a.order - b.order),
     }));
 };
