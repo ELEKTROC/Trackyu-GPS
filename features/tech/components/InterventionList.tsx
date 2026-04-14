@@ -196,9 +196,10 @@ export const InterventionList: React.FC<InterventionListProps> = ({
         return i.invoiceItems.map((item) => ({
           description: `${item.description} (${i.licensePlate || i.vehicleName || 'Véhicule'})`,
           quantity: item.quantity,
-          price: item.price,
+          price: item.price ?? 0,
           unitPrice: (item as { unitPrice?: number; price: number }).unitPrice || item.price,
-          total: (item as { total?: number; quantity: number; price: number }).total || item.quantity * item.price,
+          total:
+            (item as { total?: number; quantity: number; price: number }).total || item.quantity * (item.price ?? 0),
         }));
       } else {
         return [
@@ -215,7 +216,8 @@ export const InterventionList: React.FC<InterventionListProps> = ({
 
     const totalAmount = allItems.reduce(
       (sum, item) =>
-        sum + ((item as { total?: number; quantity: number; price: number }).total || item.quantity * item.price),
+        sum +
+        ((item as { total?: number; quantity: number; price: number }).total || item.quantity * (item.price ?? 0)),
       0
     );
 

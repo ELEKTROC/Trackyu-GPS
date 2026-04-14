@@ -48,6 +48,9 @@ vi.mock('react-window', () => ({
 const mockVehicles: Vehicle[] = [
   {
     id: 'VEH-001',
+    subscriptionCode: 'VEH-001',
+    imei: '000000000000001',
+    branchId: 'branch-default',
     tenantId: 'tenant_default',
     name: 'Truck A',
     client: 'Client X',
@@ -59,6 +62,8 @@ const mockVehicles: Vehicle[] = [
     lastUpdated: new Date(),
     type: 'TRUCK',
     maxSpeed: 90,
+    destination: '',
+    nextMaintenance: '',
     fuelQuantity: 300,
     refuelAmount: 0,
     fuelLoss: 0,
@@ -75,6 +80,9 @@ const mockVehicles: Vehicle[] = [
   },
   {
     id: 'VEH-002',
+    subscriptionCode: 'VEH-002',
+    imei: '000000000000002',
+    branchId: 'branch-default',
     tenantId: 'tenant_default',
     name: 'Van B',
     client: 'Client Y',
@@ -86,6 +94,8 @@ const mockVehicles: Vehicle[] = [
     lastUpdated: new Date(),
     type: 'VAN',
     maxSpeed: 130,
+    destination: '',
+    nextMaintenance: '',
     fuelQuantity: 60,
     refuelAmount: 0,
     fuelLoss: 0,
@@ -115,7 +125,7 @@ const renderWithContext = (ui: React.ReactElement, contextValues: any = {}) => {
 
   return {
     ...render(
-      <ToastContext.Provider value={{ showToast: mockShowToast, toasts: [], removeToast: vi.fn() }}>
+      <ToastContext.Provider value={{ showToast: mockShowToast }}>
         <DataContext.Provider value={defaultContext as any}>{ui}</DataContext.Provider>
       </ToastContext.Provider>
     ),

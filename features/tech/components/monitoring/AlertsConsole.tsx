@@ -235,7 +235,7 @@ export const AlertsConsole: React.FC = () => {
   const handleCreateTicket = (alert: Alert) => {
     const clientId = resolveClientId(alert.vehicleId);
     addTicket({ id: '', clientId, vehicleId: alert.vehicleId, subject: `[${getAlertTypeLabel(alert.type)}] ${alert.vehicleName || 'Véhicule'}`, description: alert.message, status: 'OPEN', priority: alert.severity === 'CRITICAL' ? 'URGENT' : alert.severity === 'HIGH' ? 'HIGH' : 'MEDIUM', category: 'TECHNICAL', subCategory: 'Dépannage', interventionType: 'DEPANNAGE', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as unknown as Ticket);
-    markAlertAsRead(alert.id);
+    markAlertAsRead(String(alert.id));
     showToast(`Ticket technique créé pour ${alert.vehicleName || 'véhicule'}`, 'success');
   };
 
@@ -243,7 +243,7 @@ export const AlertsConsole: React.FC = () => {
     const clientId = resolveClientId(alert.vehicleId);
     const vehicle = vehicles.find(v => v.id === alert.vehicleId);
     addIntervention({ id: '', vehicleId: alert.vehicleId, vehicleName: alert.vehicleName || vehicle?.name || '', clientId, type: 'CORRECTIVE', status: 'PLANNED', priority: alert.severity === 'CRITICAL' ? 'URGENT' : 'HIGH', description: `Intervention suite à alerte: ${alert.message}`, scheduledDate: new Date().toISOString(), createdAt: new Date().toISOString() } as unknown as Intervention);
-    markAlertAsRead(alert.id);
+    markAlertAsRead(String(alert.id));
     showToast(`Intervention planifiée pour ${alert.vehicleName || 'véhicule'}`, 'success');
   };
 
@@ -269,7 +269,7 @@ export const AlertsConsole: React.FC = () => {
     const previous = queryClient.getQueryData<Alert[]>(key);
     queryClient.setQueryData(key, (old: Alert[] = []) => old.map(a => a.id === commentingAlert.id ? { ...a, comment: commentText || null } : a));
     try {
-      await api.alerts.comment(commentingAlert.id, commentText);
+      await api.alerts.comment(String(commentingAlert.id), commentText);
       showToast(TOAST.CRUD.SAVED('Commentaire'), 'success');
       setCommentingAlert(null); setCommentText('');
     } catch (err) {
@@ -285,7 +285,7 @@ export const AlertsConsole: React.FC = () => {
     const previous = queryClient.getQueryData<Alert[]>(key);
     queryClient.setQueryData(key, (old: Alert[] = []) => old.map(a => a.id === alert.id ? { ...a, treated: newTreated, treatedAt: newTreated ? new Date().toISOString() : null } : a));
     try {
-      await api.alerts.treat(alert.id, newTreated);
+      await api.alerts.treat(String(alert.id), newTreated);
       showToast(newTreated ? 'Alerte marquée comme traitée' : 'Alerte marquée comme non traitée', 'success');
     } catch (err) {
       queryClient.setQueryData(key, previous);
@@ -480,7 +480,7 @@ export const AlertsConsole: React.FC = () => {
                   </div>
                   {/* Actions */}
                   <div className="flex gap-0.5 flex-shrink-0 ml-2">
-                    {!isRead && <button onClick={() => markAlertAsRead(alert.id)} className="p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Marquer comme lu"><CheckCircle className="w-4 h-4" /></button>}
+                    {!isRead && <button onClick={() => markAlertAsRead(String(alert.id))} className="p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors" title="Marquer comme lu"><CheckCircle className="w-4 h-4" /></button>}
                     <button onClick={() => handleTreat(alert)} className={`p-1.5 hover:bg-white/50 hover:bg-[var(--bg-elevated)]/50 rounded-lg transition-colors ${alert.treated ? 'text-green-600' : 'text-[var(--text-secondary)] hover:text-green-600'}`} title={alert.treated ? 'Marquer non traité' : 'Marquer traité'}>
                       {alert.treated ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
                     </button>

@@ -904,6 +904,10 @@ export interface TrackedObject {
   entryDate?: string;
   createdAt?: string;
   updatedAt?: string;
+
+  // Fuel event aggregates (computed by adapter)
+  refuelCount?: number; // Nombre de recharges sur la période
+  suspectLossCount?: number; // Nombre de baisses suspectes sur la période
 }
 
 /**

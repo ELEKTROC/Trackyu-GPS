@@ -304,8 +304,8 @@ export const FinanceTab: React.FC<FinanceTabProps> = ({
                     >
                       <input
                         type="checkbox"
-                        checked={visiblePaymentColumns.includes(col.id)}
-                        onChange={() => togglePaymentColumn(col.id)}
+                        checked={visiblePaymentColumns.includes(col.id as PaymentColumnId)}
+                        onChange={() => togglePaymentColumn(col.id as PaymentColumnId)}
                         className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)] bg-[var(--bg-surface)]"
                       />
                       <span className="text-[var(--text-primary)]">{col.label}</span>

@@ -123,7 +123,7 @@ export const TechTeamView: React.FC = () => {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `rapport_equipe_${dateRange.start}_${dateRange.end}.csv`);
+    link.setAttribute('download', `rapport_equipe_${dateRange?.start ?? ''}_${dateRange?.end ?? ''}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

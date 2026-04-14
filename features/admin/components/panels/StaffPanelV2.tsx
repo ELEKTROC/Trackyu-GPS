@@ -864,7 +864,7 @@ export const StaffPanelV2: React.FC = () => {
                                 {roleConfig.label}
                               </span>
                               <span className="text-[10px] text-[var(--text-muted)]">
-                                {formatLastLogin(user.lastLogin)}
+                                {formatLastLogin(user.lastLogin ?? undefined)}
                               </span>
                             </div>
                           </div>
@@ -980,7 +980,7 @@ export const StaffPanelV2: React.FC = () => {
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
                                 <Clock className="w-4 h-4" />
-                                {formatLastLogin(user.lastLogin)}
+                                {formatLastLogin(user.lastLogin ?? undefined)}
                               </div>
                             </td>
                             <td className="px-6 py-4">{getStatusBadge(user.status)}</td>
@@ -2148,7 +2148,7 @@ const UserDetailContent: React.FC<UserDetailContentProps> = ({
               )}
               <div className="flex items-center gap-3">
                 <Clock className="w-4 h-4 text-[var(--text-muted)]" />
-                <span>Dernière connexion: {formatLastLogin(user.lastLogin)}</span>
+                <span>Dernière connexion: {formatLastLogin(user.lastLogin ?? undefined)}</span>
               </div>
               <div className="flex items-center gap-3">
                 <Calendar className="w-4 h-4 text-[var(--text-muted)]" />

@@ -627,16 +627,14 @@ export const MapView: React.FC<MapViewProps> = ({
       }
 
       // Batterie faible (<20%)
-      if (
-        (v as Vehicle & { battery?: number }).battery !== undefined &&
-        (v as Vehicle & { battery?: number }).battery < 20
-      ) {
+      const batteryVehicle = v as Vehicle & { battery?: number };
+      if (batteryVehicle.battery !== undefined && batteryVehicle.battery < 20) {
         alerts.push({
           id: `battery-${v.id}`,
           type: 'BATTERY',
           vehicle: v,
-          message: `${v.name} : Batterie ${(v as Vehicle & { battery?: number }).battery}%`,
-          severity: (v as Vehicle & { battery?: number }).battery < 10 ? 'critical' : 'warning',
+          message: `${v.name} : Batterie ${batteryVehicle.battery}%`,
+          severity: batteryVehicle.battery < 10 ? 'critical' : 'warning',
         });
       }
 
@@ -1817,33 +1815,33 @@ export const MapView: React.FC<MapViewProps> = ({
                         {expandedClients[groupKey] && (
                           <div className="bg-[var(--bg-elevated)]/50">
                             {/* Branches within Client - juste un label, pas de dropdown */}
-                            {Object.values(group.branches).map(
-                              (branch: { id: string; name?: string; vehicles: Vehicle[] }) => (
-                                <div key={branch.id}>
-                                  {/* Branch name as simple label - aligned left */}
-                                  <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-elevated)]/30">
-                                    <span className="font-medium text-[var(--text-secondary)] text-[11px] uppercase tracking-wider">
-                                      {branch.name}
-                                    </span>
-                                    <span className="text-[10px] text-[var(--text-muted)] font-medium">
-                                      {branch.vehicles.length}
-                                    </span>
-                                  </div>
-                                  {/* Vehicles of this branch - always visible */}
-                                  <VirtualVehicleList
-                                    vehicles={branch.vehicles}
-                                    selectedVehicleIds={selectedVehicleIds}
-                                    focusedVehicleId={selectedVehicle?.id}
-                                    onFocus={focusOnVehicle}
-                                    onToggleSelection={toggleSelection}
-                                    config={cardConfig}
-                                    onEdit={(v) =>
-                                      onNavigate && onNavigate(View.SETTINGS, { action: 'edit_vehicle', id: v.id })
-                                    }
-                                  />
+                            {(
+                              Object.values(group.branches) as { id: string; name?: string; vehicles: Vehicle[] }[]
+                            ).map((branch) => (
+                              <div key={branch.id}>
+                                {/* Branch name as simple label - aligned left */}
+                                <div className="flex items-center justify-between px-4 py-2 bg-[var(--bg-elevated)]/30">
+                                  <span className="font-medium text-[var(--text-secondary)] text-[11px] uppercase tracking-wider">
+                                    {branch.name}
+                                  </span>
+                                  <span className="text-[10px] text-[var(--text-muted)] font-medium">
+                                    {branch.vehicles.length}
+                                  </span>
                                 </div>
-                              )
-                            )}
+                                {/* Vehicles of this branch - always visible */}
+                                <VirtualVehicleList
+                                  vehicles={branch.vehicles}
+                                  selectedVehicleIds={selectedVehicleIds}
+                                  focusedVehicleId={selectedVehicle?.id}
+                                  onFocus={focusOnVehicle}
+                                  onToggleSelection={toggleSelection}
+                                  config={cardConfig}
+                                  onEdit={(v) =>
+                                    onNavigate && onNavigate(View.SETTINGS, { action: 'edit_vehicle', id: v.id })
+                                  }
+                                />
+                              </div>
+                            ))}
 
                             {/* Direct Vehicles (sans branche) */}
                             {group.directVehicles.length > 0 && (
@@ -2320,7 +2318,7 @@ export const MapView: React.FC<MapViewProps> = ({
               />
 
               <MapUpdater
-                focusedVehicle={focusedVehicle}
+                focusedVehicle={focusedVehicle ?? null}
                 selectedVehicle={selectedVehicle}
                 isReplayActive={isReplayActive}
                 focusPosition={mapFocusPosition}

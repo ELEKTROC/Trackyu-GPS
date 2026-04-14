@@ -2137,7 +2137,7 @@ CLIENT-002;Installation demandée;Demande d'intervention;MEDIUM;Nouvelle install
                         vehicleId: data.vehicleId,
                         status: 'PLANNED',
                         scheduledDate: new Date(),
-                      } as Intervention);
+                      } as unknown as Intervention);
                       setIsInterventionModalOpen(true);
                     }}
                   />

@@ -1160,7 +1160,7 @@ ACCESSORY;;;;;"Capteur Température";SN-001;IN_STOCK;CENTRAL;Client ABC;Capteur`
         onDownloadTemplate={handleDownloadTemplate}
         onFileUpload={handleFileUpload}
         onImport={handleBulkImport}
-        fileInputRef={fileInputRef}
+        fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>}
       />
 
       <StockDetailModal isOpen={isDetailModalOpen} onClose={() => setIsDetailModalOpen(false)} item={detailItem} />

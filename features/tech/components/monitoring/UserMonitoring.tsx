@@ -16,9 +16,8 @@ interface EnhancedUser extends User {
   lastActionAt: string | null;
   avgLoginsPerWeek: number;
   mostUsedAction: string | null;
-  lastLoginIp: string;
+  lastLoginIp?: string | null;
   firstLogin: string | null;
-  createdAt: string | null;
 }
 
 interface AuditLog {
@@ -243,7 +242,7 @@ export const UserMonitoring: React.FC = () => {
                 </td>
                 <td className="px-3 py-2.5">
                   <div className="flex flex-col">
-                    <span className="text-[var(--text-primary)] text-xs">{formatRelative(user.lastLogin)}</span>
+                    <span className="text-[var(--text-primary)] text-xs">{formatRelative(user.lastLogin ?? null)}</span>
                     {user.lastLogin && <span className="text-[10px] text-[var(--text-muted)]">{formatDate(user.lastLogin)}</span>}
                     {user.lastLoginIp && <span className="text-[10px] text-[var(--text-muted)] font-mono flex items-center gap-1"><Globe className="w-2.5 h-2.5" />{user.lastLoginIp}</span>}
                   </div>

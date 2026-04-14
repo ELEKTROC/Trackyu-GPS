@@ -1007,7 +1007,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     icon={PauseCircle}
                     label="Temps ralenti"
                     value={formatDuration(tripStats.idleTime)}
-                    color="yellow"
+                    color="orange"
                   />
                   <StatCard
                     icon={Gauge}
@@ -1055,7 +1055,9 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           border: '1px solid #e2e8f0',
                           fontSize: '12px',
                         }}
-                        formatter={(value: number) => [`${value.toFixed(0)} km/h`, 'Vitesse']}
+                        formatter={(value: unknown) =>
+                          [`${(value as number).toFixed(0)} km/h`, 'Vitesse'] as [string, string]
+                        }
                       />
                       <ReferenceLine y={selectedVehicle?.maxSpeed || 120} stroke="#ef4444" strokeDasharray="3 3" />
                       <Area type="linear" dataKey="speed" stroke="#3b82f6" fill="url(#speedGradient)" strokeWidth={2} />
@@ -1267,10 +1269,12 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     <YAxis stroke="#94a3b8" fontSize={12} domain={[0, 'auto']} />
                     <Tooltip
                       contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}
-                      formatter={(value: number, name: string) => [
-                        `${value.toFixed(0)} km/h`,
-                        name === 'speed' ? 'Vitesse' : 'Limite',
-                      ]}
+                      formatter={(value: unknown, name: unknown) =>
+                        [`${(value as number).toFixed(0)} km/h`, name === 'speed' ? 'Vitesse' : 'Limite'] as [
+                          string,
+                          string,
+                        ]
+                      }
                     />
                     <ReferenceLine
                       y={selectedVehicle?.maxSpeed || 120}
@@ -1412,11 +1416,12 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                             border: '1px solid #e2e8f0',
                             fontSize: '12px',
                           }}
-                          formatter={(value: number, name: string) => {
-                            if (name === 'fuel') return [`${value.toFixed(1)}%`, 'Carburant'];
-                            if (name === 'speed') return [`${value.toFixed(0)} km/h`, 'Vitesse'];
-                            if (name === 'ignition') return [value > 0 ? 'ON' : 'OFF', 'Contact'];
-                            return [value, name];
+                          formatter={(value: unknown, name: unknown) => {
+                            const v = value as number;
+                            if (name === 'fuel') return [`${v.toFixed(1)}%`, 'Carburant'] as [string, string];
+                            if (name === 'speed') return [`${v.toFixed(0)} km/h`, 'Vitesse'] as [string, string];
+                            if (name === 'ignition') return [v > 0 ? 'ON' : 'OFF', 'Contact'] as [string, string];
+                            return [v, name as string] as [number, string];
                           }}
                         />
                         <ReferenceLine

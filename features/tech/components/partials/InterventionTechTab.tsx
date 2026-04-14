@@ -110,7 +110,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
     }
     // Priority 3: formData.simNumber if previously set
     if ((formData as Partial<Intervention> & { simNumber?: string }).simNumber) {
-      return (formData as Partial<Intervention> & { simNumber?: string }).simNumber;
+      return (formData as Partial<Intervention> & { simNumber?: string }).simNumber ?? '';
     }
     return '';
   };

@@ -208,7 +208,7 @@ export const MyNotificationsView: React.FC = () => {
                         )}
 
                         {/* Comment Section */}
-                        {commentingAlertId === alert.id ? (
+                        {commentingAlertId === String(alert.id) ? (
                           <div className="mt-3 flex gap-2 animate-in fade-in slide-in-from-top-2">
                             <input
                               type="text"
@@ -221,7 +221,7 @@ export const MyNotificationsView: React.FC = () => {
                             <button
                               onClick={() => {
                                 if (commentText.trim()) {
-                                  addAlertComment(alert.id, commentText);
+                                  addAlertComment(String(alert.id), commentText);
                                   setCommentingAlertId(null);
                                   setCommentText('');
                                 }
@@ -242,7 +242,7 @@ export const MyNotificationsView: React.FC = () => {
                           </div>
                         ) : (
                           <button
-                            onClick={() => setCommentingAlertId(alert.id)}
+                            onClick={() => setCommentingAlertId(String(alert.id))}
                             className="mt-2 text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1"
                           >
                             <MessageCircle className="w-3 h-3" /> Commenter
@@ -251,7 +251,7 @@ export const MyNotificationsView: React.FC = () => {
                       </div>
                       {!alert.isRead && (
                         <button
-                          onClick={() => markAlertAsRead(alert.id)}
+                          onClick={() => markAlertAsRead(String(alert.id))}
                           className="self-center p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-full transition-colors"
                           title="Marquer comme lu"
                         >

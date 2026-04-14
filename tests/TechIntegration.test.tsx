@@ -34,9 +34,10 @@ const mockInterventions: Intervention[] = [
     status: 'SCHEDULED',
     scheduledDate: new Date().toISOString(),
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
     description: 'Installation GPS',
     duration: 60,
+    nature: 'Installation',
+    location: '',
   },
   {
     id: 'INT-002',
@@ -48,27 +49,44 @@ const mockInterventions: Intervention[] = [
     status: 'COMPLETED',
     scheduledDate: new Date(Date.now() - 86400000).toISOString(), // Yesterday
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
     description: 'Réparation Sonde',
     duration: 45,
+    nature: 'Dépannage',
+    location: '',
   },
 ];
 
 const mockUsers: User[] = [
-  { id: 'TECH-001', name: 'Technicien 1', role: 'Technicien', email: 'tech1@fleet.co', avatar: '', permissions: [] },
-  { id: 'ADMIN-001', name: 'Admin', role: 'SUPERADMIN', email: 'admin@fleet.co', avatar: '', permissions: [] },
+  {
+    id: 'TECH-001',
+    name: 'Technicien 1',
+    role: 'Technicien',
+    email: 'tech1@fleet.co',
+    avatar: '',
+    permissions: [],
+    status: 'Actif' as const,
+  },
+  {
+    id: 'ADMIN-001',
+    name: 'Admin',
+    role: 'SUPERADMIN',
+    email: 'admin@fleet.co',
+    avatar: '',
+    permissions: [],
+    status: 'Actif' as const,
+  },
 ];
 
 const mockStock: DeviceStock[] = [
   {
     id: 'DEV-001',
-    type: 'GPS',
+    tenantId: 'tenant_default',
+    type: 'BOX',
+    serialNumber: '123456789012345',
     model: 'FMB120',
-    imei: '123456789012345',
-    status: 'AVAILABLE',
+    status: 'IN_STOCK',
     location: 'TECH',
     technicianId: 'TECH-001',
-    updatedAt: new Date(),
   },
 ];
 

@@ -67,35 +67,42 @@ interface FleetTableProps {
 
 // Définition des colonnes disponibles
 const ALL_COLUMNS = [
-  { id: 'vehicle', label: 'Objet / Véhicule', minWidth: 200, locked: true, filterable: true },
+  { id: 'vehicle', label: 'Objet / Véhicule', minWidth: 220, locked: true },
   { id: 'abo', label: 'Code ABO', minWidth: 120 },
-  { id: 'client', label: 'Client', minWidth: 120, filterable: true },
+  { id: 'client', label: 'Client', minWidth: 130, filterable: true },
+  { id: 'branch', label: 'Branche', minWidth: 120 },
   { id: 'group', label: 'Groupe', minWidth: 100, filterable: true },
-  { id: 'driver', label: 'Conducteur', minWidth: 120 },
-  { id: 'status', label: 'Statut', minWidth: 100 },
-  { id: 'speed', label: 'Vitesse', minWidth: 80 },
-  { id: 'maxSpeed', label: 'V. Max', minWidth: 80 },
-  { id: 'fuel', label: 'Niveau', minWidth: 100 },
-  { id: 'fuelQty', label: 'Qté Carburant', minWidth: 100 },
-  { id: 'refuel', label: 'Recharge', minWidth: 90 },
-  { id: 'fuelLoss', label: 'Perte', minWidth: 80 },
-  { id: 'consumption', label: 'Conso.', minWidth: 80 },
-  { id: 'suspectLoss', label: 'Perte Suspecte', minWidth: 110 },
+  { id: 'driver', label: 'Conducteur', minWidth: 130 },
+  { id: 'status', label: 'Statut', minWidth: 110 },
+  { id: 'speed', label: 'Vitesse', minWidth: 90 },
+  { id: 'maxSpeed', label: 'V. Max', minWidth: 90 },
+  { id: 'fuel', label: 'Niveau %', minWidth: 110 },
+  { id: 'fuelQty', label: 'Qté (L)', minWidth: 90 },
+  { id: 'capacity', label: 'Capacité', minWidth: 100 },
+  { id: 'refuel', label: 'Recharges (L)', minWidth: 130 },
+  { id: 'fuelLoss', label: 'Conso. réelle (L)', minWidth: 135 },
+  { id: 'consumption', label: 'Conso. (L/100)', minWidth: 130 },
+  { id: 'suspectLoss', label: 'Écart suspect (L)', minWidth: 135 },
   { id: 'departure', label: 'Départ', minWidth: 140 },
   { id: 'arrival', label: 'Arrivée', minWidth: 140 },
-  { id: 'geofence', label: 'Geofence', minWidth: 120, filterable: true },
-  { id: 'lastUpdated', label: 'Dernière MàJ', minWidth: 110 },
-  { id: 'mileage', label: 'Km Total', minWidth: 90 },
-  { id: 'dailyMileage', label: 'Km Jour', minWidth: 80 },
-  { id: 'violations', label: 'Violations', minWidth: 80 },
-  { id: 'location', label: 'Position', minWidth: 140 },
-  { id: 'score', label: 'Score', minWidth: 70, align: 'right' },
+  { id: 'geofence', label: 'Geofence', minWidth: 120 },
+  { id: 'lastUpdated', label: 'Dernière MàJ', minWidth: 115 },
+  { id: 'mileage', label: 'Km Total', minWidth: 100 },
+  { id: 'dailyMileage', label: 'Km Jour', minWidth: 90 },
+  { id: 'violations', label: 'Violations', minWidth: 95 },
+  { id: 'location', label: 'Position', minWidth: 150 },
+  { id: 'score', label: 'Score', minWidth: 80, align: 'right' },
+  { id: 'imei', label: 'IMEI', minWidth: 160 },
+  { id: 'sim', label: 'SIM', minWidth: 140 },
+  { id: 'installDate', label: 'Date install.', minWidth: 115 },
+  { id: 'subscriptionEnd', label: 'Exp. ABO', minWidth: 110 },
 ];
 
 // Colonnes par défaut pour Desktop (optimisé pour données disponibles)
 const DEFAULT_DESKTOP_COLUMNS = [
   'vehicle',
   'client',
+  'branch',
   'abo',
   'group',
   'status',
@@ -110,8 +117,21 @@ const DEFAULT_MOBILE_COLUMNS = ['vehicle', 'status', 'speed'];
 // PRESETS DE VUES
 const VIEW_PRESETS = {
   STANDARD: DEFAULT_DESKTOP_COLUMNS,
-  FUEL: ['vehicle', 'client', 'fuel', 'fuelQty', 'consumption', 'fuelLoss', 'refuel', 'suspectLoss', 'mileage'],
-  TECH: ['vehicle', 'client', 'status', 'speed', 'maxSpeed', 'mileage', 'dailyMileage', 'lastUpdated'],
+  FUEL: [
+    'vehicle',
+    'client',
+    'branch',
+    'fuel',
+    'fuelQty',
+    'capacity',
+    'consumption',
+    'refuel',
+    'suspectLoss',
+    'fuelLoss',
+    'mileage',
+  ],
+  TECHNIQUE: ['vehicle', 'client', 'branch', 'imei', 'sim', 'status', 'installDate', 'subscriptionEnd', 'lastUpdated'],
+  KILOMETRAGE: ['vehicle', 'client', 'branch', 'mileage', 'dailyMileage', 'score', 'violations', 'lastUpdated'],
 };
 
 // Composant Dropdown Filtre Interne
@@ -215,7 +235,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   // Ensure vehicles is always a valid array — wrapped in useMemo to stabilize reference
   const vehicles = useMemo(() => (Array.isArray(vehiclesProp) ? vehiclesProp : []), [vehiclesProp]);
 
-  const { addVehicle, isLoading } = useDataContext();
+  const { addVehicle, isLoading, branches, contracts } = useDataContext();
   const { showToast } = useToast();
   const { branding } = useTenantBranding();
   const { appearance } = useAppearance();
@@ -300,7 +320,6 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   // --- NOUVEAU: Tri et Filtres Avancés ---
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [statusFilter, setStatusFilter] = useState<VehicleStatus[]>([]);
-  const [showAlertsOnly, setShowAlertsOnly] = useState(false);
 
   // --- PAGINATION & GROUPING ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -320,22 +339,17 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   };
   // ---------------------------------------
 
-  // Filtres Spécifiques
+  // Filtres Spécifiques (simplifiés : recherche + client + groupe uniquement)
   const [activeFilters, setActiveFilters] = useState<{
     client: string[];
-    vehicle: string[];
-    group?: string[];
-    geofence?: string[];
-    branch?: string[];
-    plate?: string[];
-  }>({ client: [], vehicle: [], branch: [], plate: [] });
+    group: string[];
+  }>({ client: [], group: [] });
 
   const [openFilterColumn, setOpenFilterColumn] = useState<string | null>(null);
   const resetFilters = () => {
     setGlobalSearch('');
     setStatusFilter([]);
-    setShowAlertsOnly(false);
-    setActiveFilters({ client: [], vehicle: [], branch: [], plate: [] });
+    setActiveFilters({ client: [], group: [] });
   };
 
   // --- GESTION DES PREFERENCES UTILISATEUR (Persistance + Mobile) ---
@@ -360,7 +374,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   }, [visibleColumnIds]);
 
   const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'STANDARD' | 'FUEL' | 'TECH'>('STANDARD');
+  const [activeView, setActiveView] = useState<'STANDARD' | 'FUEL' | 'TECHNIQUE' | 'KILOMETRAGE'>('STANDARD');
   const [dragColumnId, setDragColumnId] = useState<string | null>(null);
   const columnMenuRef = useRef<HTMLDivElement>(null);
   const filterMenuRef = useRef<HTMLDivElement>(null);
@@ -393,27 +407,11 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   // const handleScroll = (e: React.UIEvent<HTMLDivElement>) => { setScrollTop(e.currentTarget.scrollTop); };
 
   const uniqueClients = useMemo(() => Array.from(new Set(vehicles.map((v) => v.client))).sort(), [vehicles]);
-  const uniqueVehicles = useMemo(() => Array.from(new Set(vehicles.map((v) => v.name))).sort(), [vehicles]);
   const uniqueGroups = useMemo(
     () =>
       Array.from(new Set(vehicles.map((v) => v.group || '')))
         .filter(Boolean)
         .sort(),
-    [vehicles]
-  );
-  const uniqueGeofences = useMemo(
-    () =>
-      Array.from(new Set(vehicles.map((v) => v.geofence || '')))
-        .filter(Boolean)
-        .sort(),
-    [vehicles]
-  );
-  const uniqueBranches = useMemo(
-    () => Array.from(new Set(vehicles.map((v) => v.branchId).filter(Boolean))).sort() as string[],
-    [vehicles]
-  );
-  const uniquePlates = useMemo(
-    () => Array.from(new Set(vehicles.map((v) => v.plate || '').filter(Boolean))).sort(),
     [vehicles]
   );
 
@@ -423,45 +421,27 @@ export const FleetTable: React.FC<FleetTableProps> = ({
       return [];
     }
 
+    const search = globalSearch.toLowerCase();
     const result = vehicles.filter((v) => {
-      // 1. Global Search
+      // 1. Global Search (nom, plaque, client, conducteur, IMEI)
       const matchesGlobal =
-        !globalSearch ||
-        (v.name || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
-        (v.driver || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
-        (v.id || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
-        (v.plate || '').toLowerCase().includes(globalSearch.toLowerCase()) ||
-        (v.client || '').toLowerCase().includes(globalSearch.toLowerCase());
+        !search ||
+        (v.name || '').toLowerCase().includes(search) ||
+        (v.driver || '').toLowerCase().includes(search) ||
+        (v.id || '').toLowerCase().includes(search) ||
+        (v.plate || '').toLowerCase().includes(search) ||
+        (v.client || '').toLowerCase().includes(search) ||
+        (v.imei || '').toLowerCase().includes(search);
 
-      // 2. Specific Checkbox Filters
+      // 2. Filtres Client & Groupe
       const matchesClient = activeFilters.client.length === 0 || activeFilters.client.includes(v.client);
-      const matchesVehicle = activeFilters.vehicle.length === 0 || activeFilters.vehicle.includes(v.name);
       const matchesGroup =
-        !activeFilters.group || activeFilters.group.length === 0 || (v.group && activeFilters.group.includes(v.group));
-      const matchesGeofence =
-        !activeFilters.geofence ||
-        activeFilters.geofence.length === 0 ||
-        (v.geofence && activeFilters.geofence.includes(v.geofence));
-      const matchesBranch =
-        !activeFilters.branch || activeFilters.branch.length === 0 || activeFilters.branch.includes(v.branchId);
-      const matchesPlate =
-        !activeFilters.plate || activeFilters.plate.length === 0 || activeFilters.plate.includes(v.plate || '');
+        activeFilters.group.length === 0 || (v.group != null && activeFilters.group.includes(v.group));
 
-      // 3. Advanced Filters
+      // 3. Statut
       const matchesStatus = statusFilter.length === 0 || statusFilter.includes(v.status);
-      const matchesAlerts = !showAlertsOnly || v.violationsCount > 0 || v.suspectLoss > 0;
 
-      return (
-        matchesGlobal &&
-        matchesClient &&
-        matchesVehicle &&
-        matchesGroup &&
-        matchesGeofence &&
-        matchesBranch &&
-        matchesPlate &&
-        matchesStatus &&
-        matchesAlerts
-      );
+      return matchesGlobal && matchesClient && matchesGroup && matchesStatus;
     });
 
     // 4. Sorting
@@ -500,13 +480,13 @@ export const FleetTable: React.FC<FleetTableProps> = ({
     }
 
     return result;
-  }, [vehicles, globalSearch, activeFilters, sortConfig, statusFilter, showAlertsOnly, groupByClient]);
+  }, [vehicles, globalSearch, activeFilters, sortConfig, statusFilter, groupByClient]);
 
   // --- FIX: RESET PAGINATION ON FILTER CHANGE ---
   useEffect(() => {
     setCurrentPage(1);
     setMobileDisplayCount(20);
-  }, [globalSearch, activeFilters, sortConfig, statusFilter, showAlertsOnly, groupByClient, itemsPerPage]);
+  }, [globalSearch, activeFilters, sortConfig, statusFilter, groupByClient, itemsPerPage]);
 
   const totalCount = filteredVehicles.length;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -612,6 +592,10 @@ export const FleetTable: React.FC<FleetTableProps> = ({
             </span>
           </div>
         );
+      case 'branch': {
+        const branchName = branches.find((b) => b.id === vehicle.branchId)?.name || vehicle.branchId || '-';
+        return <span className="text-sm text-[var(--text-secondary)] truncate">{branchName}</span>;
+      }
       case 'group':
         return <span className="text-sm text-[var(--text-secondary)] truncate">{vehicle.group || '-'}</span>;
       case 'geofence':
@@ -652,6 +636,9 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         return vehicle.refuelAmount > 0 ? (
           <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-[var(--clr-success-dim)] text-[var(--clr-success-strong)] rounded text-xs font-bold border border-green-100 dark:border-green-900/50">
             +{vehicle.refuelAmount} L
+            {vehicle.refuelCount != null && (
+              <span className="text-[var(--clr-success)] opacity-70">({vehicle.refuelCount})</span>
+            )}
           </span>
         ) : (
           <span className="text-[var(--text-muted)] text-xs">-</span>
@@ -669,6 +656,9 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           <div className="flex items-center gap-1 text-red-600 font-bold text-xs">
             <AlertCircle className="w-3 h-3" />
             <span>{vehicle.suspectLoss} L</span>
+            {vehicle.suspectLossCount != null && (
+              <span className="text-red-400 font-normal">({vehicle.suspectLossCount})</span>
+            )}
           </div>
         ) : (
           <span className="text-[var(--text-muted)] text-xs">-</span>
@@ -746,6 +736,56 @@ export const FleetTable: React.FC<FleetTableProps> = ({
             {vehicle.driverScore}
           </span>
         );
+      case 'imei':
+        return (
+          <span className="font-mono text-xs text-[var(--text-secondary)] select-all tracking-tight">
+            {vehicle.imei || <span className="text-[var(--text-muted)]">—</span>}
+          </span>
+        );
+      case 'sim':
+        return (
+          <span className="font-mono text-xs text-[var(--text-secondary)] select-all">
+            {(vehicle as any).sim || (vehicle as any).simNumber || <span className="text-[var(--text-muted)]">—</span>}
+          </span>
+        );
+      case 'capacity':
+        return vehicle.tankCapacity != null ? (
+          <span className="font-mono text-sm text-[var(--text-secondary)]">{vehicle.tankCapacity} L</span>
+        ) : (
+          <span className="text-[var(--text-muted)] text-xs">—</span>
+        );
+      case 'installDate': {
+        const d = vehicle.installDate;
+        if (!d) return <span className="text-[var(--text-muted)] text-xs">—</span>;
+        const date = new Date(d);
+        return (
+          <span className="text-xs text-[var(--text-secondary)] font-mono">
+            {date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+          </span>
+        );
+      }
+      case 'subscriptionEnd': {
+        const contract = contracts.find((c) => c.id === vehicle.contractId);
+        const endDate = contract?.endDate;
+        if (!endDate) return <span className="text-[var(--text-muted)] text-xs">—</span>;
+        const date = new Date(endDate);
+        const isExpired = date < new Date();
+        const daysLeft = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+        return (
+          <span
+            className={`text-xs font-mono font-medium ${
+              isExpired
+                ? 'text-red-600 dark:text-red-400'
+                : daysLeft <= 30
+                  ? 'text-amber-600 dark:text-amber-400'
+                  : 'text-[var(--text-secondary)]'
+            }`}
+          >
+            {date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+            {isExpired ? ' ⚠' : daysLeft <= 30 ? ` (${daysLeft}j)` : ''}
+          </span>
+        );
+      }
       default:
         return null;
     }
@@ -891,122 +931,102 @@ export const FleetTable: React.FC<FleetTableProps> = ({
             {activeColumns.map((col) => (
               <div
                 key={col.id}
-                className={`px-4 shrink-0 ${col.id === 'score' ? 'text-right ml-auto' : ''}`}
+                className={`px-3 shrink-0 overflow-hidden ${col.id === 'score' ? 'text-right ml-auto' : ''}`}
                 style={{ width: col.minWidth, flex: col.id === 'vehicle' ? '1 0 auto' : '0 0 auto' }}
               >
                 {renderCell(vehicle, col.id)}
               </div>
             ))}
-            <div className="w-10 shrink-0"></div>
+            {/* Inline row actions */}
+            <div
+              className="flex items-center gap-1 px-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {onLocationClick && (
+                <button
+                  onClick={() => onLocationClick(vehicle)}
+                  className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors whitespace-nowrap"
+                  title="Voir sur la carte"
+                >
+                  <MapPin className="w-3 h-3" />
+                  <span className="hidden xl:inline">Carte</span>
+                </button>
+              )}
+              {onVehicleClick && (
+                <button
+                  onClick={() => onVehicleClick(vehicle)}
+                  className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors whitespace-nowrap"
+                  title="Voir le détail"
+                >
+                  <ChevronRight className="w-3 h-3" />
+                  <span className="hidden xl:inline">Détail</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       );
     },
-    [filteredVehicles, groupByClient, selectedIds, activeColumns, onVehicleClick]
+    [filteredVehicles, groupByClient, selectedIds, activeColumns, onVehicleClick, onLocationClick]
   );
 
   // Enable virtualization for large datasets (>200 vehicles)
   const useVirtualization = filteredVehicles.length > 200;
 
-  // Mini dashboard KPIs selon la vue active
-  const miniDashboard = useMemo(() => {
-    const fv = filteredVehicles;
-    if (activeView === 'FUEL')
-      return [
-        {
-          label: 'Conso. moy.',
-          value:
-            fv.length > 0 ? `${(fv.reduce((s, v) => s + (v.consumption || 0), 0) / fv.length).toFixed(1)} L/100` : '--',
-          icon: Gauge,
-          color: 'text-[var(--primary)] dark:text-[var(--primary)]',
-          bg: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]',
-        },
-        {
-          label: 'Carburant total',
-          value: `${Math.round(fv.reduce((s, v) => s + (v.fuelQuantity || 0), 0))} L`,
-          icon: Fuel,
-          color: 'text-[var(--clr-success)]',
-          bg: 'bg-[var(--clr-success-dim)]',
-        },
-        {
-          label: 'Pertes suspectes',
-          value: `${Math.round(fv.reduce((s, v) => s + (v.suspectLoss || 0), 0))} L`,
-          icon: Droplets,
-          color: 'text-[var(--clr-danger)]',
-          bg: 'bg-[var(--clr-danger-dim)]',
-        },
-        {
-          label: 'Recharges',
-          value: `${fv.filter((v) => (v.refuelAmount || 0) > 0).length} véh.`,
-          icon: TrendingUp,
-          color: 'text-[var(--clr-emerald)]',
-          bg: 'bg-[var(--clr-emerald-dim)]',
-        },
-      ];
-    if (activeView === 'TECH')
-      return [
-        {
-          label: "Km aujourd'hui",
-          value: `${Math.round(fv.reduce((s, v) => s + (v.dailyMileage || 0), 0)).toLocaleString()} km`,
-          icon: TrendingUp,
-          color: 'text-[var(--primary)] dark:text-[var(--primary)]',
-          bg: 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]',
-        },
-        {
-          label: 'Score moyen',
-          value:
-            fv.length > 0 ? `${Math.round(fv.reduce((s, v) => s + (v.driverScore || 0), 0) / fv.length)}/100` : '--',
-          icon: Gauge,
-          color: 'text-[var(--clr-success)]',
-          bg: 'bg-[var(--clr-success-dim)]',
-        },
-        {
-          label: 'Violations',
-          value: String(fv.reduce((s, v) => s + (v.violationsCount || 0), 0)),
-          icon: AlertTriangle,
-          color: 'text-[var(--clr-warning)]',
-          bg: 'bg-[var(--clr-warning-dim)]',
-        },
-        {
-          label: 'Maintenance < 7j',
-          value: `${stats.maintenanceDue} véh.`,
-          icon: Wrench,
-          color: 'text-[var(--clr-danger)]',
-          bg: 'bg-[var(--clr-danger-dim)]',
-        },
-      ];
-    // STANDARD
-    return [
+  // KPI pills config (fixed, clickable by status)
+  const kpiPills = useMemo(
+    () => [
       {
         label: 'Total',
-        value: `${stats.total} véh.`,
-        icon: Truck,
+        value: stats.total,
+        statusFilter: null,
         color: 'text-[var(--text-secondary)]',
-        bg: 'bg-[var(--bg-elevated)]',
+        activeBg: 'bg-[var(--bg-elevated)] border-[var(--border)]',
+        activeFg: 'text-[var(--text-primary)]',
       },
       {
         label: 'En mouvement',
-        value: `${stats.moving} (${stats.total > 0 ? Math.round((stats.moving / stats.total) * 100) : 0}%)`,
-        icon: TrendingUp,
-        color: 'text-[var(--clr-success)]',
-        bg: 'bg-[var(--clr-success-dim)]',
+        value: stats.moving,
+        statusFilter: VehicleStatus.MOVING,
+        color: 'text-[var(--clr-success-strong)]',
+        activeBg: 'bg-[var(--clr-success-dim)] border-green-300 dark:border-green-800',
+        activeFg: 'text-[var(--clr-success-strong)]',
       },
       {
-        label: 'Alertes actives',
-        value: String(stats.alertsCount),
-        icon: AlertTriangle,
+        label: "À l'arrêt",
+        value: stats.stopped,
+        statusFilter: VehicleStatus.STOPPED,
+        color: 'text-red-500 dark:text-red-400',
+        activeBg: 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800',
+        activeFg: 'text-red-600 dark:text-red-400',
+      },
+      {
+        label: 'Idle',
+        value: stats.idle,
+        statusFilter: VehicleStatus.IDLE,
+        color: 'text-amber-500',
+        activeBg: 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-800',
+        activeFg: 'text-amber-600 dark:text-amber-400',
+      },
+      {
+        label: 'Hors ligne',
+        value: stats.offline,
+        statusFilter: VehicleStatus.OFFLINE,
+        color: 'text-[var(--text-muted)]',
+        activeBg: 'bg-[var(--bg-elevated)] border-[var(--border-strong)]',
+        activeFg: 'text-[var(--text-secondary)]',
+      },
+      {
+        label: 'Alertes',
+        value: stats.alertsCount,
+        statusFilter: null,
         color: 'text-[var(--clr-danger)]',
-        bg: 'bg-[var(--clr-danger-dim)]',
+        activeBg: 'bg-[var(--clr-danger-dim)] border-red-200 dark:border-red-900',
+        activeFg: 'text-[var(--clr-danger)]',
       },
-      {
-        label: 'Maintenance < 7j',
-        value: `${stats.maintenanceDue} véh.`,
-        icon: Wrench,
-        color: 'text-[var(--clr-warning)]',
-        bg: 'bg-[var(--clr-warning-dim)]',
-      },
-    ];
-  }, [activeView, filteredVehicles, stats]);
+    ],
+    [stats]
+  );
 
   if (isLoading && vehicles.length === 0) {
     return <FleetTableSkeleton isMobile={isMobileView} />;
@@ -1015,21 +1035,46 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   return (
     <div className="h-full flex flex-col gap-4">
       <Card className="flex-1 flex flex-col" title={isMobileView ? undefined : 'Liste des Véhicules'}>
-        {/* Mini Dashboard */}
+        {/* KPI Bar — fixed 6 stats, clickable to filter by status */}
         {!isMobileView && (
-          <div className="grid grid-cols-4 gap-3 mb-4">
-            {miniDashboard.map((kpi) => (
-              <div
-                key={kpi.label}
-                className={`flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] ${kpi.bg}`}
+          <div className="flex flex-wrap gap-2 mb-4">
+            {kpiPills.map((pill) => {
+              const isActive =
+                pill.statusFilter !== null && statusFilter.length === 1 && statusFilter[0] === pill.statusFilter;
+              return (
+                <button
+                  key={pill.label}
+                  type="button"
+                  onClick={() => {
+                    if (!pill.statusFilter) return;
+                    setStatusFilter(isActive ? [] : [pill.statusFilter]);
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all ${
+                    isActive
+                      ? `${pill.activeBg} ${pill.activeFg} shadow-sm`
+                      : pill.statusFilter
+                        ? 'border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)]'
+                        : 'border-[var(--border)] cursor-default'
+                  }`}
+                  style={
+                    isActive ? undefined : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }
+                  }
+                >
+                  <span className={`text-base font-bold ${isActive ? pill.activeFg : pill.color}`}>{pill.value}</span>
+                  <span className="text-xs">{pill.label}</span>
+                </button>
+              );
+            })}
+            {statusFilter.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setStatusFilter([])}
+                className="flex items-center gap-1 px-3 py-2 rounded-full border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors"
+                style={{ backgroundColor: 'var(--bg-surface)' }}
               >
-                <kpi.icon className={`w-5 h-5 shrink-0 ${kpi.color}`} />
-                <div className="min-w-0">
-                  <p className="text-xs text-[var(--text-muted)] truncate">{kpi.label}</p>
-                  <p className={`text-sm font-bold ${kpi.color}`}>{kpi.value}</p>
-                </div>
-              </div>
-            ))}
+                <X className="w-3 h-3" /> Tout
+              </button>
+            )}
           </div>
         )}
 
@@ -1064,82 +1109,27 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
             </div>
 
-            {/* Vehicle Filter Toolbar - Hidden on mobile */}
-            <div className="relative w-48 hidden lg:block">
-              <select
-                value={activeFilters.vehicle[0] || ''}
-                onChange={(e) =>
-                  setActiveFilters((prev) => ({ ...prev, vehicle: e.target.value ? [e.target.value] : [] }))
-                }
-                className="w-full pl-3 pr-8 py-2 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] appearance-none cursor-pointer"
-                style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
-              >
-                <option value="">Tous les véhicules</option>
-                {uniqueVehicles.map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
-            </div>
-
-            {/* Status Filter - Hidden on mobile */}
-            <div className="relative group hidden md:block">
-              <button
-                className={`flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${statusFilter.length > 0 ? 'bg-[var(--primary-dim)] border-[var(--border)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]' : 'border-[var(--border)] hover:bg-[var(--bg-elevated)]'}`}
-                style={
-                  statusFilter.length > 0
-                    ? undefined
-                    : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }
-                }
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                <span className="hidden xl:inline">Statut</span>
-                {statusFilter.length > 0 && (
-                  <span className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] text-[10px] px-1.5 rounded-full">
-                    {statusFilter.length}
-                  </span>
-                )}
-              </button>
-              {/* Simple Dropdown for Status */}
-              <div
-                className="absolute top-full left-0 mt-2 w-48 border border-[var(--border)] rounded-lg shadow-xl z-50 hidden group-hover:block p-1"
-                style={{ backgroundColor: 'var(--bg-surface)' }}
-              >
-                {(VehicleStatus ? Object.values(VehicleStatus) : []).map((status) => (
-                  <label
-                    key={status}
-                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-[var(--bg-elevated)] rounded cursor-pointer text-sm"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={statusFilter.includes(status)}
-                      onChange={() => {
-                        setStatusFilter((prev) =>
-                          prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
-                        );
-                      }}
-                      className="rounded border-[var(--border)] text-[var(--primary)]"
-                    />
-                    <StatusBadge status={status} />
-                  </label>
-                ))}
+            {/* Group Filter Toolbar - Hidden on mobile */}
+            {uniqueGroups.length > 0 && (
+              <div className="relative w-44 hidden lg:block">
+                <select
+                  value={activeFilters.group[0] || ''}
+                  onChange={(e) =>
+                    setActiveFilters((prev) => ({ ...prev, group: e.target.value ? [e.target.value] : [] }))
+                  }
+                  className="w-full pl-3 pr-8 py-2 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] appearance-none cursor-pointer"
+                  style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
+                >
+                  <option value="">Tous les groupes</option>
+                  {uniqueGroups.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] pointer-events-none" />
               </div>
-            </div>
-
-            {/* Alerts Toggle - Hidden on mobile */}
-            <button
-              onClick={() => setShowAlertsOnly(!showAlertsOnly)}
-              className={`hidden md:flex items-center gap-2 px-3 py-2 border rounded-lg text-sm font-medium transition-colors ${showAlertsOnly ? 'bg-red-50 border-red-200 text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-300' : 'border-[var(--border)] hover:bg-[var(--bg-elevated)]'}`}
-              style={
-                showAlertsOnly ? undefined : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }
-              }
-              title="Afficher uniquement les véhicules avec alertes ou violations"
-            >
-              <AlertCircle className="w-4 h-4" />
-              <span className="hidden xl:inline">Alertes</span>
-            </button>
+            )}
           </div>
           <div className="flex items-center gap-2">
             {/* Import/Export buttons - Hidden on mobile */}
@@ -1161,73 +1151,60 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               <button
                 onClick={() => setShowMobileFilter(true)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
-                  statusFilter.length > 0 ||
-                  activeFilters.client.length +
-                    (activeFilters.branch?.length ?? 0) +
-                    (activeFilters.plate?.length ?? 0) >
-                    0
+                  statusFilter.length > 0 || activeFilters.client.length + activeFilters.group.length > 0
                     ? 'bg-[var(--primary-dim)] border-[var(--primary)] text-[var(--primary)] dark:bg-[var(--primary-dim)] dark:border-[var(--primary)] dark:text-[var(--primary)]'
                     : 'border-[var(--border)]'
                 }`}
                 style={
-                  statusFilter.length > 0 ||
-                  activeFilters.client.length +
-                    (activeFilters.branch?.length ?? 0) +
-                    (activeFilters.plate?.length ?? 0) >
-                    0
+                  statusFilter.length > 0 || activeFilters.client.length + activeFilters.group.length > 0
                     ? undefined
                     : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }
                 }
               >
                 <SlidersHorizontal className="w-4 h-4" />
-                {statusFilter.length +
-                  activeFilters.client.length +
-                  (activeFilters.branch?.length ?? 0) +
-                  (activeFilters.plate?.length ?? 0) >
-                  0 && (
+                {statusFilter.length + activeFilters.client.length + activeFilters.group.length > 0 && (
                   <span className="bg-[var(--primary)] text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold">
-                    {statusFilter.length +
-                      activeFilters.client.length +
-                      (activeFilters.branch?.length ?? 0) +
-                      (activeFilters.plate?.length ?? 0)}
+                    {statusFilter.length + activeFilters.client.length + activeFilters.group.length}
                   </span>
                 )}
               </button>
             )}
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-elevated)] px-3 py-1 rounded border border-[var(--border)] h-full hidden sm:flex">
-              <Database className="w-3 h-3" />
-              <span className="hidden sm:inline">Pagination Active</span>
-            </div>
           </div>
         </div>
 
         {/* PRESETS TOOLBAR - Hidden on mobile */}
         <div className="pb-3 flex flex-wrap gap-2 hidden md:flex">
-          {(
-            [
-              {
-                key: 'STANDARD',
-                label: 'Vue Standard',
-                icon: null,
-                activeClass: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]',
-                inactiveClass: 'border-[var(--border)] hover:bg-[var(--bg-elevated)]',
-              },
-              {
-                key: 'FUEL',
-                label: 'Vue Carburant',
-                icon: <Fuel className="w-3 h-3" />,
-                activeClass: 'bg-[var(--primary)] text-white border-[var(--primary)]',
-                inactiveClass: 'border-[var(--border)] hover:bg-[var(--primary-dim)] hover:border-[var(--primary)]',
-              },
-              {
-                key: 'TECH',
-                label: 'Vue Technique',
-                icon: <Wrench className="w-3 h-3" />,
-                activeClass: 'bg-orange-500 text-white border-orange-500',
-                inactiveClass: 'border-[var(--border)] hover:bg-[var(--clr-warning-dim)] hover:border-orange-300',
-              },
-            ] as const
-          ).map(({ key, label, icon, activeClass, inactiveClass }) => (
+          {[
+            {
+              key: 'STANDARD' as const,
+              label: 'Standard',
+              icon: <LayoutGrid className="w-3 h-3" />,
+              activeClass: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]',
+              inactiveClass: 'border-[var(--border)] hover:bg-[var(--bg-elevated)]',
+            },
+            {
+              key: 'FUEL' as const,
+              label: 'Carburant',
+              icon: <Fuel className="w-3 h-3" />,
+              activeClass: 'bg-emerald-600 text-white border-emerald-600',
+              inactiveClass: 'border-[var(--border)] hover:bg-[var(--clr-success-dim)] hover:border-emerald-400',
+            },
+            {
+              key: 'TECHNIQUE' as const,
+              label: 'Technique',
+              icon: <Wrench className="w-3 h-3" />,
+              activeClass: 'bg-orange-500 text-white border-orange-500',
+              inactiveClass: 'border-[var(--border)] hover:bg-[var(--clr-warning-dim)] hover:border-orange-300',
+            },
+            {
+              key: 'KILOMETRAGE' as const,
+              label: 'Kilométrage',
+              icon: <Gauge className="w-3 h-3" />,
+              activeClass: 'bg-violet-600 text-white border-violet-600',
+              inactiveClass:
+                'border-[var(--border)] hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:border-violet-400',
+            },
+          ].map(({ key, label, icon, activeClass, inactiveClass }) => (
             <button
               key={key}
               onClick={() => {
@@ -1245,16 +1222,6 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               {label}
             </button>
           ))}
-
-          <div className="w-px h-6 bg-[var(--border)] mx-1 self-center" />
-
-          <button
-            onClick={() => setGroupByClient(!groupByClient)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap flex items-center gap-1.5 ${groupByClient ? 'bg-purple-600 text-white border-purple-600' : 'border-[var(--border)] hover:bg-[var(--bg-elevated)]'}`}
-            style={groupByClient ? undefined : { backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
-          >
-            <Briefcase className="w-3 h-3" /> Grouper par Client{groupByClient ? ' : OUI' : ''}
-          </button>
         </div>
 
         {/* Table Container */}
@@ -1306,7 +1273,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               {activeColumns.map((col) => (
                 <div
                   key={col.id}
-                  className={`px-4 py-3 section-title shrink-0 flex items-center gap-1 group cursor-pointer hover:bg-[var(--bg-elevated)] transition-colors select-none ${col.id === 'score' ? 'justify-end ml-auto' : ''}`}
+                  className={`px-3 py-3 section-title shrink-0 flex items-center gap-1 group cursor-pointer hover:bg-[var(--bg-elevated)] transition-colors select-none overflow-hidden whitespace-nowrap ${col.id === 'score' ? 'justify-end ml-auto' : ''}`}
                   style={{ width: col.minWidth, flex: col.id === 'vehicle' ? '1 0 auto' : '0 0 auto' }}
                   onClick={() => handleSort(col.id)}
                 >
@@ -1329,9 +1296,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                         onClick={() => setOpenFilterColumn(openFilterColumn === col.id ? null : col.id)}
                         className={`p-1 rounded hover:bg-[var(--bg-elevated)] transition-colors ${
                           (col.id === 'client' && activeFilters.client.length > 0) ||
-                          (col.id === 'vehicle' && activeFilters.vehicle.length > 0) ||
-                          (col.id === 'group' && activeFilters.group && activeFilters.group.length > 0) ||
-                          (col.id === 'geofence' && activeFilters.geofence && activeFilters.geofence.length > 0)
+                          (col.id === 'group' && activeFilters.group.length > 0)
                             ? 'text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
                             : 'text-[var(--text-muted)]'
                         }`}
@@ -1343,27 +1308,9 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                         <div ref={filterMenuRef}>
                           <FilterDropdown
                             title={col.label}
-                            options={
-                              col.id === 'client'
-                                ? uniqueClients
-                                : col.id === 'vehicle'
-                                  ? uniqueVehicles
-                                  : col.id === 'group'
-                                    ? uniqueGroups
-                                    : col.id === 'geofence'
-                                      ? uniqueGeofences
-                                      : []
-                            }
+                            options={col.id === 'client' ? uniqueClients : col.id === 'group' ? uniqueGroups : []}
                             selectedValues={
-                              col.id === 'client'
-                                ? activeFilters.client
-                                : col.id === 'vehicle'
-                                  ? activeFilters.vehicle
-                                  : col.id === 'group'
-                                    ? activeFilters.group || []
-                                    : col.id === 'geofence'
-                                      ? activeFilters.geofence || []
-                                      : []
+                              col.id === 'client' ? activeFilters.client : col.id === 'group' ? activeFilters.group : []
                             }
                             onChange={(vals) => {
                               setActiveFilters((prev) => ({ ...prev, [col.id]: vals }));
@@ -1823,13 +1770,38 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                         {activeColumns.map((col) => (
                           <div
                             key={col.id}
-                            className={`px-4 shrink-0 ${col.id === 'score' ? 'text-right ml-auto' : ''}`}
+                            className={`px-3 shrink-0 overflow-hidden ${col.id === 'score' ? 'text-right ml-auto' : ''}`}
                             style={{ width: col.minWidth, flex: col.id === 'vehicle' ? '1 0 auto' : '0 0 auto' }}
                           >
                             {renderCell(vehicle, col.id)}
                           </div>
                         ))}
-                        <div className="w-10 shrink-0"></div>
+                        {/* Inline row actions */}
+                        <div
+                          className="flex items-center gap-1 px-2 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {onLocationClick && (
+                            <button
+                              onClick={() => onLocationClick(vehicle)}
+                              className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors whitespace-nowrap"
+                              title="Voir sur la carte"
+                            >
+                              <MapPin className="w-3 h-3" />
+                              <span className="hidden xl:inline">Carte</span>
+                            </button>
+                          )}
+                          {onVehicleClick && (
+                            <button
+                              onClick={() => onVehicleClick(vehicle)}
+                              className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors whitespace-nowrap"
+                              title="Voir le détail"
+                            >
+                              <ChevronRight className="w-3 h-3" />
+                              <span className="hidden xl:inline">Détail</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </React.Fragment>
                   );
@@ -1895,15 +1867,10 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         <MobileFilterSheet
           isOpen={showMobileFilter}
           onClose={() => setShowMobileFilter(false)}
-          activeCount={
-            statusFilter.length +
-            activeFilters.client.length +
-            (activeFilters.branch?.length ?? 0) +
-            (activeFilters.plate?.length ?? 0)
-          }
+          activeCount={statusFilter.length + activeFilters.client.length + activeFilters.group.length}
           onReset={() => {
             setStatusFilter([]);
-            setActiveFilters((prev) => ({ ...prev, client: [], branch: [], plate: [] }));
+            setActiveFilters({ client: [], group: [] });
           }}
           tabs={[
             {
@@ -1944,53 +1911,29 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               )),
             },
             {
-              id: 'branch',
-              label: 'Branche',
-              activeCount: activeFilters.branch?.length ?? 0,
+              id: 'group',
+              label: 'Groupe',
+              activeCount: activeFilters.group.length,
               content:
-                uniqueBranches.length === 0 ? (
-                  <p className="text-sm text-[var(--text-muted)] text-center py-8">Aucune branche disponible</p>
+                uniqueGroups.length === 0 ? (
+                  <p className="text-sm text-[var(--text-muted)] text-center py-8">Aucun groupe disponible</p>
                 ) : (
-                  uniqueBranches.map((b) => (
+                  uniqueGroups.map((g) => (
                     <FilterCheckRow
-                      key={b}
-                      value={b}
-                      label={b}
-                      checked={(activeFilters.branch ?? []).includes(b)}
+                      key={g}
+                      value={g}
+                      label={g}
+                      checked={activeFilters.group.includes(g)}
                       onChange={() =>
                         setActiveFilters((prev) => ({
                           ...prev,
-                          branch: (prev.branch ?? []).includes(b)
-                            ? (prev.branch ?? []).filter((x) => x !== b)
-                            : [...(prev.branch ?? []), b],
+                          group: prev.group.includes(g) ? prev.group.filter((x) => x !== g) : [...prev.group, g],
                         }))
                       }
-                      count={vehicles.filter((v) => v.branchId === b).length}
+                      count={vehicles.filter((v) => v.group === g).length}
                     />
                   ))
                 ),
-            },
-            {
-              id: 'plate',
-              label: 'Plaque',
-              activeCount: activeFilters.plate?.length ?? 0,
-              content: uniquePlates.map((p) => (
-                <FilterCheckRow
-                  key={p}
-                  value={p}
-                  label={<span className="font-mono">{p}</span>}
-                  checked={(activeFilters.plate ?? []).includes(p)}
-                  onChange={() =>
-                    setActiveFilters((prev) => ({
-                      ...prev,
-                      plate: (prev.plate ?? []).includes(p)
-                        ? (prev.plate ?? []).filter((x) => x !== p)
-                        : [...(prev.plate ?? []), p],
-                    }))
-                  }
-                  count={vehicles.filter((v) => v.plate === p).length}
-                />
-              )),
             },
           ]}
         />
