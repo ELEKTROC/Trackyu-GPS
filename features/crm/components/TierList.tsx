@@ -519,9 +519,9 @@ export const TierList: React.FC<TierListProps> = ({
                       </p>
                     </div>
                     <span
-                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${tier.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]'}`}
+                      className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${(tier.status || '').toUpperCase() === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] dark:text-[var(--text-muted)]'}`}
                     >
-                      {tier.status === 'ACTIVE' ? 'Actif' : 'Inactif'}
+                      {(tier.status || '').toUpperCase() === 'ACTIVE' ? 'Actif' : 'Inactif'}
                     </span>
                   </div>
                   {/* Secondary: type + context data */}
@@ -647,25 +647,28 @@ export const TierList: React.FC<TierListProps> = ({
                     <td className="px-6 py-4 text-[var(--text-secondary)] text-sm">{tier.email || '-'}</td>
                   )}
                   {/* Statut */}
-                  {(!visibleColumns || visibleColumns.includes('status')) && (
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                          tier.status === 'ACTIVE'
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                            : tier.status === 'SUSPENDED'
-                              ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-                              : tier.status === 'CHURNED'
-                                ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
-                        }`}
-                      >
-                        {{ ACTIVE: 'Actif', INACTIVE: 'Inactif', SUSPENDED: 'Suspendu', CHURNED: 'Churné' }[
-                          tier.status
-                        ] || tier.status}
-                      </span>
-                    </td>
-                  )}
+                  {(!visibleColumns || visibleColumns.includes('status')) &&
+                    (() => {
+                      const st = (tier.status || '').toUpperCase() as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'CHURNED';
+                      return (
+                        <td className="px-6 py-4">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              st === 'ACTIVE'
+                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                : st === 'SUSPENDED'
+                                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                                  : st === 'CHURNED'
+                                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                    : 'bg-[var(--bg-elevated)] text-[var(--text-muted)]'
+                            }`}
+                          >
+                            {{ ACTIVE: 'Actif', INACTIVE: 'Inactif', SUSPENDED: 'Suspendu', CHURNED: 'Churné' }[st] ||
+                              st}
+                          </span>
+                        </td>
+                      );
+                    })()}
 
                   {/* Specific Columns */}
                   {renderSpecificColumns(tier)}

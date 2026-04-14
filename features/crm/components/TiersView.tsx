@@ -34,7 +34,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
   dateRange: externalDateRange,
 }) => {
   const isMobile = useIsMobile();
-  const { tiers, addTier, updateTier } = useDataContext();
+  const { tiers, addTier, updateTier, invoices } = useDataContext();
   const { showToast } = useToast();
 
   // --- DATE LOGIC ---
@@ -147,6 +147,24 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
 
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
+  // ── Tiers avec factures impayées (depuis invoices) ─────────────────────────
+  const impayesIds = useMemo(() => {
+    const PAID = new Set(['PAID', 'PAYÉ', 'CANCELLED', 'CANCELED', 'DRAFT']);
+    const ids = new Set<string>();
+    const names = new Set<string>();
+    for (const inv of invoices) {
+      if (PAID.has((inv.status || '').toUpperCase())) continue;
+      const ref = inv.clientId || (inv as any).tier_id || (inv as any).client_id || '';
+      if (ref) ids.add(ref);
+      const nm = (inv.clientName || (inv as any).tier_name || '').toLowerCase().trim();
+      if (nm) names.add(nm);
+    }
+    return { ids, names };
+  }, [invoices]);
+
+  const tierHasUnpaid = (tier: Tier) =>
+    impayesIds.ids.has(tier.id) || impayesIds.names.has(tier.name.toLowerCase().trim());
+
   // Create filter function based on activeFilters
   const getFilterFunction = useMemo(() => {
     if (activeFilters.length === 0) return undefined;
@@ -154,9 +172,7 @@ export const TiersView: React.FC<{ onNavigate?: any; dateRange?: { start: string
       for (const filter of activeFilters) {
         switch (filter) {
           case 'OVERDUE':
-            // Tiers with negative balance (unpaid invoices)
-            if (tier.type === 'CLIENT' && (tier.clientData?.balance || 0) >= 0) return false;
-            if (tier.type === 'SUPPLIER' && (tier.supplierData?.balance || 0) >= 0) return false;
+            if (!tierHasUnpaid(tier)) return false;
             break;
           case 'INACTIVE':
             if (tier.status !== 'INACTIVE' && tier.status !== 'SUSPENDED') return false;
