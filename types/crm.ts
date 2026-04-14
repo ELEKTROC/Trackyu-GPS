@@ -18,18 +18,18 @@ export interface Client {
   companyName?: string; // Nom de l'entreprise (alias)
   type: 'B2B' | 'B2C';
   status: 'ACTIVE' | 'SUSPENDED' | 'CHURNED' | 'INACTIVE';
-  
+
   // Contact Principal
   contactName: string;
   email: string;
   phone: string;
-  
+
   // Contact Secondaire & Adresse
   secondContactName?: string;
   address: string;
   city?: string;
   country?: string;
-  
+
   // Info Commerciales
   subscriptionPlan: string;
   resellerId?: string;
@@ -39,16 +39,16 @@ export interface Client {
   sector?: string;
   segment?: string; // ex: 'VIP', 'Standard', 'Grand Compte'
   language?: string;
-  
+
   // Info Financières
   paymentTerms?: string; // ex: '30 jours fin de mois'
   currency?: string;
   paymentStatus?: 'UP_TO_DATE' | 'OVERDUE'; // A jour / Impayés
   balance?: number; // Nouveau champ
-  
+
   // Liste des contacts additionnels
   contacts?: ClientContact[];
-  
+
   // Account creation flag
   createUserAccount?: boolean;
 }
@@ -140,20 +140,22 @@ export interface Tier {
     maxVehicles?: number;
     maxUsers?: number;
     maxClients?: number;
-    modules?: {
-      fleet?: boolean;
-      interventions?: boolean;
-      stock?: boolean;
-      crm?: boolean;
-      finance?: boolean;
-      reports?: boolean;
-      alerts?: boolean;
-      map?: boolean;
-    };
+    apiAccess?: boolean;
+    modules?: string[];
     permissions?: string[];
     isActive?: boolean;
+    quotas?: {
+      maxVehicles?: number;
+      maxUsers?: number;
+      maxClients?: number;
+    };
+    whiteLabelConfig?: {
+      primaryColor?: string;
+      secondaryColor?: string;
+      logo?: string;
+    };
   };
-  
+
   // Legacy compatibility
   contactName?: string;
   secondContactName?: string;

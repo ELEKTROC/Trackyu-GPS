@@ -645,9 +645,8 @@ export const OrganizationPanelV2: React.FC = () => {
   const [showApiKey, setShowApiKey] = useState(false);
   const [mobileViewTabsConfig, setMobileViewTabsConfig] = useState<Record<string, string[]>>({});
 
-  // Get tenant slug from user or fallback
-  const tenantSlug =
-    (user as any)?.slug || user?.tenantId?.replace('tenant_', '').split('_')[0]?.toUpperCase() || 'XXX';
+  // Dérive le slug du tenant depuis l'ID (ex: tenant_abc_123 → ABC)
+  const tenantSlug = user?.tenantId?.replace('tenant_', '').split('_')[0]?.toUpperCase() || 'XXX';
 
   // React Query hooks for numbering
   const { data: apiCounters, isLoading: countersLoading, refetch: refetchCounters } = useNumberingCounters();

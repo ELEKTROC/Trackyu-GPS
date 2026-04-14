@@ -60,6 +60,7 @@ import { RoleManagerV2 } from '../RoleManagerV2';
 import { useCurrency } from '../../../../hooks/useCurrency';
 import { api } from '../../../../services/apiLazy';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
+import type { Tenant } from '../../../../types/admin';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { MobileCard, MobileCardList } from '../../../../components/MobileCard';
 
@@ -270,12 +271,12 @@ export const StaffPanelV2: React.FC = () => {
   const isSuperAdmin = currentUser?.role === 'SUPERADMIN';
 
   // Tenants pour le sélecteur CLIENT (tous sauf tenant_default)
-  const { data: tenantsList = [] } = useQuery<any[]>({
+  const { data: tenantsList = [] } = useQuery<Tenant[]>({
     queryKey: ['tenants'],
     queryFn: () => api.tenants.list(),
     staleTime: 5 * 60 * 1000,
   });
-  const clientTenants = (tenantsList as any[]).filter((t: any) => t.id !== 'tenant_default');
+  const clientTenants = tenantsList.filter((t) => t.id !== 'tenant_default');
   const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
 
   // Organisations (Resellers) pour les checkboxes

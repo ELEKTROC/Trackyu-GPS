@@ -453,18 +453,22 @@ function GlobalConfigTab() {
     gpsAccuracy: 'high' as 'high' | 'medium' | 'low',
   });
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState(false);
 
   const save = async () => {
     try {
-      await fetch('/api/admin/gps-config', {
+      const res = await fetch('/api/admin/gps-config', {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify(config),
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {
-      /* ignore fetch error */
+    } catch (e) {
+      console.error('[DeviceConfig] save error:', e);
+      setSaveError(true);
+      setTimeout(() => setSaveError(false), 3000);
     }
   };
 
@@ -487,7 +491,7 @@ function GlobalConfigTab() {
               min={min}
               max={max}
               step={step}
-              value={(config as any)[key]}
+              value={config[key as keyof typeof config] as number}
               onChange={(e) => setConfig((c) => ({ ...c, [key]: parseInt(e.target.value) }))}
               className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-sm"
             />
@@ -497,7 +501,7 @@ function GlobalConfigTab() {
           <label className="block text-xs text-[var(--text-secondary)] mb-1">Précision GPS</label>
           <select
             value={config.gpsAccuracy}
-            onChange={(e) => setConfig((c) => ({ ...c, gpsAccuracy: e.target.value as any }))}
+            onChange={(e) => setConfig((c) => ({ ...c, gpsAccuracy: e.target.value as 'high' | 'medium' | 'low' }))}
             className="w-full border border-[var(--border)] rounded-lg px-3 py-2 text-sm"
           >
             <option value="high">Haute (HDOP ≤ 2)</option>
@@ -510,7 +514,7 @@ function GlobalConfigTab() {
         onClick={save}
         className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm hover:bg-[var(--primary-light)]"
       >
-        {saved ? '✅ Enregistré' : 'Enregistrer la configuration'}
+        {saved ? '✅ Enregistré' : saveError ? '❌ Erreur — réessayer' : 'Enregistrer la configuration'}
       </button>
     </div>
   );
@@ -527,8 +531,8 @@ export default function DeviceConfigPanelV2() {
     try {
       const res = await fetch('/api/admin/gps-stats', { headers: getHeaders() });
       if (res.ok) setStats(await res.json());
-    } catch {
-      /* ignore fetch error */
+    } catch (e) {
+      console.error('[DeviceConfig] fetchStats error:', e);
     } finally {
       setLoadingStats(false);
     }

@@ -100,7 +100,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
     const { showToast } = useToast();
 
     // Préparer les valeurs initiales depuis le Tier
-    const rd = initialData?.resellerData as any;
+    const rd = initialData?.resellerData;
     const defaultValues: Partial<ResellerFormDataV2> = initialData
       ? {
           companyName: initialData.name,
@@ -144,7 +144,7 @@ export const ResellerFormV2 = forwardRef<HTMLFormElement, ResellerFormV2Props>(
       watch,
       formState: { errors },
     } = useForm<ResellerFormDataV2>({
-      resolver: zodResolver(ResellerSchemaV2) as any,
+      resolver: zodResolver(ResellerSchemaV2) as any, // Zod input vs output type mismatch (champs avec .default())
       defaultValues,
     });
 
