@@ -110,6 +110,7 @@ interface FinanceViewProps {
   initialData?: Partial<Invoice>;
   dateRange?: { start: string; end: string };
   onSaveSuccess?: (item: Invoice) => void;
+  navParams?: Record<string, string>;
 }
 
 // --- MOCK DATA Constants (Updated with new fields) ---
@@ -147,6 +148,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   initialData,
   dateRange,
   onSaveSuccess,
+  navParams,
 }) => {
   const isMobile = useIsMobile();
   const { formatPrice } = useCurrency();
@@ -355,6 +357,42 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
     const columns = mode === 'QUOTES' ? QUOTE_COLUMNS : INVOICE_COLUMNS;
     setVisibleColumns(columns.map((c) => c.id));
   }, [mode]);
+
+  // Ouverture automatique du formulaire depuis une navigation externe (ex: Planning → Créer facture)
+  useEffect(() => {
+    if (!navParams || navParams.action !== 'create') return;
+    const period = navParams.period || ''; // ex: "2025-03"
+    const [periodYear, periodMonth] = period.split('-');
+    const dateStr = period ? `${periodYear}-${periodMonth}-01` : new Date().toISOString().split('T')[0];
+
+    // Chercher le client par clientId ou clientName
+    const matchedClient =
+      clients.find((c) => c.id === navParams.clientId) ||
+      tiers.find((t) => t.id === navParams.clientId) ||
+      clients.find((c) => c.name === navParams.clientName) ||
+      null;
+
+    setEditingItem({
+      date: dateStr,
+      dueDate: new Date(new Date(dateStr).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      clientId: matchedClient?.id || navParams.clientId || '',
+      contractId: navParams.contractId || '',
+      subject: `Abonnement GPS — ${navParams.plate || ''} — ${period || ''}`.trim(),
+      items: [
+        {
+          description: `Renouvellement abonnement${navParams.plate ? ` — ${navParams.plate}` : ''}${period ? ` (${period})` : ''}`,
+          quantity: 1,
+          price: Number(navParams.amount) || 0,
+        },
+      ],
+      vatRate: 0,
+      status: 'DRAFT',
+      invoiceType: 'FACTURE',
+    });
+    setIsFormDirty(false);
+    setIsFormOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navParams]);
 
   const toggleColumn = (columnId: string) => {
     setVisibleColumns((prev) => (prev.includes(columnId) ? prev.filter((id) => id !== columnId) : [...prev, columnId]));

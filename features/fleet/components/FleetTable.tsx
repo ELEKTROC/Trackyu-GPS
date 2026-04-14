@@ -66,11 +66,18 @@ interface FleetTableProps {
 }
 
 // Définition des colonnes disponibles
-const ALL_COLUMNS = [
+const ALL_COLUMNS: {
+  id: string;
+  label: string;
+  minWidth: number;
+  locked?: boolean;
+  align?: string;
+  filterable?: boolean;
+}[] = [
   { id: 'vehicle', label: 'Objet / Véhicule', minWidth: 220, locked: true },
-  { id: 'client', label: 'Client', minWidth: 130 },
+  { id: 'client', label: 'Client', minWidth: 130, filterable: true },
   { id: 'branch', label: 'Branche', minWidth: 120 },
-  { id: 'group', label: 'Groupe', minWidth: 100 },
+  { id: 'group', label: 'Groupe', minWidth: 100, filterable: true },
   { id: 'driver', label: 'Conducteur', minWidth: 130 },
   { id: 'status', label: 'Statut', minWidth: 110 },
   { id: 'speed', label: 'Vitesse', minWidth: 90 },
@@ -1307,39 +1314,6 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     )
                   ) : (
                     <ArrowUpDown className="w-3 h-3 text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
-                  )}
-
-                  {col.filterable && (
-                    <div className="relative ml-1" onClick={(e) => e.stopPropagation()}>
-                      <button
-                        aria-label="Filter column"
-                        onClick={() => setOpenFilterColumn(openFilterColumn === col.id ? null : col.id)}
-                        className={`p-1 rounded hover:bg-[var(--bg-elevated)] transition-colors ${
-                          (col.id === 'client' && activeFilters.client.length > 0) ||
-                          (col.id === 'group' && activeFilters.group.length > 0)
-                            ? 'text-[var(--primary)] dark:text-[var(--primary)] bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]'
-                            : 'text-[var(--text-muted)]'
-                        }`}
-                      >
-                        <Filter className="w-3 h-3" />
-                      </button>
-
-                      {openFilterColumn === col.id && (
-                        <div ref={filterMenuRef}>
-                          <FilterDropdown
-                            title={col.label}
-                            options={col.id === 'client' ? uniqueClients : col.id === 'group' ? uniqueGroups : []}
-                            selectedValues={
-                              col.id === 'client' ? activeFilters.client : col.id === 'group' ? activeFilters.group : []
-                            }
-                            onChange={(vals) => {
-                              setActiveFilters((prev) => ({ ...prev, [col.id]: vals }));
-                            }}
-                            onClose={() => setOpenFilterColumn(null)}
-                          />
-                        </div>
-                      )}
-                    </div>
                   )}
                 </div>
               ))}

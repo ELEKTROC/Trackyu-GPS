@@ -17,29 +17,20 @@ export const ContractTabs: React.FC<ContractTabsProps> = ({ dateRange, onNavigat
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('LIST');
 
   const CONTRACT_SUB_TABS = [
-    { id: 'LIST',          label: 'Liste des Contrats',  icon: FileText  },
-    { id: 'SUBSCRIPTIONS', label: 'Abonnements',         icon: Truck     },
-    { id: 'FORECAST',      label: 'Prévisionnel',        icon: BarChart2 },
+    { id: 'LIST', label: 'Liste des Contrats', icon: FileText },
+    { id: 'SUBSCRIPTIONS', label: 'Abonnements', icon: Truck },
+    { id: 'FORECAST', label: 'Planning', icon: BarChart2 },
   ];
 
   return (
     <div className="h-full flex flex-col space-y-4">
       <div className="flex justify-start">
-        <Tabs
-          tabs={CONTRACT_SUB_TABS}
-          activeTab={activeSubTab}
-          onTabChange={(id) => setActiveSubTab(id as SubTab)}
-        />
+        <Tabs tabs={CONTRACT_SUB_TABS} activeTab={activeSubTab} onTabChange={(id) => setActiveSubTab(id as SubTab)} />
       </div>
 
       <div className="flex-1 min-h-0">
         {activeSubTab === 'LIST' && <ContractsView dateRange={dateRange} />}
-        {activeSubTab === 'SUBSCRIPTIONS' && (
-          <SubscriptionsView
-            dateRange={dateRange}
-            onNavigate={onNavigate}
-          />
-        )}
+        {activeSubTab === 'SUBSCRIPTIONS' && <SubscriptionsView dateRange={dateRange} onNavigate={onNavigate} />}
         {activeSubTab === 'FORECAST' && <BillingForecastView />}
       </div>
     </div>

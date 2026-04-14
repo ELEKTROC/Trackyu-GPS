@@ -15,10 +15,11 @@ type Tab = 'DASHBOARD' | 'TIERS' | 'INVOICES' | 'CONTRACTS';
 
 interface SalesViewProps {
   initialTab?: string;
+  navParams?: Record<string, string>;
   onNavigate?: (view: View, params?: Record<string, string>) => void;
 }
 
-export const SalesView: React.FC<SalesViewProps> = ({ initialTab, onNavigate }) => {
+export const SalesView: React.FC<SalesViewProps> = ({ initialTab, navParams, onNavigate }) => {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<Tab>('DASHBOARD');
 
@@ -85,7 +86,9 @@ export const SalesView: React.FC<SalesViewProps> = ({ initialTab, onNavigate }) 
             <SalesDashboard onNavigate={(tab) => setActiveTab(tab as Tab)} dateRange={dateRange ?? undefined} />
           )}
           {activeTab === 'TIERS' && <TiersView onNavigate={onNavigate} dateRange={dateRange ?? undefined} />}
-          {activeTab === 'INVOICES' && <FinanceView mode="INVOICES" dateRange={dateRange ?? undefined} />}
+          {activeTab === 'INVOICES' && (
+            <FinanceView mode="INVOICES" dateRange={dateRange ?? undefined} navParams={navParams} />
+          )}
           {activeTab === 'CONTRACTS' && (
             <ContractTabs dateRange={dateRange ?? undefined} onNavigate={onNavigate as any} />
           )}

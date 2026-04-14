@@ -25,6 +25,7 @@ import {
   Download,
   FileText,
   FileSpreadsheet,
+  FilePlus,
 } from 'lucide-react';
 import { SubscriptionDetailModal } from './SubscriptionDetailModal';
 import { ContractDetailModal } from './ContractDetailModal';
@@ -78,9 +79,11 @@ const INVOICE_CELL_COLORS: Record<string, string> = {
   CANCELLED:
     'bg-[var(--bg-elevated)]  text-[var(--text-muted)]  bg-[var(--bg-elevated)]/60  dark:text-[var(--text-secondary)]',
 };
-// Aucune facture trouvée = prévisionnel (neutre)
+// Aucune facture trouvée = prévisionnel (neutre, mois futur)
 const INVOICE_CELL_DEFAULT =
   'bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)]/50 dark:text-[var(--text-muted)]';
+// Aucune facture trouvée + mois passé = non émis (à régulariser)
+const INVOICE_CELL_MISSING = 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
 
 const CYCLE_LABELS: Record<string, string> = {
   ANNUAL: 'AN',
@@ -157,6 +160,7 @@ interface SubForecast {
   subscriptionId: string; // real subscription UUID
   plate: string;
   name: string;
+  branchName: string;
   cycle: string;
   fee: number;
   billingMonths: number[];
@@ -171,8 +175,10 @@ interface SubForecast {
 interface ContractForecast {
   contractId: string;
   contractNumber: string;
+  clientId: string;
   clientName: string;
   resellerName: string;
+  branches: string[]; // noms distincts des branches
   subs: SubForecast[];
 }
 
@@ -183,7 +189,7 @@ interface BillingForecastViewProps {
 }
 
 export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavigate }) => {
-  const { contracts, invoices, vehicles, tiers } = useDataContext();
+  const { contracts, invoices, vehicles, tiers, branches } = useDataContext();
   const { formatPrice: format } = useCurrency();
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
@@ -193,6 +199,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
   const [search, setSearch] = useState('');
   const [filterClient, setFilterClient] = useState('');
   const [filterReseller, setFilterReseller] = useState('');
+  const [filterBranch, setFilterBranch] = useState('');
   const [filterCycle, setFilterCycle] = useState('');
   const [page, setPage] = useState(1);
   const [filterMonth, setFilterMonth] = useState<number | null>(null);
@@ -212,6 +219,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     invoice: any | null;
     sub: SubForecast;
     contractId: string;
+    clientId: string;
     clientName: string;
     monthIdx: number;
   } | null>(null);
@@ -237,9 +245,16 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     const yearStart = new Date(year, 0, 1);
     const yearEnd = new Date(year, 11, 31, 23, 59, 59);
 
-    // Garder uniquement les abonnements actifs PENDANT l'année sélectionnée
+    // Garder les abonnements qui étaient actifs PENDANT l'année sélectionnée.
+    // Pour une année passée : on inclut aussi les statuts EXPIRED/TERMINATED/CANCELLED
+    // si leurs dates de début/fin chevauchent l'année.
+    const isPastYear = year < currentYear;
+    const validStatuses = isPastYear
+      ? ['ACTIVE', 'EXPIRED', 'TERMINATED', 'CANCELLED', 'INACTIVE', 'SUSPENDED']
+      : ['ACTIVE'];
+
     const activeSubs = rawSubs.filter((s) => {
-      if (s.status !== 'ACTIVE') return false;
+      if (!validStatuses.includes((s.status || '').toUpperCase())) return false;
       if (s.end_date && new Date(s.end_date) < yearStart) return false;
       if (s.start_date && new Date(s.start_date) > yearEnd) return false;
       return true;
@@ -252,19 +267,28 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
       if (!contractId) continue;
       const contract = contracts.find((c) => c.id === contractId);
       const contractNumber = sub.contract_number || contract?.contractNumber || contractId;
+      const clientId = sub.client_id || contract?.clientId || '';
       const clientName = sub.client_name || contract?.clientName || '—';
       const resellerName = contract?.resellerName || '—';
       const cycle = (sub.billing_cycle || 'ANNUAL').toUpperCase();
-      const billingMonths = getBillingMonths(sub.next_billing_date, cycle, year);
+      // Pour les abonnements expirés, next_billing_date peut être null → fallback sur start_date
+      const billingAnchor = sub.next_billing_date || sub.start_date || null;
+      const billingMonths = getBillingMonths(billingAnchor, cycle, year);
 
       // N'inclure que les abonnements qui ont au moins une échéance dans l'année
       if (billingMonths.length === 0) continue;
+
+      // Résolution de la branche via le véhicule
+      const vehicle = vehicles.find((v) => v.id === sub.vehicle_id);
+      const branchId = sub.branch_id || vehicle?.branchId || '';
+      const branchName = branches.find((b) => b.id === branchId)?.name || '—';
 
       const subForecast: SubForecast = {
         id: sub.vehicle_id || sub.id,
         subscriptionId: sub.id,
         plate: sub.vehicle_plate || sub.vehicle_id || '—',
         name: [sub.vehicle_brand, sub.vehicle_model].filter(Boolean).join(' ') || sub.vehicle_name || '',
+        branchName,
         cycle,
         fee: Number(sub.monthly_fee) || 0,
         billingMonths,
@@ -276,20 +300,102 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
       };
 
       if (!byContract.has(contractId)) {
-        byContract.set(contractId, { contractId, contractNumber, clientName, resellerName, subs: [] });
+        byContract.set(contractId, {
+          contractId,
+          contractNumber,
+          clientId,
+          clientName,
+          resellerName,
+          branches: [],
+          subs: [],
+        });
       }
-      byContract.get(contractId)!.subs.push(subForecast);
+      const cf = byContract.get(contractId)!;
+      if (branchName && branchName !== '—' && !cf.branches.includes(branchName)) {
+        cf.branches.push(branchName);
+      }
+      cf.subs.push(subForecast);
+    }
+
+    // ── Supplément factures pour années passées ────────────────────────────────
+    // Si le backend ne retourne que les abonnements ACTIFS, les contrats expirés
+    // n'apparaissent pas dans rawSubs. On complète depuis les factures existantes :
+    // tout contrat ayant des factures pour l'année sélectionnée génère une ligne.
+    if (isPastYear) {
+      const coveredContractIds = new Set(byContract.keys());
+
+      // Indexer les factures de l'année par contractId
+      const invByContract = new Map<string, InvoiceRaw[]>();
+      for (const inv of invoices as InvoiceRaw[]) {
+        if (!inv.date) continue;
+        const d = new Date(inv.date as string);
+        if (isNaN(d.getTime()) || d.getFullYear() !== year) continue;
+        const cId = String(inv.contractId ?? (inv as any).contract_id ?? '');
+        if (!cId || coveredContractIds.has(cId)) continue;
+        if (!invByContract.has(cId)) invByContract.set(cId, []);
+        invByContract.get(cId)!.push(inv as InvoiceRaw);
+      }
+
+      for (const [cId, cInvoices] of invByContract) {
+        const contract = contracts.find((c) => c.id === cId);
+        const clientId = cInvoices[0].clientId || contract?.clientId || '';
+        const clientName = cInvoices[0].clientName || contract?.clientName || '—';
+        const resellerName = contract?.resellerName || '—';
+        const contractNumber = contract?.contractNumber || cId;
+
+        // Un groupe par subscriptionId distinct (ou par contrat si pas de subId)
+        const subGroups = new Map<string, InvoiceRaw[]>();
+        for (const inv of cInvoices) {
+          const subId = (inv as any).subscriptionId ?? (inv as any).subscription_id ?? `c:${cId}`;
+          if (!subGroups.has(subId)) subGroups.set(subId, []);
+          subGroups.get(subId)!.push(inv);
+        }
+
+        const subs: SubForecast[] = [];
+        for (const [subId, subInvs] of subGroups) {
+          const months = [...new Set(subInvs.map((inv) => new Date(inv.date as string).getMonth()))];
+          subs.push({
+            id: subId,
+            subscriptionId: subId,
+            plate: '—',
+            name: '',
+            branchName: '—',
+            cycle: 'ANNUAL',
+            fee: subInvs[0].amount || 0,
+            billingMonths: months,
+            status: 'EXPIRED',
+            autoRenew: false,
+            startDate: contract?.startDate || '',
+            endDate: contract?.endDate ?? null,
+            nextBillingDate: null,
+          });
+        }
+
+        byContract.set(cId, {
+          contractId: cId,
+          contractNumber,
+          clientId,
+          clientName,
+          resellerName,
+          branches: [],
+          subs,
+        });
+      }
     }
 
     return Array.from(byContract.values())
       .filter((c) => c.subs.length > 0)
       .sort((a, b) => a.clientName.localeCompare(b.clientName));
-  }, [rawSubs, contracts, year]);
+  }, [rawSubs, contracts, invoices, vehicles, branches, year, currentYear]);
 
   // Options filtres dynamiques
   const clientOptions = useMemo(() => [...new Set(allForecastData.map((c) => c.clientName))].sort(), [allForecastData]);
   const resellerOptions = useMemo(
     () => [...new Set(allForecastData.map((c) => c.resellerName).filter((r) => r && r !== '—'))].sort(),
+    [allForecastData]
+  );
+  const branchOptions = useMemo(
+    () => [...new Set(allForecastData.flatMap((c) => c.branches).filter(Boolean))].sort(),
     [allForecastData]
   );
 
@@ -299,6 +405,10 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     return allForecastData.filter((c) => {
       if (filterClient && c.clientName !== filterClient) return false;
       if (filterReseller && c.resellerName !== filterReseller) return false;
+      if (filterBranch) {
+        const hasBranch = c.subs.some((s) => s.branchName === filterBranch);
+        if (!hasBranch) return false;
+      }
       if (filterCycle) {
         const hasCycle = c.subs.some(
           (s) => s.cycle === filterCycle || (filterCycle === 'ANNUAL' && s.cycle === 'YEARLY')
@@ -370,6 +480,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     e: React.MouseEvent<HTMLTableCellElement>,
     sub: SubForecast,
     contractId: string,
+    clientId: string,
     clientName: string,
     monthIdx: number
   ) => {
@@ -388,6 +499,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
       invoice,
       sub,
       contractId,
+      clientId,
       clientName,
       monthIdx,
     });
@@ -419,11 +531,19 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
   const collapseAll = () => setCollapsed(new Set(pagedData.map((c) => c.contractId)));
   const expandAll = () => setCollapsed(new Set());
 
-  const hasFilters = !!(search || filterClient || filterReseller || filterCycle || filterMonth !== null);
+  const hasFilters = !!(
+    search ||
+    filterClient ||
+    filterReseller ||
+    filterBranch ||
+    filterCycle ||
+    filterMonth !== null
+  );
   const clearFilters = () => {
     setSearch('');
     setFilterClient('');
     setFilterReseller('');
+    setFilterBranch('');
     setFilterCycle('');
     setFilterMonth(null);
     setPage(1);
@@ -437,6 +557,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
         const row: Record<string, any> = {
           client: c.clientName,
           reseller: c.resellerName,
+          branch: s.branchName,
           contract: c.contractNumber,
           plate: s.plate,
           vehicle: s.name,
@@ -457,6 +578,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
     () => [
       { key: 'client', header: 'Client', format: 'text' as const },
       { key: 'reseller', header: 'Revendeur', format: 'text' as const },
+      { key: 'branch', header: 'Branche', format: 'text' as const },
       { key: 'contract', header: 'Contrat', format: 'text' as const },
       { key: 'plate', header: 'Plaque', format: 'text' as const },
       { key: 'vehicle', header: 'Véhicule', format: 'text' as const },
@@ -668,6 +790,11 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
               },
               {
                 status: null,
+                label: 'Non émis',
+                color: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+              },
+              {
+                status: null,
                 label: 'Prévision',
                 color:
                   'bg-[var(--bg-elevated)]  text-[var(--text-secondary)]  bg-[var(--bg-elevated)]/50  dark:text-[var(--text-muted)]',
@@ -744,6 +871,24 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
               ))}
             </select>
           </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase">Branche</label>
+            <select
+              value={filterBranch}
+              onChange={(e) => {
+                setFilterBranch(e.target.value);
+                setPage(1);
+              }}
+              className="text-xs border border-[var(--border)] rounded-lg px-2 py-1.5 bg-[var(--bg-elevated)] min-w-[160px]"
+            >
+              <option value="">Toutes les branches</option>
+              {branchOptions.map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       )}
 
@@ -778,6 +923,9 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                         </button>
                       </div>
                     </div>
+                  </th>
+                  <th className="text-left px-2 py-3 font-bold text-[var(--text-secondary)] uppercase tracking-wide whitespace-nowrap w-28">
+                    Branche
                   </th>
                   <th className="text-center px-1 py-3 font-bold text-[var(--text-secondary)] uppercase tracking-wide w-12">
                     Cycle
@@ -840,6 +988,15 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                             </span>
                           </div>
                         </td>
+                        <td className="px-2 py-2.5 text-[var(--text-muted)] dark:text-[var(--text-secondary)] text-xs">
+                          {contract.branches.length > 0 ? (
+                            <span className="truncate block max-w-[100px]" title={contract.branches.join(', ')}>
+                              {contract.branches.join(', ')}
+                            </span>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
                         <td className="text-center px-1 py-2.5 text-[var(--text-muted)] dark:text-[var(--text-secondary)]">
                           —
                         </td>
@@ -879,6 +1036,18 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                                   </button>
                                 </div>
                               </td>
+                              <td className="px-2 py-1.5 text-xs text-[var(--text-secondary)] truncate max-w-[100px]">
+                                {sub.branchName !== '—' ? (
+                                  <span
+                                    className="inline-block px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] text-[var(--text-secondary)] text-[10px] font-medium truncate max-w-[90px]"
+                                    title={sub.branchName}
+                                  >
+                                    {sub.branchName}
+                                  </span>
+                                ) : (
+                                  <span className="text-[var(--text-muted)]">—</span>
+                                )}
+                              </td>
                               <td className="text-center px-1 py-1.5">
                                 <span className="px-1 py-0.5 rounded text-[10px] font-bold text-[var(--text-secondary)]">
                                   {CYCLE_LABELS[sub.cycle] || sub.cycle}
@@ -889,9 +1058,18 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                                 const invStatus = has
                                   ? getInvoiceStatus(sub.subscriptionId, contract.contractId, i)
                                   : null;
+                                // Mois passé = avant le mois courant (année ou mois)
+                                const isPastMonth = year < currentYear || (year === currentYear && i < currentMonth);
                                 const cellColor = invStatus
                                   ? (INVOICE_CELL_COLORS[invStatus] ?? INVOICE_CELL_DEFAULT)
-                                  : INVOICE_CELL_DEFAULT;
+                                  : has && isPastMonth
+                                    ? INVOICE_CELL_MISSING // échéance passée sans facture
+                                    : INVOICE_CELL_DEFAULT; // prévision future
+                                const cellLabel = invStatus
+                                  ? format(sub.fee)
+                                  : has && isPastMonth
+                                    ? 'Non émis'
+                                    : format(sub.fee);
                                 const isActive =
                                   previewPopup?.sub.subscriptionId === sub.subscriptionId &&
                                   previewPopup?.monthIdx === i;
@@ -900,7 +1078,15 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                                     key={i}
                                     onClick={
                                       has
-                                        ? (e) => handleCellClick(e, sub, contract.contractId, contract.clientName, i)
+                                        ? (e) =>
+                                            handleCellClick(
+                                              e,
+                                              sub,
+                                              contract.contractId,
+                                              contract.clientId,
+                                              contract.clientName,
+                                              i
+                                            )
                                         : undefined
                                     }
                                     className={`text-center px-0.5 py-1.5 ${has ? 'cursor-pointer' : ''}
@@ -910,7 +1096,7 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                                       <span
                                         className={`inline-block px-1 py-0.5 rounded text-[10px] font-semibold transition-all ${cellColor} ${isActive ? 'ring-2 ring-[var(--primary-dim)] ring-offset-1' : 'hover:brightness-95'}`}
                                       >
-                                        {format(sub.fee)}
+                                        {cellLabel}
                                       </span>
                                     ) : (
                                       <span className="text-[var(--text-muted)]">·</span>
@@ -1069,60 +1255,92 @@ export const BillingForecastView: React.FC<BillingForecastViewProps> = ({ onNavi
                 </div>
               </>
             ) : (
-              /* ── Aperçu prévisionnel ── */
-              <>
-                <div className="px-4 py-3 border-b border-[var(--border)] border-[var(--border)] flex items-center justify-between">
-                  <p className="text-xs font-bold text-[var(--text-primary)]">Aperçu prévisionnel</p>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[var(--bg-elevated)] text-[var(--text-secondary)] bg-[var(--bg-elevated)] dark:text-[var(--text-muted)]">
-                    Non émise
-                  </span>
-                </div>
-                <div className="px-4 py-3 space-y-2">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-[var(--text-secondary)]">Client</span>
-                    <span className="font-medium text-[var(--text-primary)] text-right max-w-[160px] truncate">
-                      {previewPopup.clientName}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-[var(--text-secondary)]">Véhicule</span>
-                    <span className="font-mono font-medium text-[var(--primary)] dark:text-[var(--primary)]">
-                      {previewPopup.sub.plate}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-[var(--text-secondary)]">Période</span>
-                    <span className="text-[var(--text-primary)]">
-                      {MONTHS_FULL[previewPopup.monthIdx]} {year}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-[var(--text-secondary)]">Périodicité</span>
-                    <span className="text-[var(--text-primary)]">
-                      {CYCLE_LABELS[previewPopup.sub.cycle] || previewPopup.sub.cycle}
-                    </span>
-                  </div>
-                  <div className="h-px bg-[var(--bg-elevated)]" />
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-[var(--text-primary)]">Montant prévu</span>
-                    <span className="text-[var(--clr-success)]">{format(previewPopup.sub.fee)}</span>
-                  </div>
-                  <p className="text-[10px] text-[var(--text-muted)] italic">
-                    Facture non encore générée pour cette période.
-                  </p>
-                </div>
-                <div className="px-4 pb-3">
-                  <button
-                    onClick={() => {
-                      setPreviewPopup(null);
-                      setSelectedSub({ ...previewPopup.sub, contractId: previewPopup.contractId });
-                    }}
-                    className="w-full text-center text-[11px] text-[var(--primary)] dark:text-[var(--primary)] hover:underline font-medium"
-                  >
-                    Voir l'abonnement →
-                  </button>
-                </div>
-              </>
+              /* ── Aperçu sans facture (prévision ou non émis) ── */
+              (() => {
+                const isPopupPast =
+                  year < currentYear || (year === currentYear && previewPopup.monthIdx < currentMonth);
+                return (
+                  <>
+                    <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between">
+                      <p className="text-xs font-bold text-[var(--text-primary)]">
+                        {isPopupPast ? 'Échéance non émise' : 'Aperçu prévisionnel'}
+                      </p>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          isPopupPast
+                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
+                            : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] dark:text-[var(--text-muted)]'
+                        }`}
+                      >
+                        {isPopupPast ? 'Non émis' : 'Prévision'}
+                      </span>
+                    </div>
+                    <div className="px-4 py-3 space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-[var(--text-secondary)]">Client</span>
+                        <span className="font-medium text-[var(--text-primary)] text-right max-w-[160px] truncate">
+                          {previewPopup.clientName}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-[var(--text-secondary)]">Véhicule</span>
+                        <span className="font-mono font-medium text-[var(--primary)] dark:text-[var(--primary)]">
+                          {previewPopup.sub.plate}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-[var(--text-secondary)]">Période</span>
+                        <span className="text-[var(--text-primary)]">
+                          {MONTHS_FULL[previewPopup.monthIdx]} {year}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-[var(--text-secondary)]">Périodicité</span>
+                        <span className="text-[var(--text-primary)]">
+                          {CYCLE_LABELS[previewPopup.sub.cycle] || previewPopup.sub.cycle}
+                        </span>
+                      </div>
+                      <div className="h-px bg-[var(--border)]" />
+                      <div className="flex justify-between text-xs font-bold">
+                        <span className="text-[var(--text-primary)]">Montant prévu</span>
+                        <span className="text-[var(--clr-success)]">{format(previewPopup.sub.fee)}</span>
+                      </div>
+                    </div>
+                    <div className="px-4 pb-3 flex flex-col gap-2">
+                      {isPopupPast && onNavigate && (
+                        <button
+                          onClick={() => {
+                            setPreviewPopup(null);
+                            onNavigate('INVOICES' as View, {
+                              action: 'create',
+                              contractId: previewPopup.contractId,
+                              clientId: previewPopup.clientId,
+                              clientName: previewPopup.clientName,
+                              subscriptionId: previewPopup.sub.subscriptionId,
+                              plate: previewPopup.sub.plate,
+                              amount: String(previewPopup.sub.fee),
+                              period: `${year}-${String(previewPopup.monthIdx + 1).padStart(2, '0')}`,
+                            });
+                          }}
+                          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[var(--primary)] text-white text-xs font-bold hover:bg-[var(--primary-light)] transition-colors"
+                        >
+                          <FilePlus className="w-3.5 h-3.5" />
+                          Créer la facture
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setPreviewPopup(null);
+                          setSelectedSub({ ...previewPopup.sub, contractId: previewPopup.contractId });
+                        }}
+                        className="w-full text-center text-[11px] text-[var(--primary)] dark:text-[var(--primary)] hover:underline font-medium"
+                      >
+                        Voir l'abonnement →
+                      </button>
+                    </div>
+                  </>
+                );
+              })()
             )}
           </div>
         </>
