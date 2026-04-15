@@ -12,7 +12,7 @@
 | **Phase 0**  | Audit pipeline + corrections critiques              | ✅ Complété 2026-04-03     |
 | **Sprint 1** | Kalman Filter + Dead Reckoning + GPS Loss Detection | ✅ Déployé prod 2026-04-15 |
 | **Sprint 2** | Couverture protocoles (Queclink, Suntech, Seeworld) | ✅ Déployé prod 2026-04-15 |
-| **Sprint 3** | Monitoring pipeline GPS + interface staff boîtiers  | 🔲 Prochain                |
+| **Sprint 3** | Monitoring pipeline GPS + interface staff boîtiers  | ✅ Déployé prod 2026-04-15 |
 | **Sprint 4** | Infrastructure (OSRM road snapping, MQTT broker)    | 🔲 KVM2 requis             |
 | **Sprint 5** | Données riches (CAN bus J1939, OBD2 PIDs)           | 🔲 À planifier             |
 
@@ -158,16 +158,11 @@ Coordonnées filtrées → positionBuffer (DB) + emitVehicleUpdate (Socket.IO)
 
 ---
 
-## Sprint 3 — Monitoring pipeline GPS + interface staff 🔲 (Prochain)
+## Sprint 3 — Monitoring pipeline GPS + interface staff ✅ (2026-04-15)
 
-> Zéro infrastructure requise — frontend + backend existants.
+### Ce qui a été fait
 
-### Objectif
-
-Donner au staff une visibilité complète sur le pipeline GPS en temps réel :
-état de chaque parseur, boîtiers inconnus, qualité signal, historique commandes.
-
-### 3.1 — Bug B1 corrigé ✅ (GT06/0x08 IMEI UNKNOWN)
+#### 3.1 — Bug B1 corrigé ✅ (GT06/0x08 IMEI UNKNOWN)
 
 **Cause racine :** `GT06Parser` est un singleton dans le tableau `parsers[]`. Deux connexions
 simultanées appellent `setSocket()` sur la même instance → `this._socket` est écrasé par la
@@ -182,40 +177,44 @@ dernière connexion → WeakMap miss sur la première → IMEI UNKNOWN.
 
 **Script :** `patch_gt06_imei_fallback.py`
 
-### 3.2 — Route API métriques pipeline
+#### 3.2 — Route API métriques pipeline ✅
 
-Créer `GET /api/admin/gps-stats` (route déjà prévue dans deviceRoutes) :
+`GET /api/admin/gps-stats` déployée dans `dist/routes/monitoringRoutes.js` :
 
 ```json
 {
-  "parsers": {
-    "GT06": { "total": 1420, "valid": 1418, "errors": 2, "lastSeen": "..." },
-    "QUECLINK": { "total": 0, "valid": 0, "errors": 0, "lastSeen": null },
-    "SUNTECH": { "total": 0, "valid": 0, "errors": 0, "lastSeen": null }
-  },
-  "activeConnections": 3,
-  "unknownImeis": { "123456789012345": { "count": 12, "lastSeen": "..." } },
-  "rateLimit": { "maxPerSec": 10, "trackedImeis": 1 },
-  "kalman": { "trackedVehicles": 1 },
-  "deadReckoning": { "activeExtrapolations": 0 }
+  "timestamp": "2026-04-15T...",
+  "pipeline": { "activeConnections": 3, "activeParsers": ["GT06", "QUECLINK"] },
+  "parsers": [{ "name": "GT06", "totalPackets": 1420, "validPackets": 1418, "successRate": 99, "lastSeen": "..." }],
+  "unknownImeis": [{ "imei": "123456789012345", "packetCount": 12, "lastSeen": "..." }],
+  "totals": { "packets": 1420, "valid": 1418, "rejected": 2, "crcErrors": 0 }
 }
 ```
 
-### 3.3 — Interface Monitoring > Pipeline GPS
+**Données exportées depuis `server.js` :**
 
-Dans `features/tech/components/monitoring/MonitoringView.tsx` ou panel admin :
+- `exports.pipelineStats` — compteurs par protocole (total, valid, rejected, crcErrors, lastSeen)
+- `exports.unknownImeiLog` — Map imei → { count, lastSeen }
+- `exports.getParsers()` — liste des parseurs actifs
 
-- **Tableau parseurs** : nom, paquets/min, taux erreur, dernier fix
-- **IMEI inconnus** : liste des boîtiers non enregistrés qui se connectent
-- **Kalman stats** : nb véhicules filtrés, extrapolations DR actives
-- **Connexions TCP actives** : IMEI connecté, IP, durée
+**Script :** `patch_gps_stats_route.py`
 
-### 3.4 — Interface Admin > Boîtiers > DEVICE_HEALTH
+#### 3.3 — Interface Monitoring > Pipeline GPS ✅ (déjà présent)
 
-Dans `features/admin/components/panels/DeviceConfigPanelV2.tsx` :
+`features/tech/components/monitoring/MonitoringView.tsx` — `PipelineGpsTab` :
 
-- Onglet `DEVICE_HEALTH` : batterie (mV), ExternalVolt, satellites, HDOP, dernier fix
-- Onglet `DIAGNOSTICS` : variant GT06, protocole détecté, nb paquets/24h, taux erreur
+- Polling `/api/admin/gps-stats` toutes les 10s
+- KPIs : connexions actives, taux succès global, paquets reçus, IMEI inconnus
+- Tableau parseurs avec code couleur successRate (vert/orange/rouge)
+- Panel orange IMEI inconnus (boîtiers non enregistrés)
+
+#### 3.4 — Interface Admin > Boîtiers ✅ (déjà présent)
+
+`features/admin/components/panels/DeviceConfigPanelV2.tsx` — 3 onglets :
+
+- **DASHBOARD** : état global, liste véhicules, recherche IMEI
+- **DEVICE_HEALTH** : IMEI input → `/api/devices/:imei/diagnostics` — variant GT06, signal, satellites, HDOP, battery, position, dernière comm
+- **GLOBAL_CONFIG** : envoi commandes TCP, override variant, intervalles reporting
 
 ---
 
@@ -293,12 +292,15 @@ Docker container backend
 
 ## Scripts de déploiement VPS
 
-| Script                            | Action                                        |
-| --------------------------------- | --------------------------------------------- |
-| `patch_kalman_deadreckoning.py`   | Sprint 1 — Kalman + DR dans positionWorker.js |
-| `patch_socketio_compression.py`   | perMessageDeflate + throttle adaptatif        |
-| `patch_vehicle_update_payload.py` | Payload vehicle:update 18 champs              |
-| `deploy.ps1`                      | Déploiement frontend + backend complet        |
+| Script                              | Action                                        |
+| ----------------------------------- | --------------------------------------------- |
+| `patch_kalman_deadreckoning.py`     | Sprint 1 — Kalman + DR dans positionWorker.js |
+| `patch_socketio_compression.py`     | perMessageDeflate + throttle adaptatif        |
+| `patch_vehicle_update_payload.py`   | Payload vehicle:update 18 champs              |
+| `patch_parsers_queclink_suntech.py` | Sprint 2 — Parseurs Queclink + Suntech VPS    |
+| `patch_gt06_imei_fallback.py`       | Sprint 3 — Bug B1 IMEI UNKNOWN GT06           |
+| `patch_gps_stats_route.py`          | Sprint 3 — Route /api/admin/gps-stats         |
+| `deploy.ps1`                        | Déploiement frontend + backend complet        |
 
 ---
 
@@ -309,7 +311,7 @@ Docker container backend
 | Bruit GPS (RMS)                 | ~5-8m             | ~1-2m (Kalman)        |
 | Positions fantômes en tunnel    | fréquent          | 0 (Dead Reckoning)    |
 | Drift stationnement             | oscillations ~30m | < 5m                  |
-| Protocoles couverts             | 6/9               | 9/9 (Sprint 2)        |
+| Protocoles couverts             | 6/9               | ✅ 9/9 (Sprint 2)     |
 | Trafic WebSocket                | baseline          | -60% (compression)    |
 | Latence UI véhicule sélectionné | 2s                | 500ms (REALTIME tier) |
 
@@ -330,5 +332,31 @@ parsers = [
   TextProtocol    ← Fallback texte générique
 ]
 ```
+
+---
+
+## Prochaines étapes
+
+### Sprint 4 — Infrastructure (nécessite KVM2)
+
+- OSRM self-hosted road snapping (4GB RAM insuffisant sur KVM1)
+- MQTT Mosquitto pour FOTA Teltonika + LTE-M/NB-IoT
+- En attendant KVM2 : Mapbox Map Matching API en post-processing ($0.005/100pts)
+
+### Sprint 3-bis — Corrections post-déploiement ✅ (2026-04-15)
+
+| Correctif                                 | Détail                                                                       | Statut     |
+| ----------------------------------------- | ---------------------------------------------------------------------------- | ---------- |
+| Regex IMEI `^d{10,16}$` → `^\d{10,16}$`   | Bug backslash absent → 400 pour tout IMEI valide                             | ✅ Corrigé |
+| `getDeviceDiagnostics` : champs manquants | `batteryMv`, `protocol`, `vehicleName`, `vehiclePlate` absents de la réponse | ✅ Enrichi |
+| `GET/PUT /api/admin/gps-config`           | Route manquante → erreur 404 sur onglet Configuration                        | ✅ Créé    |
+
+**Scripts :** `patch_device_diagnostics.py`, `patch_gps_config_route.py`
+
+### Sprint 4-bis — À faire sans KVM2
+
+- [ ] Graphe temps réel Kalman stats dans MonitoringView (nb véhicules filtrés, gain moyen)
+- [ ] Alertes IMEI inconnu → notification staff temps réel (Socket.IO event)
+- [ ] Charger la config GPS au démarrage du pipeline depuis `settings` (appliquer `rateLimitPerSec` au runtime)
 
 _Dernière mise à jour : 2026-04-15_
