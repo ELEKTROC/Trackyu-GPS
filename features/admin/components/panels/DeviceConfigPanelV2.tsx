@@ -450,10 +450,28 @@ function GlobalConfigTab() {
     stoppedIntervalSec: 60,
     heartbeatIntervalSec: 120,
     rateLimitPerSec: 10,
-    gpsAccuracy: 'high' as 'high' | 'medium' | 'low',
+    gpsAccuracy: 'medium' as 'high' | 'medium' | 'low',
   });
+  const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/admin/gps-config', { headers: getHeaders() })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data)
+          setConfig({
+            movingIntervalSec: data.movingIntervalSec ?? 30,
+            stoppedIntervalSec: data.stoppedIntervalSec ?? 60,
+            heartbeatIntervalSec: data.heartbeatIntervalSec ?? 120,
+            rateLimitPerSec: data.rateLimitPerSec ?? 10,
+            gpsAccuracy: data.gpsAccuracy ?? 'medium',
+          });
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   const save = async () => {
     try {
@@ -471,6 +489,13 @@ function GlobalConfigTab() {
       setTimeout(() => setSaveError(false), 3000);
     }
   };
+
+  if (loading)
+    return (
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-6 text-center text-sm text-[var(--text-secondary)]">
+        Chargement de la configuration…
+      </div>
+    );
 
   return (
     <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4 space-y-4">

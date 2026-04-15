@@ -1,13 +1,14 @@
 // features/tech/components/monitoring/MonitoringView.tsx
 // Vue de monitoring technique — Tableau de bord flotte + Pipeline GPS temps réel
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { AlertsConsole } from './AlertsConsole';
 import { OfflineTrackerList } from './OfflineTrackerList';
 import { AnomalyDashboard } from './AnomalyDashboard';
 import { SystemMetricsPanel } from './SystemMetricsPanel';
 import { UserMonitoring } from './UserMonitoring';
 import { getHeaders } from '../../../../services/api/client';
+import { getSocket } from '../../../../services/socket';
 import { Tabs } from '../../../../components/Tabs';
 import {
   Activity, AlertTriangle, CheckCircle, Cpu, RefreshCw,
@@ -42,6 +43,7 @@ interface GpsPipelineStats {
   }[];
   unknownImeis: { imei: string; packetCount: number; lastSeen: string }[];
   totals: { packets: number; valid: number; rejected: number; crcErrors: number };
+  kalman?: { trackedVehicles: number };
 }
 
 type Tab = 'OVERVIEW' | 'PIPELINE_GPS' | 'ALERTS' | 'OFFLINE' | 'ANOMALIES' | 'SYSTEM' | 'USERS';
@@ -61,6 +63,8 @@ function PipelineGpsTab() {
   const [stats, setStats] = useState<GpsPipelineStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [liveAlert, setLiveAlert] = useState<{ imei: string; protocol: string; ip: string } | null>(null);
+  const alertTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchStats = useCallback(async () => {
     try {
@@ -75,8 +79,26 @@ function PipelineGpsTab() {
 
   useEffect(() => {
     fetchStats();
-    const interval = setInterval(fetchStats, 10_000); // Refresh toutes les 10s
+    const interval = setInterval(fetchStats, 10_000);
     return () => clearInterval(interval);
+  }, [fetchStats]);
+
+  // Écoute Socket.IO : nouvel IMEI inconnu détecté en temps réel
+  useEffect(() => {
+    const socket = getSocket();
+    const handleUnknownImei = (data: { imei: string; protocol: string; ip: string }) => {
+      setLiveAlert(data);
+      // Rafraîchir immédiatement la liste
+      fetchStats();
+      // Auto-dismiss après 8s
+      if (alertTimerRef.current) clearTimeout(alertTimerRef.current);
+      alertTimerRef.current = setTimeout(() => setLiveAlert(null), 8_000);
+    };
+    socket.on('admin:unknown-imei', handleUnknownImei);
+    return () => {
+      socket.off('admin:unknown-imei', handleUnknownImei);
+      if (alertTimerRef.current) clearTimeout(alertTimerRef.current);
+    };
   }, [fetchStats]);
 
   if (loading) {
@@ -116,6 +138,22 @@ function PipelineGpsTab() {
           </button>
         </div>
       </div>
+
+      {/* Alerte temps réel — nouvel IMEI inconnu détecté */}
+      {liveAlert && (
+        <div className="flex items-start gap-3 bg-orange-50 border border-orange-300 rounded-lg px-4 py-3 text-sm animate-pulse">
+          <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5 shrink-0" />
+          <div>
+            <span className="font-semibold text-orange-800">Nouveau boîtier non enregistré détecté</span>
+            <div className="text-orange-700 mt-0.5 font-mono">
+              IMEI {liveAlert.imei} · {liveAlert.protocol} · {liveAlert.ip}
+            </div>
+          </div>
+          <button onClick={() => setLiveAlert(null)} className="ml-auto text-orange-400 hover:text-orange-600">
+            <XCircle className="h-4 w-4" />
+          </button>
+        </div>
+      )}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -255,15 +293,35 @@ function PipelineGpsTab() {
         </div>
       )}
 
-      {/* Rate limiting */}
-      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
-        <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
-          <Shield className="h-4 w-4 text-[var(--primary)]" />
-          Rate Limiting IMEI
-        </h4>
-        <div className="flex gap-6 text-sm text-[var(--text-secondary)]">
-          <span>Max: <strong>{stats.pipeline.rateLimit.maxPerSec} paquets/sec</strong> par IMEI</span>
-          <span>IMEI suivis: <strong>{stats.pipeline.rateLimit.trackedImeis}</strong></span>
+      {/* Rate limiting + Kalman */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
+          <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
+            <Shield className="h-4 w-4 text-[var(--primary)]" />
+            Rate Limiting IMEI
+          </h4>
+          <div className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
+            <span>Max: <strong>{stats.pipeline.rateLimit.maxPerSec} paquets/sec</strong> par IMEI</span>
+            <span>IMEI suivis: <strong>{stats.pipeline.rateLimit.trackedImeis}</strong></span>
+            {(stats.pipeline.rateLimit as any).blockedImeis > 0 && (
+              <span className="text-red-600">Bloqués: <strong>{(stats.pipeline.rateLimit as any).blockedImeis}</strong></span>
+            )}
+          </div>
+        </div>
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4">
+          <h4 className="text-sm font-semibold text-[var(--text-primary)] mb-2 flex items-center gap-2">
+            <Zap className="h-4 w-4 text-[var(--primary)]" />
+            Filtre Kalman 2D
+          </h4>
+          <div className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
+            <span>
+              Véhicules filtrés:{' '}
+              <strong className="text-[var(--text-primary)]">
+                {stats.kalman?.trackedVehicles ?? 0}
+              </strong>
+            </span>
+            <span className="text-xs">Dead Reckoning actif sur les pertes GPS</span>
+          </div>
         </div>
       </div>
     </div>
