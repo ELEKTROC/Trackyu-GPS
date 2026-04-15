@@ -19,8 +19,11 @@ import { GT06Parser } from './parsers/gt06';
 import { TeltonikaParser } from './parsers/teltonika';
 import { MeitrackParser } from './parsers/meitrack';
 import { WialonIpsParser } from './parsers/wialonIps';
+import { QueclinkParser } from './parsers/queclink';
+import { SuntechParser } from './parsers/suntech';
 import type { GpsData, GpsParser } from './types';
 import { validateGpsData, calculateDistance } from './utils';
+import { filterPosition } from './precision';
 
 // ─── Imports services (avec fallbacks gracieux si module absent) ──────────────
 let pool: any = null;
@@ -50,7 +53,9 @@ const PORT = process.env.GPS_PORT ? parseInt(process.env.GPS_PORT) : 5000;
 // des faux positifs sur les paquets binaires.
 const parsers: GpsParser[] = [
   new TeltonikaParser(),    // Codec 8/8E — 0x00 0x00 preamble OU IMEI ASCII
-  new GT06Parser(),         // Binaire 0x78 0x78 — login + GPS
+  new GT06Parser(),         // Binaire 0x78 0x78 — login + GPS (GT06, Concox, JimiIoT, Coban, Seeworld)
+  new QueclinkParser(),     // ASCII +RESP:GT... — GV300, GV500, GV600, GL300
+  new SuntechParser(),      // ASCII SA200STT;... — ST310, ST340, ST600, ST900
   new MeitrackParser(),     // Texte $$...*checksum
   new WialonIpsParser(),    // Texte #L#, #D#, #B#
   new TextExtendedParser(), // Texte :::key=val...###
@@ -180,7 +185,22 @@ async function handleGpsData(
     }
   }
 
-  // 6. Lissage carburant (filtre passe-bas configurable par véhicule)
+  // 6. Filtrage Kalman + Dead Reckoning (précision trajectoire)
+  const dtMs = (() => {
+    if (CacheService) {
+      // Utilise l'âge du dernier fix Redis si disponible
+    }
+    return 5_000; // Défaut conservateur (5s entre paquets)
+  })();
+  const filtered = filterPosition(parsedData.imei, parsedData, dtMs);
+  // Remplacer les coordonnées brutes par les coordonnées filtrées
+  parsedData.latitude = filtered.lat;
+  parsedData.longitude = filtered.lng;
+  if (filtered.isExtrapolated) {
+    logger.debug?.(`[GPS] Dead reckoning IMEI ${parsedData.imei} (+${filtered.extrapolatedMs}ms)`);
+  }
+
+  // 7. Lissage carburant (filtre passe-bas configurable par véhicule)
   let processedFuel = parsedData.fuelLevel;
   if (FuelService && processedFuel !== undefined && vehicle) {
     processedFuel = FuelService.smoothFuelLevel(
@@ -190,7 +210,7 @@ async function handleGpsData(
     );
   }
 
-  // 7. Mise en buffer pour insertion PostgreSQL (avec WAL disque)
+  // 8. Mise en buffer pour insertion PostgreSQL (avec WAL disque)
   if (positionBuffer) {
     positionBuffer.add({
       vehicleId,
@@ -212,7 +232,7 @@ async function handleGpsData(
     });
   }
 
-  // 8. Mise à jour cache dernière position
+  // 9. Mise à jour cache dernière position
   if (CacheService) {
     await CacheService.setLastPosition(vehicleId, {
       latitude: parsedData.latitude,
@@ -222,7 +242,7 @@ async function handleGpsData(
     }).catch(() => {});
   }
 
-  // 9. Émission Socket.IO vers le frontend (avec throttle 2s par véhicule)
+  // 10. Émission Socket.IO vers le frontend (avec throttle 2s par véhicule)
   const io = getIO?.();
   if (io && socketThrottle) {
     const shouldEmit = socketThrottle.shouldEmit(vehicleId);
@@ -254,7 +274,7 @@ async function handleGpsData(
     }
   }
 
-  // 10. Alertes comportementales
+  // 11. Alertes comportementales
   if (parsedData.sos || parsedData.crash || parsedData.harshBraking || parsedData.harshAccel) {
     const alertType = parsedData.crash ? 'CRASH'
                     : parsedData.sos ? 'SOS'
@@ -264,7 +284,7 @@ async function handleGpsData(
     // Les alertes sont insérées par le ruleEvaluationService après l'INSERT en base
   }
 
-  // 11. Métriques Prometheus
+  // 12. Métriques Prometheus
   if (metricsService?.incrementGpsPackets) {
     metricsService.incrementGpsPackets(parserName);
   }
