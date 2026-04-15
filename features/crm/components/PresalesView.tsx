@@ -31,7 +31,6 @@ import { useCurrency } from '../../../hooks/useCurrency';
 import { DateRangeSelector } from '../../../components/DateRangeSelector';
 import { TasksView } from './TasksView';
 import { AutomationRulesView } from './AutomationRulesView';
-import { PipelineView } from './PipelineView';
 import { RegistrationRequestsPanel } from '../../admin/components/panels/RegistrationRequestsPanel';
 import {
   BarChart,
@@ -48,7 +47,7 @@ import {
 } from 'recharts';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 
-type Tab = 'OVERVIEW' | 'LEADS' | 'QUOTES' | 'CATALOG' | 'TASKS' | 'AUTOMATION' | 'REGISTRATION' | 'PIPELINE';
+type Tab = 'OVERVIEW' | 'LEADS' | 'QUOTES' | 'CATALOG' | 'TASKS' | 'AUTOMATION' | 'REGISTRATION';
 
 interface PresalesViewProps {
   initialTab?: string;
@@ -212,7 +211,6 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
       description: 'KPIs et statistiques',
     },
     { id: 'LEADS', label: 'Leads & Pistes', icon: Users, color: 'bg-orange-500', description: 'Pipeline commercial' },
-    { id: 'PIPELINE', label: 'Pipeline', icon: TrendingUp, color: 'bg-purple-500', description: 'Vue pipeline Kanban' },
     { id: 'QUOTES', label: 'Devis', icon: FileDigit, color: 'bg-green-500', description: 'Propositions commerciales' },
     { id: 'CATALOG', label: 'Catalogue', icon: BookOpen, color: 'bg-teal-500', description: 'Produits et services' },
     {
@@ -239,7 +237,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
   ];
 
   const PRESALES_TABS = isMobile
-    ? PRESALES_TABS_ALL.filter((t) => !['PIPELINE', 'TASKS', 'AUTOMATION'].includes(t.id))
+    ? PRESALES_TABS_ALL.filter((t) => !['TASKS', 'AUTOMATION'].includes(t.id))
     : PRESALES_TABS_ALL;
 
   const handleTabChange = (id: string) => {
@@ -325,7 +323,7 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
                     </div>
                   </div>
                 </Card>
-                <Card className="p-4 border-l-4 border-l-violet-500 bg-gradient-to-r from-violet-50 to-white dark:from-slate-800 dark:to-slate-900">
+                <Card className="p-4 border-l-4 border-l-violet-500 bg-gradient-to-r from-violet-50 to-white dark:from-[var(--bg-elevated)] dark:to-[var(--bg-primary)]">
                   <div>
                     <p className="section-title">Pipeline Value</p>
                     <p className="text-xl font-bold text-violet-600 mt-1">
@@ -604,11 +602,6 @@ export const PresalesView: React.FC<PresalesViewProps> = ({ initialTab }) => {
 
           {activeTab === 'LEADS' && (
             <CRMView mode="LEADS" onCreateQuote={handleCreateQuote} dateRange={dateRange ?? undefined} />
-          )}
-          {activeTab === 'PIPELINE' && (
-            <div className="h-full overflow-y-auto pb-4">
-              <PipelineView />
-            </div>
           )}
           {activeTab === 'QUOTES' && (
             <FinanceView

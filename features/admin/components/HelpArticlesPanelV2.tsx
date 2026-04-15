@@ -117,7 +117,7 @@ const HELP_COLOR_CLASSES: Record<string, { bg100: string; text600: string; text7
     bg100: 'bg-[var(--bg-elevated)]',
     text600: 'text-[var(--text-secondary)]',
     text700: 'text-[var(--text-primary)]',
-    darkBg: 'dark:bg-slate-900/30',
+    darkBg: 'dark:bg-[var(--bg-elevated)]',
   },
 };
 

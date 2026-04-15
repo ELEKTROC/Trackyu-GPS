@@ -355,7 +355,7 @@ export const InterventionPlanning: React.FC<InterventionPlanningProps> = ({
                       <div
                         key={int.id}
                         onClick={() => onEdit(int)}
-                        className="flex items-stretch cursor-pointer tr-hover/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700"
+                        className="flex items-stretch cursor-pointer tr-hover/50 active:bg-[var(--bg-elevated)]"
                       >
                         <div className={`w-1 shrink-0 ${getStatusBgClass(int.status)}`} />
                         <div className="flex-1 px-3 py-3 min-w-0">

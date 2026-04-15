@@ -347,7 +347,7 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
               <thead>
                 <tr>
                   <th colSpan={7} className="p-0">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gradient-to-r from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 border-b border-[var(--border)]">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gradient-to-r from-slate-50 to-white dark:from-[var(--bg-primary)] dark:to-[var(--bg-elevated)] border-b border-[var(--border)]">
                       <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] border-[var(--border)] shadow-sm">
                         <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase mb-1">Total HT</p>
                         <p className="text-lg font-bold text-[var(--text-primary)]">{formatPrice(totalHT)}</p>

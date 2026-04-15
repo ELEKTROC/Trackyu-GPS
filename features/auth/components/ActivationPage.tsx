@@ -259,7 +259,7 @@ export const ActivationPage: React.FC = () => {
                         minLength={8}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]"
                         placeholder="Minimum 8 caractères"
                       />
                       <button
@@ -284,7 +284,7 @@ export const ActivationPage: React.FC = () => {
                         minLength={8}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-slate-400 dark:placeholder-slate-500"
+                        className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]"
                         placeholder="Retapez votre mot de passe"
                       />
                       <button

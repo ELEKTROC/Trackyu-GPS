@@ -148,7 +148,7 @@ export const InstallPrompt: React.FC = () => {
             <h3 className="text-lg font-bold text-[var(--text-primary)]">Installer Trackyu GPS</h3>
             <button
               onClick={handleDismiss}
-              className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200 rounded-full hover:bg-[var(--bg-elevated)]"
+              className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--bg-elevated)]"
             >
               <X className="w-5 h-5" />
             </button>
@@ -215,7 +215,7 @@ export const InstallPrompt: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={handleDismiss}
-            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-slate-200 rounded-full hover:bg-[var(--bg-elevated)] transition-colors"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--bg-elevated)] transition-colors"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />

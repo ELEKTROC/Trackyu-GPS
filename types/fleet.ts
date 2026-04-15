@@ -77,8 +77,8 @@ export type DeviceStatus =
  * This is the source of truth type for the new architecture.
  */
 export interface TrackedObject {
-  id: string;               // ABO-XXXXXX code (primary key)
-  subscriptionCode: string;  // Same as id (alias for clarity)
+  id: string; // ABO-XXXXXX code (primary key)
+  subscriptionCode: string; // Same as id (alias for clarity)
   tenantId: string;
 
   // Device fields (ex-devices BOX)
@@ -147,25 +147,25 @@ export interface TrackedObject {
 
 /**
  * Vehicle — Extended TrackedObject with backward-compatible aliases.
- * 
+ *
  * Components use `vehicle.client`, `vehicle.driver`, `vehicle.speed`, etc.
  * These aliases are populated by the api.vehicles.list() adapter layer.
- * 
+ *
  * New code should prefer TrackedObject fields (clientName, driverName, etc.)
  * but both are available on Vehicle for backward compatibility.
  */
 export interface Vehicle extends TrackedObject {
   // Backward-compat aliases (mapped from TrackedObject equivalents)
-  client: string;       // = clientName || ''
-  driver: string;       // = driverName || ''
+  client: string; // = clientName || ''
+  driver: string; // = driverName || ''
 
   // Required overrides (TrackedObject has these as optional, Vehicle needs defaults)
-  speed: number;        // km/h (default 0)
-  fuelLevel: number;    // percentage (default 0)
-  mileage: number;      // Kilométrage Total (default 0)
-  lastUpdated: Date;    // (default to createdAt or epoch)
+  speed: number; // km/h (default 0)
+  fuelLevel: number; // percentage (default 0)
+  mileage: number; // Kilométrage Total (default 0)
+  lastUpdated: Date; // (default to createdAt or epoch)
   location: Coordinate; // (default { lat: 0, lng: 0 })
-  branchId: string;     // Mandatory: Vehicle MUST belong to a branch
+  branchId: string; // Mandatory: Vehicle MUST belong to a branch
 
   // Vehicle display/computed fields (not in DB, set by adapter)
   maxSpeed: number;
@@ -182,26 +182,26 @@ export interface Vehicle extends TrackedObject {
   violationsCount: number;
 
   // Fuel computed fields
-  fuelQuantity: number;    // Litres actuels (= lastFuelLiters)
-  refuelAmount: number;    // Litres ajoutés (Recharge)
-  fuelLoss: number;        // Litres perdus (Perte)
-  consumption: number;     // L/100km
-  suspectLoss: number;     // Litres (Perte suspecte)
+  fuelQuantity: number; // Litres actuels (= lastFuelLiters)
+  refuelAmount: number; // Litres ajoutés (Recharge)
+  fuelLoss: number; // Litres perdus (Perte)
+  consumption: number; // L/100km
+  suspectLoss: number; // Litres (Perte suspecte)
 
   // Organisation compat
-  group?: string;          // = groupName
+  group?: string; // = groupName
   geofence?: string;
 
   // Identification compat
-  licensePlate?: string;   // = plate
+  licensePlate?: string; // = plate
   wwPlate?: string;
   sim?: string;
   resellerId?: string;
 
   // Security compat aliases
   isBrokenDown?: boolean;
-  immobilized?: boolean;   // = isImmobilized
-  isBreakdown?: boolean;   // = isBrokenDown
+  immobilized?: boolean; // = isImmobilized
+  isBreakdown?: boolean; // = isBrokenDown
 
   // Media
   photoUrl?: string;
@@ -210,8 +210,20 @@ export interface Vehicle extends TrackedObject {
   engineHours?: number;
   weight?: number;
   temperature?: number;
-  batteryLevel?: number;   // Tension batterie en V (= batteryVoltage)
+  batteryLevel?: number; // Tension batterie en V (= batteryVoltage)
+  batteryPercent?: number; // % batterie boîtier GPS
   signalStrength?: string;
+
+  // Champs GPS enrichis (transmis via vehicle:update Socket.IO)
+  altitude?: number; // Altitude en mètres
+  hdop?: number; // Précision horizontale (HDOP — plus faible = meilleur)
+  ignition?: boolean; // Contact moteur (acc)
+
+  // Alertes comportementales temps réel
+  crash?: boolean;
+  sos?: boolean;
+  harshBraking?: boolean;
+  harshAccel?: boolean;
 
   // Behavior Stats (computed)
   behaviorStats?: {
@@ -222,8 +234,8 @@ export interface Vehicle extends TrackedObject {
   };
 
   // Settings / Form field aliases
-  deviceType?: string;     // = deviceModel
-  odometer?: number;       // = mileage
+  deviceType?: string; // = deviceModel
+  odometer?: number; // = mileage
 
   // Override odometerSource to also accept legacy 'CANBUS' value
   odometerSource?: 'GPS' | 'CAN' | 'SENSOR' | 'CANBUS';

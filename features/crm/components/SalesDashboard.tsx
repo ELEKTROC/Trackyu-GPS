@@ -277,7 +277,7 @@ export const SalesDashboard: React.FC<{
       </div>
       {/* KPI CARDS - Hidden on mobile */}
       <div className="hidden sm:grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <Card className="p-4 border-[var(--border)] bg-gradient-to-br from-blue-50 to-white dark:from-slate-800 dark:to-slate-900">
+        <Card className="p-4 border-[var(--border)] bg-gradient-to-br from-blue-50 to-white dark:from-[var(--bg-elevated)] dark:to-[var(--bg-primary)]">
           <div className="flex justify-between items-start mb-2">
             <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg text-[var(--primary)] dark:text-[var(--primary)]">
               <TrendingUp className="w-5 h-5" />
@@ -288,7 +288,7 @@ export const SalesDashboard: React.FC<{
           <p className="text-[10px] text-[var(--text-muted)]">Revenu mensuel récurrent</p>
         </Card>
 
-        <Card className="p-4 border-[var(--border)] bg-gradient-to-br from-purple-50 to-white dark:from-slate-800 dark:to-slate-900">
+        <Card className="p-4 border-[var(--border)] bg-gradient-to-br from-purple-50 to-white dark:from-[var(--bg-elevated)] dark:to-[var(--bg-primary)]">
           <div className="flex justify-between items-start mb-2">
             <div className="p-2 bg-[var(--clr-info-muted)] rounded-lg text-[var(--clr-info)]">
               <DollarSign className="w-5 h-5" />
@@ -359,7 +359,7 @@ export const SalesDashboard: React.FC<{
 
       {/* PIPELINE VALUE + FORECAST */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="p-4 border-l-4 border-l-violet-500 bg-gradient-to-r from-violet-50 to-white dark:from-slate-800 dark:to-slate-900">
+        <Card className="p-4 border-l-4 border-l-violet-500 bg-gradient-to-r from-violet-50 to-white dark:from-[var(--bg-elevated)] dark:to-[var(--bg-primary)]">
           <div className="flex items-center justify-between">
             <div>
               <p className="section-title">Pipeline Commercial</p>
@@ -382,7 +382,7 @@ export const SalesDashboard: React.FC<{
           </div>
         </Card>
 
-        <Card className="p-4 border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-50 to-white dark:from-slate-800 dark:to-slate-900">
+        <Card className="p-4 border-l-4 border-l-blue-500 bg-gradient-to-r from-blue-50 to-white dark:from-[var(--bg-elevated)] dark:to-[var(--bg-primary)]">
           <div className="flex items-center justify-between">
             <div>
               <p className="section-title">Prévision Mois Prochain</p>

@@ -850,7 +850,7 @@ export const AuditLogsPanelV2: React.FC = () => {
                     <div key={log.id} className="relative">
                       {/* Timeline dot */}
                       <div
-                        className={`absolute -left-5 w-6 h-6 rounded-full ${actionConfig.bgColor} flex items-center justify-center ring-4 ring-white dark:ring-slate-900`}
+                        className={`absolute -left-5 w-6 h-6 rounded-full ${actionConfig.bgColor} flex items-center justify-center ring-4 ring-[var(--bg-surface)]`}
                       >
                         <ActionIcon className={`w-3 h-3 ${actionConfig.color}`} />
                       </div>

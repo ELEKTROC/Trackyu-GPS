@@ -53,15 +53,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isMob
   const { appearance } = useAppearance();
 
   // Génère les menus depuis le registre centralisé
-  const menuGroups = getSortedSidebarMenu().map((group) => ({
-    title: group.title,
-    items: group.items.map((item) => ({
-      view: View[item.id as keyof typeof View],
-      label: item.label,
-      icon: ICON_MAP[item.icon] || LayoutDashboard,
-      requiredPerm: item.alwaysVisible ? null : item.permission || null,
-    })),
-  }));
+  const userRole = user?.role?.toUpperCase() || '';
+  const menuGroups = getSortedSidebarMenu()
+    .map((group) => ({
+      title: group.title,
+      items: group.items
+        .filter((item) => !item.hiddenForRoles?.some((r) => r.toUpperCase() === userRole))
+        .map((item) => ({
+          view: View[item.id as keyof typeof View],
+          label: item.label,
+          icon: ICON_MAP[item.icon] || LayoutDashboard,
+          requiredPerm: item.alwaysVisible ? null : item.permission || null,
+        })),
+    }))
+    // Ne garder que les groupes ayant au moins un item visible pour cet utilisateur
+    .filter((group) => group.items.some((item) => !item.requiredPerm || hasPermission(item.requiredPerm as any)));
 
   const APP_VERSION = 'v1.0.4';
   const IS_MOCK = import.meta.env.VITE_USE_MOCK === 'true';

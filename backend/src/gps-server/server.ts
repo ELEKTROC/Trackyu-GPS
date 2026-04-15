@@ -234,10 +234,22 @@ async function handleGpsData(
         location: { lat: parsedData.latitude, lng: parsedData.longitude },
         speed: parsedData.speed,
         heading: parsedData.heading,
+        altitude: parsedData.altitude,
         status: parsedData.speed > 3 ? 'MOVING' : parsedData.acc ? 'IDLE' : 'STOPPED',
         lastUpdated: parsedData.timestamp.toISOString(),
+        // Télémétriques boîtier (carburant, odomètre, batterie, signal)
+        fuelLevel: processedFuel,
+        odometer: parsedData.odometer,
+        ignition: parsedData.acc ?? false,
         batteryVoltage: parsedData.externalVolt ? parsedData.externalVolt / 1000 : undefined,
+        batteryPercent: parsedData.batteryPercent,
         satellites: parsedData.satellites,
+        hdop: parsedData.hdop,
+        // Alertes comportementales temps réel
+        crash: parsedData.crash || false,
+        sos: parsedData.sos || false,
+        harshBraking: parsedData.harshBraking || false,
+        harshAccel: parsedData.harshAccel || false,
       });
     }
   }

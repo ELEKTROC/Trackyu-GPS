@@ -193,7 +193,7 @@ export const BudgetView: React.FC<BudgetViewProps> = ({ budgets, journalEntries,
                 }}
               />
             ) : (
-              <span className="text-xs font-mono text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] dark:group-hover:text-white transition-colors">
+              <span className="text-xs font-mono text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors">
                 {amounts[i] === 0 ? '-' : Math.round(amounts[i]).toLocaleString()}
               </span>
             )}

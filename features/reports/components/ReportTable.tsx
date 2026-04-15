@@ -489,7 +489,7 @@ export const ReportTable: React.FC<ReportTableProps> = ({ title, columns, data, 
                       visibleColumns.includes(columns[cellIdx]) && (
                         <td
                           key={cellIdx}
-                          className="px-4 py-3 text-sm text-[var(--text-secondary)] whitespace-nowrap group-hover:text-[var(--text-primary)] dark:group-hover:text-white"
+                          className="px-4 py-3 text-sm text-[var(--text-secondary)] whitespace-nowrap group-hover:text-[var(--text-primary)]"
                         >
                           {cell}
                         </td>

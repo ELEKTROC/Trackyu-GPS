@@ -1820,7 +1820,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                   <div
                     key={item.id}
                     onClick={() => setSelectedItem(item)}
-                    className={`pl-4 pr-4 py-3 border-l-4 ${borderColor} cursor-pointer tr-hover/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700`}
+                    className={`pl-4 pr-4 py-3 border-l-4 ${borderColor} cursor-pointer tr-hover/50 active:bg-[var(--bg-elevated)]`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <div className="min-w-0 flex-1">
@@ -2134,7 +2134,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                             return <td key={col.id}>-</td>;
                           })}
 
-                        <td className="px-6 py-4 text-right sticky right-0 bg-[var(--bg-surface)] shadow-[-4px_0_6px_-4px_rgba(0,0,0,0.08)] group-hover:bg-[var(--bg-elevated)] dark:group-hover:bg-slate-800/50">
+                        <td className="px-6 py-4 text-right sticky right-0 bg-[var(--bg-surface)] shadow-[-4px_0_6px_-4px_rgba(0,0,0,0.08)] group-hover:bg-[var(--bg-elevated)]">
                           <div className="flex items-center justify-end gap-1 relative whitespace-nowrap">
                             <button
                               onClick={() => handleEdit(item)}

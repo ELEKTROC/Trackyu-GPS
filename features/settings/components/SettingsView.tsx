@@ -1220,14 +1220,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
   const { hasPermission, user } = useAuth();
 
   const filteredMenuGroups = useMemo(() => {
+    const isClient = ['CLIENT', 'SOUS_COMPTE', 'SUB_ACCOUNT'].includes((user?.role || '').toUpperCase());
     return MENU_GROUPS.map((group) => ({
       ...group,
-      items: group.items.filter((item) => {
-        // Permissions check for other items if needed
-        return true;
-      }),
-    })).filter((group) => group.items.length > 0);
-  }, [hasPermission]);
+      items: group.items.filter(() => true),
+    }))
+      .filter((group) => group.items.length > 0)
+      .filter((group) => !(isClient && group.title === 'Système'));
+  }, [hasPermission, user?.role]);
 
   const { isDarkMode, toggleTheme } = useTheme();
   const { showToast } = useToast();
@@ -2011,7 +2011,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
                           setActiveTab(item.id as TabId);
                           setMobileShowList(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-elevated)]/50 active:bg-[var(--bg-elevated)] dark:active:bg-slate-700 text-left"
+                        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-elevated)]/50 active:bg-[var(--bg-elevated)] text-left"
                       >
                         <div className={`w-9 h-9 rounded-full ${bgColor} flex items-center justify-center shrink-0`}>
                           <Icon className="w-4.5 h-4.5 text-white" style={{ width: 18, height: 18 }} />

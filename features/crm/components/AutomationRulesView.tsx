@@ -314,7 +314,7 @@ export const AutomationRulesView: React.FC = () => {
             <div
               key={rule.id}
               className={`bg-[var(--bg-elevated)] rounded-xl p-5 border-l-4 shadow-sm transition-all hover:shadow-md ${
-                rule.isActive ? 'border-l-green-500' : 'border-l-slate-300 dark:border-l-slate-600 opacity-60'
+                rule.isActive ? 'border-l-green-500' : 'border-l-[var(--border-strong)] opacity-60'
               }`}
             >
               {/* Header */}
