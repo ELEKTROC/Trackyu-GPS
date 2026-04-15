@@ -21,29 +21,37 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
   const { showToast } = useToast();
   const { tiers } = useDataContext();
   const { currency } = useCurrency();
-  const isNew = !initialData?.id;
+  const deriveType = (category?: string, currentType?: string): 'Produit' | 'Service' => {
+    if (category === 'Abonnement' || category === 'Prestation') return 'Service';
+    if (category === 'Matériel') return 'Produit';
+    return (currentType as 'Produit' | 'Service') || 'Produit';
+  };
+
   const [formData, setFormData] = useState<Partial<CatalogItem>>({
     isSellable: true,
     isPurchasable: false,
     trackStock: false,
-    taxRate: 0,
     status: 'ACTIVE',
-    type: 'Produit',
     category: 'Matériel',
     ...initialData,
+    // Auto-correction type/catégorie (Abonnement/Prestation → Service, Matériel → Produit)
+    type: deriveType(initialData?.category, initialData?.type),
+    // Normalise null → undefined pour les champs optionnels (null = PostgreSQL NULL)
+    minPrice: initialData?.minPrice ?? undefined,
+    maxPrice: initialData?.maxPrice ?? undefined,
+    taxRate: initialData?.taxRate ?? 0,
   });
 
-  // Pré-remplir le taux de TVA depuis les paramètres du tenant (création uniquement)
+  // Pré-remplir le taux de TVA depuis les paramètres du tenant (création et modification)
   useEffect(() => {
-    if (!isNew) return;
     api.tenants
       .getCurrent()
       .then((tenant: any) => {
-        const rate = parseFloat(tenant.default_tax_rate ?? '0') || 0;
-        if (rate > 0) setFormData((prev) => ({ ...prev, taxRate: rate }));
+        const rate = parseFloat(tenant.taxRate ?? tenant.default_tax_rate ?? tenant.settings?.taxRate ?? '0');
+        if (!isNaN(rate)) setFormData((prev) => ({ ...prev, taxRate: rate }));
       })
       .catch(() => {});
-  }, [isNew]);
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,13 +72,19 @@ export const CatalogForm: React.FC<CatalogFormProps> = ({ initialData, onSave, o
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const validatedData = CatalogSchema.parse(formData);
+      // Normalise null → undefined pour tous les champs (PostgreSQL NULL ≠ undefined Zod)
+      const sanitized = Object.fromEntries(Object.entries(formData).map(([k, v]) => [k, v === null ? undefined : v]));
+      const validatedData = CatalogSchema.parse(sanitized);
       onSave(validatedData as CatalogItem);
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error('[CatalogForm] Zod validation failed:', JSON.stringify(error.issues, null, 2));
+        console.error('[CatalogForm] formData:', JSON.stringify(formData, null, 2));
         error.issues.forEach((err) => {
           showToast(mapError(err.message), 'error');
         });
+      } else {
+        console.error('[CatalogForm] Unexpected error:', error);
       }
     }
   };

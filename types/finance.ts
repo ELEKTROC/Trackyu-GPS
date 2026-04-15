@@ -80,7 +80,17 @@ export interface Invoice {
   currency?: string; // ISO 4217 (XOF, EUR, USD, etc.)
   amountHT?: number; // Added: Amount before tax
   balance?: number; // Added: Remaining balance to pay
-  status: 'DRAFT' | 'SENT' | 'PAID' | 'PARTIALLY_PAID' | 'PARTIAL' | 'OVERDUE' | 'CANCELLED' | 'paid' | 'pending' | 'cancelled';
+  status:
+    | 'DRAFT'
+    | 'SENT'
+    | 'PAID'
+    | 'PARTIALLY_PAID'
+    | 'PARTIAL'
+    | 'OVERDUE'
+    | 'CANCELLED'
+    | 'paid'
+    | 'pending'
+    | 'cancelled';
   items: { description: string; quantity: number; price: number }[];
   // New fields
   paymentTerms?: string;
@@ -129,11 +139,21 @@ export interface Payment {
   date: string;
   amount: number;
   currency?: string; // ISO 4217 (XOF, EUR, USD, etc.)
-  method: 'VIREMENT' | 'CHEQUE' | 'ESPECES' | 'CB' | 'PRELEVEMENT' | 'MOBILE_MONEY' | 'EXCESS_USAGE' | 'CASH' | 'BANK_TRANSFER' | 'CHECK';
+  method:
+    | 'VIREMENT'
+    | 'CHEQUE'
+    | 'ESPECES'
+    | 'CB'
+    | 'PRELEVEMENT'
+    | 'MOBILE_MONEY'
+    | 'EXCESS_USAGE'
+    | 'CASH'
+    | 'BANK_TRANSFER'
+    | 'CHECK';
   type: 'INCOMING' | 'OUTGOING';
   reference: string; // Bank ref or Check number
   status: 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'COMPLETED' | 'FAILED' | 'PENDING';
-  
+
   // Workflow d'approbation (double validation)
   createdBy?: string; // User ID du créateur
   createdByName?: string;
@@ -146,20 +166,20 @@ export interface Payment {
   rejectionReason?: string;
   requiresApproval?: boolean; // true si montant > seuil
   approvalThreshold?: number; // Seuil au-delà duquel l'approbation est requise
-  
+
   // Links
-  clientId?: string; 
+  clientId?: string;
   resellerId?: string; // New: Reseller link
   invoiceId?: string; // Legacy: Single invoice link
   invoiceIds?: string[]; // New: Multiple invoices
   allocations?: { invoiceId: string; amount: number }[]; // New: Amount per invoice
-  supplierId?: string; 
-  
+  supplierId?: string;
+
   // Context
   vehicleId?: string;
   contractId?: string;
   attachments?: string[]; // URLs or filenames
-  
+
   notes?: string;
   error?: string; // Error message from API
   createdAt: string;
@@ -248,9 +268,13 @@ export interface CatalogItem {
   type: 'Produit' | 'Service';
   category: 'Matériel' | 'Abonnement' | 'Prestation' | 'Package';
   price: number;
+  minPrice?: number | null;
+  maxPrice?: number | null;
   unit: string;
+  taxRate?: number;
+  sku?: string;
   description?: string;
-  
+
   // Propriétés pour les Packages
   isPackage?: boolean;
   includesSubscription?: boolean; // Déclenche la logique contrat
@@ -260,7 +284,7 @@ export interface CatalogItem {
   status: 'ACTIVE' | 'INACTIVE';
   resellerId?: string; // Added
   resellerName?: string; // Added
-  
+
   // New fields for Accounting & Stock
   accountingAccountSale?: string;
   accountingAccountPurchase?: string;

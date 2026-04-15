@@ -2,19 +2,19 @@ import { z } from 'zod';
 
 export const CatalogSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Le nom est requis"),
+  name: z.string().min(1, 'Le nom est requis'),
   type: z.enum(['Produit', 'Service']),
   category: z.enum(['Matériel', 'Abonnement', 'Prestation', 'Package']),
-  price: z.number().min(0, "Le prix doit être positif"),
-  minPrice: z.number().min(0).optional(),
-  maxPrice: z.number().min(0).optional(),
-  unit: z.string().min(1, "L'unité est requise"),
-  taxRate: z.number().min(0).max(100).optional().default(0),
+  price: z.coerce.number().min(0, 'Le prix doit être positif'),
+  minPrice: z.coerce.number().min(0).nullable().optional(),
+  maxPrice: z.coerce.number().min(0).nullable().optional(),
+  unit: z.string().min(1, "L'unité est requise").default('unité'),
+  taxRate: z.coerce.number().min(0).max(100).optional().default(0),
   description: z.string().optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
   resellerId: z.string().optional(),
   resellerName: z.string().optional(),
-  
+
   // New fields
   accountingAccountSale: z.string().optional(),
   accountingAccountPurchase: z.string().optional(),
