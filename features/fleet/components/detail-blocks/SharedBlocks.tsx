@@ -24,7 +24,8 @@ export const ConfigurableRow: React.FC<{
             onToggle();
           }}
           className="absolute -top-2 -right-2 bg-[var(--bg-elevated)] shadow-md rounded-full p-1 text-[var(--text-secondary)] hover:text-[var(--primary)] border border-[var(--border)] z-10"
-          title={isHidden ? 'Afficher' : 'Masquer'}
+          title={isHidden ? 'Afficher ce champ' : 'Masquer ce champ'}
+          aria-label={isHidden ? 'Afficher ce champ' : 'Masquer ce champ'}
         >
           {isHidden ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
         </button>
@@ -69,6 +70,8 @@ export const CollapsibleSection: React.FC<{
             <button
               onClick={onToggleVisibility}
               className={`p-1.5 rounded hover:bg-[var(--bg-elevated)] transition-colors ${isVisible ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
+              title={isVisible ? 'Masquer ce bloc' : 'Afficher ce bloc'}
+              aria-label={isVisible ? 'Masquer ce bloc' : 'Afficher ce bloc'}
             >
               {isVisible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
             </button>
@@ -81,12 +84,16 @@ export const CollapsibleSection: React.FC<{
             <button
               onClick={() => onMoveUp?.()}
               className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded"
+              title="Monter ce bloc"
+              aria-label="Monter ce bloc"
             >
               <ArrowUp className="w-4 h-4" />
             </button>
             <button
               onClick={() => onMoveDown?.()}
               className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded"
+              title="Descendre ce bloc"
+              aria-label="Descendre ce bloc"
             >
               <ArrowDown className="w-4 h-4" />
             </button>

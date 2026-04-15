@@ -95,6 +95,8 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
                 <button
                   onClick={() => setShowFullscreen(true)}
                   className="p-2 bg-white/90 rounded-full mr-2 hover:bg-white transition-colors"
+                  title="Agrandir la photo"
+                  aria-label="Agrandir la photo"
                 >
                   <Maximize2 className="w-4 h-4 text-[var(--text-primary)]" />
                 </button>
@@ -102,6 +104,8 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
                   <button
                     onClick={handleRemovePhoto}
                     className="p-2 bg-red-500/90 rounded-full hover:bg-red-500 transition-colors"
+                    title="Supprimer la photo"
+                    aria-label="Supprimer la photo"
                   >
                     <X className="w-4 h-4 text-white" />
                   </button>
@@ -152,6 +156,8 @@ export const PhotoBlock: React.FC<PhotoBlockProps> = ({ vehicle, configMode = fa
           <button
             onClick={() => setShowFullscreen(false)}
             className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+            title="Fermer la photo"
+            aria-label="Fermer la photo"
           >
             <X className="w-6 h-6 text-white" />
           </button>

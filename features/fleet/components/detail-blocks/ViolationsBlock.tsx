@@ -59,7 +59,12 @@ export const ViolationsBlock: React.FC<ViolationsBlockProps> = ({
                   </div>
                 </div>
                 {event.clipUrl && (
-                  <button className="ml-auto p-1.5 bg-[var(--bg-elevated)] rounded shadow-sm hover:scale-105 transition-transform">
+                  <button
+                    className="ml-auto p-1.5 bg-[var(--bg-elevated)] rounded shadow-sm hover:scale-105 transition-transform"
+                    title="Lire le clip vidéo"
+                    aria-label="Lire le clip vidéo"
+                    onClick={() => window.open(event.clipUrl, '_blank', 'noopener,noreferrer')}
+                  >
                     <Video className="w-3 h-3 text-[var(--primary)]" />
                   </button>
                 )}

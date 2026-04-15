@@ -8,6 +8,7 @@ import {
   X,
   Navigation,
   Lock,
+  LockOpen,
   Bike,
   Bus,
   HardHat,
@@ -80,7 +81,7 @@ interface BlockConfig {
 export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   vehicle,
   onClose,
-  variant = 'drawer',
+  variant: _variant = 'drawer',
   onReplay,
 }) => {
   const { user } = useAuth();
@@ -99,7 +100,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   const isStaff = useMemo(() => {
     if (!user) return false;
     const staffRoles = ['SUPERADMIN', 'ADMIN', 'TECH', 'SUPPORT_AGENT', 'AGENT_TRACKING'];
-    return staffRoles.includes((user.role || '').toUpperCase().replace('_', ''));
+    return staffRoles.includes((user.role || '').toUpperCase());
   }, [user]);
   const [isImmobilizing, setIsImmobilizing] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
@@ -267,10 +268,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     return { hiddenFields: new Set<string>(), blocksOrder: null, blocksVisibility: {} };
   };
 
-  const savedConfig = loadSavedConfig();
-
   // État pour masquer des champs spécifiques (Set d'IDs masqués)
-  const [hiddenFields, setHiddenFields] = useState<Set<string>>(savedConfig.hiddenFields);
+  const [hiddenFields, setHiddenFields] = useState<Set<string>>(() => loadSavedConfig().hiddenFields);
 
   const defaultBlocks: BlockConfig[] = [
     { id: 'photo', label: 'Photo Véhicule', visible: true, icon: Camera },
@@ -288,12 +287,13 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
 
   // Appliquer l'ordre et la visibilité sauvegardés
   const getInitialBlocks = (): BlockConfig[] => {
+    const cfg = loadSavedConfig();
     let result = [...defaultBlocks];
 
     // Appliquer l'ordre sauvegardé
-    if (savedConfig.blocksOrder && savedConfig.blocksOrder.length === defaultBlocks.length) {
+    if (cfg.blocksOrder && cfg.blocksOrder.length === defaultBlocks.length) {
       const orderedBlocks: BlockConfig[] = [];
-      for (const id of savedConfig.blocksOrder) {
+      for (const id of cfg.blocksOrder) {
         const block = result.find((b) => b.id === id);
         if (block) orderedBlocks.push(block);
       }
@@ -301,10 +301,10 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     }
 
     // Appliquer la visibilité sauvegardée
-    if (savedConfig.blocksVisibility) {
+    if (cfg.blocksVisibility) {
       result = result.map((b) => ({
         ...b,
-        visible: savedConfig.blocksVisibility[b.id] !== undefined ? savedConfig.blocksVisibility[b.id] : b.visible,
+        visible: cfg.blocksVisibility[b.id] !== undefined ? cfg.blocksVisibility[b.id] : b.visible,
       }));
     }
 
@@ -663,6 +663,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
                 <button
                   onClick={() => navigator.clipboard.writeText(`${vehicle.location?.lat},${vehicle.location?.lng}`)}
                   title="Copier les coordonnées"
+                  aria-label="Copier les coordonnées GPS"
                   className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
                 >
                   <Copy className="w-3 h-3" />
@@ -672,6 +673,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
                   target="_blank"
                   rel="noreferrer"
                   title="Ouvrir dans Google Maps"
+                  aria-label="Ouvrir la position dans Google Maps"
                   className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
                 >
                   <ExternalLink className="w-3 h-3" />
@@ -684,6 +686,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               onClick={() => setIsConfigMode(!isConfigMode)}
               className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
               title="Configurer l'affichage"
+              aria-label="Configurer l'affichage"
             >
               <SlidersHorizontal className="w-4 h-4" />
             </button>
@@ -691,6 +694,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               onClick={onClose}
               className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-[var(--text-muted)]"
               title="Fermer"
+              aria-label="Fermer le panneau"
             >
               <X className="w-4 h-4" />
             </button>
@@ -784,7 +788,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               ) {
                 try {
                   setIsImmobilizing(true);
-                  await toggleImmobilization(vehicle.id, !vehicle.isImmobilized);
+                  toggleImmobilization(vehicle.id, !vehicle.isImmobilized);
                 } catch {
                   // Error handled by DataContext / TanStack Query
                 } finally {
@@ -802,7 +806,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             {isImmobilizing ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : vehicle.isImmobilized ? (
-              <Lock className="w-4 h-4" />
+              <LockOpen className="w-4 h-4" />
             ) : (
               <Lock className="w-4 h-4" />
             )}
@@ -827,7 +831,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               ) {
                 try {
                   setIsUpdatingStatus(true);
-                  await updateVehicle({ ...vehicle, isBrokenDown: !vehicle.isBrokenDown });
+                  updateVehicle({ ...vehicle, isBrokenDown: !vehicle.isBrokenDown });
                 } catch {
                   // Error handled by DataContext / TanStack Query
                 } finally {

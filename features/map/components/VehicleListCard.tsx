@@ -10,7 +10,7 @@ import {
   Car,
   Bike,
   Bus,
-  Hammer,
+  HardHat,
   User,
   Battery,
   Pencil,
@@ -34,8 +34,6 @@ interface VehicleListCardProps {
   isFocused: boolean;
   onFocus: (vehicle: Vehicle) => void;
   onToggleSelection: (id: string, e: React.MouseEvent) => void;
-  onReplay?: (vehicle: Vehicle) => void;
-  onDetails?: (vehicle: Vehicle) => void;
   onEdit?: (vehicle: Vehicle) => void;
   config?: VehicleCardConfig;
 }
@@ -47,8 +45,6 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
     isFocused,
     onFocus,
     onToggleSelection,
-    onReplay,
-    onDetails,
     onEdit,
     config = {
       showSpeed: true,
@@ -77,9 +73,18 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
       statusColorClass = 'text-red-600';
     }
 
-    // Fuel/Battery Color Logic
+    // Fuel/Battery Color Logic — neutral when fuelLevel unknown to avoid false red
+    const fuelLevel = vehicle.fuelLevel;
     const batteryColor =
-      vehicle.fuelLevel > 50 ? 'text-green-500' : vehicle.fuelLevel > 20 ? 'text-orange-500' : 'text-red-500';
+      fuelLevel === undefined || fuelLevel === null
+        ? 'text-[var(--text-muted)]'
+        : fuelLevel > 50
+          ? 'text-green-500'
+          : fuelLevel > 20
+            ? 'text-orange-500'
+            : 'text-red-500';
+    const fuelTooltip =
+      fuelLevel !== undefined && fuelLevel !== null ? `Carburant : ${Math.round(fuelLevel)}%` : 'Carburant inconnu';
 
     // Vehicle Type Icon Logic
     const getVehicleIcon = () => {
@@ -94,7 +99,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
           case 'BUS':
             return Bus;
           case 'CONSTRUCTION':
-            return Hammer;
+            return HardHat;
           case 'VAN':
             return Truck; // Use Truck for Van for now or find better icon
           default:
@@ -205,21 +210,33 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
             </div>
 
             <div className="flex items-center gap-3">
-              <Signal
-                className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-[var(--text-muted)] dark:text-[var(--text-secondary)]'}`}
-              />
+              <span title={isOnline ? 'Connecté' : 'Hors ligne'}>
+                <Signal
+                  className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-[var(--text-muted)] dark:text-[var(--text-secondary)]'}`}
+                />
+              </span>
 
-              {config.showFuel && <Battery className={`w-3 h-3 ${batteryColor}`} />}
-
-              {config.showIgnition && (
-                <Key className={`w-3 h-3 ${isIgnitionOn ? 'text-orange-400' : 'text-[var(--text-secondary)]'}`} />
+              {config.showFuel && (
+                <span title={fuelTooltip}>
+                  <Battery className={`w-3 h-3 ${batteryColor}`} />
+                </span>
               )}
 
-              {/* Immobilization Icon */}
-              <Lock className={`w-3 h-3 ${vehicle.isImmobilized ? 'text-red-500' : 'text-green-500'}`} />
+              {config.showIgnition && (
+                <span title={isIgnitionOn ? 'Contact : Allumé' : 'Contact : Éteint'}>
+                  <Key className={`w-3 h-3 ${isIgnitionOn ? 'text-orange-400' : 'text-[var(--text-secondary)]'}`} />
+                </span>
+              )}
 
-              {/* Breakdown Icon */}
-              {vehicle.isBrokenDown && <Wrench className="w-3 h-3 text-red-500 animate-pulse" />}
+              <span title={vehicle.isImmobilized ? 'Véhicule immobilisé' : 'Véhicule actif'}>
+                <Lock className={`w-3 h-3 ${vehicle.isImmobilized ? 'text-red-500' : 'text-green-500'}`} />
+              </span>
+
+              {vehicle.isBrokenDown && (
+                <span title="En panne">
+                  <Wrench className="w-3 h-3 text-red-500 animate-pulse" />
+                </span>
+              )}
             </div>
 
             {config.showTime && (

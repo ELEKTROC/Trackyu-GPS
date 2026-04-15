@@ -39,11 +39,11 @@ import {
   Activity,
   Zap,
   Filter,
+  Printer,
 } from 'lucide-react';
 import { VehicleDetailPanel } from '../../fleet/components/VehicleDetailPanel';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { MobileFilterSheet, FilterRadioRow } from '../../../components/MobileFilterSheet';
-import { useTheme } from '../../../contexts/ThemeContext';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -318,9 +318,10 @@ const MobileVehicleBottomSheet: React.FC<MobileVehicleBottomSheetProps> = ({ veh
             key={state}
             onClick={() => setSheetState(state)}
             className={`w-2.5 h-2.5 rounded-full transition-colors ${
-              sheetState === state ? 'bg-[var(--primary-dim)]0' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'
+              sheetState === state ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'
             }`}
-            aria-label={`Taille ${state}`}
+            aria-label={state === 'collapsed' ? 'Réduit' : state === 'half' ? 'Mi-hauteur' : 'Plein écran'}
+            title={state === 'collapsed' ? 'Réduit' : state === 'half' ? 'Mi-hauteur' : 'Plein écran'}
           />
         ))}
       </div>
@@ -436,6 +437,34 @@ const MapUpdater: React.FC<{
 const isValidCoord = (lat: number, lng: number): boolean =>
   !isNaN(lat) && !isNaN(lng) && isFinite(lat) && isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
 
+// --- TILE LAYER CONFIG (OSM, no API key required) ---
+const OSM_TILE_LAYERS = {
+  standard: {
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    label: 'Standard',
+  },
+  satellite: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution:
+      'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    label: 'Satellite',
+  },
+  terrain: {
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution:
+      'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    label: 'Terrain',
+  },
+  dark: {
+    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    label: 'Nuit',
+  },
+} as const;
+type OsmLayer = keyof typeof OSM_TILE_LAYERS;
+
 export const MapView: React.FC<MapViewProps> = ({
   vehicles,
   zones = [],
@@ -444,7 +473,6 @@ export const MapView: React.FC<MapViewProps> = ({
   onNavigate,
   onReplay,
 }) => {
-  const { isDarkMode: _isDarkMode } = useTheme();
   const { getVehicleHistory, clients, branches, isSocketConnected, isDataStale, isLoading } = useDataContext();
   const { showToast } = useToast();
   const { user } = useAuth();
@@ -492,6 +520,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const [mapProvider, setMapProvider] = useState<'leaflet' | 'google'>('leaflet');
   const [googleMapsKey, setGoogleMapsKey] = useState<string | null>(null);
   const [googleMapType, setGoogleMapType] = useState<'roadmap' | 'satellite'>('roadmap');
+  const [osmLayer, setOsmLayer] = useState<OsmLayer>('standard');
 
   useEffect(() => {
     // Fetch Google Maps Key - use dedicated map-config route (no special permissions needed)
@@ -535,15 +564,31 @@ export const MapView: React.FC<MapViewProps> = ({
   const [activeStatusFilter, setActiveStatusFilter] = useState<VehicleStatus | null>(null);
 
   // --- CONFIGURATION CARTE ---
-  const [cardConfig, setCardConfig] = useState<VehicleCardConfig>({
-    showSpeed: true,
-    showFuel: true,
-    showIgnition: true,
-    showDriver: true,
-    showTime: true,
-    showStatusText: true,
-    displayNameOptions: ['name'],
+  const [cardConfig, setCardConfig] = useState<VehicleCardConfig>(() => {
+    const defaults: VehicleCardConfig = {
+      showSpeed: true,
+      showFuel: true,
+      showIgnition: true,
+      showDriver: true,
+      showTime: true,
+      showStatusText: true,
+      displayNameOptions: ['name'],
+    };
+    try {
+      const saved = localStorage.getItem('map_card_config');
+      if (saved) return { ...defaults, ...JSON.parse(saved) };
+    } catch {
+      /* ignore parse error */
+    }
+    return defaults;
   });
+  useEffect(() => {
+    try {
+      localStorage.setItem('map_card_config', JSON.stringify(cardConfig));
+    } catch {
+      /* ignore quota error */
+    }
+  }, [cardConfig]);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -597,6 +642,29 @@ export const MapView: React.FC<MapViewProps> = ({
   const [isSoundEnabled, setIsSoundEnabled] = useState(true);
   const [showAlertsPanel, setShowAlertsPanel] = useState(false);
   const _alertSoundRef = useRef<HTMLAudioElement | null>(null);
+
+  // --- PRINT MAP ---
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.id = 'map-print-style';
+    style.textContent = [
+      '@media print {',
+      '  body.print-map-only * { visibility: hidden; }',
+      '  body.print-map-only .map-print-target,',
+      '  body.print-map-only .map-print-target * { visibility: visible; }',
+      '  body.print-map-only .map-print-target { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; }',
+      '}',
+    ].join('\n');
+    if (!document.getElementById('map-print-style')) document.head.appendChild(style);
+    return () => {
+      document.getElementById('map-print-style')?.remove();
+    };
+  }, []);
+  const handlePrintMap = () => {
+    document.body.classList.add('print-map-only');
+    window.print();
+    setTimeout(() => document.body.classList.remove('print-map-only'), 500);
+  };
 
   // --- SPRINT 3: GEOCODING & ADRESSES ---
   const [addressCache, setAddressCache] = useState<Record<string, string>>({});
@@ -773,7 +841,11 @@ export const MapView: React.FC<MapViewProps> = ({
       );
       const data = await response.json();
       const address = data.display_name?.split(',').slice(0, 3).join(', ') || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      setAddressCache((prev) => ({ ...prev, [cacheKey]: address }));
+      setAddressCache((prev) => {
+        const entries = Object.entries(prev);
+        const trimmed = entries.length >= 200 ? Object.fromEntries(entries.slice(-199)) : prev;
+        return { ...trimmed, [cacheKey]: address };
+      });
       return address;
     } catch {
       return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
@@ -917,7 +989,30 @@ export const MapView: React.FC<MapViewProps> = ({
       }
     };
     loadQuickTrace();
-  }, [selectedVehicle, isReplayActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedVehicle?.id, isReplayActive]); // Reload only when vehicle changes, not on position update
+
+  // --- LIVE SYNC: sync selectedVehicle data + append new GPS to quick trace ---
+  useEffect(() => {
+    if (!selectedVehicle || isReplayActive) return;
+    const updated = vehicles.find((v) => v.id === selectedVehicle.id);
+    if (!updated) return;
+    const posChanged =
+      updated.location?.lat !== selectedVehicle.location?.lat ||
+      updated.location?.lng !== selectedVehicle.location?.lng;
+    if (posChanged || updated.speed !== selectedVehicle.speed || updated.status !== selectedVehicle.status) {
+      setSelectedVehicle(updated);
+    }
+    if (posChanged && updated.location?.lat && updated.location?.lng) {
+      setQuickTracePath((prev) => {
+        if (prev.length === 0) return prev;
+        const last = prev[prev.length - 1];
+        if (last.lat === updated.location.lat && last.lng === updated.location.lng) return prev;
+        return [...prev, updated.location];
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vehicles]);
 
   // --- GESTION REPLAY MODE ---
   useEffect(() => {
@@ -2037,13 +2132,13 @@ export const MapView: React.FC<MapViewProps> = ({
             <div className="flex items-center bg-white/10 rounded px-1 gap-0.5 ml-1">
               <button
                 onClick={() => setMapProvider('leaflet')}
-                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary-dim)]0 text-white' : 'text-[var(--text-muted)]'}`}
+                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-muted)]'}`}
               >
                 OSM
               </button>
               <button
                 onClick={() => googleMapsKey && setMapProvider('google')}
-                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white' : googleMapsKey ? 'text-[var(--text-muted)]' : 'text-[var(--text-secondary)] cursor-not-allowed'}`}
+                className={`text-[9px] font-bold px-1.5 py-1 rounded transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary)] text-white' : googleMapsKey ? 'text-[var(--text-muted)]' : 'text-[var(--text-secondary)] cursor-not-allowed'}`}
                 disabled={!googleMapsKey}
               >
                 G
@@ -2052,7 +2147,7 @@ export const MapView: React.FC<MapViewProps> = ({
             {/* Filter button */}
             <button
               onClick={() => setShowMobileMapFilter(true)}
-              className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${activeStatusFilter || filterClient || filterBranch ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
+              className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${activeStatusFilter || filterClient || filterBranch ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
               aria-label="Filtres"
               title="Filtres"
             >
@@ -2061,11 +2156,24 @@ export const MapView: React.FC<MapViewProps> = ({
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-[var(--bg-primary)]" />
               )}
             </button>
+            {/* OSM Layer cycle — visible uniquement quand OSM actif */}
+            {mapProvider === 'leaflet' && (
+              <button
+                onClick={() => {
+                  const layers = Object.keys(OSM_TILE_LAYERS) as OsmLayer[];
+                  setOsmLayer((cur) => layers[(layers.indexOf(cur) + 1) % layers.length]);
+                }}
+                className="flex items-center justify-center w-7 h-7 bg-white/10 rounded ml-1 text-[var(--text-muted)] hover:bg-white/20"
+                title={`Fond: ${OSM_TILE_LAYERS[osmLayer].label}`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+              </button>
+            )}
             {/* Satellite toggle — visible uniquement quand Google Maps actif */}
             {mapProvider === 'google' && (
               <button
                 onClick={() => setGoogleMapType((t) => (t === 'roadmap' ? 'satellite' : 'roadmap'))}
-                className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${googleMapType === 'satellite' ? 'bg-[var(--primary-dim)]0 text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
+                className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${googleMapType === 'satellite' ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
                 aria-label="Vue satellite"
                 title={googleMapType === 'satellite' ? 'Vue carte' : 'Vue satellite'}
               >
@@ -2278,7 +2386,7 @@ export const MapView: React.FC<MapViewProps> = ({
       />
 
       {/* MAP RENDERER */}
-      <div className="flex-1 relative bg-[var(--bg-elevated)] overflow-hidden z-0 min-h-[300px] flex items-center justify-center">
+      <div className="map-print-target flex-1 relative bg-[var(--bg-elevated)] overflow-hidden z-0 min-h-[300px] flex items-center justify-center">
         {/* Diagnostic: Always show something even if map fails */}
         <div className="absolute inset-0 flex items-center justify-center text-[var(--text-muted)] z-[-1]">
           <div className="flex flex-col items-center gap-2">
@@ -2312,8 +2420,9 @@ export const MapView: React.FC<MapViewProps> = ({
               className="z-0"
             >
               <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                key={osmLayer}
+                attribution={OSM_TILE_LAYERS[osmLayer].attribution}
+                url={OSM_TILE_LAYERS[osmLayer].url}
                 crossOrigin="anonymous"
               />
 
@@ -2707,20 +2816,43 @@ export const MapView: React.FC<MapViewProps> = ({
                 <div className="flex items-center bg-[var(--bg-elevated)] rounded-full p-1 shadow-lg border border-[var(--border)]">
                   <button
                     onClick={() => setMapProvider('leaflet')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary-dim)]0 text-white shadow' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary)] text-white shadow' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
                     title="Carte OpenStreetMap"
                   >
                     OSM
                   </button>
                   <button
                     onClick={() => googleMapsKey && setMapProvider('google')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary-dim)]0 text-white shadow' : googleMapsKey ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]' : 'text-[var(--text-muted)] cursor-not-allowed'}`}
+                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary)] text-white shadow' : googleMapsKey ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]' : 'text-[var(--text-muted)] cursor-not-allowed'}`}
                     title={googleMapsKey ? 'Carte Google Maps' : 'Google Maps (Clé API requise)'}
                     disabled={!googleMapsKey}
                   >
                     Google
                   </button>
                 </div>
+                {/* OSM Layer Picker — visible only in OSM mode */}
+                {mapProvider === 'leaflet' && (
+                  <div className="flex items-center bg-[var(--bg-elevated)] rounded-full p-1 shadow-lg border border-[var(--border)]">
+                    {(Object.keys(OSM_TILE_LAYERS) as OsmLayer[]).map((layer) => (
+                      <button
+                        key={layer}
+                        onClick={() => setOsmLayer(layer)}
+                        className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${osmLayer === layer ? 'bg-[var(--primary)] text-white shadow' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+                        title={OSM_TILE_LAYERS[layer].label}
+                      >
+                        {OSM_TILE_LAYERS[layer].label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {/* Export carte */}
+                <button
+                  onClick={handlePrintMap}
+                  className="p-2 rounded-full shadow-lg bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                  title="Imprimer / Exporter la carte"
+                >
+                  <Printer className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
