@@ -28,6 +28,8 @@ import {
   Search,
   PauseCircle,
   Key,
+  WifiOff,
+  Droplets,
 } from 'lucide-react';
 import {
   LineChart,
@@ -44,6 +46,7 @@ import {
 import { loadHtml2Canvas } from '../../../services/pdfLoader';
 import { PERIOD_PRESETS, type PeriodPreset } from '../../../hooks/useDateRange';
 import { exportToGPX, exportToKML, downloadFile } from '../../../utils/gpsExport';
+import { API_URL, getHeaders } from '../../../services/api/client';
 
 // Types pour les événements et arrêts
 export interface StopEvent {
@@ -116,6 +119,13 @@ interface ReplayControlPanelProps {
   // Callbacks for map markers
   onStopClick?: (stop: StopEvent) => void;
   onEventClick?: (event: SpeedEvent) => void;
+  onTripClick?: (trip: TripSegment) => void;
+
+  // Sélection externe (clic marqueur carte → ouvrir onglet)
+  externalStopSelect?: { stop: StopEvent; tab: 'STOPS' | 'IDLE' } | null;
+  onExternalStopHandled?: () => void;
+  externalEventSelect?: SpeedEvent | null;
+  onExternalEventHandled?: () => void;
 
   // Sync stops and events to parent (MapView)
   onStopsDetected?: (stops: StopEvent[]) => void;
@@ -167,6 +177,20 @@ const formatDuration = (minutes: number): string => {
   return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
 };
 
+// Composant autonome pour géocodage live dans les tableaux (STOPS/IDLE)
+// IMPORTANT : défini en dehors du composant principal — ne jamais mettre un composant avec hooks dans un useCallback
+const GeocodedCell: React.FC<{ lat: number; lng: number; address?: string }> = ({ lat, lng, address }) => {
+  const [addr, setAddr] = React.useState<string | null>(address || null);
+  React.useEffect(() => {
+    if (addr) return;
+    fetch(`${API_URL}/fleet/geocode?lat=${lat}&lng=${lng}`, { credentials: 'include', headers: getHeaders() })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setAddr(d?.address || null))
+      .catch(() => {});
+  }, [lat, lng]);
+  return <span className="text-xs">{addr || `${lat.toFixed(4)}, ${lng.toFixed(4)}`}</span>;
+};
+
 export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   isOpen,
   onClose,
@@ -185,12 +209,53 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   history = [],
   onStopClick,
   onEventClick,
+  onTripClick,
+  externalStopSelect,
+  onExternalStopHandled,
+  externalEventSelect,
+  onExternalEventHandled,
   onStopsDetected,
   onEventsDetected,
 }) => {
   const { showToast } = useToast();
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('STATS');
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+
+  // Trajets depuis le serveur (source unique)
+  const [serverTrips, setServerTrips] = useState<any[]>([]);
+  const [serverTripsLoading, setServerTripsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedVehicle?.id) return;
+    setServerTripsLoading(true);
+    const startDate = dateRange.start.toISOString();
+    const endDate = dateRange.end.toISOString();
+    fetch(`${API_URL}/fleet/vehicles/${selectedVehicle.id}/trips?startDate=${startDate}&endDate=${endDate}`, {
+      headers: getHeaders(),
+    })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setServerTrips(Array.isArray(data) ? data : []))
+      .catch(() => setServerTrips([]))
+      .finally(() => setServerTripsLoading(false));
+  }, [selectedVehicle?.id, dateRange.start.toISOString(), dateRange.end.toISOString()]);
+
+  // Réagir aux sélections depuis la carte (clic sur marqueur stop/idle/alerte)
+  useEffect(() => {
+    if (!externalStopSelect) return;
+    setActiveTab(externalStopSelect.tab);
+    setSelectedRowId(externalStopSelect.stop.id);
+    setIsBottomPanelOpen(true);
+    onExternalStopHandled?.();
+  }, [externalStopSelect]);
+
+  useEffect(() => {
+    if (!externalEventSelect) return;
+    setActiveTab('EVENTS');
+    setSelectedRowId(externalEventSelect.id);
+    setIsBottomPanelOpen(true);
+    onExternalEventHandled?.();
+  }, [externalEventSelect]);
   const [isExporting, setIsExporting] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -205,7 +270,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   const [showSpeedOnFuelChart, setShowSpeedOnFuelChart] = useState(false);
   const [showIgnitionOnFuelChart, setShowIgnitionOnFuelChart] = useState(false);
 
-  // W1 — Filtre dérive GPS 50 m (appliqué avant tous les calculs)
+  // filteredHistory = données filtrées anti-drift pour l'affichage carte uniquement (polyline, marqueurs)
+  // Pour les stats et la détection d'arrêts, on utilise `history` brut = même source que VehicleDetailPanel
   const filteredHistory = useMemo(() => filterDriftGPS(history), [history]);
 
   // Filter vehicles based on search (name or client)
@@ -296,7 +362,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   // IDLE  = engine on  (ignition=true)  + speed=0 for > 1 min
   // When ignition is unknown (null), use speed-only: treat as STOP
   const stops = useMemo<StopEvent[]>(() => {
-    if (!filteredHistory || filteredHistory.length < 2) return [];
+    if (!history || history.length < 2) return [];
 
     const MIN_STOP_DURATION = 2; // minutes
     const MIN_IDLE_DURATION = 1; // minute
@@ -327,8 +393,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       stopStart = null;
     };
 
-    for (let i = 0; i < filteredHistory.length; i++) {
-      const point = filteredHistory[i];
+    for (let i = 0; i < history.length; i++) {
+      const point = history[i];
       const speed = point.speed || 0;
       if (speed < 2) {
         if (!stopStart) stopStart = point;
@@ -337,21 +403,30 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       }
     }
     // Handle last segment still stopped
-    if (stopStart && filteredHistory.length > 0) flush(filteredHistory[filteredHistory.length - 1]);
+    // Si le dernier point est aujourd'hui et que le véhicule est toujours arrêté → utiliser now comme fin (comme VehicleDetailPanel)
+    if (stopStart && history.length > 0) {
+      const lastPoint = history[history.length - 1];
+      const lastTs = new Date(lastPoint.timestamp || lastPoint.time);
+      const now = new Date();
+      const isToday = lastTs.toDateString() === now.toDateString();
+      const cappedNow = isToday ? new Date(Math.min(now.getTime(), lastTs.getTime() + 30 * 60 * 1000)) : lastTs;
+      // Synthetic end point with capped now
+      flush({ ...lastPoint, timestamp: cappedNow.toISOString(), time: cappedNow.toISOString() });
+    }
 
     return detectedStops;
-  }, [filteredHistory]);
+  }, [history]);
 
   // Calculate speeding events (speed > maxSpeed for > 10 seconds)
   const speedingEvents = useMemo<SpeedEvent[]>(() => {
-    if (!filteredHistory || filteredHistory.length < 2) return [];
+    if (!history || history.length < 2) return [];
 
     const MAX_SPEED = selectedVehicle?.maxSpeed || 120; // Default max speed
     const events: SpeedEvent[] = [];
     let overSpeedStart: any = null;
 
-    for (let i = 0; i < filteredHistory.length; i++) {
-      const point = filteredHistory[i];
+    for (let i = 0; i < history.length; i++) {
+      const point = history[i];
       const speed = point.speed || 0;
 
       if (speed > MAX_SPEED) {
@@ -381,94 +456,81 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     }
 
     return events;
-  }, [filteredHistory, selectedVehicle]);
+  }, [history, selectedVehicle]);
 
-  // Calculate trip segments (between stops)
+  // Calculate trip segments — délimités par les stops, durée = temps de conduite uniquement
   const tripSegments = useMemo<TripSegment[]>(() => {
-    if (!filteredHistory || filteredHistory.length < 2) return [];
+    if (!history || history.length < 2) return [];
 
-    const segments: TripSegment[] = [];
-    let segmentStart = filteredHistory[0];
-    let segmentDistance = 0;
-    let segmentMaxSpeed = 0;
-    let segmentSpeeds: number[] = [];
+    const getTime = (p: any) => new Date(p.timestamp || p.time).getTime();
+    const firstTime = getTime(history[0]);
+    const lastTime = getTime(history[history.length - 1]);
 
-    for (let i = 1; i < filteredHistory.length; i++) {
-      const prev = filteredHistory[i - 1];
-      const curr = filteredHistory[i];
-      const speed = curr.speed || 0;
-
-      // Calculate distance
-      const prevLoc = prev.location || { lat: prev.lat, lng: prev.lng };
-      const currLoc = curr.location || { lat: curr.lat, lng: curr.lng };
-
-      if (prevLoc && currLoc) {
-        segmentDistance += calculateDistance(prevLoc.lat, prevLoc.lng, currLoc.lat, currLoc.lng);
+    // Construire les fenêtres de conduite : intervalles entre la fin d'un stop et le début du suivant
+    const sortedStops = [...stops].sort((a, b) => a.startTime.getTime() - b.startTime.getTime());
+    const windows: { start: number; end: number }[] = [];
+    let cursor = firstTime;
+    for (const s of sortedStops) {
+      if (s.startTime.getTime() > cursor) {
+        windows.push({ start: cursor, end: s.startTime.getTime() });
       }
+      cursor = s.endTime.getTime();
+    }
+    if (cursor < lastTime) windows.push({ start: cursor, end: lastTime });
 
-      if (speed > 0) {
-        segmentSpeeds.push(speed);
-        if (speed > segmentMaxSpeed) segmentMaxSpeed = speed;
-      }
-
-      // Check if this is a stop point
-      const isStop = stops.some((s) => {
-        const pointTime = new Date(curr.timestamp || curr.time).getTime();
-        return pointTime >= s.startTime.getTime() && pointTime <= s.endTime.getTime();
-      });
-
-      if (isStop && segmentDistance > 0.1) {
-        // At least 100m
-        const startTime = new Date(segmentStart.timestamp || segmentStart.time);
-        const endTime = new Date(curr.timestamp || curr.time);
-        const duration = (endTime.getTime() - startTime.getTime()) / 60000;
-
-        segments.push({
-          id: `trip_${segments.length}`,
-          startTime,
-          endTime,
-          startLocation: segmentStart.location || { lat: segmentStart.lat, lng: segmentStart.lng },
-          endLocation: currLoc,
-          distance: segmentDistance,
-          duration,
-          avgSpeed: segmentSpeeds.length > 0 ? segmentSpeeds.reduce((a, b) => a + b, 0) / segmentSpeeds.length : 0,
-          maxSpeed: segmentMaxSpeed,
+    return windows
+      .map((w, i) => {
+        const pts = history.filter((p) => {
+          const t = getTime(p);
+          return t >= w.start && t <= w.end;
         });
+        if (pts.length < 2) return null;
 
-        // Reset for next segment
-        segmentStart = curr;
-        segmentDistance = 0;
-        segmentMaxSpeed = 0;
-        segmentSpeeds = [];
-      }
-    }
+        let distance = 0,
+          maxSpeed = 0,
+          speedSum = 0,
+          speedCount = 0;
+        let segDrivingMs = 0;
+        const SEG_SPEED_THRESHOLD = 2;
+        const SEG_MAX_GAP_MS = 5 * 60 * 1000;
+        for (let j = 1; j < pts.length; j++) {
+          const prevLoc = pts[j - 1].location || { lat: pts[j - 1].lat, lng: pts[j - 1].lng };
+          const currLoc = pts[j].location || { lat: pts[j].lat, lng: pts[j].lng };
+          if (prevLoc && currLoc) distance += calculateDistance(prevLoc.lat, prevLoc.lng, currLoc.lat, currLoc.lng);
+          const spd = pts[j].speed || 0;
+          const prevSpd = pts[j - 1].speed || 0;
+          if (spd > maxSpeed) maxSpeed = spd;
+          if (spd > 0) {
+            speedSum += spd;
+            speedCount++;
+          }
+          const dt = getTime(pts[j]) - getTime(pts[j - 1]);
+          if ((prevSpd > SEG_SPEED_THRESHOLD || spd > SEG_SPEED_THRESHOLD) && dt < SEG_MAX_GAP_MS) {
+            segDrivingMs += dt;
+          }
+        }
+        if (distance < 0.1) return null;
 
-    // Add final segment if there's remaining distance
-    if (segmentDistance > 0.1 && filteredHistory.length > 0) {
-      const lastPoint = filteredHistory[filteredHistory.length - 1];
-      const startTime = new Date(segmentStart.timestamp || segmentStart.time);
-      const endTime = new Date(lastPoint.timestamp || lastPoint.time);
-      const duration = (endTime.getTime() - startTime.getTime()) / 60000;
-
-      segments.push({
-        id: `trip_${segments.length}`,
-        startTime,
-        endTime,
-        startLocation: segmentStart.location || { lat: segmentStart.lat, lng: segmentStart.lng },
-        endLocation: lastPoint.location || { lat: lastPoint.lat, lng: lastPoint.lng },
-        distance: segmentDistance,
-        duration,
-        avgSpeed: segmentSpeeds.length > 0 ? segmentSpeeds.reduce((a, b) => a + b, 0) / segmentSpeeds.length : 0,
-        maxSpeed: segmentMaxSpeed,
-      });
-    }
-
-    return segments;
-  }, [filteredHistory, stops]);
+        // Durée = temps effectivement en mouvement dans ce segment
+        const duration = segDrivingMs > 0 ? segDrivingMs / 60000 : (w.end - w.start) / 60000;
+        return {
+          id: `trip_${i}`,
+          startTime: new Date(w.start),
+          endTime: new Date(w.end),
+          startLocation: pts[0].location || { lat: pts[0].lat, lng: pts[0].lng },
+          endLocation: pts[pts.length - 1].location || { lat: pts[pts.length - 1].lat, lng: pts[pts.length - 1].lng },
+          distance,
+          duration,
+          avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
+          maxSpeed,
+        } as TripSegment;
+      })
+      .filter((s): s is TripSegment => s !== null);
+  }, [history, stops]);
 
   // Calculate overall trip statistics
   const tripStats = useMemo<TripStats>(() => {
-    if (!filteredHistory || filteredHistory.length < 2) {
+    if (!history || history.length < 2) {
       return {
         totalDistance: 0,
         totalDuration: 0,
@@ -482,29 +544,52 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       };
     }
 
-    const firstPoint = filteredHistory[0];
-    const lastPoint = filteredHistory[filteredHistory.length - 1];
+    const firstPoint = history[0];
+    const lastPoint = history[history.length - 1];
     const startTime = new Date(firstPoint.timestamp || firstPoint.time);
-    const endTime = new Date(lastPoint.timestamp || lastPoint.time);
+    const lastTs = new Date(lastPoint.timestamp || lastPoint.time);
+    // Aligner avec VehicleDetailPanel : si c'est aujourd'hui, étendre jusqu'à now (cap 30min)
+    const now = new Date();
+    const isToday = lastTs.toDateString() === now.toDateString();
+    const endTime = isToday ? new Date(Math.min(now.getTime(), lastTs.getTime() + 30 * 60 * 1000)) : lastTs;
     const totalDuration = (endTime.getTime() - startTime.getTime()) / 60000; // minutes
 
-    // Calculate total distance
+    // Même logique que VehicleDetailPanel : classifier chaque intervalle par le statut du point courant
+    // speed >= 2 → MOVING, ignition true → IDLE, sinon → STOPPED
+    const getPointStatus = (p: any): 'MOVING' | 'IDLE' | 'STOPPED' => {
+      const speed = typeof p.speed === 'number' ? p.speed : parseFloat(p.speed ?? '0') || 0;
+      if (speed >= 2) return 'MOVING';
+      const ign = p.ignition;
+      if (ign === true || ign === 'true' || ign === 't') return 'IDLE';
+      return 'STOPPED';
+    };
+    const getTs = (p: any) => new Date(p.timestamp || p.time).getTime();
+
     let totalDistance = 0;
     let maxSpeed = 0;
     let speedSum = 0;
     let speedCount = 0;
+    let drivingMs = 0;
+    let idleMs = 0;
+    let stoppedMs = 0;
 
-    for (let i = 1; i < filteredHistory.length; i++) {
-      const prev = filteredHistory[i - 1];
-      const curr = filteredHistory[i];
+    const sorted = [...history].sort((a, b) => getTs(a) - getTs(b));
 
-      const prevLoc = prev.location || { lat: prev.lat, lng: prev.lng };
-      const currLoc = curr.location || { lat: curr.lat, lng: curr.lng };
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const curr = sorted[i];
+      const next = sorted[i + 1];
+      const dt = getTs(next) - getTs(curr);
+      const status = getPointStatus(curr);
+      if (status === 'MOVING') drivingMs += dt;
+      else if (status === 'IDLE') idleMs += dt;
+      else stoppedMs += dt;
 
-      if (prevLoc && currLoc) {
+      const prevLoc = curr.location || { lat: curr.lat, lng: curr.lng };
+      const currLoc = next.location || { lat: next.lat, lng: next.lng };
+      if (prevLoc && currLoc && dt < 10 * 60 * 1000) {
+        // ignorer gaps > 10min pour la distance
         totalDistance += calculateDistance(prevLoc.lat, prevLoc.lng, currLoc.lat, currLoc.lng);
       }
-
       const speed = curr.speed || 0;
       if (speed > maxSpeed) maxSpeed = speed;
       if (speed > 0) {
@@ -513,22 +598,30 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       }
     }
 
-    const stoppedTime = stops.filter((s) => s.type === 'STOP').reduce((acc, s) => acc + s.duration, 0);
-    const idleTime = stops.filter((s) => s.type === 'IDLE').reduce((acc, s) => acc + s.duration, 0);
-    const drivingTime = totalDuration - stoppedTime - idleTime;
+    // Dernier point → now (si aujourd'hui, cap 30min) — identique à VehicleDetailPanel
+    if (sorted.length > 0) {
+      const last = sorted[sorted.length - 1];
+      const lastStatus = getPointStatus(last);
+      const extraMs = Math.min(endTime.getTime() - getTs(last), 30 * 60 * 1000);
+      if (extraMs > 0) {
+        if (lastStatus === 'MOVING') drivingMs += extraMs;
+        else if (lastStatus === 'IDLE') idleMs += extraMs;
+        else stoppedMs += extraMs;
+      }
+    }
 
     return {
       totalDistance,
       totalDuration,
-      drivingTime: Math.max(0, drivingTime),
-      stoppedTime,
-      idleTime,
+      drivingTime: drivingMs / 60000,
+      stoppedTime: stoppedMs / 60000,
+      idleTime: idleMs / 60000,
       avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
       maxSpeed,
       stopCount: stops.length,
       speedingEvents: speedingEvents.length,
     };
-  }, [filteredHistory, stops, speedingEvents]);
+  }, [history, stops, speedingEvents]);
 
   // Sync stops and events to parent component (MapView)
   useEffect(() => {
@@ -620,6 +713,50 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
     return events;
   }, [filteredHistory]);
+
+  // Carburant consommé = (premier niveau - dernier niveau) + somme des recharges
+  const fuelConsumed = useMemo<number | null>(() => {
+    const withFuel = filteredHistory.filter((h) => h.fuelLevel != null && h.fuelLevel > 0);
+    if (withFuel.length < 2) return null;
+    const first = withFuel[0].fuelLevel as number;
+    const last = withFuel[withFuel.length - 1].fuelLevel as number;
+    const totalRefill = fuelEvents.filter((e) => e.type === 'REFILL').reduce((s, e) => s + e.delta, 0);
+    return Math.max(0, first - last + totalRefill);
+  }, [filteredHistory, fuelEvents]);
+
+  // Niveau de carburant actuel (dernier point avec donnée)
+  const currentFuelLevel = useMemo<number | null>(() => {
+    const withFuel = filteredHistory.filter((h) => h.fuelLevel != null && h.fuelLevel > 0);
+    return withFuel.length > 0 ? (withFuel[withFuel.length - 1].fuelLevel as number) : null;
+  }, [filteredHistory]);
+
+  // Coupures GPS (gaps > 5 min entre 2 points consécutifs)
+  const { offlineGaps, offlineTimeMin } = useMemo(() => {
+    if (filteredHistory.length < 2) return { offlineGaps: 0, offlineTimeMin: 0 };
+    // Seuil : 30 minutes sans signal = période hors ligne
+    const GAP_MS = 30 * 60 * 1000;
+    // Filtrer les points dont le timestamp est dans la fenêtre sélectionnée
+    // Évite de compter le gap nuit (dernier point hier → premier point aujourd'hui)
+    const periodStart = dateRange.start.getTime();
+    const periodEnd = dateRange.end.getTime();
+    const inRange = filteredHistory.filter((p) => {
+      const t = new Date(p.timestamp || p.time).getTime();
+      return t >= periodStart && t <= periodEnd;
+    });
+    if (inRange.length < 2) return { offlineGaps: 0, offlineTimeMin: 0 };
+    let count = 0;
+    let totalOfflineMs = 0;
+    for (let i = 1; i < inRange.length; i++) {
+      const a = new Date(inRange[i - 1].timestamp || inRange[i - 1].time).getTime();
+      const b = new Date(inRange[i].timestamp || inRange[i].time).getTime();
+      const dt = b - a;
+      if (dt > GAP_MS) {
+        count++;
+        totalOfflineMs += dt;
+      }
+    }
+    return { offlineGaps: count, offlineTimeMin: totalOfflineMs / 60000 };
+  }, [filteredHistory, dateRange]);
 
   // Export screenshot
   const handleExportVideo = useCallback(async () => {
@@ -874,62 +1011,103 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       </div>
 
       {/* BOTTOM PANEL */}
-      <div className="pointer-events-auto m-4 flex flex-col items-center print:m-0">
-        {/* Playback Controls */}
-        <div className="bg-[var(--bg-elevated)] shadow-lg rounded-full px-6 py-2 mb-4 flex items-center gap-6 border border-[var(--border)] print:hidden">
-          <button
-            className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-            onClick={() => onProgressChange(Math.max(0, progress - 10))}
-            title="Reculer de 10%"
-          >
-            <Rewind size={20} />
-          </button>
-          <button
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors ${isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-[var(--primary)] hover:bg-[var(--primary-light)]'}`}
-            onClick={onPlayPause}
-            title={isPlaying ? 'Pause' : 'Lecture'}
-          >
-            {isPlaying ? (
-              <Pause size={20} fill="currentColor" />
-            ) : (
-              <Play size={20} fill="currentColor" className="ml-1" />
-            )}
-          </button>
-          <button
-            className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-            onClick={() => onProgressChange(Math.min(100, progress + 10))}
-            title="Avancer de 10%"
-          >
-            <FastForward size={20} />
-          </button>
-          <div className="h-4 w-px bg-[var(--border)] mx-2"></div>
-          <select
-            className="bg-transparent text-sm font-medium text-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] cursor-pointer"
-            value={playbackSpeed}
-            onChange={(e) => onSpeedChange(Number(e.target.value))}
-            title="Vitesse de lecture"
-          >
-            <option value="0.5">0.5x</option>
-            <option value="1">1x</option>
-            <option value="2">2x</option>
-            <option value="5">5x</option>
-            <option value="10">10x</option>
-            <option value="20">20x</option>
-          </select>
-          <div className="h-4 w-px bg-[var(--border)] mx-2"></div>
-          <div className="text-sm font-mono font-bold text-[var(--text-primary)] min-w-[60px] text-center">
-            {currentTime}
+      <div className="pointer-events-auto w-full flex flex-col print:m-0">
+        {/* Playback Controls — centrés avec marges latérales */}
+        <div className="flex flex-col items-center px-4 mb-2">
+          <div className="bg-[var(--bg-elevated)] shadow-lg rounded-full px-6 py-2 mb-2 flex items-center gap-6 border border-[var(--border)] print:hidden">
+            <button
+              className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+              onClick={() => onProgressChange(Math.max(0, progress - 10))}
+              title="Reculer de 10%"
+            >
+              <Rewind size={20} />
+            </button>
+            <button
+              className={`w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors ${isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-[var(--primary)] hover:bg-[var(--primary-light)]'}`}
+              onClick={onPlayPause}
+              title={isPlaying ? 'Pause' : 'Lecture'}
+            >
+              {isPlaying ? (
+                <Pause size={20} fill="currentColor" />
+              ) : (
+                <Play size={20} fill="currentColor" className="ml-1" />
+              )}
+            </button>
+            <button
+              className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+              onClick={() => onProgressChange(Math.min(100, progress + 10))}
+              title="Avancer de 10%"
+            >
+              <FastForward size={20} />
+            </button>
+            <div className="h-4 w-px bg-[var(--border)] mx-2"></div>
+            <div className="flex items-center gap-1" title="Vitesse de lecture">
+              {[1, 2, 5, 10, 20].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => onSpeedChange(s)}
+                  className={`px-2 py-0.5 rounded text-xs font-bold border transition-colors ${
+                    playbackSpeed === s
+                      ? 'bg-[var(--primary)] text-white border-[var(--primary)]'
+                      : 'bg-transparent text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'
+                  }`}
+                >
+                  {s}×
+                </button>
+              ))}
+            </div>
+            <div className="h-4 w-px bg-[var(--border)] mx-2"></div>
+            <div className="text-sm font-mono font-bold text-[var(--text-primary)] min-w-[60px] text-center">
+              {currentTime}
+            </div>
+            {/* Scrubable progress bar */}
+            <div
+              className="relative flex-1 min-w-[80px] max-w-[200px] h-5 flex items-center cursor-pointer"
+              title={`${progress.toFixed(0)}%`}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                onProgressChange(Math.round(ratio * 100));
+              }}
+            >
+              <div className="w-full h-2 bg-[var(--border)] rounded-full relative">
+                <div
+                  className="h-full bg-[var(--primary)] rounded-full transition-all duration-100"
+                  style={{ width: `${progress}%` }}
+                />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[var(--primary)] rounded-full border-2 border-white shadow"
+                  style={{ left: `calc(${progress}% - 6px)` }}
+                />
+              </div>
+            </div>
+            <span className="text-xs font-mono text-[var(--text-secondary)] min-w-[32px] text-right">
+              {progress.toFixed(0)}%
+            </span>
           </div>
-          {/* Progress bar */}
-          <div className="w-32 h-2 bg-[var(--bg-elevated)] rounded-full overflow-hidden">
-            <div className="h-full bg-[var(--primary)] transition-all duration-100" style={{ width: `${progress}%` }} />
-          </div>
-          <span className="text-xs text-[var(--text-secondary)]">{progress.toFixed(0)}%</span>
-        </div>
 
-        {/* Data Panel */}
+          {/* Speed Legend */}
+          <div className="flex items-center justify-center gap-5 py-1.5 text-xs text-[var(--text-muted)] print:hidden">
+            {(
+              [
+                { color: '#6b7280', label: '< 10 km/h' },
+                { color: '#22c55e', label: '10–50 km/h' },
+                { color: '#f97316', label: '50–90 km/h' },
+                { color: '#ef4444', label: '> 90 km/h' },
+              ] as const
+            ).map((item) => (
+              <div key={item.label} className="flex items-center gap-1.5">
+                <span style={{ backgroundColor: item.color }} className="inline-block w-5 h-1.5 rounded" />
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* fin wrapper centré */}
+
+        {/* Data Panel — pleine largeur, colle aux bords */}
         <div
-          className={`w-full max-w-6xl bg-[var(--bg-elevated)] rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] border border-[var(--border)] transition-all duration-300 ease-in-out flex flex-col print:shadow-none print:border-0 ${isBottomPanelOpen ? 'h-96' : 'h-12'}`}
+          className={`w-full bg-[var(--bg-elevated)] shadow-[0_-4px_20px_rgba(0,0,0,0.1)] border-t border-[var(--border)] transition-all duration-300 ease-in-out flex flex-col print:shadow-none print:border-0 ${isBottomPanelOpen ? 'h-80' : 'h-12'}`}
         >
           {/* Tabs */}
           <div
@@ -952,9 +1130,19 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                 >
                   <tab.icon size={16} />
                   {tab.label}
-                  {tab.id === 'STOPS' && stops.length > 0 && (
+                  {tab.id === 'STOPS' && stops.filter((s) => s.type === 'STOP').length > 0 && (
                     <span className="ml-1 px-1.5 py-0.5 text-xs bg-[var(--primary-dim)] text-[var(--primary)] rounded-full">
-                      {stops.length}
+                      {stops.filter((s) => s.type === 'STOP').length}
+                    </span>
+                  )}
+                  {tab.id === 'TRIPS' && tripSegments.length > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 text-xs bg-[var(--primary-dim)] text-[var(--primary)] rounded-full">
+                      {tripSegments.length}
+                    </span>
+                  )}
+                  {tab.id === 'IDLE' && stops.filter((s) => s.type === 'IDLE').length > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 text-xs bg-orange-100 text-orange-600 rounded-full">
+                      {stops.filter((s) => s.type === 'IDLE').length}
                     </span>
                   )}
                   {tab.id === 'EVENTS' && speedingEvents.length > 0 && (
@@ -974,219 +1162,307 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-hidden p-4 bg-[var(--bg-elevated)]/50">
-            {/* STATS TAB */}
+          <div className="flex-1 overflow-hidden bg-[var(--bg-elevated)]/50">
+            {/* STATS TAB — 3 colonnes verticales pleine largeur */}
             {activeTab === 'STATS' && (
-              <div className="h-full overflow-y-auto">
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  <StatCard
+              <div className="grid grid-cols-3 divide-x divide-[var(--border)] h-full">
+                {/* Colonne 1 — Trajet */}
+                <div className="flex flex-col overflow-y-auto px-4 py-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Trajet</p>
+                  <StatRow
                     icon={Route}
-                    label="Distance totale"
+                    label="Distance"
                     value={`${tripStats.totalDistance.toFixed(1)} km`}
                     color="blue"
                   />
-                  <StatCard
-                    icon={Timer}
-                    label="Durée totale"
-                    value={formatDuration(tripStats.totalDuration)}
-                    color="purple"
-                  />
-                  <StatCard
+                  <StatRow
                     icon={Navigation}
                     label="Temps conduite"
                     value={formatDuration(tripStats.drivingTime)}
                     color="green"
                   />
-                  <StatCard
+                  <StatRow
                     icon={StopCircle}
                     label="Temps arrêt"
                     value={formatDuration(tripStats.stoppedTime)}
-                    color="orange"
+                    color="red"
                   />
-                  <StatCard
+                  <StatRow
                     icon={PauseCircle}
                     label="Temps ralenti"
                     value={formatDuration(tripStats.idleTime)}
                     color="orange"
                   />
-                  <StatCard
+                  <StatRow
+                    icon={WifiOff}
+                    label="Temps hors ligne"
+                    value={formatDuration(offlineTimeMin)}
+                    color="gray"
+                  />
+                </div>
+
+                {/* Colonne 2 — Vitesse & Alertes */}
+                <div className="flex flex-col overflow-y-auto px-4 py-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">
+                    Vitesse & Alertes
+                  </p>
+                  <StatRow
                     icon={Gauge}
                     label="Vitesse moyenne"
                     value={`${tripStats.avgSpeed.toFixed(0)} km/h`}
                     color="cyan"
                   />
-                  <StatCard
+                  <StatRow
                     icon={Zap}
                     label="Vitesse max"
                     value={`${tripStats.maxSpeed.toFixed(0)} km/h`}
                     color={tripStats.maxSpeed > (selectedVehicle?.maxSpeed || 120) ? 'red' : 'green'}
                   />
-                  <StatCard icon={MapPin} label="Nombre d'arrêts" value={`${tripStats.stopCount}`} color="blue" />
-                  <StatCard
+                  <StatRow icon={MapPin} label="Arrêts détectés" value={`${tripStats.stopCount}`} color="blue" />
+                  <StatRow
                     icon={AlertCircle}
-                    label="Excès vitesse"
+                    label="Excès de vitesse"
                     value={`${tripStats.speedingEvents}`}
                     color={tripStats.speedingEvents > 0 ? 'red' : 'green'}
                   />
+                  <StatRow
+                    icon={WifiOff}
+                    label="Coupures GPS"
+                    value={`${offlineGaps}`}
+                    color={offlineGaps > 0 ? 'red' : 'green'}
+                  />
                 </div>
 
-                {/* Mini speed chart */}
-                <div className="mt-4 h-32 bg-[var(--bg-elevated)] rounded-lg border border-[var(--border)] p-2">
-                  <ResponsiveContainer
-                    width="100%"
-                    height="100%"
-                    minHeight={100}
-                    minWidth={150}
-                    initialDimension={{ width: 150, height: 100 }}
-                  >
-                    <AreaChart data={chartData}>
-                      <defs>
-                        <linearGradient id="speedGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <XAxis dataKey="time" hide />
-                      <YAxis hide />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#fff',
-                          borderRadius: '8px',
-                          border: '1px solid #e2e8f0',
-                          fontSize: '12px',
-                        }}
-                        formatter={(value: unknown) =>
-                          [`${(value as number).toFixed(0)} km/h`, 'Vitesse'] as [string, string]
-                        }
-                      />
-                      <ReferenceLine y={selectedVehicle?.maxSpeed || 120} stroke="#ef4444" strokeDasharray="3 3" />
-                      <Area type="linear" dataKey="speed" stroke="#3b82f6" fill="url(#speedGradient)" strokeWidth={2} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                {/* Colonne 3 — Carburant */}
+                <div className="flex flex-col overflow-y-auto px-4 py-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Carburant</p>
+                  <StatRow
+                    icon={Fuel}
+                    label="Consommé"
+                    value={fuelConsumed != null ? `${fuelConsumed.toFixed(1)}%` : '–'}
+                    color="purple"
+                  />
+                  <StatRow
+                    icon={Droplets}
+                    label="Niveau actuel"
+                    value={currentFuelLevel != null ? `${currentFuelLevel.toFixed(0)}%` : '–'}
+                    color={currentFuelLevel != null && currentFuelLevel < 20 ? 'red' : 'green'}
+                  />
+                  <StatRow
+                    icon={TrendingDown}
+                    label="Baisses suspectes"
+                    value={`${fuelEvents.filter((e) => e.type === 'LOSS').length}`}
+                    color={fuelEvents.some((e) => e.type === 'LOSS') ? 'red' : 'green'}
+                  />
+                  <StatRow
+                    icon={TrendingUp}
+                    label="Recharges"
+                    value={`${fuelEvents.filter((e) => e.type === 'REFILL').length}`}
+                    color="blue"
+                  />
                 </div>
               </div>
             )}
 
-            {/* STOPS TAB */}
-            {activeTab === 'STOPS' && (
-              <div className="h-full overflow-y-auto">
-                {stops.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
-                    <div className="text-center">
-                      <MapPin className="w-12 h-12 mx-auto mb-2 opacity-30" />
-                      <p>Aucun arrêt détecté pour cette période</p>
-                      <p className="text-sm text-[var(--text-muted)]">
-                        Les arrêts de moins de 2 minutes ne sont pas comptabilisés
-                      </p>
-                    </div>
+            {/* STOPS TAB — uniquement les arrêts moteur (STOP), pas les ralentis */}
+            {activeTab === 'STOPS' &&
+              (() => {
+                const stopOnly = stops.filter((s) => s.type === 'STOP');
+                return (
+                  <div className="h-full overflow-y-auto">
+                    {stopOnly.length === 0 ? (
+                      <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
+                        <div className="text-center">
+                          <MapPin className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                          <p>Aucun arrêt moteur détecté pour cette période</p>
+                          <p className="text-sm text-[var(--text-muted)]">
+                            Les arrêts de moins de 2 minutes ne sont pas comptabilisés
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <table className="w-full text-sm text-left">
+                        <thead className="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)]/50 sticky top-0">
+                          <tr>
+                            <th className="px-4 py-2">#</th>
+                            <th className="px-4 py-2">Heure début</th>
+                            <th className="px-4 py-2">Heure fin</th>
+                            <th className="px-4 py-2">Durée</th>
+                            <th className="px-4 py-2">Position</th>
+                            <th className="px-4 py-2">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-surface)]">
+                          {stopOnly.map((stop, index) => (
+                            <tr
+                              key={stop.id}
+                              className={`cursor-pointer transition-colors ${
+                                selectedRowId === stop.id
+                                  ? 'bg-[var(--primary-dim)] border-l-4 border-l-[var(--primary)]'
+                                  : 'hover:bg-[var(--primary-dim)]/40'
+                              }`}
+                              onClick={() => {
+                                setSelectedRowId(stop.id);
+                                onStopClick?.(stop);
+                              }}
+                            >
+                              <td className="px-4 py-2 font-medium text-[var(--text-primary)]">{index + 1}</td>
+                              <td className="px-4 py-2">
+                                {stop.startTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                              </td>
+                              <td className="px-4 py-2">
+                                {stop.endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                              </td>
+                              <td className="px-4 py-2">
+                                <span
+                                  className={`px-2 py-0.5 rounded-full text-xs font-medium ${stop.duration > 30 ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}`}
+                                >
+                                  {formatDuration(stop.duration)}
+                                </span>
+                              </td>
+                              <td className="px-4 py-2 text-[var(--text-secondary)]">
+                                <GeocodedCell lat={stop.location.lat} lng={stop.location.lng} address={stop.address} />
+                              </td>
+                              <td className="px-4 py-2">
+                                <span
+                                  className={`text-xs font-medium ${selectedRowId === stop.id ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
+                                >
+                                  {selectedRowId === stop.id ? '● Sur carte' : 'Cliquer'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
                   </div>
-                ) : (
-                  <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)]/50 sticky top-0">
-                      <tr>
-                        <th className="px-4 py-2">#</th>
-                        <th className="px-4 py-2">Type</th>
-                        <th className="px-4 py-2">Heure début</th>
-                        <th className="px-4 py-2">Heure fin</th>
-                        <th className="px-4 py-2">Durée</th>
-                        <th className="px-4 py-2">Position</th>
-                        <th className="px-4 py-2">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-surface)]">
-                      {stops.map((stop, index) => (
-                        <tr
-                          key={stop.id}
-                          className="hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/20 cursor-pointer"
-                          onClick={() => onStopClick?.(stop)}
-                        >
-                          <td className="px-4 py-2 font-medium text-[var(--text-primary)]">{index + 1}</td>
-                          <td className="px-4 py-2">
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${stop.type === 'STOP' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}`}
-                            >
-                              {stop.type === 'STOP' ? 'Arrêt' : 'Ralenti'}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2">
-                            {stop.startTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                          </td>
-                          <td className="px-4 py-2">
-                            {stop.endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                          </td>
-                          <td className="px-4 py-2">
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${stop.duration > 30 ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'}`}
-                            >
-                              {formatDuration(stop.duration)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 text-[var(--text-secondary)]">
-                            {stop.address || `${stop.location.lat.toFixed(4)}, ${stop.location.lng.toFixed(4)}`}
-                          </td>
-                          <td className="px-4 py-2">
-                            <button className="text-[var(--primary)] hover:text-[var(--primary)] text-xs font-medium">
-                              Voir sur carte
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            )}
+                );
+              })()}
 
             {/* TRIPS TAB */}
             {activeTab === 'TRIPS' && (
-              <div className="h-full overflow-y-auto">
-                {tripSegments.length === 0 ? (
+              <div className="h-full overflow-y-auto px-3 py-2 space-y-2">
+                {serverTripsLoading ? (
+                  <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
+                    <div className="text-center">
+                      <div className="animate-spin w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full mx-auto mb-2" />
+                      <p className="text-sm">Chargement des trajets…</p>
+                    </div>
+                  </div>
+                ) : serverTrips.length === 0 ? (
                   <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
                     <div className="text-center">
                       <Navigation className="w-12 h-12 mx-auto mb-2 opacity-30" />
-                      <p>Aucun trajet détecté pour cette période</p>
+                      <p>Aucun trajet enregistré sur cette période</p>
                     </div>
                   </div>
                 ) : (
-                  <table className="w-full text-sm text-left">
-                    <thead className="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)]/50 sticky top-0">
-                      <tr>
-                        <th className="px-4 py-2">#</th>
-                        <th className="px-4 py-2">Départ</th>
-                        <th className="px-4 py-2">Arrivée</th>
-                        <th className="px-4 py-2">Distance</th>
-                        <th className="px-4 py-2">Durée</th>
-                        <th className="px-4 py-2">Vit. Moy</th>
-                        <th className="px-4 py-2">Vit. Max</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-surface)]">
-                      {tripSegments.map((trip, index) => (
-                        <tr
-                          key={trip.id}
-                          className="hover:bg-[var(--primary-dim)]/50 dark:hover:bg-[var(--primary-dim)]/20"
-                        >
-                          <td className="px-4 py-2 font-medium text-[var(--text-primary)]">{index + 1}</td>
-                          <td className="px-4 py-2">
-                            {trip.startTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                          </td>
-                          <td className="px-4 py-2">
-                            {trip.endTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                          </td>
-                          <td className="px-4 py-2 font-medium">{trip.distance.toFixed(1)} km</td>
-                          <td className="px-4 py-2">{formatDuration(trip.duration)}</td>
-                          <td className="px-4 py-2">{trip.avgSpeed.toFixed(0)} km/h</td>
-                          <td className="px-4 py-2">
-                            <span
-                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${trip.maxSpeed > (selectedVehicle?.maxSpeed || 120) ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}
-                            >
-                              {trip.maxSpeed.toFixed(0)} km/h
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  serverTrips.map((trip, index) => {
+                    const maxLimit = selectedVehicle?.maxSpeed || 120;
+                    const maxOver = trip.max_speed_kmh != null && Number(trip.max_speed_kmh) > maxLimit;
+                    const isSelected = selectedRowId === trip.id;
+                    const fmtTime = (iso: string | null) =>
+                      iso ? new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '–';
+                    const fmtDur = (sec: number | null) => {
+                      if (!sec) return '–';
+                      const m = Math.round(sec / 60);
+                      return m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}`;
+                    };
+                    const startAddr =
+                      trip.start_address ||
+                      (trip.start_lat
+                        ? `${Number(trip.start_lat).toFixed(4)}, ${Number(trip.start_lng).toFixed(4)}`
+                        : null);
+                    const endAddr =
+                      trip.end_address ||
+                      (trip.end_lat ? `${Number(trip.end_lat).toFixed(4)}, ${Number(trip.end_lng).toFixed(4)}` : null);
+                    return (
+                      <div
+                        key={trip.id ?? index}
+                        onClick={() => {
+                          const newId = isSelected ? null : trip.id;
+                          setSelectedRowId(newId);
+                          if (!isSelected && trip.start_lat && trip.start_lng) {
+                            onTripClick?.({
+                              id: trip.id,
+                              startTime: new Date(trip.start_time),
+                              endTime: new Date(trip.end_time || trip.start_time),
+                              startLocation: { lat: Number(trip.start_lat), lng: Number(trip.start_lng) },
+                              endLocation: {
+                                lat: Number(trip.end_lat ?? trip.start_lat),
+                                lng: Number(trip.end_lng ?? trip.start_lng),
+                              },
+                              distance: Number(trip.distance_km ?? 0),
+                              duration: Number(trip.duration_seconds ?? 0) / 60,
+                              avgSpeed: Number(trip.avg_speed_kmh ?? 0),
+                              maxSpeed: Number(trip.max_speed_kmh ?? 0),
+                            });
+                          }
+                        }}
+                        className={`cursor-pointer rounded-lg border px-3 py-2 transition-all ${
+                          isSelected
+                            ? 'border-l-4 border-[var(--primary)] bg-[var(--primary-dim)]'
+                            : 'border-[var(--border)] bg-[var(--bg-surface)] hover:bg-[var(--primary-dim)]/40'
+                        }`}
+                      >
+                        {/* Ligne 1 : # + heures + durée + stats */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span
+                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${isSelected ? 'bg-[var(--primary)] text-white' : 'bg-[var(--primary-dim)] text-[var(--primary)]'}`}
+                          >
+                            {index + 1}
+                          </span>
+                          <span className="text-sm font-bold text-[var(--text-primary)]">
+                            {fmtTime(trip.start_time)} → {fmtTime(trip.end_time)}
+                          </span>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full border bg-[var(--bg-elevated)] text-[var(--primary)] border-[var(--border)]">
+                            {fmtDur(trip.duration_seconds)}
+                          </span>
+                          <div className="flex items-center gap-2 ml-auto flex-wrap">
+                            {trip.distance_km != null && (
+                              <span className="flex items-center gap-1 text-xs text-[var(--text-muted)]">
+                                <Route className="w-3 h-3" />
+                                {Number(trip.distance_km).toFixed(1)} km
+                              </span>
+                            )}
+                            {trip.avg_speed_kmh != null && (
+                              <span className="text-xs text-[var(--text-muted)]">
+                                {Math.round(Number(trip.avg_speed_kmh))} km/h moy
+                              </span>
+                            )}
+                            {trip.max_speed_kmh != null && (
+                              <span
+                                className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${maxOver ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}
+                              >
+                                {Math.round(Number(trip.max_speed_kmh))} max
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {/* Ligne 2 : Départ → Arrivée */}
+                        {(startAddr || endAddr) && (
+                          <div className="flex items-start gap-1 mt-1 text-xs text-[var(--text-secondary)] min-w-0">
+                            {startAddr && (
+                              <span className="truncate flex-1">
+                                <span className="font-semibold text-green-600">Départ </span>
+                                {startAddr}
+                              </span>
+                            )}
+                            {startAddr && endAddr && <span className="flex-shrink-0">→</span>}
+                            {endAddr && (
+                              <span className="truncate flex-1 text-right">
+                                <span className="font-semibold text-red-500">Arrivée </span>
+                                {endAddr}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        {trip.driver_name && (
+                          <p className="text-xs text-[var(--text-muted)] mt-0.5">{trip.driver_name}</p>
+                        )}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             )}
@@ -1219,8 +1495,15 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       {speedingEvents.map((event, index) => (
                         <tr
                           key={event.id}
-                          className="hover:bg-red-50/50 dark:hover:bg-red-900/20 cursor-pointer"
-                          onClick={() => onEventClick?.(event)}
+                          className={`cursor-pointer transition-colors ${
+                            selectedRowId === event.id
+                              ? 'bg-red-50 dark:bg-red-900/30 border-l-4 border-l-red-500'
+                              : 'hover:bg-red-50/50 dark:hover:bg-red-900/20'
+                          }`}
+                          onClick={() => {
+                            setSelectedRowId(event.id);
+                            onEventClick?.(event);
+                          }}
                         >
                           <td className="px-4 py-2 font-medium text-[var(--text-primary)]">{index + 1}</td>
                           <td className="px-4 py-2">
@@ -1559,11 +1842,23 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                             <th className="px-4 py-2">Heure fin</th>
                             <th className="px-4 py-2">Durée</th>
                             <th className="px-4 py-2">Position</th>
+                            <th className="px-4 py-2">Carte</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-elevated)]">
                           {idleEvents.map((event, index) => (
-                            <tr key={event.id} className="hover:bg-orange-50/50">
+                            <tr
+                              key={event.id}
+                              className={`cursor-pointer transition-colors ${
+                                selectedRowId === event.id
+                                  ? 'bg-orange-50 dark:bg-orange-900/20 border-l-4 border-l-orange-500'
+                                  : 'hover:bg-orange-50/50'
+                              }`}
+                              onClick={() => {
+                                setSelectedRowId(event.id);
+                                onStopClick?.(event);
+                              }}
+                            >
                               <td className="px-4 py-2 font-medium text-[var(--text-primary)]">{index + 1}</td>
                               <td className="px-4 py-2">
                                 {event.startTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
@@ -1580,6 +1875,13 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                               </td>
                               <td className="px-4 py-2 text-[var(--text-secondary)] text-xs">
                                 {event.address || `${event.location.lat.toFixed(4)}, ${event.location.lng.toFixed(4)}`}
+                              </td>
+                              <td className="px-4 py-2">
+                                <span
+                                  className={`text-xs font-medium ${selectedRowId === event.id ? 'text-orange-600' : 'text-[var(--text-muted)]'}`}
+                                >
+                                  {selectedRowId === event.id ? '● Sur carte' : 'Cliquer'}
+                                </span>
                               </td>
                             </tr>
                           ))}
@@ -1629,6 +1931,42 @@ const StatCard: React.FC<{
         <span className="text-xs font-medium opacity-80">{label}</span>
       </div>
       <p className="text-lg font-bold">{value}</p>
+    </div>
+  );
+};
+
+// Ligne de stat pour l'onglet STATS — label gauche, valeur droite, lisible
+const StatRow: React.FC<{
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  color: 'blue' | 'purple' | 'green' | 'orange' | 'red' | 'cyan' | 'gray';
+}> = ({ icon: Icon, label, value, color }) => {
+  const iconColor = {
+    blue: 'text-[var(--primary)]',
+    purple: 'text-purple-500',
+    green: 'text-green-500',
+    orange: 'text-orange-500',
+    red: 'text-red-500',
+    cyan: 'text-cyan-500',
+    gray: 'text-gray-400',
+  }[color];
+  const valueColor = {
+    blue: 'text-[var(--primary)]',
+    purple: 'text-purple-600',
+    green: 'text-green-600',
+    orange: 'text-orange-600',
+    red: 'text-red-600',
+    cyan: 'text-cyan-600',
+    gray: 'text-gray-500',
+  }[color];
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-[var(--border)]/50 last:border-0">
+      <div className="flex items-center gap-2.5">
+        <Icon size={16} className={`shrink-0 ${iconColor}`} />
+        <span className="text-sm text-[var(--text-secondary)]">{label}</span>
+      </div>
+      <span className={`text-base font-bold ${valueColor}`}>{value}</span>
     </div>
   );
 };

@@ -170,16 +170,27 @@ export function ResellerDrawerForm({
         primaryColor: rd.primaryColor || '#3b82f6',
         secondaryColor: rd.secondaryColor || '#1e40af',
         customDomain: rd.customDomain || '',
-        modules: rd.modules || {
-          fleet: true,
-          interventions: true,
-          stock: false,
-          crm: false,
-          finance: false,
-          reports: true,
-          alerts: true,
-          map: true,
-        },
+        modules: Array.isArray(rd.modules)
+          ? {
+              fleet: rd.modules.includes('fleet'),
+              interventions: rd.modules.includes('interventions') || rd.modules.includes('tech'),
+              stock: rd.modules.includes('stock'),
+              crm: rd.modules.includes('crm'),
+              finance: rd.modules.includes('finance'),
+              reports: rd.modules.includes('reports'),
+              alerts: rd.modules.includes('alerts'),
+              map: rd.modules.includes('map'),
+            }
+          : {
+              fleet: true,
+              interventions: true,
+              stock: false,
+              crm: false,
+              finance: false,
+              reports: true,
+              alerts: true,
+              map: true,
+            },
         permissions: rd.permissions
           ? {
               canManageTeam: rd.permissions.includes('MANAGE_TEAM'),

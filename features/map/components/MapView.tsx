@@ -55,7 +55,7 @@ import { type VehicleCardConfig } from './VehicleListCard';
 import { VirtualVehicleList } from './VirtualVehicleList';
 import { MapSidebarSkeleton } from '../../../components/Skeleton';
 import { GoogleMapComponent } from './GoogleMapComponent';
-import { ReplayControlPanel, type StopEvent, type SpeedEvent } from './ReplayControlPanel';
+import { ReplayControlPanel, type StopEvent, type SpeedEvent, type TripSegment } from './ReplayControlPanel';
 import { HeatmapLayer } from './HeatmapLayer';
 import { AnimatedVehicleMarker } from './AnimatedVehicleMarker';
 import { getHeaders } from '../../../services/api/client';
@@ -166,15 +166,122 @@ const createVehicleIcon = (vehicle: Vehicle) => {
 };
 
 // Numbered marker for stops/idle during replay
-const createStopMarkerIcon = (num: number, type: 'STOP' | 'IDLE') => {
+const createStopMarkerIcon = (num: number, type: 'STOP' | 'IDLE', highlighted = false) => {
   const bg = type === 'STOP' ? '#dc2626' : '#f97316';
+  const size = highlighted ? 36 : 28;
+  const label = type === 'STOP' ? '🅿' : '⏸';
   const html = `<div style="
-    width:28px;height:28px;border-radius:50%;
-    background:${bg};color:white;font-weight:700;font-size:12px;
-    display:flex;align-items:center;justify-content:center;
-    border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.35);
-    cursor:pointer;">${num}</div>`;
-  return L.divIcon({ html, className: '', iconSize: [28, 28], iconAnchor: [14, 14] });
+    width:${size}px;height:${size}px;border-radius:50%;
+    background:${bg};color:white;font-weight:700;font-size:${highlighted ? 14 : 11}px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+    border:${highlighted ? 3 : 2}px solid white;
+    box-shadow:0 ${highlighted ? 4 : 2}px ${highlighted ? 12 : 6}px rgba(0,0,0,${highlighted ? 0.5 : 0.35});
+    cursor:pointer;transition:all .15s;line-height:1">
+    <span style="font-size:${highlighted ? 11 : 9}px">${label}</span>
+    <span>${num}</span>
+  </div>`;
+  return L.divIcon({ html, className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2] });
+};
+
+// Marqueur véhicule replay avec label (plaque, vitesse, distance)
+const createReplayMarkerIcon = (
+  vehicle: Vehicle,
+  status: VehicleStatus,
+  heading: number,
+  speed: number,
+  distKm: number
+) => {
+  const color = status === VehicleStatus.MOVING ? '#22c55e' : status === VehicleStatus.IDLE ? '#f97316' : '#ef4444';
+  const speedColor = speed >= 90 ? '#ef4444' : speed >= 50 ? '#f97316' : speed >= 10 ? '#22c55e' : '#94a3b8';
+  const plate = vehicle.licensePlate || vehicle.name || '—';
+  const typeEmoji =
+    vehicle.type === 'TRUCK' ? '🚛' : vehicle.type === 'BUS' ? '🚌' : vehicle.type === 'MOTORCYCLE' ? '🏍️' : '🚗';
+  const arrow =
+    status === VehicleStatus.MOVING
+      ? `<div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%) rotate(${heading}deg);transform-origin:bottom center;height:22px;width:2px;">
+           <div style="width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:7px solid ${color};position:absolute;top:0;left:-4px;"></div>
+         </div>`
+      : '';
+  const html = `
+    <div style="display:flex;flex-direction:column;align-items:center;pointer-events:none;user-select:none">
+      <div style="position:relative;width:40px;height:40px;background:white;border-radius:50%;border:3px solid ${color};
+        box-shadow:0 3px 10px rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;">
+        ${arrow}
+        <span style="font-size:20px;line-height:1">${typeEmoji}</span>
+      </div>
+      <div style="margin-top:4px;background:rgba(10,10,10,0.82);color:white;border-radius:8px;padding:3px 8px;
+        text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.4);white-space:nowrap;">
+        <div style="font-size:11px;font-weight:800;letter-spacing:0.5px;display:flex;align-items:center;gap:5px;justify-content:center;">
+          <span style="overflow:hidden;text-overflow:ellipsis;max-width:70px">${plate}</span>
+          <span style="color:${speedColor}">${Math.round(speed)} km/h</span>
+          <span style="color:#94a3b8;font-size:9px">${distKm.toFixed(1)}km</span>
+        </div>
+      </div>
+    </div>`;
+  return L.divIcon({ html, className: '', iconSize: [130, 90], iconAnchor: [65, 20] });
+};
+
+// Popup enrichi : géocodage live + heure début/fin
+const StopPopupContent: React.FC<{
+  stop: {
+    location: Coordinate;
+    startTime: Date;
+    endTime: Date;
+    duration: number;
+    type: 'STOP' | 'IDLE';
+    address?: string;
+  };
+  index: number;
+}> = ({ stop, index }) => {
+  const [address, setAddress] = React.useState<string | null>(stop.address || null);
+  const [loading, setLoading] = React.useState(!stop.address);
+
+  React.useEffect(() => {
+    if (stop.address || address) return;
+    setLoading(true);
+    fetch(`/api/fleet/geocode?lat=${stop.location.lat}&lng=${stop.location.lng}`, {
+      credentials: 'include',
+      headers: getHeaders(),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => setAddress(data?.address || null))
+      .catch(() => setAddress(null))
+      .finally(() => setLoading(false));
+  }, [stop.location.lat, stop.location.lng]);
+
+  const fmt = (d: Date) => d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const color = stop.type === 'STOP' ? '#dc2626' : '#f97316';
+  const emoji = stop.type === 'STOP' ? '🅿️' : '⏸️';
+  const label = stop.type === 'STOP' ? 'Arrêt moteur' : 'Ralenti';
+
+  return (
+    <div style={{ minWidth: 200, fontFamily: 'inherit' }}>
+      <p style={{ fontWeight: 700, color, marginBottom: 6, fontSize: 13 }}>
+        {emoji} {label} #{index + 1}
+      </p>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 4, fontSize: 12 }}>
+        <span>
+          🕐 <strong>{fmt(stop.startTime)}</strong>
+        </span>
+        <span>→</span>
+        <span>
+          <strong>{fmt(stop.endTime)}</strong>
+        </span>
+      </div>
+      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>
+        ⏱ {Math.floor(stop.duration)}min {Math.round((stop.duration % 1) * 60)}s
+      </div>
+      {loading ? (
+        <div style={{ fontSize: 11, color: '#94a3b8' }}>📍 Géocodage…</div>
+      ) : address ? (
+        <div style={{ fontSize: 11, color: '#374151', lineHeight: 1.4 }}>📍 {address}</div>
+      ) : (
+        <div style={{ fontSize: 10, color: '#94a3b8', fontFamily: 'monospace' }}>
+          {stop.location.lat.toFixed(5)}, {stop.location.lng.toFixed(5)}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const createClusterCustomIcon = (cluster: MarkerCluster) => {
@@ -334,6 +441,7 @@ interface MapViewProps {
   zones?: Zone[];
   focusedVehicle?: Vehicle | null;
   replayVehicle?: Vehicle | null; // New prop for Replay Mode
+  onReplayClose?: () => void; // Notifie le parent que le replay a été fermé (pour reset replayVehicle)
   onNavigate?: (view: View, params?: Record<string, string>) => void;
   onReplay?: (vehicle: Vehicle) => void; // Callback passed down to DetailPanel
 }
@@ -356,19 +464,30 @@ type _RenderItem = (Vehicle & { _screenX?: number; _screenY?: number }) | Cluste
 type SidebarTab = 'vehicles' | 'places' | 'drivers';
 
 // Component to update map view when focused vehicle changes
-// Follows the replay marker on the map, panning every ~2 seconds
+// Ne panne que si le véhicule sort de la zone centrale visible (80% de la vue)
 const ReplayFollower: React.FC<{ progress: number; path: Coordinate[] }> = ({ progress, path }) => {
   const map = useMap();
-  const lastPanTime = React.useRef(0);
   React.useEffect(() => {
     if (path.length === 0) return;
-    const now = Date.now();
-    if (now - lastPanTime.current < 2000) return;
     const idx = Math.min(Math.floor((progress / 100) * (path.length - 1)), path.length - 1);
     const pos = path[idx];
-    if (pos) {
-      map.panTo([pos.lat, pos.lng]);
-      lastPanTime.current = now;
+    if (!pos) return;
+
+    const bounds = map.getBounds();
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+    // Marge de 20% sur chaque bord — si le véhicule est dans les 60% centraux, on ne bouge pas
+    const latMargin = (ne.lat - sw.lat) * 0.2;
+    const lngMargin = (ne.lng - sw.lng) * 0.2;
+
+    const inView =
+      pos.lat > sw.lat + latMargin &&
+      pos.lat < ne.lat - latMargin &&
+      pos.lng > sw.lng + lngMargin &&
+      pos.lng < ne.lng - lngMargin;
+
+    if (!inView) {
+      map.panTo([pos.lat, pos.lng], { animate: true, duration: 0.5 });
     }
   }, [progress, path, map]);
   return null;
@@ -437,30 +556,47 @@ const MapUpdater: React.FC<{
 const isValidCoord = (lat: number, lng: number): boolean =>
   !isNaN(lat) && !isNaN(lng) && isFinite(lat) && isFinite(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
 
-// --- TILE LAYER CONFIG (OSM, no API key required) ---
+// --- TILE LAYER CONFIG ---
 const OSM_TILE_LAYERS = {
   standard: {
     url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     label: 'Standard',
+    icon: '🗺️',
+    overlay: null as string | null,
   },
   satellite: {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution:
-      'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+      'Tiles &copy; Esri &mdash; Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, GIS User Community',
     label: 'Satellite',
+    icon: '🛰️',
+    overlay: null as string | null,
+  },
+  hybrid: {
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    attribution:
+      'Tiles &copy; Esri &mdash; Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, GIS User Community',
+    label: 'Hybride',
+    icon: '🌐',
+    overlay:
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
   },
   terrain: {
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     attribution:
       'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
     label: 'Terrain',
+    icon: '⛰️',
+    overlay: null as string | null,
   },
   dark: {
     url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
     attribution:
       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
     label: 'Nuit',
+    icon: '🌙',
+    overlay: null as string | null,
   },
 } as const;
 type OsmLayer = keyof typeof OSM_TILE_LAYERS;
@@ -470,6 +606,7 @@ export const MapView: React.FC<MapViewProps> = ({
   zones = [],
   focusedVehicle,
   replayVehicle,
+  onReplayClose,
   onNavigate,
   onReplay,
 }) => {
@@ -519,8 +656,17 @@ export const MapView: React.FC<MapViewProps> = ({
   // Default to leaflet, only use google if API key is available
   const [mapProvider, setMapProvider] = useState<'leaflet' | 'google'>('leaflet');
   const [googleMapsKey, setGoogleMapsKey] = useState<string | null>(null);
-  const [googleMapType, setGoogleMapType] = useState<'roadmap' | 'satellite'>('roadmap');
+  const [googleMapType, setGoogleMapType] = useState<'roadmap' | 'satellite' | 'terrain' | 'hybrid'>('roadmap');
   const [osmLayer, setOsmLayer] = useState<OsmLayer>('standard');
+  const [showLayerPicker, setShowLayerPicker] = useState(false);
+
+  // Fermer le picker de couches au clic en dehors
+  useEffect(() => {
+    if (!showLayerPicker) return;
+    const handler = () => setShowLayerPicker(false);
+    window.addEventListener('click', handler, { capture: true, once: true });
+    return () => window.removeEventListener('click', handler, { capture: true });
+  }, [showLayerPicker]);
 
   useEffect(() => {
     // Fetch Google Maps Key - use dedicated map-config route (no special permissions needed)
@@ -619,6 +765,22 @@ export const MapView: React.FC<MapViewProps> = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const replayAnimationRef = useRef<number | null>(null);
   const replayFetchAbortRef = useRef<AbortController | null>(null);
+
+  // Grace delay 30s avant d'afficher la bannière de déconnexion
+  // Évite d'alarmer le client pour des micro-coupures normales (WiFi, proxy timeout)
+  const [showSocketBanner, setShowSocketBanner] = useState(false);
+  const socketBannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (isSocketConnected) {
+      if (socketBannerTimerRef.current) clearTimeout(socketBannerTimerRef.current);
+      setShowSocketBanner(false);
+    } else {
+      socketBannerTimerRef.current = setTimeout(() => setShowSocketBanner(true), 30_000);
+    }
+    return () => {
+      if (socketBannerTimerRef.current) clearTimeout(socketBannerTimerRef.current);
+    };
+  }, [isSocketConnected]);
   const nominatimDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [replayDateRange, setReplayDateRange] = useState(() => {
@@ -635,6 +797,27 @@ export const MapView: React.FC<MapViewProps> = ({
   const [highlightedStop, setHighlightedStop] = useState<string | null>(null);
   const [highlightedEvent, setHighlightedEvent] = useState<string | null>(null);
   const [mapFocusPosition, setMapFocusPosition] = useState<Coordinate | null>(null);
+  // Sélection externe (clic sur marqueur → ouvrir onglet dans le panneau)
+  const [externalStopSelect, setExternalStopSelect] = useState<{ stop: StopEvent; tab: 'STOPS' | 'IDLE' } | null>(null);
+  const [externalEventSelect, setExternalEventSelect] = useState<SpeedEvent | null>(null);
+
+  // Distance cumulée par index de replayPath (pour affichage sur le marqueur)
+  const replayCumDist = useMemo(() => {
+    if (replayPath.length === 0) return [] as number[];
+    const R = 6371;
+    const dists: number[] = [0];
+    for (let i = 1; i < replayPath.length; i++) {
+      const prev = replayPath[i - 1];
+      const curr = replayPath[i];
+      const dLat = ((curr.lat - prev.lat) * Math.PI) / 180;
+      const dLng = ((curr.lng - prev.lng) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos((prev.lat * Math.PI) / 180) * Math.cos((curr.lat * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+      dists.push(dists[i - 1] + R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+    }
+    return dists;
+  }, [replayPath]);
 
   // --- SPRINT 1: TEMPS RÉEL & ALERTES ---
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
@@ -1019,6 +1202,8 @@ export const MapView: React.FC<MapViewProps> = ({
     if (replayVehicle) {
       setActiveReplayVehicle(replayVehicle);
       setIsReplayActive(true);
+      setIsPlaying(false); // forcer la pause immédiatement, pas d'auto-play
+      setReplayProgress(0);
       setIsSidebarOpen(false);
       setSelectedVehicle(null);
     }
@@ -1035,88 +1220,27 @@ export const MapView: React.FC<MapViewProps> = ({
     const loadReplayData = async () => {
       if (activeReplayVehicle && isReplayActive) {
         try {
-          const dateStr = replayDateRange.start.toISOString().split('T')[0];
-          const response = await fetch(
-            `/api/fleet/vehicles/${activeReplayVehicle.id}/history/snapped?date=${dateStr}`,
-            {
-              signal: abortController.signal,
-              credentials: 'include',
-              headers: getHeaders(),
-            }
-          );
-
-          if (response.ok) {
-            const history = await response.json();
-            if (history && history.length > 0) {
-              const path = history.map(
-                (point: { lat?: number; latitude?: number; lng?: number; longitude?: number }) => ({
-                  lat: point.lat || point.latitude,
-                  lng: point.lng || point.longitude,
-                })
-              );
-              setReplayPath(path);
-              setReplayHistory(
-                history.map(
-                  (
-                    point: {
-                      lat?: number;
-                      latitude?: number;
-                      lng?: number;
-                      longitude?: number;
-                      time?: string;
-                      speed?: number;
-                      heading?: number;
-                      ignition?: boolean;
-                      fuel_level?: number;
-                    },
-                    idx: number
-                  ) => ({
-                    vehicleId: activeReplayVehicle.id,
-                    timestamp: point.time || new Date(replayDateRange.start.getTime() + idx * 60000).toISOString(),
-                    location: { lat: point.lat || point.latitude, lng: point.lng || point.longitude },
-                    speed: point.speed || 0,
-                    heading: point.heading || 0,
-                    ignition: point.ignition !== undefined ? point.ignition : null,
-                    fuelLevel: point.fuel_level || 0,
-                  })
-                )
-              );
-            } else {
-              // Pas de données, fallback
-              const rawHistory = await getVehicleHistory(activeReplayVehicle.id, replayDateRange.start);
-              if (rawHistory && rawHistory.length > 0) {
-                setReplayPath(rawHistory.map((h) => h.location));
-                setReplayHistory(rawHistory);
-              } else {
-                // No data available
-                setReplayPath([]);
-                setReplayHistory([]);
-              }
-            }
+          // Utiliser le même endpoint que VehicleDetailPanel → /objects/{id}/history/snapped
+          // Source unique garantie : mêmes données, mêmes stats
+          const rawHistory = await getVehicleHistory(activeReplayVehicle.id, replayDateRange.start);
+          if (rawHistory && rawHistory.length > 0) {
+            setReplayPath(
+              rawHistory.map((h: any) => h.location || { lat: h.lat || h.latitude, lng: h.lng || h.longitude })
+            );
+            setReplayHistory(rawHistory);
           } else {
-            // Fallback en cas d'erreur API
-            const rawHistory = await getVehicleHistory(activeReplayVehicle.id, replayDateRange.start);
-            if (rawHistory && rawHistory.length > 0) {
-              setReplayPath(rawHistory.map((h) => h.location));
-              setReplayHistory(rawHistory);
-            } else {
-              setReplayPath([]);
-              setReplayHistory([]);
-            }
+            setReplayPath([]);
+            setReplayHistory([]);
           }
-        } catch (e) {
-          if ((e as Error).name !== 'AbortError') {
+        } catch (err: any) {
+          if (err?.name !== 'AbortError') {
             setReplayPath([]);
             setReplayHistory([]);
           }
         }
-
-        if (!abortController.signal.aborted) {
-          setReplayProgress(0);
-          setIsPlaying(true);
-        }
       }
     };
+
     loadReplayData();
     return () => {
       abortController.abort();
@@ -1177,7 +1301,9 @@ export const MapView: React.FC<MapViewProps> = ({
       let lastTime = performance.now();
       const animate = (time: number) => {
         const delta = time - lastTime;
-        if (delta > 50 / playbackSpeed) {
+        // Base : 300ms par tick à 1× → journée complète en ~60s
+        // 2× = 30s, 5× = 12s, 10× = 6s, 20× = 3s
+        if (delta > 300 / playbackSpeed) {
           setReplayProgress((prev) => {
             if (prev >= 100) {
               setIsPlaying(false);
@@ -1474,16 +1600,17 @@ export const MapView: React.FC<MapViewProps> = ({
 
   return (
     <div className="flex h-full w-full absolute inset-0 lg:relative overflow-hidden bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg select-none">
-      {/* ── Socket connectivity banner ─────────────────────────────────────── */}
-      {!isSocketConnected && (
-        <div
-          className={`absolute lg:top-2 bottom-24 lg:bottom-auto left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium shadow-lg pointer-events-none
-          ${isDataStale ? 'bg-red-600 text-white' : 'bg-amber-500 text-white'}`}
-        >
-          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-          {isDataStale ? 'Données périmées — reconnexion…' : 'Connexion temps réel interrompue…'}
-        </div>
-      )}
+      {/* ── Socket connectivity banner — staff uniquement (invisible pour les clients) ── */}
+      {showSocketBanner &&
+        ['SUPER_ADMIN', 'SUPERADMIN', 'ADMIN', 'MANAGER', 'TECH', 'SUPPORT_AGENT'].includes(user?.role ?? '') && (
+          <div
+            className={`absolute lg:top-2 bottom-24 lg:bottom-auto left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium shadow-lg pointer-events-none transition-opacity duration-500
+          ${isDataStale ? 'bg-slate-600 text-white' : 'bg-slate-500/90 text-white'}`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-white/70 animate-pulse" />
+            {isDataStale ? 'Actualisation suspendue — synchronisation en cours…' : 'Synchronisation…'}
+          </div>
+        )}
 
       {/* Sidebar Gauche (HIDDEN IN REPLAY AND ON MOBILE) */}
       {isSidebarOpen && !isReplayActive && (
@@ -2156,30 +2283,77 @@ export const MapView: React.FC<MapViewProps> = ({
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border border-[var(--bg-primary)]" />
               )}
             </button>
-            {/* OSM Layer cycle — visible uniquement quand OSM actif */}
-            {mapProvider === 'leaflet' && (
+            {/* Sélecteur de fond de carte unifié */}
+            <div className="relative ml-1">
               <button
-                onClick={() => {
-                  const layers = Object.keys(OSM_TILE_LAYERS) as OsmLayer[];
-                  setOsmLayer((cur) => layers[(layers.indexOf(cur) + 1) % layers.length]);
-                }}
-                className="flex items-center justify-center w-7 h-7 bg-white/10 rounded ml-1 text-[var(--text-muted)] hover:bg-white/20"
-                title={`Fond: ${OSM_TILE_LAYERS[osmLayer].label}`}
+                onClick={() => setShowLayerPicker((v) => !v)}
+                className={`flex items-center gap-1 px-2 h-7 rounded transition-colors text-xs font-medium ${showLayerPicker ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
+                title="Changer le fond de carte"
               >
                 <Layers className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">
+                  {mapProvider === 'leaflet'
+                    ? OSM_TILE_LAYERS[osmLayer].label
+                    : googleMapType === 'roadmap'
+                      ? 'Google'
+                      : googleMapType === 'satellite'
+                        ? 'G.Satellite'
+                        : googleMapType === 'terrain'
+                          ? 'G.Terrain'
+                          : 'G.Hybride'}
+                </span>
               </button>
-            )}
-            {/* Satellite toggle — visible uniquement quand Google Maps actif */}
-            {mapProvider === 'google' && (
-              <button
-                onClick={() => setGoogleMapType((t) => (t === 'roadmap' ? 'satellite' : 'roadmap'))}
-                className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${googleMapType === 'satellite' ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
-                aria-label="Vue satellite"
-                title={googleMapType === 'satellite' ? 'Vue carte' : 'Vue satellite'}
-              >
-                <Layers className="w-3.5 h-3.5" />
-              </button>
-            )}
+              {showLayerPicker && (
+                <div className="absolute top-full right-0 mt-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl shadow-2xl z-[100] p-2 min-w-[180px]">
+                  <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold px-2 pb-1 mb-1">
+                    Fond de carte
+                  </p>
+                  {(Object.entries(OSM_TILE_LAYERS) as [OsmLayer, (typeof OSM_TILE_LAYERS)[OsmLayer]][]).map(
+                    ([key, cfg]) => (
+                      <button
+                        key={key}
+                        onClick={() => {
+                          setOsmLayer(key);
+                          setMapProvider('leaflet');
+                          setShowLayerPicker(false);
+                        }}
+                        className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-sm transition-colors ${mapProvider === 'leaflet' && osmLayer === key ? 'bg-[var(--primary)] text-white' : 'hover:bg-[var(--primary-dim)] text-[var(--text-primary)]'}`}
+                      >
+                        <span className="text-base">{cfg.icon}</span>
+                        {cfg.label}
+                      </button>
+                    )
+                  )}
+                  {googleMapsKey && (
+                    <>
+                      <div className="border-t border-[var(--border)] my-2" />
+                      <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold px-2 pb-1">
+                        Google Maps
+                      </p>
+                      {[
+                        { key: 'roadmap' as const, label: 'Google Route', icon: '🗺️' },
+                        { key: 'satellite' as const, label: 'G. Satellite', icon: '🛰️' },
+                        { key: 'hybrid' as const, label: 'G. Hybride', icon: '🌐' },
+                        { key: 'terrain' as const, label: 'G. Terrain', icon: '⛰️' },
+                      ].map(({ key, label, icon }) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            setGoogleMapType(key);
+                            setMapProvider('google');
+                            setShowLayerPicker(false);
+                          }}
+                          className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-sm transition-colors ${mapProvider === 'google' && googleMapType === key ? 'bg-[var(--primary)] text-white' : 'hover:bg-[var(--primary-dim)] text-[var(--text-primary)]'}`}
+                        >
+                          <span className="text-base">{icon}</span>
+                          {label}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </>
       )}
@@ -2420,11 +2594,19 @@ export const MapView: React.FC<MapViewProps> = ({
               className="z-0"
             >
               <TileLayer
-                key={osmLayer}
+                key={`${osmLayer}-base`}
                 attribution={OSM_TILE_LAYERS[osmLayer].attribution}
                 url={OSM_TILE_LAYERS[osmLayer].url}
                 crossOrigin="anonymous"
               />
+              {OSM_TILE_LAYERS[osmLayer].overlay && (
+                <TileLayer
+                  key={`${osmLayer}-overlay`}
+                  url={OSM_TILE_LAYERS[osmLayer].overlay as string}
+                  attribution=""
+                  crossOrigin="anonymous"
+                />
+              )}
 
               <MapUpdater
                 focusedVehicle={focusedVehicle ?? null}
@@ -2519,40 +2701,45 @@ export const MapView: React.FC<MapViewProps> = ({
                 */}
                   {(() => {
                     const GAP_MS = 5 * 60 * 1000;
-                    const maxSpeed = (activeReplayVehicle as any).maxSpeed || 120;
-                    type Seg = { coords: [number, number][]; speeding: boolean };
+                    // 4-tier speed palette (mobile-inspired)
+                    const speedColor = (kmh: number): string => {
+                      if (kmh < 10) return '#6b7280'; // gris foncé — quasi-arrêt (plus visible)
+                      if (kmh < 50) return '#22c55e'; // green — allure normale
+                      if (kmh < 90) return '#f97316'; // orange — rapide
+                      return '#ef4444'; // red   — excès
+                    };
+                    const speedWeight = (kmh: number): number => (kmh < 10 ? 2 : kmh < 50 ? 3 : 5);
+                    type Seg = { coords: [number, number][]; color: string; weight: number };
                     const segs: Seg[] = [];
                     let cur: Seg | null = null;
 
                     for (let i = 0; i < replayHistory.length; i++) {
                       const p = replayHistory[i];
                       if (!p.location?.lat || !p.location?.lng) continue;
-                      const speeding = (p.speed || 0) > maxSpeed;
+                      const spd = p.speed || 0;
+                      const color = speedColor(spd);
+                      const weight = speedWeight(spd);
                       const gap =
                         i > 0
                           ? new Date(p.timestamp).getTime() - new Date(replayHistory[i - 1].timestamp).getTime()
                           : 0;
 
-                      // Rupture sur gap ou changement de couleur
-                      if (!cur || gap > GAP_MS || cur.speeding !== speeding) {
+                      // Rupture sur gap temporel ou changement de couleur
+                      if (!cur || gap > GAP_MS || cur.color !== color) {
                         // Relier au dernier point du segment précédent pour éviter les trous
                         if (cur && gap <= GAP_MS) cur.coords.push([p.location.lat, p.location.lng]);
                         if (cur) segs.push(cur);
-                        cur = { coords: [], speeding };
+                        cur = { coords: [], color, weight };
                       }
                       cur.coords.push([p.location.lat, p.location.lng]);
                     }
                     if (cur) segs.push(cur);
 
-                    return segs.map((s, i) => (
+                    return segs.map((s, idx) => (
                       <Polyline
-                        key={`seg-${i}`}
+                        key={`seg-${idx}`}
                         positions={s.coords}
-                        pathOptions={{
-                          color: s.speeding ? '#dc2626' : '#3b82f6',
-                          weight: s.speeding ? 5 : 3,
-                          opacity: s.speeding ? 0.95 : 0.75,
-                        }}
+                        pathOptions={{ color: s.color, weight: s.weight, opacity: 0.88 }}
                       />
                     ));
                   })()}
@@ -2562,41 +2749,18 @@ export const MapView: React.FC<MapViewProps> = ({
                     <Marker
                       key={`stop-${stop.id}`}
                       position={[stop.location.lat, stop.location.lng]}
-                      icon={createStopMarkerIcon(index + 1, stop.type)}
+                      icon={createStopMarkerIcon(index + 1, stop.type, highlightedStop === stop.id)}
                       eventHandlers={{
                         click: () => {
                           setHighlightedStop(stop.id);
                           setHighlightedEvent(null);
+                          setMapFocusPosition(stop.location);
+                          setExternalStopSelect({ stop, tab: stop.type === 'STOP' ? 'STOPS' : 'IDLE' });
                         },
                       }}
                     >
                       <Popup>
-                        <div style={{ minWidth: 160 }} className="text-sm">
-                          <p className="font-bold mb-1" style={{ color: stop.type === 'STOP' ? '#dc2626' : '#f97316' }}>
-                            {stop.type === 'STOP' ? '🅿️ Arrêt' : '⏸️ Ralenti'} #{index + 1}
-                          </p>
-                          <p className="text-[var(--text-primary)] font-medium">
-                            {Math.floor(stop.duration)}min {Math.round((stop.duration % 1) * 60)}s
-                          </p>
-                          <p className="text-xs text-[var(--text-secondary)] mt-1">
-                            {new Date(stop.startTime).toLocaleTimeString('fr-FR', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                            {' → '}
-                            {new Date(stop.endTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                          </p>
-                          {stop.address && (
-                            <p className="text-xs text-[var(--text-secondary)] mt-1 truncate max-w-[180px]">
-                              {stop.address}
-                            </p>
-                          )}
-                          {stop.location && (
-                            <p className="text-[10px] text-[var(--text-muted)] mt-1 font-mono">
-                              {stop.location.lat.toFixed(5)}, {stop.location.lng.toFixed(5)}
-                            </p>
-                          )}
-                        </div>
+                        <StopPopupContent stop={stop} index={index + 1} />
                       </Popup>
                     </Marker>
                   ))}
@@ -2618,6 +2782,8 @@ export const MapView: React.FC<MapViewProps> = ({
                         click: () => {
                           setHighlightedEvent(event.id);
                           setHighlightedStop(null);
+                          setMapFocusPosition(event.location);
+                          setExternalEventSelect(event);
                         },
                       }}
                     >
@@ -2695,7 +2861,7 @@ export const MapView: React.FC<MapViewProps> = ({
                       );
                     })()}
 
-                  {/* Marqueur véhicule — statut dérivé de la vitesse courante, pas du statut live */}
+                  {/* Marqueur véhicule replay — plaque + vitesse + distance cumulée */}
                   {(() => {
                     if (replayPath.length === 0) return null;
                     const pathIndex = Math.min(
@@ -2710,10 +2876,11 @@ export const MapView: React.FC<MapViewProps> = ({
                     const replayStatus: VehicleStatus =
                       speed >= 2 ? VehicleStatus.MOVING : ign === true ? VehicleStatus.IDLE : VehicleStatus.STOPPED;
                     const heading = histPoint?.heading ?? 0;
+                    const distKm = replayCumDist[pathIndex] ?? 0;
                     return (
                       <Marker
                         position={[currentPos.lat, currentPos.lng]}
-                        icon={createVehicleIcon({ ...activeReplayVehicle, status: replayStatus, heading })}
+                        icon={createReplayMarkerIcon(activeReplayVehicle, replayStatus, heading, speed, distKm)}
                         zIndexOffset={1000}
                       />
                     );
@@ -2956,10 +3123,85 @@ export const MapView: React.FC<MapViewProps> = ({
           </>
         )}
 
+        {/* Bouton fond de carte pendant le replay */}
+        {isReplayActive && (
+          <div className="absolute top-4 right-4 z-[400]">
+            <div className="relative">
+              <button
+                onClick={() => setShowLayerPicker((v) => !v)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-lg border text-xs font-medium transition-colors ${showLayerPicker ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:text-[var(--primary)]'}`}
+                title="Changer le fond de carte"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                {mapProvider === 'leaflet'
+                  ? OSM_TILE_LAYERS[osmLayer].label
+                  : googleMapType === 'roadmap'
+                    ? 'Google'
+                    : googleMapType === 'satellite'
+                      ? 'G.Satellite'
+                      : googleMapType === 'terrain'
+                        ? 'G.Terrain'
+                        : 'G.Hybride'}
+              </button>
+              {showLayerPicker && (
+                <div className="absolute top-full right-0 mt-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl shadow-2xl z-[500] p-2 min-w-[180px]">
+                  <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold px-2 pb-1 mb-1">
+                    Fond de carte
+                  </p>
+                  {(Object.entries(OSM_TILE_LAYERS) as [OsmLayer, (typeof OSM_TILE_LAYERS)[OsmLayer]][]).map(
+                    ([key, cfg]) => (
+                      <button
+                        key={key}
+                        onClick={() => {
+                          setOsmLayer(key);
+                          setMapProvider('leaflet');
+                          setShowLayerPicker(false);
+                        }}
+                        className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-sm transition-colors ${mapProvider === 'leaflet' && osmLayer === key ? 'bg-[var(--primary)] text-white' : 'hover:bg-[var(--primary-dim)] text-[var(--text-primary)]'}`}
+                      >
+                        <span className="text-base">{cfg.icon}</span>
+                        {cfg.label}
+                      </button>
+                    )
+                  )}
+                  {googleMapsKey && (
+                    <>
+                      <div className="border-t border-[var(--border)] my-2" />
+                      <p className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold px-2 pb-1">
+                        Google Maps
+                      </p>
+                      {[
+                        { key: 'roadmap' as const, label: 'Google Route', icon: '🗺️' },
+                        { key: 'satellite' as const, label: 'G. Satellite', icon: '🛰️' },
+                        { key: 'hybrid' as const, label: 'G. Hybride', icon: '🌐' },
+                        { key: 'terrain' as const, label: 'G. Terrain', icon: '⛰️' },
+                      ].map(({ key, label, icon }) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            setGoogleMapType(key);
+                            setMapProvider('google');
+                            setShowLayerPicker(false);
+                          }}
+                          className={`w-full flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-sm transition-colors ${mapProvider === 'google' && googleMapType === key ? 'bg-[var(--primary)] text-white' : 'hover:bg-[var(--primary-dim)] text-[var(--text-primary)]'}`}
+                        >
+                          <span className="text-base">{icon}</span>
+                          {label}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* --- REPLAY OVERLAY --- */}
         <ReplayControlPanel
           isOpen={isReplayActive}
           onClose={() => {
+            const vehicleToRestore = activeReplayVehicle;
             setIsReplayActive(false);
             setReplayPath([]);
             setReplayHistory([]);
@@ -2968,7 +3210,10 @@ export const MapView: React.FC<MapViewProps> = ({
             setReplaySpeedEvents([]);
             setHighlightedStop(null);
             setHighlightedEvent(null);
-            if (onNavigate) onNavigate(View.FLEET);
+            // Notifier le parent pour reset replayVehicle → permet de re-ouvrir le replay sur le même véhicule
+            onReplayClose?.();
+            // Revenir à la carte avec le véhicule pré-sélectionné
+            if (vehicleToRestore) setSelectedVehicle(vehicleToRestore);
           }}
           vehicles={vehicles}
           selectedVehicle={activeReplayVehicle}
@@ -3011,6 +3256,15 @@ export const MapView: React.FC<MapViewProps> = ({
             // Center map on event location
             setMapFocusPosition(event.location);
           }}
+          onTripClick={(trip) => {
+            setHighlightedStop(null);
+            setHighlightedEvent(null);
+            setMapFocusPosition(trip.startLocation);
+          }}
+          externalStopSelect={externalStopSelect}
+          onExternalStopHandled={() => setExternalStopSelect(null)}
+          externalEventSelect={externalEventSelect}
+          onExternalEventHandled={() => setExternalEventSelect(null)}
           onStopsDetected={setReplayStops}
           onEventsDetected={setReplaySpeedEvents}
         />

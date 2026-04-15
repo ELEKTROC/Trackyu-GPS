@@ -1338,18 +1338,20 @@ export interface Tier {
     maxVehicles?: number;
     maxUsers?: number;
     maxClients?: number;
-    modules?: {
-      fleet?: boolean;
-      interventions?: boolean;
-      stock?: boolean;
-      crm?: boolean;
-      finance?: boolean;
-      reports?: boolean;
-      alerts?: boolean;
-      map?: boolean;
-    };
+    modules?: string[];
+    apiAccess?: boolean;
     permissions?: string[];
     isActive?: boolean;
+    quotas?: {
+      maxVehicles?: number;
+      maxUsers?: number;
+      maxClients?: number;
+    };
+    whiteLabelConfig?: {
+      primaryColor?: string;
+      secondaryColor?: string;
+      logo?: string;
+    };
   };
 
   // Legacy compatibility

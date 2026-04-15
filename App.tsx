@@ -358,6 +358,7 @@ const AppContent: React.FC = () => {
             zones={zones}
             focusedVehicle={selectedVehicle}
             replayVehicle={replayVehicle}
+            onReplayClose={() => setReplayVehicle(null)}
             onNavigate={handleNavigate}
             onReplay={handleReplay}
           />
