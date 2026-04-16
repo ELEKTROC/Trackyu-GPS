@@ -111,19 +111,16 @@ const createVehicleIcon = (vehicle: Vehicle) => {
   const iconHtml = renderToStaticMarkup(
     <div
       style={{
-        width: '36px',
-        height: '36px',
+        width: '34px',
+        height: '34px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'white',
-        borderRadius: '50%',
-        border: `2px solid ${color}`,
-        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
         position: 'relative',
+        filter: `drop-shadow(0 1px 3px rgba(0,0,0,0.45)) drop-shadow(0 0 6px ${color}66)`,
       }}
     >
-      <IconComponent size={20} color={color} fill={color} fillOpacity={0.1} />
+      <IconComponent size={30} color="white" fill={color} strokeWidth={2} />
       {/* Heading Arrow if moving */}
       {status === VehicleStatus.MOVING && (
         <div
@@ -158,8 +155,8 @@ const createVehicleIcon = (vehicle: Vehicle) => {
   const icon = L.divIcon({
     html: iconHtml,
     className: 'custom-vehicle-icon',
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
+    iconSize: [34, 34],
+    iconAnchor: [17, 17],
   });
   _vehicleIconCache.set(cacheKey, icon);
   return icon;
@@ -786,8 +783,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const [replayDateRange, setReplayDateRange] = useState(() => {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
-    const end = new Date();
-    end.setHours(23, 59, 59, 999);
+    const end = new Date(); // heure actuelle — la journée n'est pas terminée
     return { start, end };
   });
 
@@ -1224,10 +1220,15 @@ export const MapView: React.FC<MapViewProps> = ({
           // Source unique garantie : mêmes données, mêmes stats
           const rawHistory = await getVehicleHistory(activeReplayVehicle.id, replayDateRange.start);
           if (rawHistory && rawHistory.length > 0) {
-            setReplayPath(
-              rawHistory.map((h: any) => h.location || { lat: h.lat || h.latitude, lng: h.lng || h.longitude })
-            );
-            setReplayHistory(rawHistory);
+            // Normaliser : l'API renvoie { lat, lng, time } — ajouter location + timestamp
+            // pour que le rendu Polyline (p.location?.lat) et les marqueurs fonctionnent
+            const normalized = rawHistory.map((h: any) => ({
+              ...h,
+              location: h.location || { lat: h.lat || h.latitude, lng: h.lng || h.longitude },
+              timestamp: h.timestamp || h.time,
+            }));
+            setReplayPath(normalized.map((h: any) => h.location));
+            setReplayHistory(normalized);
           } else {
             setReplayPath([]);
             setReplayHistory([]);
@@ -2896,127 +2897,94 @@ export const MapView: React.FC<MapViewProps> = ({
 
         {!isReplayActive && (
           <>
-            {/* Bloc central : KPIs + Boutons + Toggle OSM/Google */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[400] hidden lg:flex flex-col items-center gap-2">
-              {/* KPIs Bar (sans nombre de véhicules) */}
-              <div className="flex items-center gap-1 bg-white/95 bg-[var(--bg-elevated)]/95 backdrop-blur-sm shadow-lg rounded-full px-4 py-2 border border-[var(--border)]">
-                <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
-                  <Activity className="w-4 h-4 text-green-500" />
-                  <span className="text-sm font-bold text-green-600">{mapKpis.activePercent}%</span>
-                  <span className="text-xs text-[var(--text-muted)]">actifs</span>
-                </div>
-                <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
-                  <Route className="w-4 h-4 text-[var(--primary)]" />
-                  <span className="text-sm font-bold text-[var(--primary)]">
-                    {mapKpis.estimatedKmToday.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-[var(--text-muted)]">km today</span>
-                </div>
-                <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
-                  <Timer className="w-4 h-4 text-orange-500" />
-                  <span className="text-sm font-bold text-orange-600">{mapKpis.avgStopMinutes}min</span>
-                  <span className="text-xs text-[var(--text-muted)]">arrêt moy</span>
-                </div>
-                {mapKpis.outOfZoneCount > 0 && (
-                  <div className="flex items-center gap-2 px-3 border-r border-[var(--border)]">
-                    <MapPinOff className="w-4 h-4 text-red-500" />
-                    <span className="text-sm font-bold text-red-600">{mapKpis.outOfZoneCount}</span>
-                    <span className="text-xs text-[var(--text-muted)]">hors zone</span>
-                  </div>
-                )}
-                {/* Alertes badge */}
-                {mapKpis.totalAlerts > 0 && (
-                  <button
-                    onClick={() => setShowAlertsPanel(!showAlertsPanel)}
-                    className={`flex items-center gap-2 px-3 py-1 rounded-full transition-colors ${showAlertsPanel ? 'bg-red-100 dark:bg-red-900' : 'hover:bg-red-50 dark:hover:bg-red-900/50'}`}
-                  >
-                    <AlertTriangle
-                      className={`w-4 h-4 ${mapKpis.criticalAlerts > 0 ? 'text-red-600 animate-pulse' : 'text-amber-500'}`}
-                    />
-                    <span
-                      className={`text-sm font-bold ${mapKpis.criticalAlerts > 0 ? 'text-red-600' : 'text-amber-600'}`}
-                    >
-                      {mapKpis.totalAlerts}
-                    </span>
-                    <span className="text-xs text-[var(--text-muted)]">alertes</span>
-                  </button>
-                )}
-                {/* Indicateur fraîcheur */}
-                <div className="flex items-center gap-2 px-3 text-xs text-[var(--text-muted)]">
-                  <RefreshCw className={`w-3 h-3 ${isAutoRefreshEnabled ? 'animate-spin-slow' : ''}`} />
-                  <span>MAJ: {getTimeSinceUpdate()}</span>
-                </div>
-              </div>
-
-              {/* Boutons flotte/zones/heatmap + son + Toggle OSM/Google */}
-              <div className="flex gap-2 items-center">
+            {/* Toolbar verticale — droite de la carte */}
+            <div
+              className="absolute top-16 z-[400] hidden lg:flex flex-col items-center gap-1.5 transition-all duration-300"
+              style={{ right: selectedVehicle && !isReplayActive ? '400px' : '16px' }}
+            >
+              {/* Groupe : flotte / zones / heatmap / son */}
+              <div className="flex flex-col items-center gap-1 bg-[var(--bg-elevated)]/95 backdrop-blur-sm rounded-xl shadow-lg border border-[var(--border)] p-1.5">
                 <button
                   onClick={() => setShowAllVehicles(!showAllVehicles)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showAllVehicles ? 'bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                  title={showAllVehicles ? 'Masquer la flotte' : 'Voir toute la flotte'}
+                  className={`p-2 rounded-lg transition-all ${showAllVehicles ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)]'}`}
                 >
                   {showAllVehicles ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  {showAllVehicles ? 'Masquer Flotte' : 'Voir toute la flotte'}
                 </button>
                 <button
                   onClick={() => setShowZones(!showZones)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showZones ? 'bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                  title={showZones ? 'Masquer les zones' : 'Voir les zones'}
+                  className={`p-2 rounded-lg transition-all ${showZones ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)]'}`}
                 >
                   {showZones ? <EyeOff className="w-4 h-4" /> : <Hexagon className="w-4 h-4" />}
-                  {showZones ? 'Masquer Zones' : 'Voir Zones'}
                 </button>
                 <button
                   onClick={() => setShowHeatmap(!showHeatmap)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-sm font-bold transition-all ${showHeatmap ? 'bg-[var(--primary)] text-white ring-2 ring-offset-2 ring-[var(--primary-dim)]' : 'bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
+                  title={showHeatmap ? 'Masquer la heatmap' : 'Voir la heatmap'}
+                  className={`p-2 rounded-lg transition-all ${showHeatmap ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)]'}`}
                 >
                   {showHeatmap ? <EyeOff className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
-                  {showHeatmap ? 'Masquer Heatmap' : 'Voir Heatmap'}
                 </button>
-                {/* Toggle son alertes */}
+                <div className="w-6 h-px bg-[var(--border)] my-0.5" />
                 <button
                   onClick={() => setIsSoundEnabled(!isSoundEnabled)}
-                  className={`p-2 rounded-full shadow-lg transition-all ${isSoundEnabled ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)]' : 'bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-muted)]'}`}
                   title={isSoundEnabled ? 'Désactiver son alertes' : 'Activer son alertes'}
+                  className={`p-2 rounded-lg transition-all ${isSoundEnabled ? 'text-[var(--primary)] hover:bg-[var(--bg-surface)]' : 'text-[var(--text-muted)] hover:bg-[var(--bg-surface)]'}`}
                 >
                   {isSoundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                 </button>
-                {/* Toggle OSM / Google */}
-                <div className="flex items-center bg-[var(--bg-elevated)] rounded-full p-1 shadow-lg border border-[var(--border)]">
-                  <button
-                    onClick={() => setMapProvider('leaflet')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'leaflet' ? 'bg-[var(--primary)] text-white shadow' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'}`}
-                    title="Carte OpenStreetMap"
-                  >
-                    OSM
-                  </button>
-                  <button
-                    onClick={() => googleMapsKey && setMapProvider('google')}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${mapProvider === 'google' ? 'bg-[var(--primary)] text-white shadow' : googleMapsKey ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]' : 'text-[var(--text-muted)] cursor-not-allowed'}`}
-                    title={googleMapsKey ? 'Carte Google Maps' : 'Google Maps (Clé API requise)'}
-                    disabled={!googleMapsKey}
-                  >
-                    Google
-                  </button>
-                </div>
-                {/* OSM Layer Picker — visible only in OSM mode */}
-                {mapProvider === 'leaflet' && (
-                  <div className="flex items-center bg-[var(--bg-elevated)] rounded-full p-1 shadow-lg border border-[var(--border)]">
-                    {(Object.keys(OSM_TILE_LAYERS) as OsmLayer[]).map((layer) => (
+              </div>
+
+              {/* Groupe : fournisseur carte OSM / Google */}
+              <div className="flex flex-col items-center gap-1 bg-[var(--bg-elevated)]/95 backdrop-blur-sm rounded-xl shadow-lg border border-[var(--border)] p-1.5">
+                <button
+                  onClick={() => setMapProvider('leaflet')}
+                  title="Carte OpenStreetMap"
+                  className={`p-2 rounded-lg text-[10px] font-bold transition-all leading-none ${mapProvider === 'leaflet' ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'}`}
+                >
+                  OSM
+                </button>
+                <button
+                  onClick={() => googleMapsKey && setMapProvider('google')}
+                  title={googleMapsKey ? 'Carte Google Maps' : 'Google Maps (clé API requise)'}
+                  disabled={!googleMapsKey}
+                  className={`p-2 rounded-lg text-[10px] font-bold transition-all leading-none ${mapProvider === 'google' ? 'bg-[var(--primary)] text-white' : googleMapsKey ? 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]' : 'text-[var(--text-muted)] cursor-not-allowed opacity-40'}`}
+                >
+                  G
+                </button>
+              </div>
+
+              {/* Groupe : couches OSM — visible uniquement en mode leaflet */}
+              {mapProvider === 'leaflet' && (
+                <div className="flex flex-col items-center gap-1 bg-[var(--bg-elevated)]/95 backdrop-blur-sm rounded-xl shadow-lg border border-[var(--border)] p-1.5">
+                  {(Object.keys(OSM_TILE_LAYERS) as OsmLayer[]).map((layer) => {
+                    const abbr: Record<string, string> = {
+                      Standard: 'Std',
+                      Satellite: 'Sat',
+                      Hybride: 'Hyb',
+                      Terrain: 'Ter',
+                      Nuit: 'Nuit',
+                    };
+                    return (
                       <button
                         key={layer}
                         onClick={() => setOsmLayer(layer)}
-                        className={`px-3 py-1.5 text-xs font-bold rounded-full transition-colors ${osmLayer === layer ? 'bg-[var(--primary)] text-white shadow' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
                         title={OSM_TILE_LAYERS[layer].label}
+                        className={`p-2 rounded-lg text-[10px] font-bold transition-all leading-none ${osmLayer === layer ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)]'}`}
                       >
-                        {OSM_TILE_LAYERS[layer].label}
+                        {abbr[OSM_TILE_LAYERS[layer].label] || OSM_TILE_LAYERS[layer].label.slice(0, 3)}
                       </button>
-                    ))}
-                  </div>
-                )}
-                {/* Export carte */}
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Imprimer */}
+              <div className="flex flex-col items-center bg-[var(--bg-elevated)]/95 backdrop-blur-sm rounded-xl shadow-lg border border-[var(--border)] p-1.5">
                 <button
                   onClick={handlePrintMap}
-                  className="p-2 rounded-full shadow-lg bg-[var(--bg-elevated)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
                   title="Imprimer / Exporter la carte"
+                  className="p-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)] transition-colors"
                 >
                   <Printer className="w-4 h-4" />
                 </button>
@@ -3024,7 +2992,10 @@ export const MapView: React.FC<MapViewProps> = ({
             </div>
 
             {/* Barre de recherche adresse - en haut à droite (desktop only) */}
-            <div className="hidden lg:block absolute top-4 right-4 z-[400]">
+            <div
+              className="hidden lg:block absolute top-4 z-[400] transition-all duration-300"
+              style={{ right: selectedVehicle && !isReplayActive ? '416px' : '64px' }}
+            >
               <div className="flex items-center gap-2 bg-[var(--bg-elevated)] rounded-full shadow-lg px-4 py-2 border border-[var(--border)]">
                 <MapPin className="w-4 h-4 text-[var(--text-muted)]" />
                 <input

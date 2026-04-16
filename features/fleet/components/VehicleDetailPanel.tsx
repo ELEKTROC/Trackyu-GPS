@@ -391,7 +391,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     geofence: vehicle.geofence || 'N/A',
     weight: vehicle.weight ? `${vehicle.weight} T` : 'N/A',
     temp: vehicle.temperature ? `${vehicle.temperature}°C` : 'N/A',
-    battery: vehicle.batteryLevel ? `${vehicle.batteryLevel} V` : 'N/A',
+    battery: vehicle.batteryLevel ? `${vehicle.batteryLevel} %` : 'N/A',
     signal: vehicle.signalStrength || 'N/A',
     deviceModel: vehicle.deviceModel || 'N/A',
     simCard: vehicle.sim || 'N/A',
@@ -634,19 +634,34 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] shrink-0 p-4 shadow-md relative">
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-lg border border-white/10">
-              {vehicle.type === 'TRUCK' || vehicle.type === 'VAN' ? (
-                <Truck className="w-5 h-5 text-white" />
-              ) : vehicle.type === 'MOTORCYCLE' ? (
-                <Bike className="w-5 h-5 text-white" />
-              ) : vehicle.type === 'BUS' ? (
-                <Bus className="w-5 h-5 text-white" />
-              ) : vehicle.type === 'CONSTRUCTION' ? (
-                <HardHat className="w-5 h-5 text-white" />
-              ) : (
-                <Car className="w-5 h-5 text-white" />
-              )}
-            </div>
+            {(() => {
+              const statusHex =
+                vehicle.status === VehicleStatus.MOVING
+                  ? '#22c55e'
+                  : vehicle.status === VehicleStatus.IDLE
+                    ? '#f97316'
+                    : vehicle.status === VehicleStatus.STOPPED
+                      ? '#ef4444'
+                      : '#64748b';
+              const IconComp =
+                vehicle.type === 'TRUCK' || vehicle.type === 'VAN'
+                  ? Truck
+                  : vehicle.type === 'MOTORCYCLE'
+                    ? Bike
+                    : vehicle.type === 'BUS'
+                      ? Bus
+                      : vehicle.type === 'CONSTRUCTION'
+                        ? HardHat
+                        : Car;
+              return (
+                <div
+                  className="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg"
+                  style={{ backgroundColor: statusHex, boxShadow: `0 2px 8px ${statusHex}88` }}
+                >
+                  <IconComp className="w-5 h-5" style={{ color: 'white', fill: 'white', strokeWidth: 2 }} />
+                </div>
+              );
+            })()}
             <div>
               <h2 className="text-lg font-bold leading-tight">{vehicle.name}</h2>
               {vehicle.plate && <p className="text-[var(--text-muted)] text-xs mt-0.5">{vehicle.plate}</p>}

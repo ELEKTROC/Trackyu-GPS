@@ -62,15 +62,19 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
 
     let statusText = 'Hors ligne';
     let statusColorClass = 'text-[var(--text-secondary)]';
+    let iconBgHex = '#64748b'; // offline gray
     if (vehicle.status === VehicleStatus.MOVING) {
       statusText = 'En mouvement';
       statusColorClass = 'text-green-600';
+      iconBgHex = '#22c55e';
     } else if (vehicle.status === VehicleStatus.IDLE) {
       statusText = 'Ralenti';
       statusColorClass = 'text-orange-600';
+      iconBgHex = '#f97316';
     } else if (vehicle.status === VehicleStatus.STOPPED) {
       statusText = 'Arrêté';
       statusColorClass = 'text-red-600';
+      iconBgHex = '#ef4444';
     }
 
     // Fuel/Battery Color Logic — neutral when fuelLevel unknown to avoid false red
@@ -168,7 +172,15 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-2 min-w-0">
-              {React.createElement(VehicleIcon, { className: 'w-3.5 h-3.5 text-[var(--text-muted)]' })}
+              <span
+                className="flex-shrink-0 p-1.5 rounded-lg"
+                style={{ backgroundColor: iconBgHex, boxShadow: `0 1px 4px ${iconBgHex}88` }}
+              >
+                {React.createElement(VehicleIcon, {
+                  className: 'w-3.5 h-3.5',
+                  style: { color: 'white', fill: 'white', strokeWidth: 2 },
+                })}
+              </span>
               <div className="flex flex-col min-w-0">
                 <div className="flex items-center gap-2">
                   <span
