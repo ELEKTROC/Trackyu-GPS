@@ -40,6 +40,7 @@ import {
   Zap,
   Filter,
   Printer,
+  Tag,
 } from 'lucide-react';
 import { VehicleDetailPanel } from '../../fleet/components/VehicleDetailPanel';
 import { StatusBadge } from '../../../components/StatusBadge';
@@ -703,6 +704,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const [showAllVehicles, setShowAllVehicles] = useState(false);
   const [showZones, setShowZones] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [showVehicleLabels, setShowVehicleLabels] = useState(true);
   const [activeTab, setActiveTab] = useState<SidebarTab>('vehicles');
   const [activeStatusFilter, setActiveStatusFilter] = useState<VehicleStatus | null>(null);
 
@@ -2687,6 +2689,7 @@ export const MapView: React.FC<MapViewProps> = ({
                       vehicle={v}
                       icon={createVehicleIcon(v)}
                       onClick={() => setSelectedVehicle(v)}
+                      showLabel={showVehicleLabels}
                     />
                   ))}
                 </MarkerClusterGroup>
@@ -2924,6 +2927,13 @@ export const MapView: React.FC<MapViewProps> = ({
                   className={`p-2 rounded-lg transition-all ${showHeatmap ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)]'}`}
                 >
                   {showHeatmap ? <EyeOff className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
+                </button>
+                <button
+                  onClick={() => setShowVehicleLabels(!showVehicleLabels)}
+                  title={showVehicleLabels ? 'Masquer les étiquettes véhicules' : 'Afficher les étiquettes véhicules'}
+                  className={`p-2 rounded-lg transition-all ${showVehicleLabels ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)]'}`}
+                >
+                  <Tag className="w-4 h-4" />
                 </button>
                 <div className="w-6 h-px bg-[var(--border)] my-0.5" />
                 <button

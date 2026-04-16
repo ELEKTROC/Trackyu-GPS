@@ -571,6 +571,17 @@ body {
   background: #1e293b !important;
 }
 
+/* Étiquettes véhicules permanentes — supprime le style Leaflet par défaut */
+.vehicle-label-tooltip {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.vehicle-label-tooltip::before {
+  display: none !important;
+}
+
 /* ========================================
    MOBILE OPTIMIZATIONS
    ======================================== */
