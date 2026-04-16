@@ -505,6 +505,7 @@ interface GenericTableProps {
   notifications?: GenericItem[];
   onAddClick: () => void;
   onEdit: (item: GenericItem) => void;
+  onStatusChange?: (id: string, newStatus: string) => void;
 }
 
 // --- COMPOSANTS FORMULAIRES (Refactorisés avec forwardRef) ---
@@ -546,6 +547,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
   ecoDrivingProfiles,
   onAddClick,
   onEdit,
+  onStatusChange,
   readOnly,
 }) => {
   // --- 1. Gestion des données sources ---
@@ -667,11 +669,10 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
   }, []);
 
   const handleStatusChange = (id: string, newStatus: string) => {
-    // In a real app, this would call an API
     setStatusMenuOpen(null);
-    // Optimistic update (mock)
-    const item = rawData.find((i: GenericItem) => i.id === id);
-    if (item) item.statut = newStatus;
+    if (onStatusChange) {
+      onStatusChange(id, newStatus);
+    }
   };
 
   // --- 3. Filtrage ---
@@ -1147,14 +1148,18 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                   )}
                   <td className="px-6 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity relative">
-                      {(type === 'reseller' || type === 'user') && (
+                      {(type === 'reseller' || type === 'user' || type === 'users' || type === 'subaccount') && (
                         <div className="relative">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setStatusMenuOpen(statusMenuOpen === item.id ? null : item.id);
                             }}
-                            className="p-1.5 text-[var(--text-muted)] hover:text-purple-600 hover:bg-[var(--clr-info-dim)] rounded transition-colors"
+                            className={`p-1.5 rounded transition-colors ${
+                              (item.status || item.statut) === 'Suspendu'
+                                ? 'text-orange-500 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20'
+                                : 'text-[var(--text-muted)] hover:text-purple-600 hover:bg-[var(--clr-info-dim)]'
+                            }`}
                             title="Changer le statut"
                           >
                             <Power className="w-4 h-4" />
@@ -1162,20 +1167,35 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                           {statusMenuOpen === item.id && (
                             <div
                               ref={statusMenuRef}
-                              className="absolute right-0 mt-2 w-32 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 animate-in fade-in zoom-in-95 duration-200"
+                              className="absolute right-0 mt-2 w-36 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 animate-in fade-in zoom-in-95 duration-200 overflow-hidden"
                             >
-                              {['Actif', 'Suspendu', 'Inactif', 'Résilié'].map((status) => (
-                                <button
-                                  key={status}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleStatusChange(item.id, status);
-                                  }}
-                                  className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--bg-elevated)] ${item.statut === status ? 'font-bold text-[var(--primary)]' : 'text-[var(--text-primary)]'}`}
-                                >
-                                  {status}
-                                </button>
-                              ))}
+                              {(type === 'users' || type === 'subaccount'
+                                ? ['Actif', 'Suspendu']
+                                : ['Actif', 'Suspendu', 'Inactif', 'Résilié']
+                              ).map((status) => {
+                                const current = item.status || item.statut;
+                                const isActive = current === status;
+                                const color =
+                                  status === 'Actif'
+                                    ? 'text-green-600'
+                                    : status === 'Suspendu'
+                                      ? 'text-orange-500'
+                                      : status === 'Inactif'
+                                        ? 'text-[var(--text-muted)]'
+                                        : 'text-red-500';
+                                return (
+                                  <button
+                                    key={status}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleStatusChange(item.id, status);
+                                    }}
+                                    className={`w-full text-left px-4 py-2 text-xs hover:bg-[var(--bg-surface)] ${isActive ? 'font-bold' : ''} ${color}`}
+                                  >
+                                    {isActive ? `✓ ${status}` : status}
+                                  </button>
+                                );
+                              })}
                             </div>
                           )}
                         </div>
@@ -1549,7 +1569,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
         const userData = {
           ...editingItem,
           ...data,
-          name: data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : data.name || editingItem.name,
+          name:
+            data.firstName && data.lastName
+              ? `${data.firstName} ${data.lastName}`
+              : (data as any).nom || data.name || editingItem.name,
           subUsers: data.subUsers || [],
         };
         updateUser(userData);
@@ -1566,11 +1589,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
 
         const newUser = {
           ...data,
-          name: data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : data.name,
+          name: data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : (data as any).nom || data.name,
           role: activeTab === 'subaccounts' ? 'SOUS_COMPTE' : data.role || 'CLIENT',
           subRole: activeTab === 'subaccounts' ? data.role : undefined,
           createdAt: new Date(),
-          status: 'Actif',
+          status: (data as any).statut || 'Actif',
           // tenantId résolu depuis le revendeur/client — si absent, le DataContext utilise
           // le tenant du contexte courant (valide pour les rôles staff)
           ...(resolvedTenantId ? { tenantId: resolvedTenantId } : {}),
@@ -1876,6 +1899,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     return 'Formulaire';
   };
 
+  const handleUserStatusChange = (id: string, newStatus: string) => {
+    const target = users.find((u: any) => u.id === id);
+    if (!target) return;
+    updateUser({ ...target, status: newStatus } as any);
+  };
+
   const renderContent = () => {
     const commonProps = { onAddClick: handleCreate, onEdit: handleEdit };
 
@@ -1946,6 +1975,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             ]}
             useRealUsers
             users={clientUsers}
+            onStatusChange={handleUserStatusChange}
             {...commonProps}
           />
         );
@@ -1995,6 +2025,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             columns={['ID', 'Client', 'Nom', 'Email', 'Rôle', 'Statut']}
             useRealUsers
             users={subUsers}
+            onStatusChange={handleUserStatusChange}
             {...commonProps}
           />
         );

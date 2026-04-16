@@ -7,23 +7,23 @@ export const SubUserPermissionsSchema = z.object({
   canEditVehicles: z.boolean().default(false),
   canViewDrivers: z.boolean().default(true),
   canEditDrivers: z.boolean().default(false),
-  
+
   // Carte
   canViewMap: z.boolean().default(true),
   canViewHistory: z.boolean().default(true),
-  
+
   // Alertes
   canViewAlerts: z.boolean().default(true),
   canConfigureAlerts: z.boolean().default(false),
-  
+
   // Rapports
   canViewReports: z.boolean().default(true),
   canExportReports: z.boolean().default(false),
-  
+
   // Interventions
   canViewInterventions: z.boolean().default(false),
   canCreateInterventions: z.boolean().default(false),
-  
+
   // Stock
   canViewStock: z.boolean().default(false),
   canManageStock: z.boolean().default(false),
@@ -31,29 +31,30 @@ export const SubUserPermissionsSchema = z.object({
 
 export const SubUserSchema = z.object({
   id: z.string().optional(),
-  
+
   // Identité
-  nom: z.string().min(2, "Le nom est requis (min 2 caractères)"),
-  email: z.string().email("Email invalide"),
+  nom: z.string().min(2, 'Le nom est requis (min 2 caractères)'),
+  email: z.string().email('Email invalide'),
   phone: z.string().optional(),
-  
+  password: z.string().min(6, 'Mot de passe : 6 caractères minimum').optional(),
+
   // Rattachement hiérarchique
-  clientId: z.string().min(1, "Client requis"),
+  clientId: z.string().min(1, 'Client requis'),
   branchId: z.string().optional(),
-  
+
   // Rôle et accès
   role: z.enum(['Manager', 'User', 'Viewer'], {
-    message: 'Rôle requis'
+    message: 'Rôle requis',
   }),
   statut: z.enum(['Actif', 'Inactif', 'En attente']).default('Actif'),
-  
+
   // Véhicules assignés
   vehicleIds: z.array(z.string()).default([]),
   allVehicles: z.boolean().default(false), // Accès à tous les véhicules du client
-  
+
   // Permissions
   permissions: SubUserPermissionsSchema.optional(),
-  
+
   // Métadonnées
   notes: z.string().optional(),
   expiresAt: z.date().optional(), // Date d'expiration du compte

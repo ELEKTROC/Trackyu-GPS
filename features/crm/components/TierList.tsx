@@ -24,6 +24,8 @@ import {
   MoreHorizontal,
   Mail,
   MessageSquare,
+  PowerOff,
+  Power,
 } from 'lucide-react';
 
 export type TierQuickAction =
@@ -34,7 +36,9 @@ export type TierQuickAction =
   | 'paiement'
   | 'mail'
   | 'sms'
-  | 'fusionner';
+  | 'fusionner'
+  | 'activate'
+  | 'deactivate';
 
 interface TierListProps {
   type?: TierType | 'ALL';
@@ -195,9 +199,28 @@ export const TierList: React.FC<TierListProps> = ({
     }
   };
 
-  const handleAction = (e: React.MouseEvent, tier: Tier, action: TierQuickAction) => {
+  const handleAction = async (e: React.MouseEvent, tier: Tier, action: TierQuickAction) => {
     e.stopPropagation();
     setOpenMenuId(null);
+
+    if (action === 'activate') {
+      await updateTier({ ...tier, status: 'ACTIVE' });
+      showToast(`${tier.name} réactivé`, 'success');
+      return;
+    }
+    if (action === 'deactivate') {
+      const ok = await confirm({
+        title: 'Désactiver le compte CRM',
+        message: `Désactiver "${tier.name}" ? Les comptes utilisateurs liés seront suspendus.`,
+        confirmLabel: 'Désactiver',
+        variant: 'danger',
+      });
+      if (!ok) return;
+      await updateTier({ ...tier, status: 'INACTIVE' });
+      showToast(`${tier.name} désactivé — comptes utilisateurs suspendus`, 'warning');
+      return;
+    }
+
     if (onQuickAction) {
       onQuickAction(tier, action);
     } else {
@@ -205,57 +228,75 @@ export const TierList: React.FC<TierListProps> = ({
     }
   };
 
-  // Quick action items for the dropdown
-  const quickActions: { action: TierQuickAction; label: string; icon: React.ElementType; color: string }[] = [
-    {
-      action: 'ticket',
-      label: 'Créer un ticket',
-      icon: LifeBuoy,
-      color: 'text-purple-600 hover:bg-[var(--clr-info-dim)]',
-    },
-    {
-      action: 'devis',
-      label: 'Créer un devis',
-      icon: FileText,
-      color: 'text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20',
-    },
-    {
-      action: 'facture',
-      label: 'Créer une facture',
-      icon: Receipt,
-      color: 'text-emerald-600 hover:bg-[var(--clr-emerald-dim)]',
-    },
-    {
-      action: 'intervention',
-      label: 'Créer une intervention',
-      icon: Wrench,
-      color: 'text-orange-600 hover:bg-[var(--clr-warning-dim)]',
-    },
-    {
-      action: 'paiement',
-      label: 'Enregistrer un paiement',
-      icon: CreditCard,
-      color: 'text-green-600 hover:bg-[var(--clr-success-dim)]',
-    },
-    {
-      action: 'mail',
-      label: 'Envoyer un e-mail',
-      icon: Mail,
-      color: 'text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20',
-    },
-    {
-      action: 'sms',
-      label: 'Envoyer un SMS',
-      icon: MessageSquare,
-      color: 'text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
-    },
-    {
-      action: 'fusionner',
-      label: 'Fusionner',
-      icon: Layers,
-      color: 'text-[var(--text-secondary)] tr-hover',
-    },
-  ];
+  // Quick action items for the dropdown — dynamic based on tier status
+  const getQuickActions = (
+    tier: Tier
+  ): { action: TierQuickAction; label: string; icon: React.ElementType; color: string }[] => {
+    const isActive = (tier.status || '').toUpperCase() === 'ACTIVE';
+    return [
+      {
+        action: 'ticket',
+        label: 'Créer un ticket',
+        icon: LifeBuoy,
+        color: 'text-purple-600 hover:bg-[var(--clr-info-dim)]',
+      },
+      {
+        action: 'devis',
+        label: 'Créer un devis',
+        icon: FileText,
+        color: 'text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]/20',
+      },
+      {
+        action: 'facture',
+        label: 'Créer une facture',
+        icon: Receipt,
+        color: 'text-emerald-600 hover:bg-[var(--clr-emerald-dim)]',
+      },
+      {
+        action: 'intervention',
+        label: 'Créer une intervention',
+        icon: Wrench,
+        color: 'text-orange-600 hover:bg-[var(--clr-warning-dim)]',
+      },
+      {
+        action: 'paiement',
+        label: 'Enregistrer un paiement',
+        icon: CreditCard,
+        color: 'text-green-600 hover:bg-[var(--clr-success-dim)]',
+      },
+      {
+        action: 'mail',
+        label: 'Envoyer un e-mail',
+        icon: Mail,
+        color: 'text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20',
+      },
+      {
+        action: 'sms',
+        label: 'Envoyer un SMS',
+        icon: MessageSquare,
+        color: 'text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20',
+      },
+      {
+        action: 'fusionner',
+        label: 'Fusionner',
+        icon: Layers,
+        color: 'text-[var(--text-secondary)] tr-hover',
+      },
+      isActive
+        ? {
+            action: 'deactivate' as TierQuickAction,
+            label: 'Désactiver le compte',
+            icon: PowerOff,
+            color: 'text-red-500 hover:bg-[var(--clr-danger-dim)] border-t border-[var(--border)] mt-1',
+          }
+        : {
+            action: 'activate' as TierQuickAction,
+            label: 'Réactiver le compte',
+            icon: Power,
+            color: 'text-green-600 hover:bg-[var(--clr-success-dim)] border-t border-[var(--border)] mt-1',
+          },
+    ];
+  };
 
   const APP_BADGE: Record<string, { label: string; className: string }> = {
     TRACKYU: {
@@ -697,7 +738,7 @@ export const TierList: React.FC<TierListProps> = ({
                               }}
                             />
                             <div className="absolute right-0 top-full mt-1 w-56 bg-[var(--bg-elevated)] rounded-xl shadow-xl border border-[var(--border)] z-40 py-1 animate-in fade-in zoom-in-95 duration-150">
-                              {quickActions.map(({ action, label, icon: Icon, color }) => (
+                              {getQuickActions(tier).map(({ action, label, icon: Icon, color }) => (
                                 <button
                                   key={action}
                                   onClick={(e) => handleAction(e, tier, action)}

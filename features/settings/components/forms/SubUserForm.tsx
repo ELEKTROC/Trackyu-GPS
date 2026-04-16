@@ -19,6 +19,9 @@ import {
   Square,
   ChevronDown,
   ChevronUp,
+  Eye,
+  EyeOff,
+  RefreshCw,
 } from 'lucide-react';
 import { FormField, FormSection, FormGrid, Input, Select, Textarea } from '../../../../components/form';
 
@@ -133,6 +136,14 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const [showPermissions, setShowPermissions] = React.useState(false);
     const [showVehicles, setShowVehicles] = React.useState(false);
     const [vehicleSearch, setVehicleSearch] = React.useState('');
+    const [showPassword, setShowPassword] = React.useState(false);
+
+    const generatePassword = () => {
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$!';
+      const pwd = Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+      setValue('password', pwd);
+      setShowPassword(true);
+    };
 
     const {
       register,
@@ -275,6 +286,38 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   <option value="Inactif">⛔ Inactif</option>
                   <option value="En attente">⏳ En attente</option>
                 </Select>
+              </FormField>
+
+              <FormField
+                label="Mot de passe"
+                hint={initialData?.id ? 'Laisser vide pour ne pas modifier' : 'Min. 6 caractères'}
+                error={errors.password?.message}
+              >
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Input
+                      {...register('password')}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder={initialData?.id ? '••••••••' : 'Mot de passe...'}
+                      className="pr-8"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={generatePassword}
+                    className="px-2 py-1.5 rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--primary)] hover:border-[var(--primary)] transition-colors"
+                    title="Générer un mot de passe"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
+                </div>
               </FormField>
             </FormGrid>
           </FormSection>
