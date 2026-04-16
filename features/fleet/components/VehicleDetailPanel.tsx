@@ -220,8 +220,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
 
         // Distance: skip gaps > 10min (GPS disconnect)
         if (dt < GAP_DIST_MS) {
-          const loc1 = current.location || { lat: current.lat, lng: current.lng };
-          const loc2 = next.location || { lat: next.lat, lng: next.lng };
+          const loc1 = current.location || { lat: (current as any).lat, lng: (current as any).lng };
+          const loc2 = next.location || { lat: (next as any).lat, lng: (next as any).lng };
           if (loc1?.lat && loc2?.lat) {
             totalDistance += haversine(loc1.lat, loc1.lng, loc2.lat, loc2.lng);
           }
