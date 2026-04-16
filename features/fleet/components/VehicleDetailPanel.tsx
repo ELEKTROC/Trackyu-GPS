@@ -173,6 +173,19 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     let idleMs = 0;
     let stoppedMs = 0;
     let statusDurationMs = 0;
+    let totalDistance = 0;
+    let offlineMs = 0;
+
+    // Haversine distance (km) — same formula as ReplayControlPanel
+    const haversine = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+      const R = 6371;
+      const dLat = ((lat2 - lat1) * Math.PI) / 180;
+      const dLon = ((lon2 - lon1) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    };
 
     if (history.length > 0) {
       // Helper: get timestamp from either field name
@@ -192,16 +205,32 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       // Sort by time
       const sorted = [...history].sort((a, b) => getTs(a) - getTs(b));
 
-      // 1. Calculate Daily Totals
+      // 1. Calculate Daily Totals + Distance + Offline
+      const GAP_DIST_MS = 10 * 60 * 1000; // gap > 10min → don't count distance
+      const GAP_OFFLINE_MS = 30 * 60 * 1000; // gap > 30min → offline period
       for (let i = 0; i < sorted.length - 1; i++) {
         const current = sorted[i];
         const next = sorted[i + 1];
-        const duration = getTs(next) - getTs(current);
+        const dt = getTs(next) - getTs(current);
         const status = getPointStatus(current);
 
-        if (status === VehicleStatus.MOVING) movingMs += duration;
-        else if (status === VehicleStatus.IDLE) idleMs += duration;
-        else stoppedMs += duration;
+        if (status === VehicleStatus.MOVING) movingMs += dt;
+        else if (status === VehicleStatus.IDLE) idleMs += dt;
+        else stoppedMs += dt;
+
+        // Distance: skip gaps > 10min (GPS disconnect)
+        if (dt < GAP_DIST_MS) {
+          const loc1 = current.location || { lat: current.lat, lng: current.lng };
+          const loc2 = next.location || { lat: next.lat, lng: next.lng };
+          if (loc1?.lat && loc2?.lat) {
+            totalDistance += haversine(loc1.lat, loc1.lng, loc2.lat, loc2.lng);
+          }
+        }
+
+        // Offline: gaps > 30min
+        if (dt > GAP_OFFLINE_MS) {
+          offlineMs += dt;
+        }
       }
 
       // Add time from last point to now (if today)
@@ -238,8 +267,10 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       drivingTime: formatDuration(movingMs),
       idleTime: formatDuration(idleMs),
       stoppedTime: formatDuration(stoppedMs),
+      offlineTime: formatDuration(offlineMs),
       statusDuration: formatDuration(statusDurationMs),
       engineHours: engineMs > 0 ? `${engineH}h${engineMin > 0 ? ` ${engineMin}min` : ''}` : 'N/A',
+      totalDistance,
     };
   }, [history, vehicle.status]);
 
@@ -385,7 +416,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     drivingTime: stats.drivingTime !== '00:00' ? stats.drivingTime : '00:00',
     idleTime: stats.idleTime !== '00:00' ? stats.idleTime : '00:00',
     stoppedTime: stats.stoppedTime !== '00:00' ? stats.stoppedTime : '00:00',
-    offlineTime: '00:00',
+    offlineTime: stats.offlineTime,
     firstStart: { time: vehicle.departureTime || 'N/A', loc: vehicle.departureLocation || 'N/A' },
     lastStop: { time: vehicle.arrivalTime || 'N/A', loc: vehicle.arrivalLocation || 'N/A' },
     geofence: vehicle.geofence || 'N/A',
@@ -491,6 +522,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           <ActivityBlock
             vehicle={vehicle}
             mockData={mockData}
+            totalDistance={stats.totalDistance}
             isConfigMode={isConfigMode}
             hiddenFields={hiddenFields}
             toggleFieldVisibility={toggleFieldVisibility}

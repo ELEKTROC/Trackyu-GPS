@@ -7,6 +7,7 @@ import { ConfigurableRow } from './SharedBlocks';
 interface ActivityBlockProps {
   vehicle: Vehicle;
   mockData: any;
+  totalDistance?: number;
   isConfigMode: boolean;
   hiddenFields: Set<string>;
   toggleFieldVisibility: (id: string) => void;
@@ -16,6 +17,7 @@ interface ActivityBlockProps {
 export const ActivityBlock: React.FC<ActivityBlockProps> = ({
   vehicle,
   mockData,
+  totalDistance,
   isConfigMode,
   hiddenFields,
   toggleFieldVisibility,
@@ -112,7 +114,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           <div className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-sm h-full">
             <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold block mb-1">Distance (Jour)</span>
             <span className="text-lg font-bold text-[var(--text-primary)]">
-              {(vehicle.dailyMileage ?? 0).toFixed(1)} km
+              {(totalDistance ?? vehicle.dailyMileage ?? 0).toFixed(1)} km
             </span>
           </div>
         </ConfigurableRow>
