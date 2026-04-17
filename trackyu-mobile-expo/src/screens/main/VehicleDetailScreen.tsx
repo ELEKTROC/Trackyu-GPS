@@ -17,7 +17,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker, Polyline as MapPolyline, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Polyline as MapPolyline, PROVIDER_GOOGLE, type MapType } from 'react-native-maps';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -1011,6 +1011,8 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
     subscription: true,
   });
   const [showOrderModal, setShowOrderModal] = useState(false);
+  const [mapType, setMapType] = useState<MapType>('standard');
+  const [showTraffic, setShowTraffic] = useState(false);
   const [showImmoModal, setShowImmoModal] = useState(false);
   const [immoTarget, setImmoTarget] = useState(false);
   const [showImmoHistory, setShowImmoHistory] = useState(false);
@@ -1948,6 +1950,8 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                 ref={mapRef}
                 provider={PROVIDER_GOOGLE}
                 style={StyleSheet.absoluteFillObject}
+                mapType={mapType}
+                showsTraffic={showTraffic}
                 initialRegion={{
                   latitude: vehicle.latitude,
                   longitude: vehicle.longitude,
@@ -1992,6 +1996,39 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                   tracksViewChanges={false}
                 />
               </MapView>
+              {/* Controls carte — haut droite (type + trafic) */}
+              <View style={{ position: 'absolute', top: 12, right: 12, gap: 6 }}>
+                <TouchableOpacity
+                  onPress={() =>
+                    setMapType((t) => (t === 'standard' ? 'satellite' : t === 'satellite' ? 'hybrid' : 'standard'))
+                  }
+                  style={{
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderRadius: 8,
+                    minWidth: 74,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>
+                    {mapType === 'standard' ? '🏙️ Plan' : mapType === 'satellite' ? '🛰️ Satellite' : '🌐 Hybride'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowTraffic((v) => !v)}
+                  style={{
+                    backgroundColor: showTraffic ? '#E8771A' : 'rgba(0,0,0,0.7)',
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderRadius: 8,
+                    minWidth: 74,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>🚦 Trafic</Text>
+                </TouchableOpacity>
+              </View>
               {/* Boutons carte — bas droite, verticaux */}
               <View style={{ position: 'absolute', bottom: 12, right: 12, gap: 8 }}>
                 <TouchableOpacity

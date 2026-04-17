@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Polyline, Marker, PROVIDER_GOOGLE, type MapType } from 'react-native-maps';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -1189,6 +1189,8 @@ export default function VehicleHistoryScreen({ route, navigation }: Props) {
 
   // Bottom sheet
   const [activeTab, setActiveTab] = useState<'trajets' | 'arrets' | 'alertes'>('trajets');
+  const [mapType, setMapType] = useState<MapType>('standard');
+  const [showTraffic, setShowTraffic] = useState(false);
   const sheetHeight = useRef(new Animated.Value(SHEET_COLLAPSED)).current;
   const sheetH = useRef(SHEET_COLLAPSED);
 
@@ -1518,7 +1520,14 @@ export default function VehicleHistoryScreen({ route, navigation }: Props) {
               <Text style={s.emptyText}>Aucune position enregistrée sur cette période</Text>
             </View>
           ) : (
-            <MapView ref={mapRef} style={{ flex: 1 }} provider={PROVIDER_GOOGLE} initialRegion={region}>
+            <MapView
+              ref={mapRef}
+              style={{ flex: 1 }}
+              provider={PROVIDER_GOOGLE}
+              initialRegion={region}
+              mapType={mapType}
+              showsTraffic={showTraffic}
+            >
               {speedSegments.map((seg, i) => (
                 <Polyline key={i} coordinates={chaikinSmooth(seg.coords, 1)} strokeColor={seg.color} strokeWidth={4} />
               ))}
@@ -1573,6 +1582,41 @@ export default function VehicleHistoryScreen({ route, navigation }: Props) {
                 </Marker>
               )}
             </MapView>
+          )}
+          {/* Controls carte — haut droite (type + trafic) */}
+          {positions.length > 0 && (
+            <View style={{ position: 'absolute', top: 8, right: 8, gap: 6 }}>
+              <TouchableOpacity
+                onPress={() =>
+                  setMapType((t) => (t === 'standard' ? 'satellite' : t === 'satellite' ? 'hybrid' : 'standard'))
+                }
+                style={{
+                  backgroundColor: 'rgba(0,0,0,0.7)',
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+                  borderRadius: 8,
+                  minWidth: 74,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>
+                  {mapType === 'standard' ? '🏙️ Plan' : mapType === 'satellite' ? '🛰️ Satellite' : '🌐 Hybride'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowTraffic((v) => !v)}
+                style={{
+                  backgroundColor: showTraffic ? '#E8771A' : 'rgba(0,0,0,0.7)',
+                  paddingVertical: 6,
+                  paddingHorizontal: 10,
+                  borderRadius: 8,
+                  minWidth: 74,
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>🚦 Trafic</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       )}

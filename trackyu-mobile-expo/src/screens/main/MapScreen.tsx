@@ -132,6 +132,7 @@ export function MapScreen() {
   const [tracksViewChanges, setTracksViewChanges] = useState(true);
   const [showLayerPicker, setShowLayerPicker] = useState(false);
   const [showGeofences, setShowGeofences] = useState(true);
+  const [showTraffic, setShowTraffic] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -516,6 +517,7 @@ export function MapScreen() {
         provider={PROVIDER_GOOGLE}
         initialRegion={INITIAL_REGION}
         mapType={MAP_MODES[mapTypeIndex].mapType}
+        showsTraffic={showTraffic && MAP_MODES[mapTypeIndex].key !== 'osm'}
         showsUserLocation
         showsMyLocationButton={false}
         onMapReady={fitToMarkers}
@@ -911,6 +913,55 @@ export function MapScreen() {
               )}
             </TouchableOpacity>
           ))}
+
+          {/* ── Toggle Trafic ── */}
+          <View style={{ height: 1, backgroundColor: theme.border, marginVertical: 6, marginHorizontal: 6 }} />
+          <TouchableOpacity
+            onPress={() => setShowTraffic((v) => !v)}
+            activeOpacity={0.7}
+            disabled={MAP_MODES[mapTypeIndex].key === 'osm'}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 10,
+              paddingHorizontal: 10,
+              paddingVertical: 9,
+              borderRadius: 10,
+              opacity: MAP_MODES[mapTypeIndex].key === 'osm' ? 0.4 : 1,
+            }}
+          >
+            <Text style={{ fontSize: 17 }}>🚦</Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: showTraffic ? '700' : '400',
+                color: showTraffic ? theme.primary : theme.text.primary,
+                flex: 1,
+              }}
+            >
+              Trafic
+            </Text>
+            <View
+              style={{
+                width: 34,
+                height: 20,
+                borderRadius: 10,
+                backgroundColor: showTraffic ? theme.primary : theme.border,
+                justifyContent: 'center',
+                padding: 2,
+              }}
+            >
+              <View
+                style={{
+                  width: 16,
+                  height: 16,
+                  borderRadius: 8,
+                  backgroundColor: '#fff',
+                  alignSelf: showTraffic ? 'flex-end' : 'flex-start',
+                }}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
       )}
 
