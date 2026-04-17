@@ -7,10 +7,20 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, Circle, Hexagon, Route, MapPin, ToggleLeft, ToggleRight } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Circle,
+  Hexagon,
+  Route,
+  MapPin,
+  ToggleLeft,
+  ToggleRight,
+  SlidersHorizontal,
+} from 'lucide-react-native';
 import type { RootStackParamList } from '../../navigation/types';
 import geofencesApi, { type Geofence, type GeofenceType, isCircle, toLatLng } from '../../api/geofencesApi';
 import { useTheme } from '../../theme';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Geofences'>;
 
@@ -22,11 +32,15 @@ const TYPE_CONFIG: Record<GeofenceType, { label: string; icon: (c: string) => Re
   ROUTE: { label: 'Route', icon: (c) => <Route size={14} color={c} /> },
 };
 
-const FILTERS: { label: string; value: FilterType }[] = [
-  { label: 'Toutes', value: 'ALL' },
-  { label: 'Cercle', value: 'CIRCLE' },
-  { label: 'Polygone', value: 'POLYGON' },
-  { label: 'Route', value: 'ROUTE' },
+const TYPE_FILTER_ITEMS = [
+  { id: 'CIRCLE', label: 'Cercle' },
+  { id: 'POLYGON', label: 'Polygone' },
+  { id: 'ROUTE', label: 'Route' },
+];
+
+const STATUS_FILTER_ITEMS = [
+  { id: 'active', label: 'Active' },
+  { id: 'inactive', label: 'Inactive' },
 ];
 
 function formatRadius(meters: number): string {
@@ -103,8 +117,9 @@ function GeofenceCard({ item, theme }: { item: Geofence; theme: ReturnType<typeo
 
 export default function GeofencesScreen({ navigation }: Props) {
   const { theme } = useTheme();
-  const [filter, setFilter] = useState<FilterType>('ALL');
-  const [activeOnly, setActiveOnly] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   const {
     data = [],
@@ -118,12 +133,27 @@ export default function GeofencesScreen({ navigation }: Props) {
     staleTime: 60_000,
   });
 
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      { key: 'type', label: 'Type', items: TYPE_FILTER_ITEMS, selected: typeFilter, onSelect: setTypeFilter },
+      { key: 'status', label: 'Statut', items: STATUS_FILTER_ITEMS, selected: statusFilter, onSelect: setStatusFilter },
+    ],
+    [typeFilter, statusFilter]
+  );
+
+  const hasActiveFilters = !!(typeFilter || statusFilter);
+  const resetFilters = () => {
+    setTypeFilter(null);
+    setStatusFilter(null);
+  };
+
   const filtered = useMemo(() => {
     let list = data;
-    if (filter !== 'ALL') list = list.filter((g) => g.type === filter);
-    if (activeOnly) list = list.filter((g) => g.is_active);
+    if (typeFilter) list = list.filter((g) => g.type === (typeFilter as GeofenceType));
+    if (statusFilter === 'active') list = list.filter((g) => g.is_active);
+    else if (statusFilter === 'inactive') list = list.filter((g) => !g.is_active);
     return list;
-  }, [data, filter, activeOnly]);
+  }, [data, typeFilter, statusFilter]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
@@ -145,51 +175,44 @@ export default function GeofencesScreen({ navigation }: Props) {
           </Text>
         </View>
         <TouchableOpacity
-          style={[
-            s.activeToggle,
-            {
-              backgroundColor: activeOnly ? theme.primary : theme.bg.surface,
-              borderColor: activeOnly ? theme.primary : theme.border,
-            },
-          ]}
-          onPress={() => setActiveOnly((v) => !v)}
-          activeOpacity={0.75}
+          onPress={() => setShowFilters((p) => !p)}
+          accessibilityRole="button"
+          accessibilityLabel="Filtres"
+          style={{
+            marginLeft: 'auto',
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+            borderWidth: 1,
+            borderColor: theme.border,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
-          <Text
-            style={{ fontSize: 11, fontWeight: '600', color: activeOnly ? theme.text.onPrimary : theme.text.muted }}
-          >
-            Actives
-          </Text>
+          <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+          {hasActiveFilters && !showFilters ? (
+            <View
+              style={{
+                position: 'absolute',
+                top: 6,
+                right: 6,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: '#EF4444',
+              }}
+            />
+          ) : null}
         </TouchableOpacity>
       </View>
 
-      {/* Filtres type */}
-      <View style={s.filterRow}>
-        {FILTERS.map((f) => (
-          <TouchableOpacity
-            key={f.value}
-            style={[
-              s.filterChip,
-              {
-                backgroundColor: filter === f.value ? theme.primary : theme.bg.surface,
-                borderColor: filter === f.value ? theme.primary : theme.border,
-              },
-            ]}
-            onPress={() => setFilter(f.value)}
-            activeOpacity={0.75}
-          >
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: '600',
-                color: filter === f.value ? theme.text.onPrimary : theme.text.secondary,
-              }}
-            >
-              {f.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <VehicleFilterPanel
+        visible={showFilters}
+        blocks={filterBlocks}
+        hasActiveFilters={hasActiveFilters}
+        onReset={resetFilters}
+      />
 
       {/* Contenu */}
       {isLoading ? (
@@ -226,7 +249,7 @@ export default function GeofencesScreen({ navigation }: Props) {
             <View style={{ alignItems: 'center', paddingTop: 60, gap: 12 }}>
               <Hexagon size={40} color={theme.text.muted} />
               <Text style={{ fontSize: 14, color: theme.text.muted, textAlign: 'center' }}>
-                {activeOnly ? 'Aucune zone active' : 'Aucune zone configurée'}
+                {hasActiveFilters ? 'Aucun résultat' : 'Aucune zone configurée'}
               </Text>
             </View>
           }

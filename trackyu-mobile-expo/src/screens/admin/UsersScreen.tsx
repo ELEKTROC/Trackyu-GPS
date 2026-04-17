@@ -9,7 +9,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, 
 import { useQuery } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ArrowLeft, User, Clock } from 'lucide-react-native';
+import { ArrowLeft, User, Clock, SlidersHorizontal } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usersApi, type TenantUser } from '../../api/users';
@@ -17,18 +17,23 @@ import type { RootStackParamList } from '../../navigation/types';
 import { ROLE_LABELS, ROLE_COLORS, ADMIN_SCREEN_ROLES } from '../../constants/roles';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
 import { SearchBar } from '../../components/SearchBar';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 
-const ROLE_FILTER_OPTIONS = [
-  { label: 'Tous', value: null },
-  { label: 'Admin', value: 'ADMIN' },
-  { label: 'Manager', value: 'MANAGER' },
-  { label: 'Tech', value: 'TECH' },
-  { label: 'Support', value: 'SUPPORT_AGENT' },
-  { label: 'Commercial', value: 'COMMERCIAL' },
-  { label: 'Client', value: 'CLIENT' },
+const ROLE_FILTER_ITEMS = [
+  { id: 'ADMIN', label: 'Admin' },
+  { id: 'MANAGER', label: 'Manager' },
+  { id: 'TECH', label: 'Tech' },
+  { id: 'SUPPORT_AGENT', label: 'Support' },
+  { id: 'COMMERCIAL', label: 'Commercial' },
+  { id: 'CLIENT', label: 'Client' },
+];
+
+const STATUS_FILTER_ITEMS = [
+  { id: 'Actif', label: 'Actif' },
+  { id: 'Inactif', label: 'Inactif' },
 ];
 
 // ── UserRow ───────────────────────────────────────────────────────────────────
@@ -127,7 +132,10 @@ export default function UsersScreen() {
   const s = styles(theme);
   const nav = useNavigation<Nav>();
   const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const [roleFilter, setRoleFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [departementFilter, setDepartementFilter] = useState<string | null>(null);
 
   const {
     data = [],
@@ -140,11 +148,44 @@ export default function UsersScreen() {
     staleTime: 60_000,
   });
 
+  const uniqueDepartements = useMemo(() => {
+    const m = new Set<string>();
+    data.forEach((u) => {
+      const d = u.departement?.trim();
+      if (d) m.add(d);
+    });
+    return Array.from(m)
+      .sort()
+      .map((d) => ({ id: d, label: d }));
+  }, [data]);
+
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      { key: 'role', label: 'Rôle', items: ROLE_FILTER_ITEMS, selected: roleFilter, onSelect: setRoleFilter },
+      { key: 'status', label: 'Statut', items: STATUS_FILTER_ITEMS, selected: statusFilter, onSelect: setStatusFilter },
+      {
+        key: 'departement',
+        label: 'Département',
+        items: uniqueDepartements,
+        selected: departementFilter,
+        onSelect: setDepartementFilter,
+      },
+    ],
+    [roleFilter, statusFilter, uniqueDepartements, departementFilter]
+  );
+
+  const hasActiveFilters = !!(roleFilter || statusFilter || departementFilter);
+  const resetFilters = () => {
+    setRoleFilter(null);
+    setStatusFilter(null);
+    setDepartementFilter(null);
+  };
+
   const filtered = useMemo(() => {
     let list = data;
-    if (roleFilter) {
-      list = list.filter((u) => u.role?.toUpperCase() === roleFilter);
-    }
+    if (roleFilter) list = list.filter((u) => u.role?.toUpperCase() === roleFilter);
+    if (statusFilter) list = list.filter((u) => u.status === statusFilter);
+    if (departementFilter) list = list.filter((u) => u.departement === departementFilter);
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       list = list.filter(
@@ -153,7 +194,7 @@ export default function UsersScreen() {
       );
     }
     return list;
-  }, [data, search, roleFilter]);
+  }, [data, search, roleFilter, statusFilter, departementFilter]);
 
   const activeCount = data.filter((u) => u.status === 'Actif').length;
 
@@ -180,33 +221,48 @@ export default function UsersScreen() {
           </View>
         </View>
 
-        {/* Search */}
-        <SearchBar
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Rechercher..."
-          style={{ marginHorizontal: 16, marginBottom: 10 }}
-        />
+        {/* Search + filtres */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginBottom: 10 }}>
+          <View style={{ flex: 1 }}>
+            <SearchBar value={search} onChangeText={setSearch} placeholder="Rechercher..." />
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowFilters((p) => !p)}
+            accessibilityRole="button"
+            accessibilityLabel="Filtres"
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+              borderWidth: 1,
+              borderColor: theme.border,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+            {hasActiveFilters && !showFilters ? (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: '#EF4444',
+                }}
+              />
+            ) : null}
+          </TouchableOpacity>
+        </View>
 
-        {/* Role filter chips */}
-        <FlatList
-          horizontal
-          data={ROLE_FILTER_OPTIONS}
-          keyExtractor={(i) => i.label}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={s.chips}
-          renderItem={({ item }) => {
-            const active = roleFilter === item.value;
-            return (
-              <TouchableOpacity
-                style={[s.chip, active && { backgroundColor: theme.primary, borderColor: theme.primary }]}
-                onPress={() => setRoleFilter(item.value)}
-                activeOpacity={0.75}
-              >
-                <Text style={[s.chipLabel, active && { color: theme.text.onPrimary }]}>{item.label}</Text>
-              </TouchableOpacity>
-            );
-          }}
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={hasActiveFilters}
+          onReset={resetFilters}
         />
 
         {/* List */}
@@ -217,7 +273,7 @@ export default function UsersScreen() {
         ) : filtered.length === 0 ? (
           <View style={s.center}>
             <User size={48} color={theme.text.muted} />
-            <Text style={s.empty}>{search || roleFilter ? 'Aucun résultat' : 'Aucun utilisateur'}</Text>
+            <Text style={s.empty}>{search || hasActiveFilters ? 'Aucun résultat' : 'Aucun utilisateur'}</Text>
           </View>
         ) : (
           <FlatList
@@ -251,20 +307,6 @@ const styles = (theme: ThemeType) =>
     backBtn: { padding: 4, marginTop: 4 },
     title: { fontSize: 22, fontWeight: '700', color: theme.text.primary },
     subtitle: { fontSize: 12, color: theme.text.muted, marginTop: 2 },
-    chips: {
-      paddingHorizontal: 16,
-      paddingBottom: 12,
-      gap: 8,
-    },
-    chip: {
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 20,
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      backgroundColor: theme.bg.surface,
-    },
-    chipLabel: { fontSize: 12, fontWeight: '500', color: theme.text.secondary },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
     empty: { fontSize: 14, color: theme.text.muted },
   });

@@ -24,9 +24,11 @@ import {
   Fuel,
   MapPin,
 } from 'lucide-react-native';
+import { SlidersHorizontal } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
 import { EmptyState } from '../../components/EmptyState';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
 import apiClient from '../../api/client';
 import alertsApi, { type Alert } from '../../api/alerts';
@@ -85,7 +87,17 @@ const SEVERITY_LABELS: Record<string, string> = {
   info: 'INFO',
 };
 
-function AlertsTab({ theme }: { theme: ThemeType }) {
+function AlertsTab({
+  theme,
+  resellerFilter,
+  clientFilter,
+  onFacetsChange,
+}: {
+  theme: ThemeType;
+  resellerFilter: string | null;
+  clientFilter: string | null;
+  onFacetsChange: (resellers: string[], clients: string[]) => void;
+}) {
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['admin-monitoring-alerts'],
     queryFn: () => alertsApi.getPage(1, 50),
@@ -93,8 +105,30 @@ function AlertsTab({ theme }: { theme: ThemeType }) {
     refetchInterval: 30_000,
   });
 
-  const alerts: Alert[] = data?.data ?? [];
+  const allAlerts: Alert[] = data?.data ?? [];
+  const alerts = useMemo(
+    () =>
+      allAlerts.filter((a) => {
+        if (resellerFilter && a.resellerName !== resellerFilter) return false;
+        if (clientFilter && a.clientName !== clientFilter) return false;
+        return true;
+      }),
+    [allAlerts, resellerFilter, clientFilter]
+  );
   const unread = alerts.filter((a) => !a.isRead).length;
+
+  React.useEffect(() => {
+    const resellers = Array.from(new Set(allAlerts.map((a) => a.resellerName).filter(Boolean) as string[])).sort();
+    const clients = Array.from(
+      new Set(
+        allAlerts
+          .filter((a) => !resellerFilter || a.resellerName === resellerFilter)
+          .map((a) => a.clientName)
+          .filter(Boolean) as string[]
+      )
+    ).sort();
+    onFacetsChange(resellers, clients);
+  }, [allAlerts, resellerFilter, onFacetsChange]);
 
   if (isLoading) return <ActivityIndicator color={theme.primary} style={{ marginTop: 40 }} />;
 
@@ -189,17 +223,50 @@ function offlineLabel(ms: number): { label: string; color: string } {
   return { label: 'Récent', color: '#6B7280' };
 }
 
-function OfflineTab({ theme }: { theme: ThemeType }) {
+function OfflineTab({
+  theme,
+  resellerFilter,
+  clientFilter,
+  onFacetsChange,
+}: {
+  theme: ThemeType;
+  resellerFilter: string | null;
+  clientFilter: string | null;
+  onFacetsChange: (resellers: string[], clients: string[]) => void;
+}) {
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['vehicles'],
     queryFn: vehiclesApi.getAll,
     staleTime: 30_000,
   });
 
-  const offlineVehicles = useMemo<Vehicle[]>(() => {
+  const offlineAll = useMemo<Vehicle[]>(() => {
     const all = data ?? [];
     return all.filter((v) => v.status === 'offline').sort((a, b) => offlineDuration(b) - offlineDuration(a));
   }, [data]);
+
+  const offlineVehicles = useMemo<Vehicle[]>(
+    () =>
+      offlineAll.filter((v) => {
+        if (resellerFilter && v.resellerName !== resellerFilter) return false;
+        if (clientFilter && v.clientName !== clientFilter) return false;
+        return true;
+      }),
+    [offlineAll, resellerFilter, clientFilter]
+  );
+
+  React.useEffect(() => {
+    const resellers = Array.from(new Set(offlineAll.map((v) => v.resellerName).filter(Boolean) as string[])).sort();
+    const clients = Array.from(
+      new Set(
+        offlineAll
+          .filter((v) => !resellerFilter || v.resellerName === resellerFilter)
+          .map((v) => v.clientName)
+          .filter(Boolean) as string[]
+      )
+    ).sort();
+    onFacetsChange(resellers, clients);
+  }, [offlineAll, resellerFilter, onFacetsChange]);
 
   if (isLoading) return <ActivityIndicator color={theme.primary} style={{ marginTop: 40 }} />;
 
@@ -402,6 +469,53 @@ export default function AdminMonitoringScreen() {
   const { theme } = useTheme();
   const nav = useNavigation();
   const [activeTab, setActiveTab] = useState<TabKey>('alerts');
+  const [showFilters, setShowFilters] = useState(false);
+  const [resellerFilter, setResellerFilter] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
+  const [facets, setFacets] = useState<{ resellers: string[]; clients: string[] }>({ resellers: [], clients: [] });
+
+  const handleFacets = React.useCallback((resellers: string[], clients: string[]) => {
+    setFacets((p) => {
+      if (
+        p.resellers.length === resellers.length &&
+        p.resellers.every((r, i) => r === resellers[i]) &&
+        p.clients.length === clients.length &&
+        p.clients.every((c, i) => c === clients[i])
+      ) {
+        return p;
+      }
+      return { resellers, clients };
+    });
+  }, []);
+
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      {
+        key: 'reseller',
+        label: 'Revendeur',
+        items: facets.resellers.map((n) => ({ id: n, label: n })),
+        selected: resellerFilter,
+        onSelect: (id) => {
+          setResellerFilter(id);
+          setClientFilter(null);
+        },
+      },
+      {
+        key: 'client',
+        label: 'Client',
+        items: facets.clients.map((n) => ({ id: n, label: n })),
+        selected: clientFilter,
+        onSelect: setClientFilter,
+      },
+    ],
+    [facets, resellerFilter, clientFilter]
+  );
+
+  const hasActiveFilters = !!(resellerFilter || clientFilter);
+  const resetFilters = () => {
+    setResellerFilter(null);
+    setClientFilter(null);
+  };
 
   return (
     <ProtectedScreen allowedRoles={ADMIN_SCREEN_ROLES}>
@@ -420,7 +534,48 @@ export default function AdminMonitoringScreen() {
             <Text style={s(theme).title}>Monitoring</Text>
             <Text style={s(theme).subtitle}>Surveillance temps réel de la flotte</Text>
           </View>
+          {activeTab !== 'anomalies' && (
+            <TouchableOpacity
+              onPress={() => setShowFilters((p) => !p)}
+              accessibilityRole="button"
+              accessibilityLabel="Filtres"
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+                borderWidth: 1,
+                borderColor: theme.border,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+              {hasActiveFilters && !showFilters ? (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: '#EF4444',
+                  }}
+                />
+              ) : null}
+            </TouchableOpacity>
+          )}
         </View>
+
+        {activeTab !== 'anomalies' && (
+          <VehicleFilterPanel
+            visible={showFilters}
+            blocks={filterBlocks}
+            hasActiveFilters={hasActiveFilters}
+            onReset={resetFilters}
+          />
+        )}
 
         {/* Onglets */}
         <View style={s(theme).tabsRow}>
@@ -446,8 +601,22 @@ export default function AdminMonitoringScreen() {
         </View>
 
         {/* Contenu */}
-        {activeTab === 'alerts' && <AlertsTab theme={theme} />}
-        {activeTab === 'offline' && <OfflineTab theme={theme} />}
+        {activeTab === 'alerts' && (
+          <AlertsTab
+            theme={theme}
+            resellerFilter={resellerFilter}
+            clientFilter={clientFilter}
+            onFacetsChange={handleFacets}
+          />
+        )}
+        {activeTab === 'offline' && (
+          <OfflineTab
+            theme={theme}
+            resellerFilter={resellerFilter}
+            clientFilter={clientFilter}
+            onFacetsChange={handleFacets}
+          />
+        )}
         {activeTab === 'anomalies' && <AnomaliesTab theme={theme} />}
       </SafeAreaView>
     </ProtectedScreen>

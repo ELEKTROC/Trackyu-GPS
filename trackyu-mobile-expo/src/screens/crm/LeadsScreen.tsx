@@ -5,20 +5,11 @@
  * GET /crm/leads → Lead[] (tableau plat snake_case)
  */
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  ScrollView,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ArrowLeft, Briefcase, TrendingUp, Phone } from 'lucide-react-native';
+import { ArrowLeft, Briefcase, TrendingUp, Phone, SlidersHorizontal } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import crmApi, {
@@ -33,17 +24,15 @@ import type { RootStackParamList } from '../../navigation/types';
 import { CRM_SCREEN_ROLES } from '../../constants/roles';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
 import { SearchBar } from '../../components/SearchBar';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 
-const FILTERS: { label: string; value: LeadStatus | null }[] = [
-  { label: 'Tous', value: null },
-  ...LEAD_FILTER_STATUSES.map((s) => ({
-    label: LEAD_STATUS_LABELS[s],
-    value: s,
-  })),
-];
+const STATUS_FILTER_ITEMS = LEAD_FILTER_STATUSES.map((s) => ({
+  id: s as string,
+  label: LEAD_STATUS_LABELS[s],
+}));
 
 function formatValue(v: number | null): string {
   if (v == null) return '–';
@@ -191,7 +180,10 @@ export default function LeadsScreen() {
   const nav = useNavigation<Nav>();
   const user = useAuthStore((st) => st.user);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<LeadStatus | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [sourceFilter, setSourceFilter] = useState<string | null>(null);
+  const [sectorFilter, setSectorFilter] = useState<string | null>(null);
 
   const {
     data = [],
@@ -204,11 +196,49 @@ export default function LeadsScreen() {
     staleTime: 60_000,
   });
 
+  const uniqueSources = useMemo(() => {
+    const m = new Set<string>();
+    data.forEach((l) => {
+      const s = l.source?.trim();
+      if (s) m.add(s);
+    });
+    return Array.from(m)
+      .sort()
+      .map((s) => ({ id: s, label: s }));
+  }, [data]);
+
+  const uniqueSectors = useMemo(() => {
+    const m = new Set<string>();
+    data.forEach((l) => {
+      const s = l.sector?.trim();
+      if (s) m.add(s);
+    });
+    return Array.from(m)
+      .sort()
+      .map((s) => ({ id: s, label: s }));
+  }, [data]);
+
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      { key: 'status', label: 'Statut', items: STATUS_FILTER_ITEMS, selected: statusFilter, onSelect: setStatusFilter },
+      { key: 'source', label: 'Source', items: uniqueSources, selected: sourceFilter, onSelect: setSourceFilter },
+      { key: 'sector', label: 'Secteur', items: uniqueSectors, selected: sectorFilter, onSelect: setSectorFilter },
+    ],
+    [statusFilter, uniqueSources, sourceFilter, uniqueSectors, sectorFilter]
+  );
+
+  const hasActiveFilters = !!(statusFilter || sourceFilter || sectorFilter);
+  const resetFilters = () => {
+    setStatusFilter(null);
+    setSourceFilter(null);
+    setSectorFilter(null);
+  };
+
   const filtered = useMemo(() => {
     let list = data;
-    if (statusFilter) {
-      list = list.filter((l) => l.status === statusFilter);
-    }
+    if (statusFilter) list = list.filter((l) => l.status === (statusFilter as LeadStatus));
+    if (sourceFilter) list = list.filter((l) => l.source === sourceFilter);
+    if (sectorFilter) list = list.filter((l) => l.sector === sectorFilter);
     if (search.trim()) {
       const q = search.trim().toLowerCase();
       list = list.filter(
@@ -219,7 +249,7 @@ export default function LeadsScreen() {
       );
     }
     return list;
-  }, [data, search, statusFilter]);
+  }, [data, search, statusFilter, sourceFilter, sectorFilter]);
 
   return (
     <ProtectedScreen allowedRoles={CRM_SCREEN_ROLES}>
@@ -243,31 +273,49 @@ export default function LeadsScreen() {
         {/* KPI bar */}
         {!isLoading && data.length > 0 && <KpiBar leads={data} theme={theme} />}
 
-        {/* Search */}
-        <SearchBar
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Entreprise, contact, email..."
-          style={{ marginHorizontal: 16, marginBottom: 10 }}
-        />
+        {/* Search + filtres */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginBottom: 10 }}>
+          <View style={{ flex: 1 }}>
+            <SearchBar value={search} onChangeText={setSearch} placeholder="Entreprise, contact, email..." />
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowFilters((p) => !p)}
+            accessibilityRole="button"
+            accessibilityLabel="Filtres"
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+              borderWidth: 1,
+              borderColor: theme.border,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+            {hasActiveFilters && !showFilters ? (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: '#EF4444',
+                }}
+              />
+            ) : null}
+          </TouchableOpacity>
+        </View>
 
-        {/* Status filters */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
-          {FILTERS.map((f) => {
-            const active = statusFilter === f.value;
-            const color = f.value ? LEAD_STATUS_COLORS[f.value] : theme.primary;
-            return (
-              <TouchableOpacity
-                key={f.label}
-                style={[s.chip, active && { backgroundColor: color, borderColor: color }]}
-                onPress={() => setStatusFilter(f.value)}
-                activeOpacity={0.75}
-              >
-                <Text style={[s.chipLabel, active && { color: '#fff' }]}>{f.label}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={hasActiveFilters}
+          onReset={resetFilters}
+        />
 
         {/* List */}
         {isLoading ? (
@@ -277,7 +325,7 @@ export default function LeadsScreen() {
         ) : filtered.length === 0 ? (
           <View style={s.center}>
             <Briefcase size={48} color={theme.text.muted} />
-            <Text style={s.empty}>{search || statusFilter ? 'Aucun résultat' : 'Aucun lead'}</Text>
+            <Text style={s.empty}>{search || hasActiveFilters ? 'Aucun résultat' : 'Aucun lead'}</Text>
           </View>
         ) : (
           <FlatList
@@ -307,16 +355,6 @@ const styles = (theme: ThemeType) =>
     backBtn: { padding: 4, marginTop: 4 },
     title: { fontSize: 22, fontWeight: '700', color: theme.text.primary },
     subtitle: { fontSize: 12, color: theme.text.muted, marginTop: 2 },
-    chips: { paddingHorizontal: 16, paddingBottom: 12, gap: 8 },
-    chip: {
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 20,
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      backgroundColor: theme.bg.surface,
-    },
-    chipLabel: { fontSize: 12, fontWeight: '500', color: theme.text.secondary },
     center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
     empty: { fontSize: 14, color: theme.text.muted },
   });

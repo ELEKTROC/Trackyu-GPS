@@ -25,9 +25,22 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Wrench, Cpu, Package, ChevronRight, MapPin, Clock, User, RotateCcw, X } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Wrench,
+  Cpu,
+  Package,
+  ChevronRight,
+  MapPin,
+  Clock,
+  User,
+  RotateCcw,
+  X,
+  SlidersHorizontal,
+} from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { SearchBar } from '../../components/SearchBar';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
 import { EmptyState } from '../../components/EmptyState';
 import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
@@ -568,6 +581,9 @@ export default function AdminInterventionsScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>(route.params?.initialTab ?? 'interventions');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<InterventionStatus | 'ALL'>('ALL');
+  const [showFilters, setShowFilters] = useState(false);
+  const [resellerFilter, setResellerFilter] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
   const [rmaDevice, setRmaDevice] = useState<DeviceItem | null>(null);
 
   // ── Queries ──────────────────────────────────────────────────────────────────
@@ -637,6 +653,8 @@ export default function AdminInterventionsScreen() {
   const filteredInterventions = useMemo<Intervention[]>(() => {
     let list = (intQuery.data ?? []) as Intervention[];
     if (statusFilter !== 'ALL') list = list.filter((i) => i.status === statusFilter);
+    if (resellerFilter) list = list.filter((i) => i.resellerName === resellerFilter);
+    if (clientFilter) list = list.filter((i) => i.clientName === clientFilter);
     if (q)
       list = list.filter(
         (i) =>
@@ -647,7 +665,60 @@ export default function AdminInterventionsScreen() {
           (i.address ?? '').toLowerCase().includes(q)
       );
     return list.sort((a, b) => (b.scheduledDate ?? '').localeCompare(a.scheduledDate ?? ''));
-  }, [intQuery.data, statusFilter, q]);
+  }, [intQuery.data, statusFilter, resellerFilter, clientFilter, q]);
+
+  // ── Filtres cascade (interventions uniquement) ────────────────────────────
+  const uniqueResellers = useMemo(() => {
+    const m = new Set<string>();
+    (intQuery.data ?? []).forEach((i) => {
+      const n = i.resellerName?.trim();
+      if (n) m.add(n);
+    });
+    return Array.from(m)
+      .sort()
+      .map((n) => ({ id: n, label: n }));
+  }, [intQuery.data]);
+
+  const uniqueClients = useMemo(() => {
+    const m = new Set<string>();
+    (intQuery.data ?? []).forEach((i) => {
+      if (resellerFilter && i.resellerName !== resellerFilter) return;
+      const n = i.clientName?.trim();
+      if (n) m.add(n);
+    });
+    return Array.from(m)
+      .sort()
+      .map((n) => ({ id: n, label: n }));
+  }, [intQuery.data, resellerFilter]);
+
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      {
+        key: 'reseller',
+        label: 'Revendeur',
+        items: uniqueResellers,
+        selected: resellerFilter,
+        onSelect: (id) => {
+          setResellerFilter(id);
+          setClientFilter(null);
+        },
+      },
+      {
+        key: 'client',
+        label: 'Client',
+        items: uniqueClients,
+        selected: clientFilter,
+        onSelect: setClientFilter,
+      },
+    ],
+    [uniqueResellers, uniqueClients, resellerFilter, clientFilter]
+  );
+
+  const hasActiveFilters = !!(resellerFilter || clientFilter);
+  const resetFilters = () => {
+    setResellerFilter(null);
+    setClientFilter(null);
+  };
 
   const filteredDevices = useMemo<DeviceItem[]>(() => {
     const list = (devQuery.data ?? []) as DeviceItem[];
@@ -722,19 +793,63 @@ export default function AdminInterventionsScreen() {
           })}
         </View>
 
-        {/* Recherche */}
-        <SearchBar
-          value={search}
-          onChangeText={setSearch}
-          placeholder={
-            activeTab === 'interventions'
-              ? 'Client, nature, véhicule, adresse…'
-              : activeTab === 'devices'
-                ? 'IMEI, série, modèle, véhicule…'
-                : 'Type, détails…'
-          }
-          style={{ marginHorizontal: 16, marginVertical: 10 }}
-        />
+        {/* Recherche + filtres (interventions uniquement) */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginHorizontal: 16, marginVertical: 10 }}>
+          <View style={{ flex: 1 }}>
+            <SearchBar
+              value={search}
+              onChangeText={setSearch}
+              placeholder={
+                activeTab === 'interventions'
+                  ? 'Client, nature, véhicule, adresse…'
+                  : activeTab === 'devices'
+                    ? 'IMEI, série, modèle, véhicule…'
+                    : 'Type, détails…'
+              }
+            />
+          </View>
+          {activeTab === 'interventions' && (
+            <TouchableOpacity
+              onPress={() => setShowFilters((p) => !p)}
+              accessibilityRole="button"
+              accessibilityLabel="Filtres"
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 10,
+                backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+                borderWidth: 1,
+                borderColor: theme.border,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+              {hasActiveFilters && !showFilters ? (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: '#EF4444',
+                  }}
+                />
+              ) : null}
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {activeTab === 'interventions' && (
+          <VehicleFilterPanel
+            visible={showFilters}
+            blocks={filterBlocks}
+            hasActiveFilters={hasActiveFilters}
+            onReset={resetFilters}
+          />
+        )}
 
         {/* Chips statut (interventions uniquement) */}
         {activeTab === 'interventions' && (
