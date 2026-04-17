@@ -753,7 +753,8 @@ export const MapView: React.FC<MapViewProps> = ({
 
   // --- ETATS SELECTION ---
   const [selectedVehicleIds, setSelectedVehicleIds] = useState<Set<string>>(new Set());
-  const [quickTracePath, setQuickTracePath] = useState<Coordinate[]>([]);
+  // TracePoint extends Coordinate with optional timestamp (ms) for gap detection
+  const [quickTracePath, setQuickTracePath] = useState<(Coordinate & { t?: number })[]>([]);
 
   // --- ETATS REPLAY ---
   const [isReplayActive, setIsReplayActive] = useState(false);
@@ -1152,9 +1153,16 @@ export const MapView: React.FC<MapViewProps> = ({
             const history = await response.json();
             // Prendre TOUT le trajet de la journée pour quick trace
             const recentPath = history.map(
-              (point: { lat?: number; latitude?: number; lng?: number; longitude?: number }) => ({
+              (point: {
+                lat?: number;
+                latitude?: number;
+                lng?: number;
+                longitude?: number;
+                time?: string | number;
+              }) => ({
                 lat: point.lat || point.latitude,
                 lng: point.lng || point.longitude,
+                t: point.time ? new Date(point.time).getTime() : undefined,
               })
             );
             setQuickTracePath(recentPath.length > 0 ? recentPath : [selectedVehicle.location]);
@@ -1189,7 +1197,7 @@ export const MapView: React.FC<MapViewProps> = ({
         if (prev.length === 0) return prev;
         const last = prev[prev.length - 1];
         if (last.lat === updated.location.lat && last.lng === updated.location.lng) return prev;
-        return [...prev, updated.location];
+        return [...prev, { ...updated.location, t: Date.now() }];
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2654,13 +2662,36 @@ export const MapView: React.FC<MapViewProps> = ({
                   return null;
                 })}
 
-              {/* Quick Trace for Selected Vehicle */}
-              {!isReplayActive && quickTracePath.length > 0 && (
-                <Polyline
-                  positions={quickTracePath.map((p) => [p.lat, p.lng])}
-                  pathOptions={{ color: '#3b82f6', weight: 4, opacity: 0.6, dashArray: '10, 10' }}
-                />
-              )}
+              {/* Quick Trace for Selected Vehicle — segmenté (gap > 10min = coupure) */}
+              {!isReplayActive &&
+                quickTracePath.length > 0 &&
+                (() => {
+                  const GAP_MS = 10 * 60 * 1000;
+                  const segments: [number, number][][] = [];
+                  let seg: [number, number][] = [];
+                  for (let i = 0; i < quickTracePath.length; i++) {
+                    const p = quickTracePath[i];
+                    const prev = quickTracePath[i - 1];
+                    if (i > 0 && p.t && prev?.t && p.t - prev.t > GAP_MS) {
+                      if (seg.length > 1) segments.push(seg);
+                      seg = [];
+                    }
+                    seg.push([p.lat, p.lng]);
+                  }
+                  if (seg.length > 1) segments.push(seg);
+                  if (segments.length === 0) return null;
+                  return (
+                    <>
+                      {/* Halo blanc pour lisibilité sur fond clair */}
+                      <Polyline
+                        positions={segments as any}
+                        pathOptions={{ color: '#ffffff', weight: 8, opacity: 0.5 }}
+                      />
+                      {/* Tracé principal bleu vif */}
+                      <Polyline positions={segments as any} pathOptions={{ color: '#1d4ed8', weight: 4, opacity: 1 }} />
+                    </>
+                  );
+                })()}
 
               {/* Heatmap Layer */}
               {showHeatmap && heatmapPoints.length > 0 && (
