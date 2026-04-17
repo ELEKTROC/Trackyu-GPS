@@ -56,8 +56,10 @@ import {
   ShieldCheck,
   Package,
   Building2,
+  SlidersHorizontal,
 } from 'lucide-react-native';
 import { useTheme } from '../../theme';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import { useVehicleStore } from '../../store/vehicleStore';
 import { useAuthStore } from '../../store/authStore';
 import type { RootStackParamList } from '../../navigation/types';
@@ -1564,125 +1566,6 @@ const clientStyles = (theme: ThemeType) =>
     actionLabel: { fontSize: 10, color: theme.text.secondary, fontWeight: '500', textAlign: 'center', lineHeight: 13 },
   });
 
-// ── ResellerPickerModal ───────────────────────────────────────────────────────
-
-function ResellerPickerModal({
-  visible,
-  resellers,
-  onSelect,
-  onClose,
-  theme,
-}: {
-  visible: boolean;
-  resellers: TierModel[];
-  onSelect: (r: TierModel) => void;
-  onClose: () => void;
-  theme: ThemeType;
-}) {
-  const [search, setSearch] = useState('');
-  const filtered = resellers.filter((r) => r.name.toLowerCase().includes(search.toLowerCase()));
-
-  return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: '#00000066', justifyContent: 'flex-end' }}>
-        <View
-          style={{
-            backgroundColor: theme.bg.surface,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
-            maxHeight: '70%',
-            paddingBottom: Platform.OS === 'ios' ? 34 : 16,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              padding: 16,
-              borderBottomWidth: 1,
-              borderBottomColor: theme.border,
-            }}
-          >
-            <Text style={{ flex: 1, fontSize: 16, fontWeight: '700', color: theme.text.primary }}>
-              Filtrer par revendeur
-            </Text>
-            <TouchableOpacity onPress={onClose}>
-              <X size={20} color={theme.text.muted} />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              margin: 12,
-              backgroundColor: theme.bg.elevated,
-              borderRadius: 10,
-              paddingHorizontal: 12,
-              gap: 8,
-              borderWidth: 1,
-              borderColor: theme.border,
-            }}
-          >
-            <Search size={14} color={theme.text.muted} />
-            <TextInput
-              style={{ flex: 1, color: theme.text.primary, fontSize: 14, paddingVertical: 10 }}
-              placeholder="Nom du revendeur..."
-              placeholderTextColor={theme.text.muted}
-              value={search}
-              onChangeText={setSearch}
-            />
-          </View>
-          <FlatList
-            data={filtered}
-            keyExtractor={(r) => r.id}
-            initialNumToRender={15}
-            maxToRenderPerBatch={10}
-            windowSize={10}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingHorizontal: 16,
-                  paddingVertical: 14,
-                  borderBottomWidth: 1,
-                  borderBottomColor: theme.border,
-                  gap: 12,
-                }}
-                onPress={() => {
-                  onSelect(item);
-                  setSearch('');
-                }}
-                activeOpacity={0.75}
-              >
-                <View
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    backgroundColor: theme.primaryDim,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
-                  <Building2 size={16} color={theme.primary} />
-                </View>
-                <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: theme.text.primary }}>{item.name}</Text>
-                <ChevronRight size={14} color={theme.text.muted} />
-              </TouchableOpacity>
-            )}
-            ListEmptyComponent={
-              <View style={{ padding: 32, alignItems: 'center' }}>
-                <Text style={{ color: theme.text.muted, fontSize: 13 }}>Aucun revendeur trouvé</Text>
-              </View>
-            }
-          />
-        </View>
-      </View>
-    </Modal>
-  );
-}
-
 // ── KpiCell + ModuleCard ──────────────────────────────────────────────────────
 
 interface KpiDef {
@@ -1812,7 +1695,8 @@ function SuperAdminDashboard({
   const isSuperAdmin = user?.role?.toUpperCase() === 'SUPERADMIN';
   const [period, setPeriod] = useState<AdminPeriod>('month');
   const [selectedReseller, setSelectedReseller] = useState<TierModel | null>(null);
-  const [resellerPickerVisible, setResellerPickerVisible] = useState(false);
+  const [clientFilterId, setClientFilterId] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Flotte stats
   const moving = vehicles.filter((v) => v.status === 'moving').length;
@@ -1884,17 +1768,53 @@ function SuperAdminDashboard({
   const pStock = useMemo(() => stockMovements.filter((s) => inPeriod(s.date, period)), [stockMovements, period]);
   const pTickets = useMemo(() => tickets.filter((t) => inPeriod(t.created_at, period)), [tickets, period]);
 
-  // Clients filtrés par revendeur sélectionné
+  // Clients filtrés par revendeur sélectionné (cascade revendeur → client)
   const filteredClients = useMemo(() => {
     if (!selectedReseller) return clients;
     return clients.filter((c) => c.resellerId === selectedReseller.id);
   }, [clients, selectedReseller]);
 
-  // IDs des clients du revendeur sélectionné (null = pas de filtre)
+  // IDs des clients à appliquer aux KPIs (null = pas de filtre)
+  // - clientFilterId présent → uniquement ce client
+  // - sinon revendeur sélectionné → tous ses clients
+  // - sinon → null (aucun filtre)
   const resellerClientIds = useMemo(() => {
+    if (clientFilterId) return new Set([clientFilterId]);
     if (!selectedReseller) return null;
     return new Set(filteredClients.map((c) => c.id));
-  }, [filteredClients, selectedReseller]);
+  }, [filteredClients, selectedReseller, clientFilterId]);
+
+  // ── Blocs filtre VehicleFilterPanel (Revendeur → Client cascade) ─────────────
+  const filterBlocks: FilterBlockDef[] = useMemo(() => {
+    const blocks: FilterBlockDef[] = [];
+    if (isSuperAdmin && resellers.length > 0) {
+      blocks.push({
+        key: 'reseller',
+        label: 'Revendeur',
+        items: resellers.map((r) => ({ id: r.id, label: r.name })),
+        selected: selectedReseller?.id ?? null,
+        onSelect: (id) => {
+          const next = id ? (resellers.find((r) => r.id === id) ?? null) : null;
+          setSelectedReseller(next);
+          setClientFilterId(null); // cascade reset
+        },
+      });
+    }
+    blocks.push({
+      key: 'client',
+      label: 'Client',
+      items: filteredClients.map((c) => ({ id: c.id, label: c.name })),
+      selected: clientFilterId,
+      onSelect: setClientFilterId,
+    });
+    return blocks;
+  }, [isSuperAdmin, resellers, selectedReseller, clientFilterId, filteredClients]);
+
+  const hasActiveFilters = !!(selectedReseller || clientFilterId);
+  const resetFilters = () => {
+    setSelectedReseller(null);
+    setClientFilterId(null);
+  };
 
   // ── KPIs par module ──────────────────────────────────────────────────────────
 
@@ -2089,45 +2009,79 @@ function SuperAdminDashboard({
           })}
         </View>
 
-        {/* Sélecteur revendeur — SUPERADMIN uniquement */}
-        {isSuperAdmin && resellers.length > 0 && (
-          <TouchableOpacity
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-              backgroundColor: theme.bg.surface,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: selectedReseller ? theme.primary : theme.border,
-              paddingHorizontal: 14,
-              paddingVertical: 10,
-              marginBottom: 14,
-            }}
-            onPress={() => setResellerPickerVisible(true)}
-            activeOpacity={0.75}
-          >
-            <Building2 size={16} color={selectedReseller ? theme.primary : theme.text.muted} />
-            <Text
-              style={{
-                flex: 1,
-                fontSize: 13,
-                color: selectedReseller ? theme.primary : theme.text.secondary,
-                fontWeight: '500',
-              }}
-            >
-              {selectedReseller ? selectedReseller.name : 'Tous les revendeurs'}
-            </Text>
-            {selectedReseller && (
-              <TouchableOpacity
-                onPress={() => setSelectedReseller(null)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        {/* Filtre Revendeur → Client (cascade) */}
+        {(isSuperAdmin || filteredClients.length > 0) && (
+          <View style={{ marginBottom: 14 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8,
+                  backgroundColor: theme.bg.surface,
+                  borderRadius: 10,
+                  borderWidth: 1,
+                  borderColor: hasActiveFilters ? theme.primary : theme.border,
+                  paddingHorizontal: 14,
+                  paddingVertical: 10,
+                }}
               >
-                <X size={14} color={theme.text.muted} />
+                <Building2 size={16} color={hasActiveFilters ? theme.primary : theme.text.muted} />
+                <Text
+                  style={{
+                    flex: 1,
+                    fontSize: 13,
+                    color: hasActiveFilters ? theme.primary : theme.text.secondary,
+                    fontWeight: '500',
+                  }}
+                  numberOfLines={1}
+                >
+                  {clientFilterId
+                    ? (filteredClients.find((c) => c.id === clientFilterId)?.name ?? 'Client')
+                    : selectedReseller
+                      ? selectedReseller.name
+                      : 'Tous les revendeurs et clients'}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowFilters((p) => !p)}
+                accessibilityRole="button"
+                accessibilityLabel="Filtres"
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 10,
+                  backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+                  borderWidth: 1,
+                  borderColor: theme.border,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+                {hasActiveFilters && !showFilters ? (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      width: 8,
+                      height: 8,
+                      borderRadius: 4,
+                      backgroundColor: '#EF4444',
+                    }}
+                  />
+                ) : null}
               </TouchableOpacity>
-            )}
-            <ChevronRight size={14} color={theme.text.muted} />
-          </TouchableOpacity>
+            </View>
+            <VehicleFilterPanel
+              visible={showFilters}
+              blocks={filterBlocks}
+              hasActiveFilters={hasActiveFilters}
+              onReset={resetFilters}
+            />
+          </View>
         )}
 
         {/* Flotte */}
@@ -2325,17 +2279,6 @@ function SuperAdminDashboard({
           </View>
         </View>
       </ScrollView>
-
-      <ResellerPickerModal
-        visible={resellerPickerVisible}
-        resellers={resellers}
-        onSelect={(r) => {
-          setSelectedReseller(r);
-          setResellerPickerVisible(false);
-        }}
-        onClose={() => setResellerPickerVisible(false)}
-        theme={theme}
-      />
     </SafeAreaView>
   );
 }

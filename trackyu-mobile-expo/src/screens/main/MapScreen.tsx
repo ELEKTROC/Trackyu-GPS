@@ -4,7 +4,7 @@
  * Sprint A2 : viewport-based marker clustering via supercluster
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, Image } from 'react-native';
 import MapView, {
   Marker,
   Circle,
@@ -32,7 +32,6 @@ import {
   X,
   SlidersHorizontal,
   Route as RouteIcon,
-  Check,
 } from 'lucide-react-native';
 import Supercluster from 'supercluster';
 import vehiclesApi, { normalizeVehicleWS, type MapMarker, type DayStats } from '../../api/vehicles';
@@ -51,15 +50,9 @@ import type { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { QK } from '../../lib/queryKeys';
+import { VehicleFilterPanel, type FilterBlockDef, type FilterItem } from '../../components/VehicleFilterPanel';
 
 type StatusFilter = 'all' | 'moving' | 'stopped' | 'idle' | 'offline';
-type FilterCategory = 'revendeur' | 'clients' | 'branches' | 'vehicles';
-const FILTER_CATEGORIES: { key: FilterCategory; label: string }[] = [
-  { key: 'revendeur', label: 'Revendeur' },
-  { key: 'clients', label: 'Clients' },
-  { key: 'branches', label: 'Branche' },
-  { key: 'vehicles', label: 'Véhicules' },
-];
 type AnyMapParams = { vehicleId?: string } | undefined;
 type AnyMapRoute = { key: string; name: 'Map'; params: AnyMapParams };
 type MarkerProps = { cluster: false; marker: MapMarker };
@@ -146,8 +139,6 @@ export function MapScreen() {
   const [branchFilter, setBranchFilter] = useState<string | null>(null);
   const [vehicleFilter, setVehicleFilter] = useState<string | null>(null);
   const [resellerFilter, setResellerFilter] = useState<string | null>(null);
-  const [filterCategory, setFilterCategory] = useState<FilterCategory>('revendeur');
-  const [filterSearch, setFilterSearch] = useState('');
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<AnyMapRoute>();
   const targetVehicleId = route.params?.vehicleId;
@@ -437,136 +428,6 @@ export function MapScreen() {
     setVehicleFilter(null);
   };
 
-  const renderFilterItems = () => {
-    const q = filterSearch.trim().toLowerCase();
-    type FilterItem = {
-      id: string;
-      label: string;
-      sublabel?: string;
-      selected: boolean;
-      statusColor?: string;
-      onPress: () => void;
-    };
-    let items: FilterItem[] = [];
-    let allLabel = 'Tous';
-    let onSelectAll = () => {};
-
-    switch (filterCategory) {
-      case 'revendeur':
-        allLabel = 'Tous les revendeurs';
-        onSelectAll = () => setResellerFilter(null);
-        items = resellerList
-          .filter((r) => !q || r.toLowerCase().includes(q))
-          .map((r) => ({
-            id: r,
-            label: r,
-            selected: resellerFilter === r,
-            onPress: () => setResellerFilter(resellerFilter === r ? null : r),
-          }));
-        break;
-      case 'clients':
-        allLabel = 'Tous les clients';
-        onSelectAll = () => setClientFilter(null);
-        items = clientList
-          .filter((c) => !q || c.toLowerCase().includes(q))
-          .map((c) => ({
-            id: c,
-            label: c,
-            selected: clientFilter === c,
-            onPress: () => setClientFilter(clientFilter === c ? null : c),
-          }));
-        break;
-      case 'branches':
-        allLabel = 'Toutes les branches';
-        onSelectAll = () => setBranchFilter(null);
-        items = branchList
-          .filter((b) => !q || b.toLowerCase().includes(q))
-          .map((b) => ({
-            id: b,
-            label: b,
-            selected: branchFilter === b,
-            onPress: () => setBranchFilter(branchFilter === b ? null : b),
-          }));
-        break;
-      case 'vehicles':
-        allLabel = 'Tous les véhicules';
-        onSelectAll = () => setVehicleFilter(null);
-        items = markers
-          .filter((m) => !q || m.plate.toLowerCase().includes(q) || m.name.toLowerCase().includes(q))
-          .slice(0, 80)
-          .map((m) => ({
-            id: m.id,
-            label: m.plate,
-            sublabel: m.name,
-            selected: vehicleFilter === m.id,
-            statusColor: getStatusColor(m.status),
-            onPress: () => {
-              if (vehicleFilter === m.id) {
-                setVehicleFilter(null);
-              } else {
-                setVehicleFilter(m.id);
-                setShowFilters(false);
-                focusVehicle(m);
-              }
-            },
-          }));
-        break;
-    }
-    const noSelection =
-      filterCategory === 'revendeur'
-        ? !resellerFilter
-        : filterCategory === 'clients'
-          ? !clientFilter
-          : filterCategory === 'branches'
-            ? !branchFilter
-            : filterCategory === 'vehicles'
-              ? !vehicleFilter
-              : true;
-    return (
-      <>
-        <TouchableOpacity style={[s.filterItem, noSelection && s.filterItemActive]} onPress={onSelectAll}>
-          <Text style={[s.filterItemText, noSelection && { color: theme.primary, fontWeight: '700' as const }]}>
-            {allLabel}
-          </Text>
-          {noSelection && <Check size={12} color={theme.primary} />}
-        </TouchableOpacity>
-        {items.length === 0 ? (
-          <Text style={[s.filterItemText, { color: theme.text.muted, paddingHorizontal: 12, paddingVertical: 10 }]}>
-            Aucun résultat
-          </Text>
-        ) : (
-          items.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={[s.filterItem, item.selected && s.filterItemActive]}
-              onPress={item.onPress}
-            >
-              {item.statusColor && (
-                <View
-                  style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: item.statusColor, marginRight: 4 }}
-                />
-              )}
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={[s.filterItemText, item.selected && { color: theme.primary, fontWeight: '600' as const }]}
-                  numberOfLines={1}
-                >
-                  {item.label}
-                </Text>
-                {item.sublabel && (
-                  <Text style={{ fontSize: 10, color: theme.text.muted }} numberOfLines={1}>
-                    {item.sublabel}
-                  </Text>
-                )}
-              </View>
-              {item.selected && <Check size={12} color={theme.primary} />}
-            </TouchableOpacity>
-          ))
-        )}
-      </>
-    );
-  };
-
   // ── Recherche étendue (plaque, nom, IMEI, client, branche, SIM) ──────────
   const searchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -592,6 +453,59 @@ export function MapScreen() {
       { duration: 500 }
     );
   };
+
+  // ── Blocs filtre VehicleFilterPanel (Revendeur → Clients → Branche → Véhicules) ─
+  const filterBlocks: FilterBlockDef[] = useMemo(() => {
+    const vehicleItems: FilterItem[] = markers.slice(0, 200).map((m) => ({
+      id: m.id,
+      label: m.plate,
+      sublabel: m.name,
+      statusColor: getStatusColor(m.status),
+    }));
+    return [
+      {
+        key: 'reseller',
+        label: 'Revendeur',
+        items: resellerList.map((r) => ({ id: r, label: r })),
+        selected: resellerFilter,
+        onSelect: (id) => {
+          setResellerFilter(id);
+          setClientFilter(null); // cascade reset
+        },
+      },
+      {
+        key: 'client',
+        label: 'Client',
+        items: clientList.map((c) => ({ id: c, label: c })),
+        selected: clientFilter,
+        onSelect: setClientFilter,
+      },
+      {
+        key: 'branch',
+        label: 'Branche',
+        items: branchList.map((b) => ({ id: b, label: b })),
+        selected: branchFilter,
+        onSelect: setBranchFilter,
+      },
+      {
+        key: 'vehicle',
+        label: 'Véhicules',
+        items: vehicleItems,
+        selected: vehicleFilter,
+        onSelect: (id) => {
+          setVehicleFilter(id);
+          if (id) {
+            const m = markers.find((mm) => mm.id === id);
+            if (m) {
+              setShowFilters(false);
+              focusVehicle(m);
+            }
+          }
+        },
+      },
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resellerList, clientList, branchList, markers, resellerFilter, clientFilter, branchFilter, vehicleFilter]);
 
   return (
     <View style={s.container}>
@@ -868,68 +782,13 @@ export function MapScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Ligne 3 : filtre 2 colonnes (dépliable) */}
-        {showFilters && (
-          <View style={s.filterPanel2}>
-            {/* Barre de recherche interne */}
-            <View style={s.filterSearch2}>
-              <Search size={12} color={theme.text.muted} />
-              <TextInput
-                style={s.filterSearch2Input}
-                placeholder="Rechercher…"
-                placeholderTextColor={theme.text.muted}
-                value={filterSearch}
-                onChangeText={setFilterSearch}
-                autoCorrect={false}
-                autoCapitalize="characters"
-              />
-              {filterSearch.length > 0 && (
-                <TouchableOpacity
-                  onPress={() => setFilterSearch('')}
-                  hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-                >
-                  <X size={11} color={theme.text.muted} />
-                </TouchableOpacity>
-              )}
-            </View>
-            {/* 2 colonnes */}
-            <View style={s.filterColumns}>
-              {/* Gauche : catégories */}
-              <View style={s.filterCatList}>
-                {FILTER_CATEGORIES.map(({ key, label }) => {
-                  const isActive = filterCategory === key;
-                  const hasSel =
-                    (key === 'revendeur' && !!resellerFilter) ||
-                    (key === 'clients' && !!clientFilter) ||
-                    (key === 'branches' && !!branchFilter) ||
-                    (key === 'vehicles' && !!vehicleFilter);
-                  return (
-                    <TouchableOpacity
-                      key={key}
-                      style={[s.filterCatBtn, isActive && s.filterCatBtnActive]}
-                      onPress={() => setFilterCategory(key)}
-                    >
-                      {hasSel && <View style={s.filterCatDot} />}
-                      <Text style={[s.filterCatText, isActive && s.filterCatTextActive]} numberOfLines={1}>
-                        {label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-                {(clientFilter || branchFilter || vehicleFilter) && (
-                  <TouchableOpacity style={s.filterCatResetBtn} onPress={onFilterReset}>
-                    <X size={10} color={theme.functional.error} />
-                    <Text style={[s.filterCatText, { color: theme.functional.error }]}>Reset</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-              {/* Droite : items */}
-              <ScrollView style={s.filterItemList} showsVerticalScrollIndicator={false}>
-                {renderFilterItems()}
-              </ScrollView>
-            </View>
-          </View>
-        )}
+        {/* Ligne 3 : filtre cascade (Revendeur → Client → Branche → Véhicules) */}
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={!!(resellerFilter || clientFilter || branchFilter || vehicleFilter)}
+          onReset={onFilterReset}
+        />
 
         {/* Dropdown résultats recherche */}
         {searchResults.length > 0 && (
@@ -1434,70 +1293,6 @@ const styles = (theme: ReturnType<typeof import('../../theme').useTheme>['theme'
       fontFamily: 'monospace',
       letterSpacing: 0.3,
     },
-
-    // ── Filter panel 2-col ────────────────────────────────────────────────────
-    filterPanel2: {
-      backgroundColor: theme.bg.surface,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: theme.border,
-      overflow: 'hidden' as const,
-    },
-    filterSearch2: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      gap: 7,
-      paddingHorizontal: 10,
-      paddingVertical: 8,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.border,
-    },
-    filterSearch2Input: { flex: 1, fontSize: 12, color: theme.text.primary, padding: 0 },
-    filterColumns: { flexDirection: 'row' as const, height: 180 },
-    filterCatList: {
-      width: 96,
-      paddingVertical: 6,
-      paddingHorizontal: 4,
-      gap: 3,
-      borderRightWidth: 1,
-      borderRightColor: theme.border,
-    },
-    filterCatBtn: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      gap: 5,
-      paddingHorizontal: 8,
-      paddingVertical: 8,
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: 'transparent' as const,
-    },
-    filterCatBtnActive: { backgroundColor: theme.primary + '22', borderColor: theme.primary },
-    filterCatDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: theme.primary },
-    filterCatText: { fontSize: 11, color: theme.text.secondary, flex: 1 },
-    filterCatTextActive: { color: theme.primary, fontWeight: '700' as const },
-    filterCatResetBtn: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      gap: 4,
-      paddingHorizontal: 8,
-      paddingVertical: 7,
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: theme.functional.error + '80',
-    },
-    filterItemList: { flex: 1 },
-    filterItem: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      paddingHorizontal: 12,
-      paddingVertical: 9,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.border,
-      gap: 6,
-    },
-    filterItemActive: { backgroundColor: theme.primary + '14' },
-    filterItemText: { fontSize: 12, color: theme.text.primary, flex: 1 },
   });
 
 // ── Google Maps dark style ─────────────────────────────────────────────────────
