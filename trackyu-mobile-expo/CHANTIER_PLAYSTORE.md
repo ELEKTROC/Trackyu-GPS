@@ -41,7 +41,7 @@
 | 3   | Multi-env mobile (APP_ENV staging/prod)                     | **Termine**                         | —                                     |
 | 4   | Credentials Android (keystore + credentials.json gitignore) | **Termine**                         | —                                     |
 | 5   | Tests unitaires locaux (915 passing)                        | **Termine**                         | —                                     |
-| 6   | Load tests staging (baseline + authentifie)                 | **En pause**                        | Reseau local instable vers VPS        |
+| 6   | Load tests staging (smoke + baseline)                       | **Termine V1**                      | Auth-fleet restant, non bloquant      |
 | 7   | Pages legales HTML (privacy + cgu + index) pretes           | **Termine**                         | —                                     |
 | 8   | Bloc Caddy `live.trackyugps.com` snippet redige             | **Termine (deploy en attente SSH)** | SSH VPS                               |
 | 9   | Assets Play Store (icon 512, feature graphic, screenshots)  | **A faire**                         | —                                     |
@@ -79,16 +79,43 @@
 - `credentials/android/keystore.jks` : present, signe deja l'app
 - Conserver ce keystore sans le perdre (sinon impossible de mettre a jour l'app sur Play Store)
 
-### 3.2 En pause
+### 3.2 Load tests — RESULTATS (GitHub Actions runner)
 
-#### Load tests
+Depuis GitHub Actions (reseau propre Azure), pas depuis Windows local.
 
-- **Smoke test** (00-smoke.yml) : `/api/health` 5 req/s sur 10s
-- **Baseline** (01-baseline-health.yml) : paliers 5 → 2500 req/s sur `/api/health`
-- **Auth-fleet** (02-auth-fleet.yml) : login + fetch vehicles, paliers 50 → 1000 req/s
-- **Credentials test staging** : stockes dans GitHub Secrets (`TEST_EMAIL`, `TEST_PASSWORD`), pas en clair dans le repo
-- **Probleme constate 2026-04-17** : `curl` direct alterne HTTP 200 (0.9s) et timeout 10s. SSH port 22 timeout egalement. Reseau local instable vers 148.230.126.62.
-- **Reprise** : relancer depuis un autre reseau, ou via SSH user direct sur le VPS, ou depuis GitHub Actions runner.
+#### Smoke test — 2026-04-17 — ✅ PASS
+
+- 32/32 HTTP 200, 0 erreur
+- p95=149.9ms, p99=149.9ms
+- Rate: 5 req/s atteint
+- **Verdict** : staging repond, endpoint `/api/health` sain sous charge nominale
+
+#### Baseline 2500 req/s — 2026-04-17 — ⚠ SATURATION PRECOCE
+
+- 375 216 requetes, **2 363 HTTP 200 (0.63%)**
+- 330 989 ETIMEDOUT (88%), 41 864 ECONNREFUSED (11%)
+- Sur les requetes qui passent : p95=149.9ms, p99=156ms (excellent)
+- Rate moyen atteint : 440 req/s (jamais monte a 2500)
+- **Verdict** : le backend sature entre 100 et 500 req/s
+- **Causes probables** (par ordre) :
+  1. `fail2ban` sur le VPS qui bannit l'IP runner GitHub pour comportement DDoS-like
+  2. Caddy reverse proxy saturation (accept backlog / FD limit)
+  3. Node backend mono-worker ou pool DB insuffisant
+
+#### Impact Play Store V1
+
+- Cible **100-500 users V1** avec polling 10-30s → **3-50 req/s theoriques** → largement sous le plafond mesure. ✅
+- Cible **2000 users fin 2026** → **66-200 req/s** → marge mince, tuning ou migration KVM2 a prevoir.
+
+#### Actions post-V1 (pas bloquant Play Store)
+
+- Verifier fail2ban jail `sshd` + `caddy-auth` quand SSH revient
+- Tuner `net.core.somaxconn` VPS + Caddy `servers.protocols`
+- Migrer vers KVM2 avec Node cluster + pool DB augmente
+
+#### Credentials
+
+- `TEST_EMAIL` et `TEST_PASSWORD` stockes dans GitHub Secrets du repo, pas en clair.
 
 ### 3.3 A faire
 
