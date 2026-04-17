@@ -81,7 +81,8 @@ const _vehicleIconCache = new Map<string, L.DivIcon>();
 const createVehicleIcon = (vehicle: Vehicle) => {
   if (!vehicle) return DefaultIcon;
   const { status, heading = 0, type, name } = vehicle;
-  const cacheKey = `${status}-${Math.round(heading / 10) * 10}-${type ?? ''}-${name ?? ''}`;
+  // heading excluded from cache key — animated via DOM in AnimatedVehicleMarker
+  const cacheKey = `${status}-${type ?? ''}-${name ?? ''}`;
   if (_vehicleIconCache.has(cacheKey)) return _vehicleIconCache.get(cacheKey)!;
   // LRU eviction
   if (_vehicleIconCache.size >= MAX_ICON_CACHE) {
@@ -122,9 +123,10 @@ const createVehicleIcon = (vehicle: Vehicle) => {
       }}
     >
       <IconComponent size={30} color="white" fill={color} strokeWidth={2} />
-      {/* Heading Arrow if moving */}
+      {/* Heading Arrow — initial heading baked in, then updated via DOM in AnimatedVehicleMarker */}
       {status === VehicleStatus.MOVING && (
         <div
+          data-arrow="1"
           style={{
             position: 'absolute',
             top: -5,
@@ -133,7 +135,7 @@ const createVehicleIcon = (vehicle: Vehicle) => {
             transformOrigin: 'bottom center',
             height: '24px',
             width: '2px',
-            // pointer to show direction
+            transition: 'transform 1s ease',
           }}
         >
           <div

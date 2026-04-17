@@ -33,6 +33,7 @@ export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
   showLabel = true,
 }) => {
   const markerRef = useRef<L.Marker | null>(null);
+  const prevHeadingRef = useRef<number>(vehicle.heading ?? 0);
 
   // Animate position changes
   const animatedPosition = useAnimatedPosition(
@@ -43,13 +44,29 @@ export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
   // Smooth marker movement
   useEffect(() => {
     if (!markerRef.current || !animatedPosition) return;
-
-    const marker = markerRef.current;
-    const newLatLng = L.latLng(animatedPosition.lat, animatedPosition.lng);
-
-    // Use Leaflet's built-in smooth panning
-    marker.setLatLng(newLatLng);
+    markerRef.current.setLatLng(L.latLng(animatedPosition.lat, animatedPosition.lng));
   }, [animatedPosition]);
+
+  // Smooth heading animation via direct DOM manipulation (CSS transition 1s)
+  useEffect(() => {
+    if (vehicle.status !== VehicleStatus.MOVING) return;
+    const el = markerRef.current?.getElement();
+    if (!el) return;
+    const arrow = el.querySelector('[data-arrow]') as HTMLElement | null;
+    if (!arrow) return;
+
+    // Normalize rotation delta to avoid 359°→1° going the long way around
+    const target = vehicle.heading ?? 0;
+    const prev = prevHeadingRef.current;
+    let delta = target - prev;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    const normalized = prev + delta;
+
+    arrow.style.transition = 'transform 1s ease';
+    arrow.style.transform = `translateX(-50%) rotate(${normalized}deg)`;
+    prevHeadingRef.current = normalized;
+  }, [vehicle.heading, vehicle.status]);
 
   if (!animatedPosition) return null;
 
