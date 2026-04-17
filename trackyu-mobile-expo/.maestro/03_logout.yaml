@@ -1,0 +1,19 @@
+# Flow E2E — Déconnexion
+# Vérifie le cycle complet login → profil → logout → retour écran Connexion.
+
+appId: com.trackyugps.app
+---
+- runFlow: 01_login.yaml
+
+- tapOn:
+    text: "Paramètres"
+- assertVisible:
+    text: "Paramètres"
+    timeout: 4000
+
+- tapOn:
+    id: "btn-logout"
+
+- assertVisible:
+    text: "Connexion"
+    timeout: 6000

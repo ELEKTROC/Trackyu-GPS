@@ -1,0 +1,38 @@
+# Flow E2E — Authentification
+# Prérequis : dev build EAS installé sur l'émulateur/device
+#
+# Variables (surchargeables via --env ou CI secrets) :
+#   EMAIL_TEST    : compte de test (ex: e2e@trackyugps.com)
+#   PASSWORD_TEST : mot de passe du compte de test
+#
+# Usage local :
+#   maestro test .maestro/01_login.yaml \
+#     --env EMAIL_TEST=e2e@trackyugps.com \
+#     --env PASSWORD_TEST=MonMotDePasse
+
+appId: com.trackyugps.app
+env:
+  EMAIL_TEST: e2e@trackyugps.com
+  PASSWORD_TEST: TrackYuE2E!
+---
+- launchApp:
+    clearState: true
+
+- assertVisible:
+    text: "Connexion"
+    timeout: 5000
+
+- tapOn:
+    id: "input-email"
+- inputText: ${EMAIL_TEST}
+
+- tapOn:
+    id: "input-password"
+- inputText: ${PASSWORD_TEST}
+
+- tapOn:
+    id: "btn-login"
+
+- assertVisible:
+    text: "Tableau de bord"
+    timeout: 10000

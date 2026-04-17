@@ -1,0 +1,77 @@
+config:
+  target: https://staging.trackyugps.com
+  http:
+    timeout: 15
+  variables:
+    email: "{{ $processEnvironment.TEST_EMAIL }}"
+    password: "{{ $processEnvironment.TEST_PASSWORD }}"
+  phases:
+    - name: warmup
+      duration: 20
+      arrivalRate: 5
+    - name: palier_50
+      duration: 60
+      arrivalRate: 50
+    - name: palier_100
+      duration: 60
+      arrivalRate: 100
+    - name: palier_250
+      duration: 60
+      arrivalRate: 250
+    - name: palier_500
+      duration: 60
+      arrivalRate: 500
+    - name: palier_750
+      duration: 60
+      arrivalRate: 750
+    - name: palier_1000
+      duration: 60
+      arrivalRate: 1000
+  ensure:
+    p95: 3000
+    maxErrorRate: 10
+
+scenarios:
+  - name: login-then-fetch-vehicles
+    flow:
+      - post:
+          url: /api/auth/login
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: $.token
+              as: authToken
+          expect:
+            - statusCode: 200
+      - get:
+          url: /api/fleet/vehicles
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  - name: fetch-day-stats
+    weight: 2
+    flow:
+      - post:
+          url: /api/auth/login
+          json:
+            email: "{{ email }}"
+            password: "{{ password }}"
+          capture:
+            - json: $.token
+              as: authToken
+          expect:
+            - statusCode: 200
+      - get:
+          url: /api/fleet/vehicles
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          capture:
+            - json: $[0].id
+              as: firstVehicleId
+      - get:
+          url: "/api/fleet/vehicles/{{ firstVehicleId }}/day-stats"
+          headers:
+            Authorization: "Bearer {{ authToken }}"

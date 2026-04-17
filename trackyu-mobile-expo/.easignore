@@ -1,0 +1,21 @@
+# Dossiers exclus du build EAS (non nécessaires au build cloud)
+node_modules/
+.expo/
+android/
+ios/
+dist/
+__tests__/
+__mocks__/
+e2e/
+coverage/
+.git/
+
+# Fichiers de dev locaux
+*.log
+*.local
+.env.local
+.DS_Store
+Thumbs.db
+
+# Docs
+*.md

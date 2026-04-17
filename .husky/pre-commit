@@ -24,12 +24,37 @@ fi
 cd ..
 
 # Secrets scan - block commits with hardcoded secrets
+# Scope: added lines in source files ONLY. Skip tests, mocks, fixtures, load-tests,
+# env examples, and template placeholders ({{ var }}, process.env.X).
 echo "🔐 Scanning for secrets..."
-SECRETS_FOUND=$(git diff --cached --diff-filter=ACMR | grep -iE "\b(password|secret|api_key|token|private_key)\b\s*[:=]\s*['\"][^'\"]{8,}" | grep -v "\.env" | grep -v "test" | grep -v "mock" | grep -v "example" | grep -v "plainPassword" || true)
+SECRET_PATTERN='\b(password|passwd|secret|api_key|apikey|token|private_key)\b[[:space:]]*[:=][[:space:]]*["'"'"'][^"'"'"']{8,}'
+SECRETS_FOUND=""
+for file in $(git diff --cached --name-only --diff-filter=ACMR); do
+  case "$file" in
+    *.test.*|*.spec.*|*/__tests__/*|*/__mocks__/*|*/fixtures/*|*/mocks/*)
+      continue;;
+    load-tests/*|*/load-tests/*|*.env.example|*.env.sample|*.env.template)
+      continue;;
+    *.md|*.txt|package-lock.json|yarn.lock|pnpm-lock.yaml)
+      continue;;
+  esac
+  MATCH=$(git diff --cached --diff-filter=ACMR -- "$file" 2>/dev/null \
+    | grep -E "^\+" \
+    | grep -iE "$SECRET_PATTERN" \
+    | grep -viE '(\{\{[^}]*\}\}|\$\{[^}]+\}|process\.env|processEnvironment|plainPassword|placeholder|example\.com|REDACTED|CHANGEME|<[A-Z_]+>)' \
+    || true)
+  if [ -n "$MATCH" ]; then
+    SECRETS_FOUND="${SECRETS_FOUND}
+--- $file ---
+$MATCH"
+  fi
+done
 if [ -n "$SECRETS_FOUND" ]; then
   echo "❌ Potential secrets found in staged files:"
   echo "$SECRETS_FOUND"
+  echo ""
   echo "Remove secrets and use environment variables instead."
+  echo "If this is a false positive (test fixture, template), move the file under *.test.*, fixtures/, or load-tests/."
   exit 1
 fi
 

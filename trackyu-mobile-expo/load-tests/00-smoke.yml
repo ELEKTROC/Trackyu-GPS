@@ -1,0 +1,16 @@
+config:
+  target: https://staging.trackyugps.com
+  http:
+    timeout: 15
+  phases:
+    - name: smoke
+      duration: 10
+      arrivalRate: 5
+
+scenarios:
+  - name: health-check
+    flow:
+      - get:
+          url: /api/health
+          expect:
+            - statusCode: 200

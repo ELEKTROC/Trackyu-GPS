@@ -54,8 +54,34 @@ Archives/
 backups/
 *.sql.gz
 
-# Mobile app — dépôt git indépendant, ne pas inclure ici
-trackyu-mobile-expo/
+# Mobile app — unifié dans le monorepo (ex-dépôt séparé)
+# Secrets mobile (keystore, credentials, service accounts)
+trackyu-mobile-expo/credentials/
+trackyu-mobile-expo/credentials.json
+trackyu-mobile-expo/secrets/
+trackyu-mobile-expo/google-services.json
+trackyu-mobile-expo/node_modules/
+trackyu-mobile-expo/.expo/
+trackyu-mobile-expo/ios/
+trackyu-mobile-expo/android/
+trackyu-mobile-expo/*.aab
+trackyu-mobile-expo/*.apk
+trackyu-mobile-expo/load-tests/*-report.json
+trackyu-mobile-expo/load-tests/*-report.html
+
+# Scripts one-shot / patches historiques (contiennent passwords temporaires)
+patch_*.py
+patch_*.js
+fix_*.js
+fix_*.ps1
+create_*.py
+audit_*.py
+abj_review_*.csv
+test-reseller-stats.ps1
+
+# Claude Code settings (personnel, peut contenir commandes avec secrets)
+.claude/settings.json
+.claude/settings.local.json
 
 # Snapshot VPS récupéré (backup ponctuel, pas du source)
 recovered_vps_2026-04-03/

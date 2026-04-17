@@ -1,0 +1,19 @@
+node_modules/
+.expo/
+dist/
+build/
+ios/
+android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+.env
+.env.local
+# google-services.json intentionally tracked (private repo)
+GoogleService-Info.plist
+# EAS credentials — contiennent l'Apple Team ID et les clés de signature
+credentials.json

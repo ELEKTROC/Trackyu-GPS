@@ -1,4 +1,5 @@
 # Résumé session — 2026-04-06
+
 > À lire en début de prochaine session
 
 ---
@@ -7,28 +8,28 @@
 
 ### 1. DB — Migrations appliquées sur VPS
 
-| Migration | Résultat |
-|-----------|----------|
-| `users.client_id` : `uuid` → `varchar(50)` | ✅ |
-| `users.branch_id` : `uuid` → `varchar(50)` | ✅ |
-| `users.sub_role` : ADD COLUMN `varchar(30)` | ✅ |
-| `users.require_password_change` : ADD COLUMN `boolean DEFAULT false` | ✅ |
-| IDs `TIER-{ts}` → formats corrects (3 records) | ✅ |
+| Migration                                                            | Résultat |
+| -------------------------------------------------------------------- | -------- |
+| `users.client_id` : `uuid` → `varchar(50)`                           | ✅       |
+| `users.branch_id` : `uuid` → `varchar(50)`                           | ✅       |
+| `users.sub_role` : ADD COLUMN `varchar(30)`                          | ✅       |
+| `users.require_password_change` : ADD COLUMN `boolean DEFAULT false` | ✅       |
+| IDs `TIER-{ts}` → formats corrects (3 records)                       | ✅       |
 
 ### 2. Backend VPS — Patches appliqués (`dist/`)
 
-| Fichier | Changements |
-|---------|-------------|
+| Fichier                          | Changements                                                                                                 |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `repositories/userRepository.js` | USER_COLS + insertUser 40 colonnes (client_id, branch_id, vehicle_ids, all_vehicles, sub_role, permissions) |
-| `controllers/userController.js` | destructure 6 champs, pass à insertUser, normalizeRole + SOUS_COMPTE, require_password_change logic |
-| `controllers/tierController.js` | get_next_number, USR-{ts}, client_id lié au tier, require_password_change = true |
-| `controllers/authController.js` | requirePasswordChange dans réponse login |
-| `schemas/index.js` | UserSchema : 6 champs ajoutés (subRole, clientId, branchId, vehicleIds, allVehicles, permissions) |
+| `controllers/userController.js`  | destructure 6 champs, pass à insertUser, normalizeRole + SOUS_COMPTE, require_password_change logic         |
+| `controllers/tierController.js`  | get_next_number, USR-{ts}, client_id lié au tier, require_password_change = true                            |
+| `controllers/authController.js`  | requirePasswordChange dans réponse login                                                                    |
+| `schemas/index.js`               | UserSchema : 6 champs ajoutés (subRole, clientId, branchId, vehicleIds, allVehicles, permissions)           |
 
 ### 3. Frontend local — Patch appliqué
 
-| Fichier | Changement |
-|---------|------------|
+| Fichier                 | Changement                                                                   |
+| ----------------------- | ---------------------------------------------------------------------------- |
 | `services/api/admin.ts` | payload `create` inclut subRole, clientId, branchId, vehicleIds, allVehicles |
 
 ### 4. Protection build TypeScript
@@ -39,24 +40,24 @@
 
 ### 5. Logique mot de passe (testée E2E)
 
-| Cas | Comportement |
-|-----|-------------|
-| SOUS_COMPTE sans password | `Trackyu2025!` par défaut + `require_password_change = true` |
-| `sendInvite: true` | Password random 12 chars + `require_password_change = true` |
-| createUserAccount (Tier) | `Trackyu2025!` + `require_password_change = true` |
-| Password explicite fourni | Hash normal, `require_password_change = false` |
-| Login avec flag `true` | Token émis + `requirePasswordChange: true` dans réponse |
+| Cas                       | Comportement                                                             |
+| ------------------------- | ------------------------------------------------------------------------ |
+| SOUS_COMPTE sans password | `&lt;DEFAULT_TEMP_PWD&gt;` par défaut + `require_password_change = true` |
+| `sendInvite: true`        | Password random 12 chars + `require_password_change = true`              |
+| createUserAccount (Tier)  | `&lt;DEFAULT_TEMP_PWD&gt;` + `require_password_change = true`            |
+| Password explicite fourni | Hash normal, `require_password_change = false`                           |
+| Login avec flag `true`    | Token émis + `requirePasswordChange: true` dans réponse                  |
 
 ---
 
 ## Tests E2E passés (tous ✅)
 
-| Chemin | Résultat |
-|--------|----------|
-| A — UserForm CLIENT | role + client_id + permissions OK |
-| B — SubUserForm SOUS_COMPTE | role=SOUS_COMPTE + sub_role + client_id + vehicle_ids + permissions OK |
-| C — TierForm createUserAccount | tier CLI-ABJ-{N} + user.client_id = tier.id OK |
-| D — BranchForm | branch_id + client_id OK |
+| Chemin                         | Résultat                                                               |
+| ------------------------------ | ---------------------------------------------------------------------- |
+| A — UserForm CLIENT            | role + client_id + permissions OK                                      |
+| B — SubUserForm SOUS_COMPTE    | role=SOUS_COMPTE + sub_role + client_id + vehicle_ids + permissions OK |
+| C — TierForm createUserAccount | tier CLI-ABJ-{N} + user.client_id = tier.id OK                         |
+| D — BranchForm                 | branch_id + client_id OK                                               |
 
 ---
 
@@ -77,6 +78,7 @@ Le backend retourne `requirePasswordChange: true` dans la réponse login quand l
 4. **Vérifier** que `resetPassword` existant (`POST /api/auth/reset-password`) remet le flag à `false`
 
 **Fichiers concernés :**
+
 - `contexts/DataContext.tsx` ou `contexts/AuthContext` — intercepter `requirePasswordChange`
 - `features/auth/` ou `features/settings/` — nouvel écran
 - Mobile : `trackyu-mobile-expo/src/screens/` — même logique

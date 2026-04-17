@@ -1,0 +1,106 @@
+name: Load test (Artillery)
+
+# Stress test staging.trackyugps.com depuis les runners GitHub (reseau propre)
+# Declenchement manuel : GitHub UI → Actions → Load test → Run workflow
+# Ou CLI : gh workflow run load-test.yml -f scenario=baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: "Scenario a executer"
+        required: true
+        default: "smoke"
+        type: choice
+        options:
+          - smoke
+          - baseline
+          - auth-fleet
+      target:
+        description: "URL cible (defaut staging)"
+        required: false
+        default: "https://staging.trackyugps.com"
+        type: string
+
+jobs:
+  load-test:
+    name: Run ${{ github.event.inputs.scenario }}
+    runs-on: ubuntu-latest
+    # Timeout large pour baseline qui peut durer ~10 min, auth-fleet ~8 min
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: trackyu-mobile-expo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Artillery
+        run: npm install -g artillery@2.0.30
+
+      - name: Verify target availability (pre-flight)
+        run: |
+          echo "Target: ${{ github.event.inputs.target }}"
+          curl -sS -o /dev/null -w "HTTP=%{http_code} TIME=%{time_total}s\n" \
+            --max-time 10 \
+            "${{ github.event.inputs.target }}/api/health" \
+            || (echo "Target unreachable, aborting" && exit 1)
+
+      - name: Select scenario file
+        id: pick
+        run: |
+          case "${{ github.event.inputs.scenario }}" in
+            smoke)      echo "file=load-tests/00-smoke.yml" >> $GITHUB_OUTPUT ;;
+            baseline)   echo "file=load-tests/01-baseline-health.yml" >> $GITHUB_OUTPUT ;;
+            auth-fleet) echo "file=load-tests/02-auth-fleet.yml" >> $GITHUB_OUTPUT ;;
+          esac
+
+      - name: Run Artillery
+        env:
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+        run: |
+          artillery run \
+            --output "report-${{ github.event.inputs.scenario }}.json" \
+            "${{ steps.pick.outputs.file }}"
+        continue-on-error: true
+
+      - name: Generate HTML report
+        if: always()
+        run: |
+          if [ -f "report-${{ github.event.inputs.scenario }}.json" ]; then
+            artillery report \
+              --output "report-${{ github.event.inputs.scenario }}.html" \
+              "report-${{ github.event.inputs.scenario }}.json" || true
+          fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-${{ github.event.inputs.scenario }}-${{ github.run_number }}
+          path: |
+            trackyu-mobile-expo/report-*.json
+            trackyu-mobile-expo/report-*.html
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Load test ${{ github.event.inputs.scenario }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Target: ${{ github.event.inputs.target }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f "report-${{ github.event.inputs.scenario }}.json" ]; then
+            echo "Report uploaded as artifact \`load-test-${{ github.event.inputs.scenario }}-${{ github.run_number }}\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No report generated (artillery may have failed early)" >> $GITHUB_STEP_SUMMARY
+          fi

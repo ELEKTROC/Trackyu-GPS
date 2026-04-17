@@ -1,0 +1,48 @@
+name: E2E Tests (Maestro)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    name: Maestro E2E
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Maestro CLI
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+
+      - name: Add Maestro to PATH
+        run: echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      # Télécharge le dernier build EAS Android (profile: e2e)
+      # Requiert EAS_TOKEN dans les secrets GitHub
+      - name: Download EAS build (.apk)
+        run: |
+          npm install -g eas-cli
+          eas build:download \
+            --platform android \
+            --profile e2e \
+            --output app-e2e.apk \
+            --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
+        working-directory: trackyu-mobile-expo
+
+      # Lance les flows sur Maestro Cloud
+      # Requiert MAESTRO_CLOUD_API_KEY dans les secrets GitHub
+      - name: Run E2E flows (Maestro Cloud)
+        run: |
+          maestro cloud \
+            --apiKey ${{ secrets.MAESTRO_CLOUD_API_KEY }} \
+            --app-file app-e2e.apk \
+            .maestro/
+        env:
+          EMAIL_TEST: ${{ secrets.E2E_EMAIL }}
+          PASSWORD_TEST: ${{ secrets.E2E_PASSWORD }}
+        working-directory: trackyu-mobile-expo
