@@ -21,9 +21,8 @@ import { Linking, Platform } from 'react-native';
 import Constants from 'expo-constants';
 import apiClient from '../api/client';
 
-// TODO SÉCURITÉ : remplacer par l'identifiant Apple réel une fois l'app publiée sur l'App Store.
-// Sans cela, le forceUpgrade sur iOS redirige vers une URL invalide et bloque l'utilisateur.
-const APP_STORE_URL = 'https://apps.apple.com/app/trackyu/id0000000000';
+// iOS non publié en V1. À renseigner quand l'app sera disponible sur l'App Store.
+const APP_STORE_URL: string | null = null;
 const PLAY_STORE_URL = 'market://details?id=com.trackyugps.app';
 
 export interface VersionStatus {
@@ -73,6 +72,7 @@ export function useAppVersionCheck(): VersionStatus | null {
 
         const openStore = () => {
           const url = Platform.OS === 'ios' ? APP_STORE_URL : PLAY_STORE_URL;
+          if (!url) return;
           Linking.openURL(url).catch(() => {});
         };
 
