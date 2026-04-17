@@ -231,11 +231,11 @@ type RoleFamily = 'CLIENT' | 'TECH' | 'COMMERCIAL' | 'FINANCE' | 'SUPPORT' | 'FU
 function getRoleFamily(role: string | undefined): RoleFamily {
   const r = (role || '').toUpperCase().replace(/_/g, '');
   if (r === 'CLIENT' || r === 'SOUSCOMPTE' || r === 'SUBACCOUNT') return 'CLIENT';
-  if (r === 'TECH') return 'TECH';
+  if (r === 'TECH' || r === 'AGENTTRACKING') return 'TECH';
   if (r === 'COMMERCIAL' || r === 'SALES') return 'COMMERCIAL';
   if (r === 'COMPTABLE') return 'FINANCE';
   if (r === 'SUPPORTAGENT') return 'SUPPORT';
-  return 'FULL'; // ADMIN, SUPERADMIN, MANAGER, AGENT_TRACKING, etc.
+  return 'FULL'; // ADMIN, SUPERADMIN, MANAGER, RESELLER_ADMIN, etc.
 }
 
 function isSectionAllowedForRole(sectionId: string, rf: RoleFamily): boolean {
@@ -243,8 +243,11 @@ function isSectionAllowedForRole(sectionId: string, rf: RoleFamily): boolean {
   if (rf === 'CLIENT') return ['banner-kpi', 'fleet-realtime', 'charts', 'bottom-row'].includes(sectionId);
   if (rf === 'TECH') return ['banner-kpi', 'fleet-realtime', 'charts', 'bottom-row'].includes(sectionId);
   if (rf === 'COMMERCIAL') return ['banner-kpi', 'business-finance', 'charts'].includes(sectionId);
-  if (rf === 'FINANCE') return ['banner-kpi', 'business-finance', 'charts'].includes(sectionId);
-  if (rf === 'SUPPORT') return ['banner-kpi', 'business-finance', 'charts', 'bottom-row'].includes(sectionId);
+  // COMPTABLE a VIEW_FLEET + VIEW_TECH + MANAGE_STOCK → ajouter fleet-realtime et bottom-row
+  if (rf === 'FINANCE')
+    return ['banner-kpi', 'fleet-realtime', 'business-finance', 'charts', 'bottom-row'].includes(sectionId);
+  // SUPPORT_AGENT n'a pas VIEW_FINANCE → retirer business-finance
+  if (rf === 'SUPPORT') return ['banner-kpi', 'charts', 'bottom-row'].includes(sectionId);
   return true;
 }
 
@@ -499,7 +502,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   const statusDonut = useMemo(() => {
     const data = (stats?.statusDistribution || {}) as Record<string, number>;
     return [
-      { name: 'En mouvement', value: data[VehicleStatus.MOVING] || fleet.moving, color: '#22c55e' },
+      { name: 'En route', value: data[VehicleStatus.MOVING] || fleet.moving, color: '#22c55e' },
       { name: 'Ralenti', value: data[VehicleStatus.IDLE] || fleet.idle, color: '#f97316' },
       { name: 'Arrêté', value: data[VehicleStatus.STOPPED] || fleet.stopped, color: '#ef4444' },
       { name: 'Hors ligne', value: data[VehicleStatus.OFFLINE] || fleet.offline, color: '#64748b' },
