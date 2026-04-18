@@ -45,6 +45,7 @@ import {
 import { MARKER_IMAGES } from '../../assets/markers';
 import geofencesApi, { isCircle, toLatLng, type Geofence } from '../../api/geofencesApi';
 import { useVehicleStore } from '../../store/vehicleStore';
+import { withErrorBoundary } from '../../components/ErrorBoundary';
 import { wsService } from '../../services/websocket';
 import type { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../theme';
@@ -1360,4 +1361,4 @@ const DARK_MAP_STYLE = [
   { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#2a2a4a' }] },
 ];
 
-export default MapScreen;
+export default withErrorBoundary(MapScreen, 'Map');

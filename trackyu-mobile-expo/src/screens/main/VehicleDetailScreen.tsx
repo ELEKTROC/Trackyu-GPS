@@ -49,6 +49,7 @@ import {
 import { Svg, Polyline as SvgPolyline, Circle, Line, Text as SvgText } from 'react-native-svg';
 import vehiclesApi, { type Vehicle, type DayStats, type FuelStats, type VehicleAlert } from '../../api/vehicles';
 import { useAuthStore } from '../../store/authStore';
+import { withErrorBoundary } from '../../components/ErrorBoundary';
 import { useTheme } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 import { storage } from '../../utils/storage';
@@ -1055,7 +1056,12 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
   const today = todayISO();
 
   // Queries
-  const { data: vehicle, isLoading } = useQuery<Vehicle>({
+  const {
+    data: vehicle,
+    isLoading,
+    isError: vehicleError,
+    refetch: refetchVehicle,
+  } = useQuery<Vehicle>({
     queryKey: ['vehicle', vehicleId],
     queryFn: () => vehiclesApi.getById(vehicleId),
     refetchInterval: 15000,
@@ -1204,22 +1210,59 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
   if (!vehicle) {
     return (
       <SafeAreaView
-        style={{ flex: 1, backgroundColor: theme.bg.primary, justifyContent: 'center', alignItems: 'center' }}
+        style={{
+          flex: 1,
+          backgroundColor: theme.bg.primary,
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 24,
+          gap: 12,
+        }}
         edges={['top']}
       >
-        <Text style={{ fontSize: 16, color: theme.text.secondary }}>Véhicule introuvable</Text>
-        <TouchableOpacity
-          style={{
-            marginTop: 16,
-            backgroundColor: theme.primary,
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            borderRadius: 12,
-          }}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={{ color: theme.text.onPrimary, fontWeight: '600' }}>Retour</Text>
-        </TouchableOpacity>
+        <Text style={{ fontSize: 16, color: theme.text.secondary, textAlign: 'center' }}>
+          {vehicleError ? 'Impossible de charger le véhicule' : 'Véhicule introuvable'}
+        </Text>
+        {vehicleError && (
+          <Text style={{ fontSize: 12, color: theme.text.muted, textAlign: 'center' }}>
+            Vérifiez votre connexion et réessayez.
+          </Text>
+        )}
+        <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+          {vehicleError && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: theme.primary,
+                paddingHorizontal: 24,
+                paddingVertical: 12,
+                borderRadius: 12,
+              }}
+              onPress={() => refetchVehicle()}
+            >
+              <Text style={{ color: theme.text.onPrimary, fontWeight: '600' }}>Réessayer</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={{
+              backgroundColor: vehicleError ? theme.bg.elevated : theme.primary,
+              borderWidth: vehicleError ? 1 : 0,
+              borderColor: theme.border,
+              paddingHorizontal: 24,
+              paddingVertical: 12,
+              borderRadius: 12,
+            }}
+            onPress={() => navigation.goBack()}
+          >
+            <Text
+              style={{
+                color: vehicleError ? theme.text.primary : theme.text.onPrimary,
+                fontWeight: '600',
+              }}
+            >
+              Retour
+            </Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     );
   }
@@ -2328,4 +2371,4 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
   );
 }
 
-export default VehicleDetailScreen;
+export default withErrorBoundary(VehicleDetailScreen, 'VehicleDetail');

@@ -101,6 +101,13 @@ export default function SignaturePad({ label, value, onChange, onClear, t }: Pro
             autoClear={false}
             style={{ height: 120 }}
             backgroundColor="transparent"
+            webviewProps={{
+              originWhitelist: ['about:blank'],
+              allowUniversalAccessFromFileURLs: false,
+              mixedContentMode: 'never',
+              cacheEnabled: false,
+              incognito: true,
+            }}
           />
         )}
       </View>

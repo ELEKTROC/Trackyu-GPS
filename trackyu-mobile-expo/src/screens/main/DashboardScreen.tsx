@@ -60,6 +60,7 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
+import { DashboardSkeleton } from '../../components/SkeletonLoader';
 import { useVehicleStore } from '../../store/vehicleStore';
 import { useAuthStore } from '../../store/authStore';
 import type { RootStackParamList } from '../../navigation/types';
@@ -2596,7 +2597,7 @@ export default function DashboardScreen() {
                   <Text style={{ fontSize: 12, color: theme.functional.error, fontWeight: '700' }}>Réessayer</Text>
                 </TouchableOpacity>
               ) : vehiclesLoading ? (
-                <ActivityIndicator color={theme.primary} />
+                <DashboardSkeleton />
               ) : (
                 <>
                   <TouchableOpacity

@@ -5,6 +5,7 @@
 import React, { Component, type ErrorInfo, type ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { AlertTriangle } from 'lucide-react-native';
+import * as Sentry from '@sentry/react-native';
 
 interface Props {
   children: ReactNode;
@@ -30,6 +31,10 @@ export class ErrorBoundary extends Component<Props, State> {
     if (__DEV__) {
       console.error(`[ErrorBoundary:${this.props.name ?? 'unknown'}]`, error, info);
     }
+    Sentry.captureException(error, {
+      tags: { errorBoundary: this.props.name ?? 'unknown' },
+      contexts: { react: { componentStack: info.componentStack ?? undefined } },
+    });
   }
 
   handleReset = () => {
@@ -87,3 +92,20 @@ const styles = StyleSheet.create({
   },
   buttonText: { color: '#fff', fontWeight: '600', fontSize: 14 },
 });
+
+/**
+ * HOC qui enveloppe un écran avec un ErrorBoundary dédié.
+ * Un crash isolé à l'écran n'arrache plus tout l'arbre React.
+ */
+export function withErrorBoundary<P extends object>(
+  Component: React.ComponentType<P>,
+  name: string
+): React.ComponentType<P> {
+  const Wrapped: React.FC<P> = (props) => (
+    <ErrorBoundary name={name}>
+      <Component {...props} />
+    </ErrorBoundary>
+  );
+  Wrapped.displayName = `withErrorBoundary(${name})`;
+  return Wrapped;
+}

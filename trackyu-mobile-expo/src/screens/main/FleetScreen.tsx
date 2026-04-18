@@ -54,6 +54,7 @@ import {
 import vehiclesApi, { type Vehicle } from '../../api/vehicles';
 import { useVehicleStore } from '../../store/vehicleStore';
 import { FleetScreenSkeleton } from '../../components/SkeletonLoader';
+import { withErrorBoundary } from '../../components/ErrorBoundary';
 import { VehicleTypeIcon } from '../../components/VehicleTypeIcon';
 import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import type { RootStackParamList } from '../../navigation/types';
@@ -1243,4 +1244,4 @@ const styles = (theme: ThemeType) =>
     filterBadgeText: { fontSize: 9, fontWeight: '700', color: '#fff' },
   });
 
-export default FleetScreen;
+export default withErrorBoundary(FleetScreen, 'Fleet');
