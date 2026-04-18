@@ -10,7 +10,8 @@
 ## État courant (2026-04-18)
 
 - ✅ **3 CRITIQUES corrigés** (commit `e3db906` du 2026-04-17)
-- ✅ **4 IMPORTANTS #4-#7 corrigés** (commit `f507a42` du 2026-04-18) — sauf AlertsScreen (voir note)
+- ✅ **4 IMPORTANTS #4-#7 corrigés** (commit `f507a42` du 2026-04-18)
+- ✅ **AlertsScreen finalisé** (commit `7dbf035` du 2026-04-18) — ErrorBoundary + AlertsListSkeleton + VehicleFilterPanel
 - 🟡 Nice-to-have (#8-#10) : non traités, post-V1
 - ⏳ **Reste avant AAB prod** : assets utilisateur (feature graphic, screenshots, Play Console account, service account JSON)
 
@@ -58,8 +59,7 @@
 
 - HOC `withErrorBoundary(Component, name)` ajouté dans `src/components/ErrorBoundary.tsx`
 - `componentDidCatch` envoie désormais à `Sentry.captureException` avec contexte écran (name)
-- Appliqué sur : **MapScreen**, **FleetScreen**, **VehicleDetailScreen**
-- ⏳ **AlertsScreen reste en attente** (mélangé avec session parallèle `VehicleFilterPanel` — à commit séparément)
+- Appliqué sur : **MapScreen**, **FleetScreen**, **VehicleDetailScreen**, **AlertsScreen** (commit `7dbf035` du 2026-04-18)
 
 ### 5. Skeleton loaders manquants — ✅ DONE (partiel)
 
@@ -67,7 +67,7 @@
   - `AlertCardSkeleton` + `AlertsListSkeleton` (6 cards)
   - `DashboardSkeleton` (donut + slices + KPI grid)
 - **DashboardScreen** : `ActivityIndicator` → `<DashboardSkeleton />` ✅
-- ⏳ **AlertsScreen** : skeleton prêt, wiring en attente (même raison que #4)
+- **AlertsScreen** : `ActivityIndicator` → `<AlertsListSkeleton />` ✅ (commit `7dbf035`)
 - **MapScreen** : skeleton jugé non nécessaire — l'`emptyMapBanner` existant (spinner + "Chargement des véhicules…") sert déjà l'UX
 
 ### 6. WebView signature — config explicite manquante — ✅ DONE
@@ -155,10 +155,9 @@
 - [x] ~~**Nettoyer `eas.json` iOS submit**~~ ✅ e3db906
 - [x] ~~**Ajouter validation deep links**~~ ✅ e3db906
 - [x] ~~**Durcir WebView SignaturePad**~~ ✅ f507a42
-- [x] ~~Ajouter ErrorBoundary sur écrans lourds~~ ✅ f507a42 (MapScreen, VehicleDetailScreen, FleetScreen) — AlertsScreen en attente
-- [x] ~~Ajouter skeletons manquants~~ ✅ f507a42 (DashboardScreen, AlertsListSkeleton prêt) — wiring AlertsScreen en attente, MapScreen jugé inutile
+- [x] ~~Ajouter ErrorBoundary sur écrans lourds~~ ✅ f507a42 + 7dbf035 (MapScreen, VehicleDetailScreen, FleetScreen, AlertsScreen)
+- [x] ~~Ajouter skeletons manquants~~ ✅ f507a42 + 7dbf035 (DashboardScreen, AlertsScreen) — MapScreen jugé inutile
 - [x] ~~Ajouter retry UX sur VehicleDetailScreen~~ ✅ f507a42
-- [ ] Wiring final AlertsScreen (ErrorBoundary + skeleton) — à commit séparément, dépend de la session parallèle VehicleFilterPanel
 - [ ] Vérifier `targetSdkVersion` ≥ 34 (exigence Play Store 2025) dans le build EAS
 - [ ] Vérifier version name / version code incrémentés (`app.config.js` + `android.versionCode`)
 - [ ] Compte démo peuplé pour screenshots Play Store
@@ -173,16 +172,16 @@
 
 ## Estimation temps correctifs critiques + importants
 
-| Item                       | Temps     | Statut                       |
-| -------------------------- | --------- | ---------------------------- |
-| App Store ID (1)           | 5 min     | ✅ e3db906                   |
-| eas.json iOS (2)           | 5 min     | ✅ e3db906                   |
-| Deep links validation (3)  | 45-60 min | ✅ e3db906                   |
-| WebView durcie (6)         | 10 min    | ✅ f507a42                   |
-| ErrorBoundary écrans (4)   | 30-45 min | ✅ f507a42 (sf AlertsScreen) |
-| Skeletons manquants (5)    | 60-90 min | ✅ f507a42 (sf AlertsScreen) |
-| Retry UX VehicleDetail (7) | 30 min    | ✅ f507a42                   |
-| **Total**                  | **3-4 h** | **100% fait code**           |
+| Item                       | Temps     | Statut               |
+| -------------------------- | --------- | -------------------- |
+| App Store ID (1)           | 5 min     | ✅ e3db906           |
+| eas.json iOS (2)           | 5 min     | ✅ e3db906           |
+| Deep links validation (3)  | 45-60 min | ✅ e3db906           |
+| WebView durcie (6)         | 10 min    | ✅ f507a42           |
+| ErrorBoundary écrans (4)   | 30-45 min | ✅ f507a42 + 7dbf035 |
+| Skeletons manquants (5)    | 60-90 min | ✅ f507a42 + 7dbf035 |
+| Retry UX VehicleDetail (7) | 30 min    | ✅ f507a42           |
+| **Total**                  | **3-4 h** | **100% fait code**   |
 
 Les 3 critiques et les 4 importants sont tous livrés. **Reste avant submit AAB** = chantiers externes (compte Play Console, feature graphic, screenshots, service account JSON).
 
@@ -193,3 +192,5 @@ Les 3 critiques et les 4 importants sont tous livrés. **Reste avant submit AAB*
 - `e3db906` — fix(mobile): audit pre-playstore — 3 correctifs critiques (2026-04-17)
 - `c3d365f` — feat(mobile): toggle trafic Google Maps + cycle mapType sur ecrans detail (2026-04-17)
 - `f507a42` — feat(mobile): audit pre-playstore — correctifs importants (#4-#7) (2026-04-18)
+- `7dbf035` — feat(mobile): VehicleFilterPanel + SearchBar sur 6 ecrans metier (2026-04-18) — finalise ErrorBoundary + skeleton AlertsScreen
+- `990224a` — feat(mobile): DashboardScreen periode semaine courante (Lun-Dim) (2026-04-18)
