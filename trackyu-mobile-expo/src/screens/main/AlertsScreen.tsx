@@ -27,11 +27,16 @@ import {
   CheckCheck,
   Clock,
   Lock,
+  SlidersHorizontal,
 } from 'lucide-react-native';
 import alertsApi, { type Alert, setAlertLocale } from '../../api/alerts';
 import { wsService, type CommandAckPayload } from '../../services/websocket';
 import storage from '../../utils/storage';
 import { useTheme } from '../../theme';
+import { SearchBar } from '../../components/SearchBar';
+import { withErrorBoundary } from '../../components/ErrorBoundary';
+import { AlertsListSkeleton } from '../../components/SkeletonLoader';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
 // ── Toast temps réel ──────────────────────────────────────────────────────────
 function RealtimeToast({
@@ -119,11 +124,29 @@ const PERIOD_FILTERS: { key: AlertPeriodFilter; label: string }[] = [
   { key: 'all', label: 'Tout' },
 ];
 
+const TYPE_LABELS: Record<string, string> = {
+  speed: 'Vitesse',
+  geofence: 'Zone',
+  fuel: 'Carburant',
+  maintenance: 'Maintenance',
+  sos: 'SOS',
+  battery: 'Batterie',
+  offline: 'Hors ligne',
+  idle: 'Ralenti',
+  immobilization: 'Immobilisation',
+};
+
 export function AlertsScreen() {
   const { theme } = useTheme();
   const queryClient = useQueryClient();
   const [toastAlert, setToastAlert] = useState<Alert | null>(null);
   const [periodFilter, setPeriodFilter] = useState<AlertPeriodFilter>('today');
+  const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [resellerFilter, setResellerFilter] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
+  const [vehicleFilter, setVehicleFilter] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const s = styles(theme);
 
   const getSeverityColor = (severity: Alert['severity']) => {
@@ -247,6 +270,78 @@ export function AlertsScreen() {
     return new Date(dateString).toLocaleDateString('fr-FR');
   };
 
+  // ── Listes dérivées pour VehicleFilterPanel ────────────────────────────────
+  const uniqueResellers = React.useMemo(
+    () =>
+      [...new Set(alerts.map((a) => a.resellerName).filter(Boolean) as string[])]
+        .sort()
+        .map((n) => ({ id: n, label: n })),
+    [alerts]
+  );
+
+  const uniqueClients = React.useMemo(() => {
+    const pool = resellerFilter ? alerts.filter((a) => a.resellerName === resellerFilter) : alerts;
+    return [...new Set(pool.map((a) => a.clientName).filter(Boolean) as string[])]
+      .sort()
+      .map((n) => ({ id: n, label: n }));
+  }, [alerts, resellerFilter]);
+
+  const uniqueVehicles = React.useMemo(() => {
+    let pool = alerts;
+    if (resellerFilter) pool = pool.filter((a) => a.resellerName === resellerFilter);
+    if (clientFilter) pool = pool.filter((a) => a.clientName === clientFilter);
+    const seen = new Set<string>();
+    const items: { id: string; label: string; sublabel?: string }[] = [];
+    for (const a of pool) {
+      const id = a.vehiclePlate || a.vehicleName || a.vehicleId;
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      items.push({ id, label: a.vehicleName || id, sublabel: a.vehiclePlate });
+    }
+    return items.sort((x, y) => x.label.localeCompare(y.label));
+  }, [alerts, resellerFilter, clientFilter]);
+
+  const uniqueTypes = React.useMemo(() => {
+    const set = new Set<string>();
+    for (const a of alerts) if (a.type) set.add(String(a.type));
+    return [...set].sort().map((t) => ({ id: t, label: TYPE_LABELS[t] ?? t }));
+  }, [alerts]);
+
+  const filterBlocks: FilterBlockDef[] = [
+    {
+      key: 'reseller',
+      label: 'Revendeur',
+      items: uniqueResellers,
+      selected: resellerFilter,
+      onSelect: (v) => {
+        setResellerFilter(v);
+        setClientFilter(null);
+        setVehicleFilter(null);
+      },
+    },
+    {
+      key: 'client',
+      label: 'Client',
+      items: uniqueClients,
+      selected: clientFilter,
+      onSelect: (v) => {
+        setClientFilter(v);
+        setVehicleFilter(null);
+      },
+    },
+    { key: 'vehicle', label: 'Véhicule', items: uniqueVehicles, selected: vehicleFilter, onSelect: setVehicleFilter },
+    { key: 'type', label: 'Type', items: uniqueTypes, selected: typeFilter, onSelect: setTypeFilter },
+  ];
+
+  const hasActiveFilters = !!(resellerFilter || clientFilter || vehicleFilter || typeFilter);
+
+  const handleReset = () => {
+    setResellerFilter(null);
+    setClientFilter(null);
+    setVehicleFilter(null);
+    setTypeFilter(null);
+  };
+
   const sections = React.useMemo(() => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -255,11 +350,27 @@ export function AlertsScreen() {
     const weekStart = new Date(todayStart);
     weekStart.setDate(weekStart.getDate() - 7);
 
+    const q = search.trim().toLowerCase();
     const filtered = alerts.filter(Boolean).filter((alert) => {
       const d = new Date(alert.createdAt);
-      if (periodFilter === 'today') return d >= todayStart;
-      if (periodFilter === 'yesterday') return d >= yesterdayStart && d < todayStart;
-      if (periodFilter === 'week') return d >= weekStart;
+      if (periodFilter === 'today' && !(d >= todayStart)) return false;
+      if (periodFilter === 'yesterday' && !(d >= yesterdayStart && d < todayStart)) return false;
+      if (periodFilter === 'week' && !(d >= weekStart)) return false;
+      if (resellerFilter && alert.resellerName !== resellerFilter) return false;
+      if (clientFilter && alert.clientName !== clientFilter) return false;
+      if (
+        vehicleFilter &&
+        alert.vehiclePlate !== vehicleFilter &&
+        alert.vehicleName !== vehicleFilter &&
+        alert.vehicleId !== vehicleFilter
+      )
+        return false;
+      if (typeFilter && alert.type !== typeFilter) return false;
+      if (q) {
+        const hay =
+          `${alert.title} ${alert.vehicleName} ${alert.vehiclePlate} ${alert.clientName ?? ''} ${alert.message}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
       return true;
     });
 
@@ -282,7 +393,7 @@ export function AlertsScreen() {
       else groups[2].data.push(alert);
     });
     return groups.filter((g) => g.data.length > 0);
-  }, [alerts, periodFilter]);
+  }, [alerts, periodFilter, search, resellerFilter, clientFilter, vehicleFilter, typeFilter]);
 
   const unreadCount = alerts.filter((a) => !a.isRead).length;
 
@@ -324,8 +435,8 @@ export function AlertsScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={s.centered} edges={['top']}>
-        <ActivityIndicator size="large" color={theme.primary} />
+      <SafeAreaView style={s.container} edges={['top']}>
+        <AlertsListSkeleton />
       </SafeAreaView>
     );
   }
@@ -358,6 +469,35 @@ export function AlertsScreen() {
             </Text>
           </TouchableOpacity>
         )}
+      </View>
+
+      {/* Recherche + bouton filtre */}
+      <View style={s.searchRow}>
+        <View style={{ flex: 1 }}>
+          <SearchBar value={search} onChangeText={setSearch} placeholder="Rechercher alerte, véhicule, client…" />
+        </View>
+        <TouchableOpacity
+          style={[
+            s.filterBtn,
+            (showFilters || hasActiveFilters) && { backgroundColor: theme.primary, borderColor: theme.primary },
+          ]}
+          onPress={() => setShowFilters((v) => !v)}
+          accessibilityLabel="Filtres avancés"
+          accessibilityRole="button"
+        >
+          <SlidersHorizontal size={16} color={showFilters || hasActiveFilters ? '#fff' : theme.text.secondary} />
+          {hasActiveFilters && <View style={s.filterDot} />}
+        </TouchableOpacity>
+      </View>
+
+      {/* VehicleFilterPanel */}
+      <View style={{ paddingHorizontal: 16, paddingBottom: showFilters ? 8 : 0 }}>
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={hasActiveFilters}
+          onReset={handleReset}
+        />
       </View>
 
       {/* Filtre période */}
@@ -485,6 +625,29 @@ const styles = (theme: ReturnType<typeof import('../../theme').useTheme>['theme'
     },
     markAllText: { fontSize: 13, fontWeight: '600' },
 
+    searchRow: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 10, gap: 8 },
+    filterBtn: {
+      width: 40,
+      height: 40,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: theme.border,
+      backgroundColor: theme.bg.surface,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    filterDot: {
+      position: 'absolute',
+      top: 6,
+      right: 6,
+      width: 7,
+      height: 7,
+      borderRadius: 4,
+      backgroundColor: '#EF4444',
+      borderWidth: 1.5,
+      borderColor: theme.bg.surface,
+    },
+
     listContent: { padding: 16, paddingBottom: 100 },
 
     sectionHeader: { marginTop: 4, marginBottom: 10 },
@@ -537,4 +700,4 @@ const styles = (theme: ReturnType<typeof import('../../theme').useTheme>['theme'
     emptySubtitle: { fontSize: 13, color: theme.text.muted },
   });
 
-export default AlertsScreen;
+export default withErrorBoundary(AlertsScreen, 'Alerts');

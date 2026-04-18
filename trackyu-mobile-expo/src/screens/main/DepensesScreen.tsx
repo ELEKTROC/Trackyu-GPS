@@ -18,12 +18,14 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Plus, Trash2, Edit2, X, CreditCard, Search, TrendingUp } from 'lucide-react-native';
+import { ArrowLeft, Plus, Trash2, Edit2, X, CreditCard, TrendingUp, SlidersHorizontal } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import expensesApi, { type VehicleExpense, type ExpenseCategory } from '../../api/expensesApi';
 import vehiclesApi from '../../api/vehicles';
 import { useTheme } from '../../theme';
+import { SearchBar } from '../../components/SearchBar';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 
@@ -435,6 +437,11 @@ export default function DepensesScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editing, setEditing] = useState<VehicleExpense | null>(null);
   const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [resellerFilter, setResellerFilter] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
+  const [vehicleFilter, setVehicleFilter] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
 
   const { data: expenses = [], isLoading } = useQuery({
     queryKey: ['vehicle-expenses'],
@@ -451,17 +458,106 @@ export default function DepensesScreen() {
   const vehicleMap = useMemo(() => new Map(vehicles.map((v) => [v.id, v])), [vehicles]);
   const vehicleOptions = useMemo(() => vehicles.map((v) => ({ id: v.id, name: v.name })), [vehicles]);
 
+  // ── Listes dérivées (via vehicleMap) ─────────────────────────────────────
+  const uniqueResellers = useMemo(
+    () =>
+      [...new Set(expenses.map((e) => vehicleMap.get(e.vehicleId)?.resellerName).filter(Boolean) as string[])]
+        .sort()
+        .map((n) => ({ id: n, label: n })),
+    [expenses, vehicleMap]
+  );
+
+  const uniqueClients = useMemo(() => {
+    const pool = resellerFilter
+      ? expenses.filter((e) => vehicleMap.get(e.vehicleId)?.resellerName === resellerFilter)
+      : expenses;
+    return [...new Set(pool.map((e) => vehicleMap.get(e.vehicleId)?.clientName).filter(Boolean) as string[])]
+      .sort()
+      .map((n) => ({ id: n, label: n }));
+  }, [expenses, vehicleMap, resellerFilter]);
+
+  const uniqueVehicles = useMemo(() => {
+    let pool = expenses;
+    if (resellerFilter) pool = pool.filter((e) => vehicleMap.get(e.vehicleId)?.resellerName === resellerFilter);
+    if (clientFilter) pool = pool.filter((e) => vehicleMap.get(e.vehicleId)?.clientName === clientFilter);
+    const seen = new Set<string>();
+    const items: { id: string; label: string; sublabel?: string }[] = [];
+    for (const e of pool) {
+      const v = vehicleMap.get(e.vehicleId);
+      if (!v || seen.has(v.id)) continue;
+      seen.add(v.id);
+      items.push({ id: v.id, label: v.name, sublabel: v.plate });
+    }
+    return items.sort((x, y) => x.label.localeCompare(y.label));
+  }, [expenses, vehicleMap, resellerFilter, clientFilter]);
+
+  const uniqueCategories = useMemo(
+    () =>
+      [...new Set(expenses.map((e) => e.category).filter(Boolean) as string[])]
+        .sort()
+        .map((c) => ({ id: c, label: c })),
+    [expenses]
+  );
+
+  const filterBlocks: FilterBlockDef[] = [
+    {
+      key: 'reseller',
+      label: 'Revendeur',
+      items: uniqueResellers,
+      selected: resellerFilter,
+      onSelect: (v) => {
+        setResellerFilter(v);
+        setClientFilter(null);
+        setVehicleFilter(null);
+      },
+    },
+    {
+      key: 'client',
+      label: 'Client',
+      items: uniqueClients,
+      selected: clientFilter,
+      onSelect: (v) => {
+        setClientFilter(v);
+        setVehicleFilter(null);
+      },
+    },
+    { key: 'vehicle', label: 'Véhicule', items: uniqueVehicles, selected: vehicleFilter, onSelect: setVehicleFilter },
+    {
+      key: 'category',
+      label: 'Catégorie',
+      items: uniqueCategories,
+      selected: categoryFilter,
+      onSelect: setCategoryFilter,
+    },
+  ];
+
+  const hasActiveFilters = !!(resellerFilter || clientFilter || vehicleFilter || categoryFilter);
+
+  const handleReset = () => {
+    setResellerFilter(null);
+    setClientFilter(null);
+    setVehicleFilter(null);
+    setCategoryFilter(null);
+  };
+
   const filtered = useMemo(() => {
     const sorted = [...expenses].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    if (!search) return sorted;
-    const q = search.toLowerCase();
-    return sorted.filter(
-      (e) =>
-        e.category.toLowerCase().includes(q) ||
-        (vehicleMap.get(e.vehicleId)?.name ?? '').toLowerCase().includes(q) ||
-        (e.description ?? '').toLowerCase().includes(q)
-    );
-  }, [expenses, search, vehicleMap]);
+    let list = sorted;
+    if (resellerFilter) list = list.filter((e) => vehicleMap.get(e.vehicleId)?.resellerName === resellerFilter);
+    if (clientFilter) list = list.filter((e) => vehicleMap.get(e.vehicleId)?.clientName === clientFilter);
+    if (vehicleFilter) list = list.filter((e) => e.vehicleId === vehicleFilter);
+    if (categoryFilter) list = list.filter((e) => e.category === categoryFilter);
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter(
+        (e) =>
+          e.category.toLowerCase().includes(q) ||
+          (vehicleMap.get(e.vehicleId)?.name ?? '').toLowerCase().includes(q) ||
+          (e.description ?? '').toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [expenses, search, vehicleMap, resellerFilter, clientFilter, vehicleFilter, categoryFilter]);
 
   // Total du mois en cours
   const now = new Date();
@@ -580,33 +676,53 @@ export default function DepensesScreen() {
         </View>
       )}
 
-      {/* Recherche */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          margin: 12,
-          backgroundColor: theme.bg.surface,
-          borderRadius: 10,
-          paddingHorizontal: 12,
-          borderWidth: 1,
-          borderColor: theme.border,
-          height: 44,
-        }}
-      >
-        <Search size={16} color={theme.text.muted} />
-        <TextInput
-          style={{ flex: 1, marginLeft: 8, fontSize: 14, color: theme.text.primary }}
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Catégorie, véhicule, description..."
-          placeholderTextColor={theme.text.muted}
+      {/* Recherche + bouton filtre */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 12, gap: 8 }}>
+        <View style={{ flex: 1 }}>
+          <SearchBar value={search} onChangeText={setSearch} placeholder="Catégorie, véhicule, description..." />
+        </View>
+        <TouchableOpacity
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: showFilters || hasActiveFilters ? theme.primary : theme.border,
+            backgroundColor: showFilters || hasActiveFilters ? theme.primary : theme.bg.surface,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={() => setShowFilters((v) => !v)}
+          accessibilityLabel="Filtres avancés"
+          accessibilityRole="button"
+        >
+          <SlidersHorizontal size={16} color={showFilters || hasActiveFilters ? '#fff' : theme.text.secondary} />
+          {hasActiveFilters && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 6,
+                right: 6,
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                backgroundColor: '#EF4444',
+                borderWidth: 1.5,
+                borderColor: theme.bg.surface,
+              }}
+            />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* VehicleFilterPanel */}
+      <View style={{ paddingHorizontal: 12, paddingTop: 8, paddingBottom: showFilters ? 4 : 0 }}>
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={hasActiveFilters}
+          onReset={handleReset}
         />
-        {search ? (
-          <TouchableOpacity onPress={() => setSearch('')}>
-            <X size={16} color={theme.text.muted} />
-          </TouchableOpacity>
-        ) : null}
       </View>
 
       {isLoading ? (

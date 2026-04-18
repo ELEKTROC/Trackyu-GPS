@@ -4,15 +4,16 @@
  * température moteur, batterie, ignition
  */
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Thermometer, Zap, Power, AlertTriangle } from 'lucide-react-native';
+import { ArrowLeft, Thermometer, Zap, Power, AlertTriangle, SlidersHorizontal } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
 import vehiclesApi, { type Vehicle } from '../../api/vehicles';
 import { useTheme } from '../../theme';
 import { Card } from '../../components/Card';
 import { SearchBar } from '../../components/SearchBar';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import { VEHICLE_STATUS_COLORS, VEHICLE_STATUS_LABELS } from '../../utils/vehicleStatus';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
@@ -126,6 +127,11 @@ export default function TemperatureScreen() {
   const { theme } = useTheme();
   const nav = useNavigation();
   const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [resellerFilter, setResellerFilter] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [alertFilter, setAlertFilter] = useState<string | null>(null); // overheat | lowBatt | normal
 
   const { data: vehicles = [], isLoading } = useQuery({
     queryKey: ['vehicles-all'],
@@ -133,14 +139,74 @@ export default function TemperatureScreen() {
     staleTime: 30_000,
   });
 
+  // ── Listes dérivées ──────────────────────────────────────────────────────
+  const uniqueResellers = useMemo(
+    () =>
+      [...new Set(vehicles.map((v) => v.resellerName).filter(Boolean) as string[])]
+        .sort()
+        .map((n) => ({ id: n, label: n })),
+    [vehicles]
+  );
+
+  const uniqueClients = useMemo(() => {
+    const pool = resellerFilter ? vehicles.filter((v) => v.resellerName === resellerFilter) : vehicles;
+    return [...new Set(pool.map((v) => v.clientName).filter(Boolean) as string[])]
+      .sort()
+      .map((n) => ({ id: n, label: n }));
+  }, [vehicles, resellerFilter]);
+
+  const uniqueStatuses = useMemo(
+    () =>
+      [...new Set(vehicles.map((v) => v.status).filter(Boolean) as string[])]
+        .sort()
+        .map((s) => ({ id: s, label: VEHICLE_STATUS_LABELS[s] ?? s })),
+    [vehicles]
+  );
+
+  const alertOptions = [
+    { id: 'overheat', label: 'Surchauffe' },
+    { id: 'lowBatt', label: 'Batterie faible' },
+    { id: 'noData', label: 'Sans capteur' },
+  ];
+
+  const filterBlocks: FilterBlockDef[] = [
+    {
+      key: 'reseller',
+      label: 'Revendeur',
+      items: uniqueResellers,
+      selected: resellerFilter,
+      onSelect: (v) => {
+        setResellerFilter(v);
+        setClientFilter(null);
+      },
+    },
+    { key: 'client', label: 'Client', items: uniqueClients, selected: clientFilter, onSelect: setClientFilter },
+    { key: 'status', label: 'Statut', items: uniqueStatuses, selected: statusFilter, onSelect: setStatusFilter },
+    { key: 'alert', label: 'Alerte', items: alertOptions, selected: alertFilter, onSelect: setAlertFilter },
+  ];
+
+  const hasActiveFilters = !!(resellerFilter || clientFilter || statusFilter || alertFilter);
+
+  const handleReset = () => {
+    setResellerFilter(null);
+    setClientFilter(null);
+    setStatusFilter(null);
+    setAlertFilter(null);
+  };
+
   // Trier : véhicules avec données capteurs en premier, puis par statut
   const filtered = useMemo(() => {
-    const list = search
-      ? vehicles.filter(
-          (v) =>
-            v.name.toLowerCase().includes(search.toLowerCase()) || v.plate.toLowerCase().includes(search.toLowerCase())
-        )
-      : vehicles;
+    let list = vehicles;
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter((v) => v.name.toLowerCase().includes(q) || v.plate.toLowerCase().includes(q));
+    }
+    if (resellerFilter) list = list.filter((v) => v.resellerName === resellerFilter);
+    if (clientFilter) list = list.filter((v) => v.clientName === clientFilter);
+    if (statusFilter) list = list.filter((v) => v.status === statusFilter);
+    if (alertFilter === 'overheat') list = list.filter((v) => ((v as any).temperature ?? 0) > 100);
+    else if (alertFilter === 'lowBatt') list = list.filter((v) => v.battery != null && v.battery < 11.5);
+    else if (alertFilter === 'noData') list = list.filter((v) => (v as any).temperature == null && v.battery == null);
 
     return [...list].sort((a, b) => {
       const hasA = (a as any).temperature != null || a.battery != null;
@@ -152,7 +218,7 @@ export default function TemperatureScreen() {
       const alertB = ((b as any).temperature ?? 0) > 100 || (b.battery ?? 99) < 11.5 ? 1 : 0;
       return alertB - alertA;
     });
-  }, [vehicles, search]);
+  }, [vehicles, search, resellerFilter, clientFilter, statusFilter, alertFilter]);
 
   const withTemp = vehicles.filter((v) => (v as any).temperature != null).length;
   const overTemp = vehicles.filter((v) => ((v as any).temperature ?? 0) > 100).length;
@@ -239,8 +305,54 @@ export default function TemperatureScreen() {
         </View>
       )}
 
-      {/* Recherche */}
-      <SearchBar value={search} onChangeText={setSearch} placeholder="Nom ou plaque..." style={{ margin: 12 }} />
+      {/* Recherche + bouton filtre */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingTop: 12, gap: 8 }}>
+        <View style={{ flex: 1 }}>
+          <SearchBar value={search} onChangeText={setSearch} placeholder="Nom ou plaque..." />
+        </View>
+        <TouchableOpacity
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: showFilters || hasActiveFilters ? theme.primary : theme.border,
+            backgroundColor: showFilters || hasActiveFilters ? theme.primary : theme.bg.surface,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={() => setShowFilters((v) => !v)}
+          accessibilityLabel="Filtres avancés"
+          accessibilityRole="button"
+        >
+          <SlidersHorizontal size={16} color={showFilters || hasActiveFilters ? '#fff' : theme.text.secondary} />
+          {hasActiveFilters && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 6,
+                right: 6,
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                backgroundColor: '#EF4444',
+                borderWidth: 1.5,
+                borderColor: theme.bg.surface,
+              }}
+            />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* VehicleFilterPanel */}
+      <View style={{ paddingHorizontal: 12, paddingTop: 8, paddingBottom: showFilters ? 4 : 0 }}>
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={hasActiveFilters}
+          onReset={handleReset}
+        />
+      </View>
 
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

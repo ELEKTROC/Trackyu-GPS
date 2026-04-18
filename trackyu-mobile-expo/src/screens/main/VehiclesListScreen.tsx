@@ -18,8 +18,9 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Truck, Edit2, X, Check } from 'lucide-react-native';
+import { ArrowLeft, Truck, Edit2, X, Check, SlidersHorizontal } from 'lucide-react-native';
 import { SearchBar } from '../../components/SearchBar';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import { VEHICLE_STATUS_COLORS, VEHICLE_STATUS_LABELS } from '../../utils/vehicleStatus';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -299,6 +300,10 @@ export default function VehiclesListScreen() {
   const nav = useNavigation();
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [resellerFilter, setResellerFilter] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
 
   const { data: vehicles = [], isLoading } = useQuery({
@@ -319,16 +324,101 @@ export default function VehiclesListScreen() {
     staleTime: 120_000,
   });
 
+  // ── Dérivations pour filtres cascade ──────────────────────────────────────
+  const uniqueResellers = useMemo(() => {
+    const m = new Map<string, string>();
+    vehicles.forEach((v) => {
+      const name = v.resellerName?.trim();
+      if (name) m.set(name, name);
+    });
+    return Array.from(m.keys())
+      .sort()
+      .map((name) => ({ id: name, label: name }));
+  }, [vehicles]);
+
+  const uniqueClients = useMemo(() => {
+    const m = new Map<string, string>();
+    vehicles.forEach((v) => {
+      if (resellerFilter && v.resellerName !== resellerFilter) return;
+      const name = v.clientName?.trim();
+      if (name) m.set(name, name);
+    });
+    return Array.from(m.keys())
+      .sort()
+      .map((name) => ({ id: name, label: name }));
+  }, [vehicles, resellerFilter]);
+
+  const uniqueStatuses = useMemo(() => {
+    const m = new Set<string>();
+    vehicles.forEach((v) => {
+      if (resellerFilter && v.resellerName !== resellerFilter) return;
+      if (clientFilter && v.clientName !== clientFilter) return;
+      if (v.status) m.add(v.status);
+    });
+    return Array.from(m)
+      .sort()
+      .map((s) => ({
+        id: s,
+        label: VEHICLE_STATUS_LABELS[s] ?? s,
+        statusColor: VEHICLE_STATUS_COLORS[s],
+      }));
+  }, [vehicles, resellerFilter, clientFilter]);
+
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      {
+        key: 'reseller',
+        label: 'Revendeur',
+        items: uniqueResellers,
+        selected: resellerFilter,
+        onSelect: (id) => {
+          setResellerFilter(id);
+          setClientFilter(null);
+          setStatusFilter(null);
+        },
+      },
+      {
+        key: 'client',
+        label: 'Client',
+        items: uniqueClients,
+        selected: clientFilter,
+        onSelect: (id) => {
+          setClientFilter(id);
+          setStatusFilter(null);
+        },
+      },
+      {
+        key: 'status',
+        label: 'Statut',
+        items: uniqueStatuses,
+        selected: statusFilter,
+        onSelect: setStatusFilter,
+      },
+    ],
+    [uniqueResellers, uniqueClients, uniqueStatuses, resellerFilter, clientFilter, statusFilter]
+  );
+
+  const hasActiveFilters = !!(resellerFilter || clientFilter || statusFilter);
+  const handleResetFilters = () => {
+    setResellerFilter(null);
+    setClientFilter(null);
+    setStatusFilter(null);
+  };
+
   const filtered = useMemo(() => {
-    if (!search) return vehicles;
-    const q = search.toLowerCase();
-    return vehicles.filter(
-      (v) =>
+    const q = search.toLowerCase().trim();
+    return vehicles.filter((v) => {
+      if (resellerFilter && v.resellerName !== resellerFilter) return false;
+      if (clientFilter && v.clientName !== clientFilter) return false;
+      if (statusFilter && v.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
         v.name.toLowerCase().includes(q) ||
         v.plate.toLowerCase().includes(q) ||
         (v.clientName ?? v.groupName ?? '').toLowerCase().includes(q)
-    );
-  }, [vehicles, search]);
+      );
+    });
+  }, [vehicles, search, resellerFilter, clientFilter, statusFilter]);
 
   const updateMutation = useMutation({
     mutationFn: ({ id, form }: { id: string; form: EditForm }) =>
@@ -376,8 +466,49 @@ export default function VehiclesListScreen() {
         </View>
       </View>
 
-      {/* Recherche */}
-      <SearchBar value={search} onChangeText={setSearch} placeholder="Plaque, nom, branche..." style={{ margin: 12 }} />
+      {/* Recherche + filtres */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, margin: 12 }}>
+        <View style={{ flex: 1 }}>
+          <SearchBar value={search} onChangeText={setSearch} placeholder="Plaque, nom, branche..." />
+        </View>
+        <TouchableOpacity
+          onPress={() => setShowFilters((p) => !p)}
+          accessibilityRole="button"
+          accessibilityLabel="Filtres"
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 10,
+            backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+            borderWidth: 1,
+            borderColor: theme.border,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+          {hasActiveFilters && !showFilters ? (
+            <View
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: '#EF4444',
+              }}
+            />
+          ) : null}
+        </TouchableOpacity>
+      </View>
+
+      <VehicleFilterPanel
+        visible={showFilters}
+        blocks={filterBlocks}
+        hasActiveFilters={hasActiveFilters}
+        onReset={handleResetFilters}
+      />
 
       {/* Table header */}
       <View

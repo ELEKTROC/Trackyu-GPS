@@ -2,11 +2,10 @@
  * TrackYu Mobile — Maintenance & Entretien
  * Liste des règles + Créer / Modifier / Supprimer
  */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   FlatList,
   Modal,
@@ -19,7 +18,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Plus, Wrench, Trash2, Edit2, X, Check, ChevronDown } from 'lucide-react-native';
+import { ArrowLeft, Plus, Wrench, Trash2, Edit2, X, Check, ChevronDown, SlidersHorizontal } from 'lucide-react-native';
 import { Button } from '../../components/Button';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -31,6 +30,8 @@ import maintenanceApi, {
 } from '../../api/maintenanceApi';
 import vehiclesApi from '../../api/vehicles';
 import { useTheme } from '../../theme';
+import { SearchBar } from '../../components/SearchBar';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 
@@ -638,6 +639,11 @@ export default function MaintenanceScreen() {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editRule, setEditRule] = useState<MaintenanceRule | null>(null);
+  const [search, setSearch] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
   const { data = [], isLoading } = useQuery({
     queryKey: ['maintenance-rules'],
@@ -657,6 +663,58 @@ export default function MaintenanceScreen() {
       { text: 'Supprimer', style: 'destructive', onPress: () => deleteMut.mutate(rule.id) },
     ]);
   };
+
+  // ── Filtres ────────────────────────────────────────────────────────────────
+  const uniqueCategories = useMemo(
+    () =>
+      [...new Set(data.map((r) => r.category).filter(Boolean) as string[])].sort().map((c) => ({ id: c, label: c })),
+    [data]
+  );
+  const uniqueStatuses = useMemo(
+    () => [...new Set(data.map((r) => r.statut).filter(Boolean) as string[])].sort().map((s) => ({ id: s, label: s })),
+    [data]
+  );
+  const uniqueTypes = useMemo(
+    () => [...new Set(data.map((r) => r.type).filter(Boolean) as string[])].sort().map((t) => ({ id: t, label: t })),
+    [data]
+  );
+
+  const filterBlocks: FilterBlockDef[] = [
+    {
+      key: 'category',
+      label: 'Catégorie',
+      items: uniqueCategories,
+      selected: categoryFilter,
+      onSelect: setCategoryFilter,
+    },
+    { key: 'status', label: 'Statut', items: uniqueStatuses, selected: statusFilter, onSelect: setStatusFilter },
+    { key: 'type', label: 'Type', items: uniqueTypes, selected: typeFilter, onSelect: setTypeFilter },
+  ];
+
+  const hasActiveFilters = !!(categoryFilter || statusFilter || typeFilter);
+
+  const handleReset = () => {
+    setCategoryFilter(null);
+    setStatusFilter(null);
+    setTypeFilter(null);
+  };
+
+  const filtered = useMemo(() => {
+    let list = data;
+    if (categoryFilter) list = list.filter((r) => r.category === categoryFilter);
+    if (statusFilter) list = list.filter((r) => r.statut === statusFilter);
+    if (typeFilter) list = list.filter((r) => r.type === typeFilter);
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter(
+        (r) =>
+          r.nom?.toLowerCase().includes(q) ||
+          r.category?.toLowerCase().includes(q) ||
+          r.description?.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [data, categoryFilter, statusFilter, typeFilter, search]);
 
   const activeCount = data.filter((r) => r.statut === 'Actif').length;
 
@@ -706,23 +764,74 @@ export default function MaintenanceScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Recherche + bouton filtre */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 10, gap: 8 }}>
+        <View style={{ flex: 1 }}>
+          <SearchBar value={search} onChangeText={setSearch} placeholder="Rechercher règle, catégorie…" />
+        </View>
+        <TouchableOpacity
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: showFilters || hasActiveFilters ? theme.primary : theme.border,
+            backgroundColor: showFilters || hasActiveFilters ? theme.primary : theme.bg.surface,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          onPress={() => setShowFilters((v) => !v)}
+          accessibilityLabel="Filtres avancés"
+          accessibilityRole="button"
+        >
+          <SlidersHorizontal size={16} color={showFilters || hasActiveFilters ? '#fff' : theme.text.secondary} />
+          {hasActiveFilters && (
+            <View
+              style={{
+                position: 'absolute',
+                top: 6,
+                right: 6,
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                backgroundColor: '#EF4444',
+                borderWidth: 1.5,
+                borderColor: theme.bg.surface,
+              }}
+            />
+          )}
+        </TouchableOpacity>
+      </View>
+
+      {/* VehicleFilterPanel */}
+      <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: showFilters ? 4 : 0 }}>
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={hasActiveFilters}
+          onReset={handleReset}
+        />
+      </View>
+
       {isLoading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator color={theme.primary} />
         </View>
-      ) : data.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 }}>
           <Wrench size={48} color={theme.text.muted} strokeWidth={1} />
           <Text style={{ fontSize: 15, color: theme.text.secondary, marginTop: 12, textAlign: 'center' }}>
-            Aucune règle de maintenance
+            {data.length === 0 ? 'Aucune règle de maintenance' : 'Aucun résultat'}
           </Text>
           <Text style={{ fontSize: 12, color: theme.text.muted, marginTop: 6, textAlign: 'center' }}>
-            Appuyez sur + pour créer la première règle.
+            {data.length === 0
+              ? 'Appuyez sur + pour créer la première règle.'
+              : 'Ajustez vos filtres pour élargir la recherche.'}
           </Text>
         </View>
       ) : (
         <FlatList
-          data={data}
+          data={filtered}
           keyExtractor={(r) => r.id}
           contentContainerStyle={{ padding: 12 }}
           renderItem={({ item }) => (

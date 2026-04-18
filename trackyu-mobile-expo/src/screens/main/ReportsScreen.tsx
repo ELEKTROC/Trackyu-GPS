@@ -40,6 +40,7 @@ import {
   FileText,
   Search,
   Filter,
+  SlidersHorizontal,
   Calendar,
   Clock,
   Send,
@@ -78,6 +79,7 @@ import { ChartSection } from './reports/charts';
 import type { Vehicle } from '../../api/vehicles';
 import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
 import { VEHICLE_STATUS_COLORS, VEHICLE_STATUS_LABELS } from '../../utils/vehicleStatus';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 
@@ -340,12 +342,70 @@ function VehiclePickerModal({
   const all = getVehicleList();
   const [search, setSearch] = useState('');
   const [local, setLocal] = useState<string[]>(selected);
-  const shown = all.filter(
-    (v) =>
-      !search ||
-      v.name.toLowerCase().includes(search.toLowerCase()) ||
-      v.plate.toLowerCase().includes(search.toLowerCase())
+  const [showFilters, setShowFilters] = useState(false);
+  const [resellerFilter, setResellerFilter] = useState<string | null>(null);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
+
+  const uniqueResellers = useMemo(() => {
+    const m = new Set<string>();
+    all.forEach((v) => {
+      const n = v.resellerName?.trim();
+      if (n) m.add(n);
+    });
+    return Array.from(m)
+      .sort()
+      .map((n) => ({ id: n, label: n }));
+  }, [all]);
+
+  const uniqueClients = useMemo(() => {
+    const m = new Set<string>();
+    all.forEach((v) => {
+      if (resellerFilter && v.resellerName !== resellerFilter) return;
+      const n = v.clientName?.trim();
+      if (n) m.add(n);
+    });
+    return Array.from(m)
+      .sort()
+      .map((n) => ({ id: n, label: n }));
+  }, [all, resellerFilter]);
+
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      {
+        key: 'reseller',
+        label: 'Revendeur',
+        items: uniqueResellers,
+        selected: resellerFilter,
+        onSelect: (id) => {
+          setResellerFilter(id);
+          setClientFilter(null);
+        },
+      },
+      {
+        key: 'client',
+        label: 'Client',
+        items: uniqueClients,
+        selected: clientFilter,
+        onSelect: setClientFilter,
+      },
+    ],
+    [uniqueResellers, uniqueClients, resellerFilter, clientFilter]
   );
+
+  const hasActiveFilters = !!(resellerFilter || clientFilter);
+  const resetFilters = () => {
+    setResellerFilter(null);
+    setClientFilter(null);
+  };
+
+  const shown = all.filter((v) => {
+    if (resellerFilter && v.resellerName !== resellerFilter) return false;
+    if (clientFilter && v.clientName !== clientFilter) return false;
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return v.name.toLowerCase().includes(q) || v.plate.toLowerCase().includes(q);
+  });
+
   const toggle = (id: string) => setLocal((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   return (
@@ -369,28 +429,68 @@ function VehiclePickerModal({
             <X size={22} color={theme.text.muted} />
           </TouchableOpacity>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            margin: 12,
-            backgroundColor: theme.bg.surface,
-            borderRadius: 10,
-            paddingHorizontal: 12,
-            borderWidth: 1,
-            borderColor: theme.border,
-            height: 44,
-          }}
-        >
-          <Search size={16} color={theme.text.muted} />
-          <TextInput
-            style={{ flex: 1, marginLeft: 8, fontSize: 14, color: theme.text.primary }}
-            value={search}
-            onChangeText={setSearch}
-            placeholder="Rechercher..."
-            placeholderTextColor={theme.text.muted}
-          />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, margin: 12 }}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: theme.bg.surface,
+              borderRadius: 10,
+              paddingHorizontal: 12,
+              borderWidth: 1,
+              borderColor: theme.border,
+              height: 44,
+            }}
+          >
+            <Search size={16} color={theme.text.muted} />
+            <TextInput
+              style={{ flex: 1, marginLeft: 8, fontSize: 14, color: theme.text.primary }}
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Rechercher..."
+              placeholderTextColor={theme.text.muted}
+            />
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowFilters((p) => !p)}
+            accessibilityRole="button"
+            accessibilityLabel="Filtres"
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+              borderWidth: 1,
+              borderColor: theme.border,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+            {hasActiveFilters && !showFilters ? (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  width: 8,
+                  height: 8,
+                  borderRadius: 4,
+                  backgroundColor: '#EF4444',
+                }}
+              />
+            ) : null}
+          </TouchableOpacity>
         </View>
+
+        <VehicleFilterPanel
+          visible={showFilters}
+          blocks={filterBlocks}
+          hasActiveFilters={hasActiveFilters}
+          onReset={resetFilters}
+        />
+
         <TouchableOpacity
           style={{
             flexDirection: 'row',
@@ -400,7 +500,7 @@ function VehiclePickerModal({
             borderBottomWidth: 1,
             borderBottomColor: theme.border,
           }}
-          onPress={() => setLocal(local.length === 0 ? all.map((v) => v.id) : [])}
+          onPress={() => setLocal(local.length === 0 ? shown.map((v) => v.id) : [])}
         >
           <View
             style={[
@@ -410,7 +510,9 @@ function VehiclePickerModal({
           >
             {local.length === 0 && <Check size={13} color="#fff" />}
           </View>
-          <Text style={{ fontSize: 14, color: theme.text.primary, fontStyle: 'italic' }}>Tous les engins</Text>
+          <Text style={{ fontSize: 14, color: theme.text.primary, fontStyle: 'italic' }}>
+            {hasActiveFilters ? `Tous les engins filtrés (${shown.length})` : 'Tous les engins'}
+          </Text>
         </TouchableOpacity>
         <FlatList
           data={shown}

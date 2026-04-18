@@ -26,6 +26,7 @@ export interface Alert {
   vehicleName: string;
   vehiclePlate: string;
   clientName?: string;
+  resellerName?: string;
   groupName?: string;
   latitude?: number;
   longitude?: number;
@@ -187,6 +188,8 @@ function normalizeAlert(raw: Record<string, unknown>): Alert {
     vehicleId: String(raw.vehicle_id || raw.vehicleId || ''),
     vehicleName: String(raw.vehicle_name || raw.vehicleName || ''),
     vehiclePlate: String(raw.vehicle_plate || raw.vehiclePlate || ''),
+    clientName: (raw.client_name ?? raw.clientName) ? String(raw.client_name ?? raw.clientName) : undefined,
+    resellerName: (raw.reseller_name ?? raw.resellerName) ? String(raw.reseller_name ?? raw.resellerName) : undefined,
     latitude: raw.latitude != null ? Number(raw.latitude) : undefined,
     longitude: raw.longitude != null ? Number(raw.longitude) : undefined,
     isRead: Boolean(raw.is_read ?? raw.isRead ?? false),
