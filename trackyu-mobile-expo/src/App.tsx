@@ -100,7 +100,9 @@ Sentry.init({
 LogBox.ignoreLogs(['Non-serializable values were found in the navigation state']);
 
 // ── React Query persister ─────────────────────────────────────────────────────
-// SÉCURITÉ : shouldDehydrateQuery: () => false désactive l'écriture sur disque.
+// SÉCURITÉ : par défaut aucune query n'est persistée sur disque.
+// Seules les queries 'geocode' (coord → adresse, données publiques Nominatim)
+// sont whitelistées pour survivre au redémarrage (maxAge 24 h).
 // Les données sensibles (GPS, factures, tickets) restent en mémoire uniquement.
 // Le buster '2' invalide le cache AsyncStorage des versions précédentes.
 const asyncStoragePersister = createAsyncStoragePersister({
@@ -166,7 +168,8 @@ function App(): React.JSX.Element {
             maxAge: 1000 * 60 * 60 * 24,
             buster: '2', // incrémenté pour invalider l'ancien cache en clair (sécurité)
             dehydrateOptions: {
-              shouldDehydrateQuery: () => false, // aucune donnée sensible écrite sur disque
+              // Whitelist : seules les queries 'geocode' (coord → adresse) sont persistées
+              shouldDehydrateQuery: (q) => Array.isArray(q.queryKey) && q.queryKey[0] === 'geocode',
             },
           }}
         >

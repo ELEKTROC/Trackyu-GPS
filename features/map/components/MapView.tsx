@@ -60,6 +60,7 @@ import { ReplayControlPanel, type StopEvent, type SpeedEvent, type TripSegment }
 import { HeatmapLayer } from './HeatmapLayer';
 import { AnimatedVehicleMarker } from './AnimatedVehicleMarker';
 import { getHeaders } from '../../../services/api/client';
+import { formatShortAddress, geocodeCoordCached } from '../../../utils/geocoding';
 import { useTranslation } from '../../../i18n';
 
 // Fix for default marker icon assets
@@ -241,12 +242,8 @@ const StopPopupContent: React.FC<{
   React.useEffect(() => {
     if (stop.address || address) return;
     setLoading(true);
-    fetch(`/api/fleet/geocode?lat=${stop.location.lat}&lng=${stop.location.lng}`, {
-      credentials: 'include',
-      headers: getHeaders(),
-    })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => setAddress(data?.address || null))
+    geocodeCoordCached(stop.location.lat, stop.location.lng, getHeaders())
+      .then((addr) => setAddress(formatShortAddress(addr)))
       .catch(() => setAddress(null))
       .finally(() => setLoading(false));
   }, [stop.location.lat, stop.location.lng]);
@@ -853,8 +850,9 @@ export const MapView: React.FC<MapViewProps> = ({
     setTimeout(() => document.body.classList.remove('print-map-only'), 500);
   };
 
-  // --- SPRINT 3: GEOCODING & ADRESSES ---
-  const [addressCache, setAddressCache] = useState<Record<string, string>>({});
+  // --- GEOCODING & ADRESSES ---
+  // Reverse geocoding (coord → adresse) : voir `utils/geocoding.ts`
+  // (cache localStorage 24 h, backend /fleet/geocode).
   const [searchAddress, setSearchAddress] = useState('');
   const [isSearchingAddress, setIsSearchingAddress] = useState(false);
 
@@ -1016,29 +1014,9 @@ export const MapView: React.FC<MapViewProps> = ({
     };
   }, [vehicles, liveAlerts]);
 
-  // --- SPRINT 3: GEOCODING ---
-  const geocodeAddress = async (lat: number, lng: number): Promise<string> => {
-    const cacheKey = `${lat.toFixed(4)},${lng.toFixed(4)}`;
-    if (addressCache[cacheKey]) return addressCache[cacheKey];
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lng=${lng}&zoom=18&addressdetails=1`,
-        { headers: { 'Accept-Language': 'fr' } }
-      );
-      const data = await response.json();
-      const address = data.display_name?.split(',').slice(0, 3).join(', ') || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-      setAddressCache((prev) => {
-        const entries = Object.entries(prev);
-        const trimmed = entries.length >= 200 ? Object.fromEntries(entries.slice(-199)) : prev;
-        return { ...trimmed, [cacheKey]: address };
-      });
-      return address;
-    } catch {
-      return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-    }
-  };
-
+  // Forward search (adresse → coord) : appel direct Nominatim.
+  // TODO Sprint 3 backend : brancher sur /fleet/geocode/search une fois l'endpoint
+  // VPS disponible (Redis cache + rate-limit centralisé côté backend).
   const searchAddressLocation = async () => {
     if (!searchAddress.trim() || isSearchingAddress) return;
     // Debounce: ignore if a request was triggered in the last 1 second
