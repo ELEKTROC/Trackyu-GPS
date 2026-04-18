@@ -152,14 +152,19 @@ Plus utile pour l'utilisateur : `"500m de Agence Cocody"` plutôt que `"Rue 12, 
 
 - Fallback sur nom de geofence (P3) — nécessite d'abord d'ajouter `geofence?: string` sur `Vehicle` mobile et de le pousser côté backend socket
 
-### Sprint 2 — Qualité & uniformisation (2-3h)
+### Sprint 2 — Qualité & uniformisation — ✅ DONE (commit f855018, 2026-04-18)
 
-**Livrables** :
+**Livré** :
 
-- Cache persistant mobile : wrapper React Query `persister` AsyncStorage (ou Map LRU custom)
-- Cache persistant web : localStorage keyé par `lat.toFixed(4),lng.toFixed(4)`
-- Remplacement Nominatim direct dans `MapView.tsx` L1020 et L1053 par `/fleet/geocode` (resp. un futur `/fleet/geocode/search`)
-- Extraction du helper `formatShortAddress` dans un module partagé `utils/geocoding.ts` utilisé web + mobile
+- Cache persistant mobile : `shouldDehydrateQuery` du `PersistQueryClientProvider` ([App.tsx:170-171](trackyu-mobile-expo/src/App.tsx#L170-L171)) whitelist désormais les queries `['geocode', ...]`. Adresses survivent au redémarrage pendant 24 h (`maxAge`). Sécurité préservée : GPS/factures/tickets restent en mémoire.
+- Cache persistant web : `utils/geocoding.ts` expose `geocodeCoordCached(lat, lng, headers)` — cache localStorage 24 h keyé par `lat.toFixed(4),lng.toFixed(4)`. Survit aux reloads.
+- Helpers partagés web : nouveau module [utils/geocoding.ts](utils/geocoding.ts) (miroir du mobile) avec `formatShortAddress`, `formatCoords`, `hasValidCoords`, `geocodeCoordCached`.
+- `GeocodedStopPopup` ([MapView.tsx:241-248](features/map/components/MapView.tsx#L241-L248)) refactoré pour utiliser `geocodeCoordCached` + `formatShortAddress`.
+- Dead code supprimé : `geocodeAddress()` L1020 + state `addressCache` L857 (fonction jamais appelée, notée M17 audits antérieurs).
+
+**Non livré (chantier Sprint 3 backend)** :
+
+- `searchAddressLocation` ([MapView.tsx:1042](features/map/components/MapView.tsx#L1042)) laissé en direct Nominatim — forward search (adresse → coord), nécessite un endpoint backend `/fleet/geocode/search?q=...` qui n'existe pas encore. TODO ajouté dans le code.
 
 ### Sprint 3 — Backend (via script Python, hors Sprint 1/2)
 
@@ -176,8 +181,7 @@ Plus utile pour l'utilisateur : `"500m de Agence Cocody"` plutôt que `"Rue 12, 
 
 - ✅ `0a03d91` — docs(audit): AUDIT_GEOCODING — état initial + plan (2026-04-18)
 - ✅ `255f81a` — feat(mobile): GeocodedAddress component + lazy geocode fallback (Sprint 1) (2026-04-18)
-- ⏳ `refactor(web): MapView utilise /fleet/geocode au lieu de Nominatim direct + cache localStorage` — Sprint 2
-- ⏳ `feat(mobile): cache persistant AsyncStorage pour geocode queries` — Sprint 2
+- ✅ `f855018` — feat(geocoding): cache persistant web + whitelist mobile (Sprint 2) (2026-04-18)
 
 ---
 
