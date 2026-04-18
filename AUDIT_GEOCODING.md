@@ -128,22 +128,29 @@ Plus utile pour l'utilisateur : `"500m de Agence Cocody"` plutôt que `"Rue 12, 
 
 ## Plan de correction
 
-### Sprint 1 — Mobile P1/P2/P3 (1-2h)
+### Sprint 1 — Mobile P1/P2 — ✅ DONE (commit 255f81a, 2026-04-18)
 
-**Livrables** :
+**Livré** :
 
-- Composant réutilisable `<GeocodedAddress lat lng fallback geofence style numberOfLines />`
-- Helper `formatShortAddress(displayName)` extrait les 3 premiers segments
-- Remplacement des 3 endroits mobile (FleetScreen, VehicleDetailScreen, DashboardScreen)
-- Fallback geofence sur tous ces écrans
+- Composant réutilisable `<GeocodedAddress lat lng fallbackAddress style numberOfLines />` dans `src/components/GeocodedAddress.tsx`
+- Helpers partagés dans `src/utils/geocoding.ts` :
+  - `formatShortAddress(displayName)` : 3 premiers segments Nominatim
+  - `formatCoords(lat, lng)` : affichage coords 4 décimales
+  - `hasValidCoords(lat, lng)` : type guard (exclut 0,0 et hors bornes)
+- Intégration `FleetScreen.tsx` L448-458 : plus de coords brutes dans la liste
+- Intégration `VehicleDetailScreen.tsx` L1300-1312 : prop `valueNode` ajoutée à `InfoRow`, plus de "–"
+- Intégration `DashboardScreen.tsx` L2740-2750 : adresse toujours affichée (ou coords/géocodage)
 
-**Comportement attendu** :
+**Comportement livré** :
 
-1. Si `fallback` (address backend) présent → affiche directement
-2. Sinon si coordonnées valides → lazy `geocodeCoord` via React Query avec `staleTime: Infinity`
-3. Pendant le fetch → "Géocodage…" (petit texte gris)
-4. Si échec ou pas de coords → fallback sur `geofence` puis "Localisation inconnue"
-5. Tous les affichages passent par `formatShortAddress` pour raccourcir
+1. Si `fallbackAddress` (backend `vehicle.address`) présent → `formatShortAddress` → affiche
+2. Sinon si coords valides → lazy `vehiclesApi.geocodeCoord` via React Query (`staleTime: Infinity`, `queryKey` par lat/lng arrondis 4 décimales ≈ 10 m)
+3. Pendant le fetch → "Géocodage…" italique muted
+4. Si échec → coords monospace ; si pas de coords → "Localisation inconnue"
+
+**Non livré (reporté — pas de champ `geofence` sur Vehicle mobile)** :
+
+- Fallback sur nom de geofence (P3) — nécessite d'abord d'ajouter `geofence?: string` sur `Vehicle` mobile et de le pousser côté backend socket
 
 ### Sprint 2 — Qualité & uniformisation (2-3h)
 
@@ -165,12 +172,12 @@ Plus utile pour l'utilisateur : `"500m de Agence Cocody"` plutôt que `"Rue 12, 
 
 ---
 
-## Commits prévus
+## Commits
 
-- `feat(mobile): composant GeocodedAddress + helper formatShortAddress` — Sprint 1
-- `fix(mobile): lazy geocode + fallback geofence sur FleetScreen/VehicleDetail/Dashboard` — Sprint 1
-- `refactor(web): MapView utilise /fleet/geocode au lieu de Nominatim direct + cache localStorage` — Sprint 2
-- `docs: AUDIT_GEOCODING — état initial + plan` — maintenant
+- ✅ `0a03d91` — docs(audit): AUDIT_GEOCODING — état initial + plan (2026-04-18)
+- ✅ `255f81a` — feat(mobile): GeocodedAddress component + lazy geocode fallback (Sprint 1) (2026-04-18)
+- ⏳ `refactor(web): MapView utilise /fleet/geocode au lieu de Nominatim direct + cache localStorage` — Sprint 2
+- ⏳ `feat(mobile): cache persistant AsyncStorage pour geocode queries` — Sprint 2
 
 ---
 
