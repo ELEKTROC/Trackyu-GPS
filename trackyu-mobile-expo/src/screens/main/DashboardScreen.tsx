@@ -105,6 +105,17 @@ function getDateRange(period: Period): { startDate: string; endDate: string } {
   return { startDate: fmt(start), endDate: fmt(end) };
 }
 
+// Plage semaine courante clippée (Lundi 00:00 → aujourd'hui)
+function getCurrentWeekRange(): { startDate: string; endDate: string } {
+  const now = new Date();
+  const day = now.getDay(); // 0=Dim, 1=Lun, ..., 6=Sam
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  const fmt = (d: Date) => d.toISOString().split('T')[0];
+  return { startDate: fmt(monday), endDate: fmt(now) };
+}
+
 // ── Admin period filter ────────────────────────────────────────────────────────
 type AdminPeriod = 'today' | 'month' | 'year';
 
@@ -684,7 +695,6 @@ function ClientDashboard({
   const user = useAuthStore((st) => st.user);
   const { width: screenWidth } = useWindowDimensions();
   const chartWidth = screenWidth - 64;
-  const period: Period = '7d';
   const [pickerVisible, setPickerVisible] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [immoVisible, setImmoVisible] = useState(false);
@@ -692,7 +702,7 @@ function ClientDashboard({
   const [activityFilter, setActivityFilter] = useState<'today' | 'week' | 'month' | 'all'>('all');
   const [activityExpanded, setActivityExpanded] = useState(false);
 
-  const { startDate, endDate } = getDateRange(period);
+  const { startDate, endDate } = getCurrentWeekRange();
 
   // Portal dashboard (factures, tickets, interventions, abonnements)
   const { data: portalData } = useQuery({
@@ -792,7 +802,7 @@ function ClientDashboard({
   // Badge non lues
   const unreadCount = allAlerts.filter((a) => !a.isRead).length;
 
-  // Distance totale de la période (7 jours) + distance du jour
+  // Distance totale semaine courante (Lun → Dim) + distance du jour
   const totalDistancePeriod = dailyRangeData.reduce((s, d) => s + d.dist, 0);
   const todayKey = new Date().toISOString().split('T')[0];
   const todayDistance = dailyRangeData.find((d) => d.date === todayKey)?.dist ?? 0;
@@ -1102,7 +1112,7 @@ function ClientDashboard({
             </TouchableOpacity>
           )}
 
-          {/* Lien Historique */}
+          {/* Lien Voir ma flotte */}
           {vehicles.length > 0 && (
             <TouchableOpacity
               style={{
@@ -1115,21 +1125,12 @@ function ClientDashboard({
                 borderTopWidth: 1,
                 borderTopColor: theme.border,
               }}
-              onPress={() => {
-                if (vehicles.length === 1) {
-                  nav.navigate('VehicleHistory', {
-                    vehicleId: vehicles[0].id,
-                    plate: vehicles[0].plate ?? '',
-                    vehicleType: vehicles[0].type ?? 'car',
-                  });
-                } else {
-                  setHistoryPickerVisible(true);
-                }
-              }}
+              onPress={() => nav.navigate('Main', { screen: 'Fleet' } as never)}
               activeOpacity={0.75}
+              accessibilityLabel="Voir ma flotte"
             >
-              <History size={14} color={theme.primary} />
-              <Text style={{ fontSize: 13, fontWeight: '600', color: theme.primary }}>Voir l'historique</Text>
+              <Truck size={14} color={theme.primary} />
+              <Text style={{ fontSize: 13, fontWeight: '600', color: theme.primary }}>Voir ma flotte</Text>
               <ChevronRight size={13} color={theme.primary} />
             </TouchableOpacity>
           )}
@@ -1166,7 +1167,7 @@ function ClientDashboard({
                 <Text style={{ fontSize: 12, fontWeight: '500', color: theme.text.muted }}> km</Text>
               </Text>
             </View>
-            {/* 7 jours */}
+            {/* Cette semaine (Lun → Dim) */}
             <View
               style={{
                 flex: 1,
@@ -1177,7 +1178,7 @@ function ClientDashboard({
                 borderColor: theme.border,
               }}
             >
-              <Text style={{ fontSize: 11, color: theme.text.muted, marginBottom: 2 }}>7 derniers jours</Text>
+              <Text style={{ fontSize: 11, color: theme.text.muted, marginBottom: 2 }}>Cette semaine (Lun–Dim)</Text>
               <Text style={{ fontSize: 20, fontWeight: '800', color: theme.text.primary }}>
                 {totalDistancePeriod >= 1000
                   ? `${(totalDistancePeriod / 1000).toFixed(1)}k`
@@ -1197,6 +1198,39 @@ function ClientDashboard({
             <Text style={{ fontSize: 12, color: theme.text.muted, marginTop: 8 }}>
               Repassez demain pour voir l'évolution sur plusieurs jours.
             </Text>
+          )}
+
+          {/* Lien Historique */}
+          {vehicles.length > 0 && (
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6,
+                marginTop: 12,
+                paddingTop: 12,
+                borderTopWidth: 1,
+                borderTopColor: theme.border,
+              }}
+              onPress={() => {
+                if (vehicles.length === 1) {
+                  nav.navigate('VehicleHistory', {
+                    vehicleId: vehicles[0].id,
+                    plate: vehicles[0].plate ?? '',
+                    vehicleType: vehicles[0].type ?? 'car',
+                  });
+                } else {
+                  setHistoryPickerVisible(true);
+                }
+              }}
+              activeOpacity={0.75}
+              accessibilityLabel="Voir l'historique"
+            >
+              <History size={14} color={theme.primary} />
+              <Text style={{ fontSize: 13, fontWeight: '600', color: theme.primary }}>Voir l'historique</Text>
+              <ChevronRight size={13} color={theme.primary} />
+            </TouchableOpacity>
           )}
         </View>
 
