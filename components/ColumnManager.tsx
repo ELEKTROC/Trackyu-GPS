@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LayoutTemplate, X, Check, RotateCcw } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 export interface ColumnDef {
   id: string;
@@ -41,8 +42,10 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
   variant = 'icon',
   buttonClassName,
   position = 'right',
-  title = 'Colonnes',
+  title,
 }) => {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t('shared.columns.title');
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -104,10 +107,10 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
           color: isActive ? 'var(--primary)' : 'var(--text-secondary)',
           backgroundColor: isOpen ? 'var(--bg-elevated)' : undefined,
         }}
-        title="Gérer les colonnes"
+        title={t('shared.columns.manage')}
       >
         <LayoutTemplate className="w-4 h-4" />
-        {variant === 'button' && <span>Colonnes</span>}
+        {variant === 'button' && <span>{resolvedTitle}</span>}
         {hasChanges && variant === 'icon' && (
           <span
             className="absolute -top-1 -right-1 w-4 h-4 text-white text-[10px] rounded-full flex items-center justify-center"
@@ -124,19 +127,19 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
         >
           {/* Header */}
           <div className="flex items-center justify-between p-3 border-b border-[var(--border)] bg-[var(--bg-elevated)]">
-            <span className="section-title tracking-wider">{title}</span>
+            <span className="section-title tracking-wider">{resolvedTitle}</span>
             <div className="flex items-center gap-1">
               <button
                 onClick={handleReset}
                 className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--border)] rounded transition-colors"
-                title="Réinitialiser"
+                title={t('shared.columns.reset')}
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--border)] rounded transition-colors"
-                title="Fermer"
+                title={t('shared.columns.close')}
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -209,7 +212,7 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
                   </span>
                   {isLocked && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-elevated)] text-[var(--text-muted)]">
-                      Requis
+                      {t('shared.columns.required')}
                     </span>
                   )}
                 </label>
@@ -220,7 +223,7 @@ export const ColumnManager: React.FC<ColumnManagerProps> = ({
           {/* Footer */}
           <div className="px-3 py-2 border-t border-[var(--border)] bg-[var(--bg-elevated)]">
             <span className="text-xs text-[var(--text-muted)]">
-              {visible.length} / {columns.length} colonnes affichées
+              {t('shared.columns.displayedCount', { visible: visible.length, total: columns.length })}
             </span>
           </div>
         </div>

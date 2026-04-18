@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Vehicle } from '../../../types';
 import { VehicleStatus } from '../../../types';
+import { useTranslation } from '../../../i18n';
 import {
   CheckSquare,
   Square,
@@ -56,23 +57,24 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
       displayNameOptions: ['name'],
     },
   }) => {
+    const { t } = useTranslation();
     const [isHovered, setIsHovered] = useState(false);
     const isOnline = vehicle.status !== VehicleStatus.OFFLINE;
     const isIgnitionOn = vehicle.status === VehicleStatus.MOVING || vehicle.status === VehicleStatus.IDLE;
 
-    let statusText = 'Hors ligne';
+    let statusText = t('map.vehicleCard.offline');
     let statusColorClass = 'text-[var(--text-secondary)]';
     let iconBgHex = '#64748b'; // offline gray
     if (vehicle.status === VehicleStatus.MOVING) {
-      statusText = 'En mouvement';
+      statusText = t('dashboard.fleetRealtime.status.moving');
       statusColorClass = 'text-green-600';
       iconBgHex = '#22c55e';
     } else if (vehicle.status === VehicleStatus.IDLE) {
-      statusText = 'Ralenti';
+      statusText = t('dashboard.fleetRealtime.status.idle');
       statusColorClass = 'text-orange-600';
       iconBgHex = '#f97316';
     } else if (vehicle.status === VehicleStatus.STOPPED) {
-      statusText = 'Arrêté';
+      statusText = t('dashboard.fleetRealtime.status.stopped');
       statusColorClass = 'text-red-600';
       iconBgHex = '#ef4444';
     }
@@ -88,7 +90,9 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
             ? 'text-orange-500'
             : 'text-red-500';
     const fuelTooltip =
-      fuelLevel !== undefined && fuelLevel !== null ? `Carburant : ${Math.round(fuelLevel)}%` : 'Carburant inconnu';
+      fuelLevel !== undefined && fuelLevel !== null
+        ? t('map.vehicleCard.fuelLabel', { pct: Math.round(fuelLevel) })
+        : t('map.vehicleCard.fuelUnknown');
 
     // Vehicle Type Icon Logic
     const getVehicleIcon = () => {
@@ -130,11 +134,11 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
     const getRelativeTime = (date: Date) => {
       if (!date) return '';
       const diff = (new Date().getTime() - new Date(date).getTime()) / 1000;
-      if (diff < 60) return "À l'instant";
-      if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-      if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
+      if (diff < 60) return t('map.vehicleCard.justNow');
+      if (diff < 3600) return t('map.vehicleCard.minAgo', { min: Math.floor(diff / 60) });
+      if (diff < 86400) return t('map.vehicleCard.hourAgo', { h: Math.floor(diff / 3600) });
       const days = Math.floor(diff / 86400);
-      return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
+      return t(days === 1 ? 'map.vehicleCard.dayAgo_one' : 'map.vehicleCard.dayAgo_other', { days });
     };
 
     const getDisplayName = () => {
@@ -195,7 +199,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
                         onEdit(vehicle);
                       }}
                       className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded transition-colors"
-                      title="Modifier le véhicule"
+                      title={t('map.vehicleCard.editTooltip')}
                     >
                       <Pencil className="w-3 h-3" />
                     </button>
@@ -222,7 +226,7 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
             </div>
 
             <div className="flex items-center gap-3">
-              <span title={isOnline ? 'Connecté' : 'Hors ligne'}>
+              <span title={isOnline ? t('map.vehicleCard.connected') : t('map.vehicleCard.offline')}>
                 <Signal
                   className={`w-3 h-3 ${isOnline ? 'text-green-500' : 'text-[var(--text-muted)] dark:text-[var(--text-secondary)]'}`}
                 />
@@ -235,17 +239,17 @@ export const VehicleListCard: React.FC<VehicleListCardProps> = React.memo(
               )}
 
               {config.showIgnition && (
-                <span title={isIgnitionOn ? 'Contact : Allumé' : 'Contact : Éteint'}>
+                <span title={isIgnitionOn ? t('map.vehicleCard.ignitionOn') : t('map.vehicleCard.ignitionOff')}>
                   <Key className={`w-3 h-3 ${isIgnitionOn ? 'text-orange-400' : 'text-[var(--text-secondary)]'}`} />
                 </span>
               )}
 
-              <span title={vehicle.isImmobilized ? 'Véhicule immobilisé' : 'Véhicule actif'}>
+              <span title={vehicle.isImmobilized ? t('map.vehicleCard.immobilized') : t('map.vehicleCard.active')}>
                 <Lock className={`w-3 h-3 ${vehicle.isImmobilized ? 'text-red-500' : 'text-green-500'}`} />
               </span>
 
               {vehicle.isBrokenDown && (
-                <span title="En panne">
+                <span title={t('map.vehicleCard.brokenDown')}>
                   <Wrench className="w-3 h-3 text-red-500 animate-pulse" />
                 </span>
               )}

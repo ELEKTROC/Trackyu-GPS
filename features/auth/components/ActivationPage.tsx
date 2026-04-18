@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Lock, CheckCircle, AlertCircle, Loader2, Eye, EyeOff, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useTranslation } from '../../../i18n';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -13,6 +14,7 @@ interface TokenData {
 type PageState = 'loading' | 'form' | 'success' | 'error';
 
 export const ActivationPage: React.FC = () => {
+  const { t } = useTranslation();
   const [pageState, setPageState] = useState<PageState>('loading');
   const [tokenData, setTokenData] = useState<TokenData | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -28,11 +30,12 @@ export const ActivationPage: React.FC = () => {
 
   useEffect(() => {
     if (!token) {
-      setErrorMessage("Aucun token d'activation trouvé dans l'URL.");
+      setErrorMessage(t('auth.activation.noToken'));
       setPageState('error');
       return;
     }
     validateToken(token);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const validateToken = async (tkn: string) => {
@@ -45,14 +48,14 @@ export const ActivationPage: React.FC = () => {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.message || 'Token invalide ou expiré');
+        throw new Error(data?.message || t('auth.activation.tokenInvalid'));
       }
 
       const data: TokenData = await response.json();
       setTokenData(data);
       setPageState('form');
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Impossible de valider le token');
+      setErrorMessage(err instanceof Error ? err.message : t('auth.activation.tokenValidationFailed'));
       setPageState('error');
     }
   };
@@ -62,12 +65,12 @@ export const ActivationPage: React.FC = () => {
     setFormError('');
 
     if (password.length < 8) {
-      setFormError('Le mot de passe doit contenir au moins 8 caractères.');
+      setFormError(t('auth.activation.tooShort'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setFormError('Les mots de passe ne correspondent pas.');
+      setFormError(t('auth.activation.mismatch'));
       return;
     }
 
@@ -82,12 +85,12 @@ export const ActivationPage: React.FC = () => {
 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        throw new Error(data?.message || "Erreur lors de l'activation");
+        throw new Error(data?.message || t('auth.activation.activationError'));
       }
 
       setPageState('success');
     } catch (err: unknown) {
-      setFormError(err instanceof Error ? err.message : "Erreur lors de l'activation du compte");
+      setFormError(err instanceof Error ? err.message : t('auth.activation.activationErrorGeneric'));
     } finally {
       setIsSubmitting(false);
     }
@@ -113,18 +116,16 @@ export const ActivationPage: React.FC = () => {
             </div>
             <span className="text-3xl font-bold tracking-tight">TrackYU GPS</span>
           </div>
-          <h1 className="text-4xl font-bold leading-tight mb-4">Activation de votre compte</h1>
-          <p className="text-lg text-white/80 leading-relaxed">
-            Votre demande d'inscription a été approuvée. Définissez votre mot de passe pour accéder à la plateforme.
-          </p>
+          <h1 className="text-4xl font-bold leading-tight mb-4">{t('auth.activation.brandingTitle')}</h1>
+          <p className="text-lg text-white/80 leading-relaxed">{t('auth.activation.brandingSubtitle')}</p>
           <div className="flex flex-wrap gap-3 mt-8">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur rounded-lg border border-white/10">
               <ShieldCheck className="w-5 h-5 text-green-400" />
-              <span className="text-sm font-medium">Compte vérifié</span>
+              <span className="text-sm font-medium">{t('auth.activation.badgeVerified')}</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur rounded-lg border border-white/10">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span className="text-sm font-medium">Prêt à utiliser</span>
+              <span className="text-sm font-medium">{t('auth.activation.badgeReady')}</span>
             </div>
           </div>
         </div>
@@ -153,7 +154,7 @@ export const ActivationPage: React.FC = () => {
             {pageState === 'loading' && (
               <div className="flex flex-col items-center justify-center py-16 space-y-4">
                 <Loader2 className="w-12 h-12 animate-spin" style={{ color: 'var(--primary)' }} />
-                <p className="text-[var(--text-secondary)] text-lg">Vérification du lien d'activation...</p>
+                <p className="text-[var(--text-secondary)] text-lg">{t('auth.activation.loading')}</p>
               </div>
             )}
 
@@ -164,7 +165,7 @@ export const ActivationPage: React.FC = () => {
                   <div className="p-4 bg-red-100 rounded-full">
                     <AlertCircle className="w-12 h-12 text-red-600" />
                   </div>
-                  <h2 className="page-title">Lien invalide</h2>
+                  <h2 className="page-title">{t('auth.activation.invalidTitle')}</h2>
                   <p className="text-[var(--text-secondary)] text-center max-w-sm">{errorMessage}</p>
                 </div>
                 <button
@@ -174,7 +175,7 @@ export const ActivationPage: React.FC = () => {
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-light)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary)')}
                 >
-                  Retour à la connexion
+                  {t('auth.activation.backToLogin')}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -187,10 +188,9 @@ export const ActivationPage: React.FC = () => {
                   <div className="p-4 bg-green-100 rounded-full">
                     <CheckCircle className="w-12 h-12 text-green-600" />
                   </div>
-                  <h2 className="page-title">Compte activé !</h2>
+                  <h2 className="page-title">{t('auth.activation.successTitle')}</h2>
                   <p className="text-[var(--text-secondary)] text-center max-w-sm">
-                    Votre compte a été activé avec succès. Vous pouvez maintenant vous connecter avec votre email et le
-                    mot de passe que vous venez de définir.
+                    {t('auth.activation.successBody')}
                   </p>
                 </div>
                 <button
@@ -200,7 +200,7 @@ export const ActivationPage: React.FC = () => {
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary-light)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--primary)')}
                 >
-                  Se connecter
+                  {t('auth.activation.goToLogin')}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
@@ -209,15 +209,15 @@ export const ActivationPage: React.FC = () => {
             {/* Form state */}
             {pageState === 'form' && tokenData && (
               <>
-                <h2 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">Activez votre compte</h2>
-                <p className="text-[var(--text-secondary)] mt-2">
-                  Bienvenue <span className="font-medium text-[var(--text-primary)]">{tokenData.name}</span> !
-                  Définissez votre mot de passe pour accéder à{' '}
-                  <span className="font-medium" style={{ color: 'var(--primary)' }}>
-                    {tokenData.tenantName}
-                  </span>
-                  .
-                </p>
+                <h2 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">
+                  {t('auth.activation.formTitle')}
+                </h2>
+                <p
+                  className="text-[var(--text-secondary)] mt-2"
+                  dangerouslySetInnerHTML={{
+                    __html: t('auth.activation.welcomeNamed', { name: tokenData.name, tenant: tokenData.tenantName }),
+                  }}
+                />
 
                 {/* Account info card */}
                 <div
@@ -225,17 +225,17 @@ export const ActivationPage: React.FC = () => {
                   style={{ backgroundColor: 'var(--primary-dim)', border: '1px solid var(--primary)' }}
                 >
                   <div className="flex justify-between text-sm">
-                    <span className="text-[var(--text-secondary)]">Email</span>
+                    <span className="text-[var(--text-secondary)]">{t('auth.activation.infoEmail')}</span>
                     <span className="font-medium text-[var(--text-primary)]">{tokenData.email}</span>
                   </div>
                   {tokenData.companyName && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-[var(--text-secondary)]">Entreprise</span>
+                      <span className="text-[var(--text-secondary)]">{t('auth.activation.infoCompany')}</span>
                       <span className="font-medium text-[var(--text-primary)]">{tokenData.companyName}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-sm">
-                    <span className="text-[var(--text-secondary)]">Plateforme</span>
+                    <span className="text-[var(--text-secondary)]">{t('auth.activation.infoPlatform')}</span>
                     <span className="font-medium text-[var(--text-primary)]">{tokenData.tenantName}</span>
                   </div>
                 </div>
@@ -250,7 +250,9 @@ export const ActivationPage: React.FC = () => {
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">Mot de passe</label>
+                    <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
+                      {t('auth.activation.passwordLabel')}
+                    </label>
                     <div className="relative group">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)] group-focus-within:text-[var(--primary)] transition-colors" />
                       <input
@@ -260,7 +262,7 @@ export const ActivationPage: React.FC = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]"
-                        placeholder="Minimum 8 caractères"
+                        placeholder={t('auth.activation.passwordPlaceholder')}
                       />
                       <button
                         type="button"
@@ -274,7 +276,7 @@ export const ActivationPage: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                      Confirmer le mot de passe
+                      {t('auth.activation.confirmLabel')}
                     </label>
                     <div className="relative group">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)] group-focus-within:text-[var(--primary)] transition-colors" />
@@ -285,7 +287,7 @@ export const ActivationPage: React.FC = () => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         className="w-full pl-10 pr-12 py-3 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-transparent transition-all shadow-sm text-[var(--text-primary)] placeholder-[var(--text-muted)]"
-                        placeholder="Retapez votre mot de passe"
+                        placeholder={t('auth.activation.confirmPlaceholder')}
                       />
                       <button
                         type="button"
@@ -303,13 +305,13 @@ export const ActivationPage: React.FC = () => {
                       className={`flex items-center gap-2 text-xs ${password.length >= 8 ? 'text-green-600' : 'text-[var(--text-muted)]'}`}
                     >
                       <CheckCircle className="w-3.5 h-3.5" />
-                      <span>Au moins 8 caractères</span>
+                      <span>{t('auth.activation.hintLength')}</span>
                     </div>
                     <div
                       className={`flex items-center gap-2 text-xs ${password && password === confirmPassword ? 'text-green-600' : 'text-[var(--text-muted)]'}`}
                     >
                       <CheckCircle className="w-3.5 h-3.5" />
-                      <span>Les mots de passe correspondent</span>
+                      <span>{t('auth.activation.hintMatch')}</span>
                     </div>
                   </div>
 
@@ -327,11 +329,11 @@ export const ActivationPage: React.FC = () => {
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-5 h-5 animate-spin" />
-                        Activation en cours...
+                        {t('auth.activation.submitting')}
                       </>
                     ) : (
                       <>
-                        Activer mon compte
+                        {t('auth.activation.submit')}
                         <ArrowRight className="w-5 h-5" />
                       </>
                     )}

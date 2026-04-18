@@ -48,7 +48,9 @@ import { MaintenanceModalContent, FuelModalContent, ViolationsModalContent } fro
 import { useDataContext } from '../../../contexts/DataContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
+import { computeVehicleStats, formatDurationHHMM, formatEngineHours } from '../../../utils/computeVehicleStats';
 import { ListItemSkeleton, StatsCardSkeleton } from '../../../components/Skeleton';
+import { useTranslation } from '../../../i18n';
 
 interface VehicleDetailPanelProps {
   vehicle: Vehicle;
@@ -84,6 +86,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   variant: _variant = 'drawer',
   onReplay,
 }) => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const {
     getFuelRecords,
@@ -169,108 +172,20 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   }, [longFuelHistory]);
 
   const stats = useMemo(() => {
-    let movingMs = 0;
-    let idleMs = 0;
-    let stoppedMs = 0;
-    let statusDurationMs = 0;
-    let totalDistance = 0;
-    let offlineMs = 0;
+    const now = new Date();
+    const dayStart = new Date(now);
+    dayStart.setHours(0, 0, 0, 0);
 
-    // Haversine distance (km) — same formula as ReplayControlPanel
-    const haversine = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-      const R = 6371;
-      const dLat = ((lat2 - lat1) * Math.PI) / 180;
-      const dLon = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    };
-
-    if (history.length > 0) {
-      // Helper: get timestamp from either field name
-      const getTs = (p: any) => new Date(p.time ?? p.timestamp).getTime();
-
-      // Helper: derive status from speed/ignition (no status field in history points)
-      const getPointStatus = (p: any): VehicleStatus => {
-        const speed = typeof p.speed === 'number' ? p.speed : parseFloat(p.speed ?? '0') || 0;
-        if (speed >= 2) return VehicleStatus.MOVING;
-        // ignition may come as boolean, 'true'/'t', or null
-        const ign = p.ignition;
-        const ignitionOn = ign === true || ign === 'true' || ign === 't';
-        if (ignitionOn) return VehicleStatus.IDLE;
-        return VehicleStatus.STOPPED;
-      };
-
-      // Sort by time
-      const sorted = [...history].sort((a, b) => getTs(a) - getTs(b));
-
-      // 1. Calculate Daily Totals + Distance + Offline
-      const GAP_DIST_MS = 10 * 60 * 1000; // gap > 10min → don't count distance
-      const GAP_OFFLINE_MS = 30 * 60 * 1000; // gap > 30min → offline period
-      for (let i = 0; i < sorted.length - 1; i++) {
-        const current = sorted[i];
-        const next = sorted[i + 1];
-        const dt = getTs(next) - getTs(current);
-        const status = getPointStatus(current);
-
-        if (status === VehicleStatus.MOVING) movingMs += dt;
-        else if (status === VehicleStatus.IDLE) idleMs += dt;
-        else stoppedMs += dt;
-
-        // Distance: skip gaps > 10min (GPS disconnect)
-        if (dt < GAP_DIST_MS) {
-          const loc1 = current.location || { lat: (current as any).lat, lng: (current as any).lng };
-          const loc2 = next.location || { lat: (next as any).lat, lng: (next as any).lng };
-          if (loc1?.lat && loc2?.lat) {
-            totalDistance += haversine(loc1.lat, loc1.lng, loc2.lat, loc2.lng);
-          }
-        }
-
-        // Offline: gaps > 30min
-        if (dt > GAP_OFFLINE_MS) {
-          offlineMs += dt;
-        }
-      }
-
-      // Add time from last point to now (if today)
-      const last = sorted[sorted.length - 1];
-      const now = new Date();
-      if (new Date(getTs(last)).toDateString() === now.toDateString()) {
-        const duration = Math.min(now.getTime() - getTs(last), 30 * 60 * 1000); // cap at 30min
-        const lastStatus = getPointStatus(last);
-        if (lastStatus === VehicleStatus.MOVING) movingMs += duration;
-        else if (lastStatus === VehicleStatus.IDLE) idleMs += duration;
-        else stoppedMs += duration;
-      }
-
-      // 2. Calculate Current Status Duration (how long in current status)
-      let lastChangeTime = getTs(last);
-      for (let i = sorted.length - 1; i >= 0; i--) {
-        if (getPointStatus(sorted[i]) !== vehicle.status) break;
-        lastChangeTime = getTs(sorted[i]);
-      }
-      statusDurationMs = new Date().getTime() - lastChangeTime;
-    }
-
-    const formatDuration = (ms: number) => {
-      const h = Math.floor(ms / 3600000);
-      const m = Math.floor((ms % 3600000) / 60000);
-      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-    };
-
-    const engineMs = movingMs + idleMs;
-    const engineH = Math.floor(engineMs / 3600000);
-    const engineMin = Math.floor((engineMs % 3600000) / 60000);
+    const s = computeVehicleStats(history, vehicle.status, dayStart, now);
 
     return {
-      drivingTime: formatDuration(movingMs),
-      idleTime: formatDuration(idleMs),
-      stoppedTime: formatDuration(stoppedMs),
-      offlineTime: formatDuration(offlineMs),
-      statusDuration: formatDuration(statusDurationMs),
-      engineHours: engineMs > 0 ? `${engineH}h${engineMin > 0 ? ` ${engineMin}min` : ''}` : 'N/A',
-      totalDistance,
+      drivingTime: formatDurationHHMM(s.movingMs),
+      idleTime: formatDurationHHMM(s.idleMs),
+      stoppedTime: formatDurationHHMM(s.stoppedMs),
+      offlineTime: formatDurationHHMM(s.offlineMs),
+      statusDuration: formatDurationHHMM(s.statusDurationMs),
+      engineHours: formatEngineHours(s.movingMs + s.idleMs),
+      totalDistance: s.totalDistance,
     };
   }, [history, vehicle.status]);
 
@@ -303,17 +218,17 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   const [hiddenFields, setHiddenFields] = useState<Set<string>>(() => loadSavedConfig().hiddenFields);
 
   const defaultBlocks: BlockConfig[] = [
-    { id: 'photo', label: 'Photo Véhicule', visible: true, icon: Camera },
-    { id: 'activity', label: 'Activité du Jour', visible: true, icon: Clock },
-    { id: 'alerts', label: 'Alertes Système', visible: true, icon: Bell },
-    { id: 'violations', label: 'Violations Conduite', visible: true, icon: AlertOctagon },
-    { id: 'behavior', label: 'Comportement', visible: true, icon: TrendingDown },
-    { id: 'maintenance', label: 'Maintenance Prévue', visible: true, icon: Calendar },
-    { id: 'expenses', label: 'Dépenses', visible: true, icon: DollarSign },
-    { id: 'fuel', label: 'Carburant', visible: true, icon: Fuel },
-    { id: 'sensors', label: 'Capteurs & Technique', visible: true, icon: Activity },
-    { id: 'gps', label: 'Appareil GPS', visible: true, icon: Settings },
-    { id: 'device-history', label: 'Historique Balises', visible: true, icon: Cpu },
+    { id: 'photo', label: t('fleet.detailPanel.blocks.photo'), visible: true, icon: Camera },
+    { id: 'activity', label: t('fleet.detailPanel.blocks.activity'), visible: true, icon: Clock },
+    { id: 'alerts', label: t('fleet.detailPanel.blocks.alerts'), visible: true, icon: Bell },
+    { id: 'violations', label: t('fleet.detailPanel.blocks.violations'), visible: true, icon: AlertOctagon },
+    { id: 'behavior', label: t('fleet.detailPanel.blocks.behavior'), visible: true, icon: TrendingDown },
+    { id: 'maintenance', label: t('fleet.detailPanel.blocks.maintenance'), visible: true, icon: Calendar },
+    { id: 'expenses', label: t('fleet.detailPanel.blocks.expenses'), visible: true, icon: DollarSign },
+    { id: 'fuel', label: t('fleet.detailPanel.blocks.fuel'), visible: true, icon: Fuel },
+    { id: 'sensors', label: t('fleet.detailPanel.blocks.sensors'), visible: true, icon: Activity },
+    { id: 'gps', label: t('fleet.detailPanel.blocks.gps'), visible: true, icon: Settings },
+    { id: 'device-history', label: t('fleet.detailPanel.blocks.deviceHistory'), visible: true, icon: Cpu },
   ];
 
   // Appliquer l'ordre et la visibilité sauvegardés
@@ -397,10 +312,10 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
 
   // --- DONNÉES MOCKÉES & CALCULS ---
   const statusLabels = {
-    [VehicleStatus.MOVING]: 'EN MOUVEMENT',
-    [VehicleStatus.IDLE]: 'RALENTI',
-    [VehicleStatus.STOPPED]: 'ARRÊTÉ',
-    [VehicleStatus.OFFLINE]: 'HORS LIGNE',
+    [VehicleStatus.MOVING]: t('fleet.detailPanel.status.moving'),
+    [VehicleStatus.IDLE]: t('fleet.detailPanel.status.idle'),
+    [VehicleStatus.STOPPED]: t('fleet.detailPanel.status.stopped'),
+    [VehicleStatus.OFFLINE]: t('fleet.detailPanel.status.offline'),
   };
 
   const statusColors = {
@@ -541,7 +456,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
         if (alerts.length === 0)
           return (
             <div className="p-6 text-center text-sm text-[var(--text-muted)]">
-              Aucune alerte récente pour ce véhicule
+              {t('fleet.detailPanel.emptyStates.noAlerts')}
             </div>
           );
         return (
@@ -584,7 +499,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
         if (maintenanceRecords.length === 0)
           return (
             <div className="p-6 text-center text-sm text-[var(--text-muted)]">
-              Aucun entretien enregistré pour ce véhicule
+              {t('fleet.detailPanel.emptyStates.noMaintenance')}
             </div>
           );
         return (
@@ -620,7 +535,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
         if (fuelRecords.length === 0)
           return (
             <div className="p-6 text-center text-sm text-[var(--text-muted)]">
-              Aucun enregistrement carburant pour ce véhicule
+              {t('fleet.detailPanel.emptyStates.noFuel')}
             </div>
           );
         return (
@@ -709,8 +624,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
                 </span>
                 <button
                   onClick={() => navigator.clipboard.writeText(`${vehicle.location?.lat},${vehicle.location?.lng}`)}
-                  title="Copier les coordonnées"
-                  aria-label="Copier les coordonnées GPS"
+                  title={t('fleet.detailPanel.headerTooltips.copyCoords')}
+                  aria-label={t('fleet.detailPanel.headerTooltips.copyCoordsAria')}
                   className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
                 >
                   <Copy className="w-3 h-3" />
@@ -719,8 +634,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
                   href={`https://www.google.com/maps?q=${vehicle.location?.lat},${vehicle.location?.lng}`}
                   target="_blank"
                   rel="noreferrer"
-                  title="Ouvrir dans Google Maps"
-                  aria-label="Ouvrir la position dans Google Maps"
+                  title={t('fleet.detailPanel.headerTooltips.openInMaps')}
+                  aria-label={t('fleet.detailPanel.headerTooltips.openInMapsAria')}
                   className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
                 >
                   <ExternalLink className="w-3 h-3" />
@@ -732,16 +647,16 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             <button
               onClick={() => setIsConfigMode(!isConfigMode)}
               className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
-              title="Configurer l'affichage"
-              aria-label="Configurer l'affichage"
+              title={t('fleet.detailPanel.headerTooltips.configure')}
+              aria-label={t('fleet.detailPanel.headerTooltips.configure')}
             >
               <SlidersHorizontal className="w-4 h-4" />
             </button>
             <button
               onClick={onClose}
               className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-[var(--text-muted)]"
-              title="Fermer"
-              aria-label="Fermer le panneau"
+              title={t('fleet.detailPanel.headerTooltips.close')}
+              aria-label={t('fleet.detailPanel.headerTooltips.closeAria')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -784,11 +699,10 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       {isConfigMode && (
         <div className="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-b border-[var(--primary)] dark:border-[var(--primary)] px-4 py-2 text-xs text-[var(--primary)] dark:text-[var(--primary)] flex justify-between items-center">
           <span>
-            <Info className="w-3 h-3 inline mr-1" /> Mode Config : Cliquez sur l'œil pour masquer les éléments ou les
-            blocs.
+            <Info className="w-3 h-3 inline mr-1" /> {t('fleet.detailPanel.configBanner.message')}
           </span>
           <button onClick={() => setIsConfigMode(false)} className="font-bold hover:underline">
-            Terminé
+            {t('fleet.detailPanel.configBanner.done')}
           </button>
         </div>
       )}
@@ -813,7 +727,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
 
         {isConfigMode && blocks.every((b) => !b.visible) && (
           <div className="text-center p-8 text-[var(--text-muted)] border-2 border-dashed border-[var(--border)] rounded-lg">
-            Tous les blocs sont masqués.
+            {t('fleet.detailPanel.emptyStates.allHidden')}
           </div>
         )}
       </div>
@@ -826,11 +740,15 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               if (
                 await confirm({
                   message: vehicle.isImmobilized
-                    ? 'Voulez-vous vraiment réactiver le démarrage de ce véhicule ?'
-                    : 'ATTENTION : Voulez-vous immobiliser ce véhicule à distance ? Le moteur sera coupé au prochain arrêt.',
+                    ? t('fleet.detailPanel.immobilization.confirmReactivateMsg')
+                    : t('fleet.detailPanel.immobilization.confirmImmobilizeMsg'),
                   variant: vehicle.isImmobilized ? 'warning' : 'danger',
-                  title: vehicle.isImmobilized ? 'Réactiver le véhicule' : 'Immobiliser le véhicule',
-                  confirmLabel: vehicle.isImmobilized ? 'Réactiver' : 'Immobiliser',
+                  title: vehicle.isImmobilized
+                    ? t('fleet.detailPanel.immobilization.reactivateTitle')
+                    : t('fleet.detailPanel.immobilization.immobilizeTitle'),
+                  confirmLabel: vehicle.isImmobilized
+                    ? t('fleet.detailPanel.immobilization.reactivateConfirm')
+                    : t('fleet.detailPanel.immobilization.immobilizeConfirm'),
                 })
               ) {
                 try {
@@ -858,10 +776,10 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               <Lock className="w-4 h-4" />
             )}
             {isImmobilizing
-              ? 'Traitement...'
+              ? t('fleet.detailPanel.immobilization.buttonProcessing')
               : vehicle.isImmobilized
-                ? 'Débloquer le véhicule'
-                : 'Immobiliser le véhicule'}
+                ? t('fleet.detailPanel.immobilization.buttonUnlock')
+                : t('fleet.detailPanel.immobilization.buttonLock')}
           </button>
 
           <button
@@ -869,11 +787,15 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               if (
                 await confirm({
                   message: vehicle.isBrokenDown
-                    ? 'Voulez-vous marquer ce véhicule comme réparé ?'
-                    : 'Voulez-vous signaler ce véhicule comme en panne ?',
+                    ? t('fleet.detailPanel.breakdown.confirmRepairedMsg')
+                    : t('fleet.detailPanel.breakdown.confirmBrokenMsg'),
                   variant: 'warning',
-                  title: vehicle.isBrokenDown ? 'Marquer comme réparé' : 'Signaler une panne',
-                  confirmLabel: vehicle.isBrokenDown ? 'Confirmer' : 'Signaler',
+                  title: vehicle.isBrokenDown
+                    ? t('fleet.detailPanel.breakdown.repairedTitle')
+                    : t('fleet.detailPanel.breakdown.brokenTitle'),
+                  confirmLabel: vehicle.isBrokenDown
+                    ? t('fleet.detailPanel.breakdown.repairedConfirm')
+                    : t('fleet.detailPanel.breakdown.brokenConfirm'),
                 })
               ) {
                 try {
@@ -894,7 +816,11 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             }`}
           >
             {isUpdatingStatus ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wrench className="w-4 h-4" />}
-            {isUpdatingStatus ? 'Traitement...' : vehicle.isBrokenDown ? 'Marquer comme Réparé' : 'Signaler une Panne'}
+            {isUpdatingStatus
+              ? t('fleet.detailPanel.breakdown.buttonProcessing')
+              : vehicle.isBrokenDown
+                ? t('fleet.detailPanel.breakdown.buttonMarkRepaired')
+                : t('fleet.detailPanel.breakdown.buttonReportBroken')}
           </button>
         </div>
       )}
@@ -905,17 +831,17 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
         onClose={() => setActiveModal(null)}
         title={
           activeModal === 'fuel'
-            ? 'Détails Carburant'
+            ? t('fleet.detailPanel.modals.fuelTitle')
             : activeModal === 'maintenance'
-              ? "Carnet d'entretien"
-              : 'Violations & Sécurité'
+              ? t('fleet.detailPanel.modals.maintenanceTitle')
+              : t('fleet.detailPanel.modals.violationsTitle')
         }
         footer={
           <button
             onClick={() => setActiveModal(null)}
             className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-[var(--text-primary)] font-medium text-sm"
           >
-            Fermer
+            {t('fleet.detailPanel.modals.close')}
           </button>
         }
       >

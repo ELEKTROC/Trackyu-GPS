@@ -366,7 +366,7 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
               }`}
             >
               {connectionStatus.status === 'MOVING'
-                ? 'En mouvement'
+                ? 'En route'
                 : connectionStatus.status === 'STOPPED'
                   ? 'Arrêté'
                   : connectionStatus.status === 'IDLE'

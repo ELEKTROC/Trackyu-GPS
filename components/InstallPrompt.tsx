@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
 import { logger } from '../utils/logger';
 import { useToast } from '../contexts/ToastContext';
+import { useTranslation } from '../i18n';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -15,6 +16,7 @@ interface BeforeInstallPromptEvent extends Event {
  */
 export const InstallPrompt: React.FC = () => {
   const { showToast } = useToast();
+  const { t } = useTranslation();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -125,7 +127,7 @@ export const InstallPrompt: React.FC = () => {
       }
     } else {
       // Fallback: Show instructions for Android
-      showToast('Pour installer : Menu \u22ee (3 points) \u2192 "Installer l\'application"', 'info');
+      showToast(t('shared.install.androidFallback'), 'info');
       setShowPrompt(false);
     }
   };
@@ -145,7 +147,7 @@ export const InstallPrompt: React.FC = () => {
       <div className="fixed inset-0 z-[200] flex items-end justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
         <div className="w-full max-w-md bg-[var(--bg-surface)] rounded-t-2xl shadow-2xl p-6 animate-in slide-in-from-bottom duration-300 safe-area-bottom">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-[var(--text-primary)]">Installer Trackyu GPS</h3>
+            <h3 className="text-lg font-bold text-[var(--text-primary)]">{t('shared.install.title')}</h3>
             <button
               onClick={handleDismiss}
               className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--bg-elevated)]"
@@ -155,33 +157,17 @@ export const InstallPrompt: React.FC = () => {
           </div>
 
           <div className="space-y-4 text-[var(--text-secondary)]">
-            <p className="text-sm">Pour installer l'application sur votre iPhone/iPad :</p>
+            <p className="text-sm">{t('shared.install.iosIntro')}</p>
 
             <ol className="space-y-3 text-sm">
-              <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">
-                  1
-                </span>
-                <span>
-                  Appuyez sur le bouton <strong>Partager</strong> (icône carré avec flèche vers le haut)
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">
-                  2
-                </span>
-                <span>
-                  Faites défiler et appuyez sur <strong>"Sur l'écran d'accueil"</strong>
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">
-                  3
-                </span>
-                <span>
-                  Appuyez sur <strong>"Ajouter"</strong> en haut à droite
-                </span>
-              </li>
+              {[1, 2, 3].map((step) => (
+                <li key={step} className="flex items-start gap-3">
+                  <span className="flex-shrink-0 w-6 h-6 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center text-xs font-bold">
+                    {step}
+                  </span>
+                  <span dangerouslySetInnerHTML={{ __html: t(`shared.install.iosStep${step}`) }} />
+                </li>
+              ))}
             </ol>
           </div>
 
@@ -189,7 +175,7 @@ export const InstallPrompt: React.FC = () => {
             onClick={handleDismiss}
             className="w-full mt-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white font-medium rounded-xl transition-colors"
           >
-            J'ai compris
+            {t('shared.install.gotIt')}
           </button>
         </div>
       </div>
@@ -207,8 +193,8 @@ export const InstallPrompt: React.FC = () => {
 
         {/* Text */}
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-[var(--text-primary)] text-sm">Installer Trackyu GPS</h4>
-          <p className="text-xs text-[var(--text-secondary)] mt-0.5">Accès rapide depuis votre écran d'accueil</p>
+          <h4 className="font-semibold text-[var(--text-primary)] text-sm">{t('shared.install.title')}</h4>
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5">{t('shared.install.description')}</p>
         </div>
 
         {/* Buttons */}
@@ -216,7 +202,7 @@ export const InstallPrompt: React.FC = () => {
           <button
             onClick={handleDismiss}
             className="p-2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-primary)] rounded-full hover:bg-[var(--bg-elevated)] transition-colors"
-            aria-label="Fermer"
+            aria-label={t('shared.install.close')}
           >
             <X className="w-5 h-5" />
           </button>
@@ -225,7 +211,7 @@ export const InstallPrompt: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white text-sm font-medium rounded-xl transition-colors shadow-sm"
           >
             <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Installer</span>
+            <span className="hidden sm:inline">{t('shared.install.install')}</span>
           </button>
         </div>
       </div>

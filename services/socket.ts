@@ -22,29 +22,35 @@ let socket: Socket;
 
 export const initSocket = (token?: string) => {
   const authToken = token || localStorage.getItem('fleet_token') || localStorage.getItem('token');
-  
+
   if (!socket) {
     socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
-      autoConnect: false, // Ne jamais auto-connecter, on gère manuellement
+      autoConnect: false,
       path: '/socket.io',
-      reconnectionAttempts: 5,
-      reconnectionDelay: 3000
+      reconnectionAttempts: Infinity,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 30000,
     });
 
-    socket.on('connect_error', (err) => {
+    socket.on('connect_error', () => {
       // Silent — avoid leaking connection error details
     });
+
+    // Refresh auth token on each reconnect attempt so stale JWTs don't block re-auth
+    socket.io.on('reconnect_attempt', () => {
+      const freshToken = localStorage.getItem('fleet_token') || localStorage.getItem('token');
+      if (freshToken) socket.auth = { token: freshToken };
+    });
   }
-  
-  // Mettre à jour le token auth et connecter seulement si token présent
+
   if (authToken) {
     socket.auth = { token: authToken };
     if (!socket.connected) {
       socket.connect();
     }
   }
-  
+
   return socket;
 };
 

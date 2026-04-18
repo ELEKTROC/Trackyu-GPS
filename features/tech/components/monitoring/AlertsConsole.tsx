@@ -19,6 +19,7 @@ import { api } from '../../../../services/apiLazy';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useConfirmDialog } from '../../../../components/ConfirmDialog';
+import { useTranslation } from '../../../../i18n';
 
 // Map icon names to actual components
 const ICON_MAP: Record<string, React.FC<{ className?: string }>> = {
@@ -40,6 +41,7 @@ export const AlertsConsole: React.FC = () => {
   } = useDataContext();
   const resellers = useMemo(() => tiers.filter(t => t.type === 'RESELLER'), [tiers]);
   const { user } = useAuth();
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const { confirm: confirmDialog, ConfirmDialogComponent } = useConfirmDialog();
   const queryClient = useQueryClient();
@@ -202,7 +204,10 @@ export const AlertsConsole: React.FC = () => {
     return colorMap[config?.color] || 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
   };
 
-  const getAlertTypeLabel = (type: string) => ALERT_TYPE_CONFIG[type as AlertType]?.label || type;
+  const getAlertTypeLabel = (type: string) => {
+    const cfg = ALERT_TYPE_CONFIG[type as AlertType];
+    return cfg ? t(cfg.labelKey) : type;
+  };
 
   const formatDate = (dateStr: string | undefined) => {
     if (!dateStr) return '—';
@@ -386,7 +391,7 @@ export const AlertsConsole: React.FC = () => {
             <span className="text-[10px] font-semibold text-[var(--text-secondary)] uppercase whitespace-nowrap">Type</span>
             <select value={filterType} onChange={e => setFilterType(e.target.value as FilterType)} className={selectClass} title="Filtrer par type">
               <option value="ALL">Tous</option>
-              {Object.entries(ALERT_TYPE_CONFIG).map(([key, config]) => <option key={key} value={key}>{config.label}</option>)}
+              {Object.entries(ALERT_TYPE_CONFIG).map(([key, config]) => <option key={key} value={key}>{t(config.labelKey)}</option>)}
             </select>
           </div>
           <div className="flex items-center gap-1.5">
@@ -572,7 +577,8 @@ export const AlertsConsole: React.FC = () => {
                 'medium': 'bg-yellow-100 text-yellow-800 border-yellow-200', 'MEDIUM': 'bg-yellow-100 text-yellow-800 border-yellow-200',
                 'low': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]', 'LOW': 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]',
               };
-              const typeLabel = ALERT_TYPE_CONFIG[config.type as AlertType]?.label || config.type;
+              const typeCfg = ALERT_TYPE_CONFIG[config.type as AlertType];
+              const typeLabel = typeCfg ? t(typeCfg.labelKey) : config.type;
               const vehicleNames = config.allVehicles ? 'Tous les véhicules' : (config.vehicleIds?.map(vid => vehicles.find(v => v.id === vid)?.name || vid).join(', ') || 'Aucun véhicule');
 
               return (

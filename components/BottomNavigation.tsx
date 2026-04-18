@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useTranslation } from '../i18n';
 import {
   getSortedSidebarMenu,
   MOBILE_DEFAULT_TABS,
@@ -58,12 +59,18 @@ interface BottomNavigationProps {
 export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView, onNavigate }) => {
   const { hasPermission, user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const [isMoreOpen, setIsMoreOpen] = React.useState(false);
 
   // Tous les items du menu depuis le registre central, triés
   const allMenuItems = useMemo(() => {
-    return getSortedSidebarMenu().flatMap((group) => group.items.map((item) => ({ ...item, groupTitle: group.title })));
-  }, []);
+    return getSortedSidebarMenu().flatMap((group) =>
+      group.items.map((item) => ({
+        ...item,
+        groupTitle: group.titleKey ? t(group.titleKey) : group.title,
+      }))
+    );
+  }, [t]);
 
   // Profil mobile du rôle courant
   const mobileProfile = useMemo(() => (user?.role ? getMobileProfileForRole(user.role) : undefined), [user?.role]);
@@ -154,15 +161,15 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
             <div className="w-12 h-1 bg-[var(--border-strong)] rounded-full mx-auto mb-4" />
 
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--text-primary)]">Plus d'options</h3>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">{t('nav.common.moreOptions')}</h3>
               <div className="flex items-center gap-2">
                 {/* Theme switcher — dark / ocean / light */}
                 <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-full p-0.5 gap-0.5">
                   {(
                     [
-                      { id: 'dark', Icon: Moon, label: 'Sombre' },
-                      { id: 'ocean', Icon: Waves, label: 'Océan' },
-                      { id: 'light', Icon: Sun, label: 'Clair' },
+                      { id: 'dark', Icon: Moon, label: t('nav.theme.dark') },
+                      { id: 'ocean', Icon: Waves, label: t('nav.theme.ocean') },
+                      { id: 'light', Icon: Sun, label: t('nav.theme.light') },
                     ] as const
                   ).map(({ id, Icon, label }) => (
                     <button
@@ -183,8 +190,8 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
                 <button
                   onClick={() => setIsMoreOpen(false)}
                   className="p-2 text-[var(--text-muted)] rounded-full hover:bg-[var(--bg-elevated)] touch-target haptic-feedback"
-                  title="Fermer"
-                  aria-label="Fermer le menu"
+                  title={t('nav.common.close')}
+                  aria-label={t('nav.common.closeMenu')}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -214,7 +221,11 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
                       >
                         <Icon className="w-6 h-6 mb-1" />
                         <span className="text-xs font-medium text-center leading-tight">
-                          {item.mobileLabel || item.label}
+                          {item.mobileLabelKey
+                            ? t(item.mobileLabelKey)
+                            : item.labelKey
+                              ? t(item.labelKey)
+                              : item.mobileLabel || item.label}
                         </span>
                       </button>
                     );
@@ -232,9 +243,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-[var(--text-primary)] truncate">
-                      {user?.name || 'Utilisateur'}
+                      {user?.name || t('nav.common.user')}
                     </p>
-                    <p className="text-xs text-[var(--text-muted)] truncate">{user?.role || 'Rôle'}</p>
+                    <p className="text-xs text-[var(--text-muted)] truncate">{user?.role || t('nav.common.role')}</p>
                   </div>
                 </div>
                 <button
@@ -246,7 +257,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
                   style={{ borderColor: 'var(--color-error)', color: 'var(--color-error)' }}
                 >
                   <LogOut className="w-4 h-4" />
-                  <span>Déconnexion</span>
+                  <span>{t('nav.common.logout')}</span>
                 </button>
               </div>
             </div>
@@ -271,7 +282,11 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
                 <Icon className="w-5 h-5" />
               </div>
               <span className="text-[10px] font-medium leading-none truncate max-w-[52px] text-center">
-                {tab.mobileLabel || tab.label}
+                {tab.mobileLabelKey
+                  ? t(tab.mobileLabelKey)
+                  : tab.labelKey
+                    ? t(tab.labelKey)
+                    : tab.mobileLabel || tab.label}
               </span>
             </button>
           );
@@ -293,7 +308,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
                 />
               )}
             </div>
-            <span className="text-[10px] font-medium leading-none">Modules</span>
+            <span className="text-[10px] font-medium leading-none">{t('nav.common.modules')}</span>
           </button>
         )}
       </nav>

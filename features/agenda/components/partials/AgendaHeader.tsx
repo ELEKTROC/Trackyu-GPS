@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, User, Search } from 'lucide-react';
+import { useTranslation } from '../../../../i18n';
 
 interface AgendaHeaderProps {
   filter: 'ALL' | 'TECH' | 'BUSINESS';
@@ -22,6 +23,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
   searchQuery,
   setSearchQuery,
 }) => {
+  const { t } = useTranslation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -39,10 +41,8 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
       <div className="shrink-0">
-        <h2 className="text-xl sm:page-title">Agenda Unifié</h2>
-        <p className="text-xs sm:text-sm text-[var(--text-secondary)] hidden sm:block">
-          Planification des interventions et rendez-vous commerciaux
-        </p>
+        <h2 className="text-xl sm:page-title">{t('agenda.title')}</h2>
+        <p className="text-xs sm:text-sm text-[var(--text-secondary)] hidden sm:block">{t('agenda.subtitle')}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
@@ -53,7 +53,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Rechercher..."
+            placeholder={t('agenda.searchPlaceholder')}
             className="w-full sm:min-w-[160px] pl-8 pr-3 py-2 text-xs bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)]"
           />
         </div>
@@ -64,19 +64,19 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
             onClick={() => setFilter('ALL')}
             className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'ALL' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
-            Tout
+            {t('agenda.filters.all')}
           </button>
           <button
             onClick={() => setFilter('TECH')}
             className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'TECH' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
-            Tech
+            {t('agenda.filters.tech')}
           </button>
           <button
             onClick={() => setFilter('BUSINESS')}
             className={`px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all ${filter === 'BUSINESS' ? 'bg-[var(--bg-elevated)] shadow-sm text-[var(--primary)] dark:text-[var(--primary)]' : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
           >
-            Comm.
+            {t('agenda.filters.business')}
           </button>
         </div>
 
@@ -88,10 +88,15 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
             onChange={(e) => setSelectedAgentId(e.target.value)}
             className="pl-8 pr-8 py-2 text-xs font-medium bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg appearance-none cursor-pointer focus:ring-2 focus:ring-[var(--primary)] min-w-[150px]"
           >
-            <option value="ALL">Tous les agents</option>
+            <option value="ALL">{t('agenda.agents.allAgents')}</option>
             {agents.map((agent) => (
               <option key={agent.id} value={agent.id}>
-                {agent.name} {agent.role === 'TECHNICIAN' ? '(Tech)' : agent.role === 'COMMERCIAL' ? '(Com)' : ''}
+                {agent.name}{' '}
+                {agent.role === 'TECHNICIAN'
+                  ? t('agenda.agents.techBadge')
+                  : agent.role === 'COMMERCIAL'
+                    ? t('agenda.agents.comBadge')
+                    : ''}
               </option>
             ))}
           </select>
@@ -104,7 +109,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
             className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] shadow-sm transition-all active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span className="text-sm font-medium">Nouveau</span>
+            <span className="text-sm font-medium">{t('agenda.newEvent.label')}</span>
           </button>
           {dropdownOpen && (
             <div className="absolute right-0 top-full mt-2 w-52 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 overflow-hidden">
@@ -115,7 +120,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                 }}
                 className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
               >
-                Intervention Technique
+                {t('agenda.newEvent.intervention')}
               </button>
               <button
                 onClick={() => {
@@ -124,7 +129,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                 }}
                 className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] text-[var(--text-primary)] border-b border-[var(--border)] border-[var(--border)]"
               >
-                Rendez-vous Commercial
+                {t('agenda.newEvent.commercial')}
               </button>
               <button
                 onClick={() => {
@@ -133,7 +138,7 @@ export const AgendaHeader: React.FC<AgendaHeaderProps> = ({
                 }}
                 className="w-full text-left px-4 py-3 text-sm hover:bg-[var(--bg-elevated)] text-[var(--text-primary)]"
               >
-                Tâche
+                {t('agenda.newEvent.task')}
               </button>
             </div>
           )}

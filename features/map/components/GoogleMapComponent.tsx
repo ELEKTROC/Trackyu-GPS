@@ -12,7 +12,7 @@ interface GoogleMapComponentProps {
   onVehicleSelect: (vehicle: Vehicle) => void;
   center?: Coordinate;
   zoom?: number;
-  mapType?: 'roadmap' | 'satellite';
+  mapType?: 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
 }
 
 const containerStyle: React.CSSProperties = {

@@ -4,6 +4,7 @@ import { Modal } from './Modal';
 import type { ImportResult } from '../services/importService';
 import { parseCSV } from '../services/importService';
 import { logger } from '../utils/logger';
+import { useTranslation } from '../i18n';
 
 interface ImportModalProps<T> {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export const ImportModal = <T,>({
   requiredColumns,
   sampleData,
 }: ImportModalProps<T>) => {
+  const { t } = useTranslation();
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<ImportResult<T> | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -80,10 +82,8 @@ export const ImportModal = <T,>({
             <div className="w-12 h-12 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)] dark:text-[var(--primary)] rounded-full flex items-center justify-center mb-4">
               <Upload className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">
-              Cliquez pour sélectionner un fichier CSV
-            </h4>
-            <p className="text-xs text-[var(--text-secondary)]">ou glissez-déposez votre fichier ici</p>
+            <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1">{t('shared.import.clickToSelect')}</h4>
+            <p className="text-xs text-[var(--text-secondary)]">{t('shared.import.dropHint')}</p>
             <input type="file" ref={fileInputRef} className="hidden" accept=".csv" onChange={handleFileChange} />
           </div>
         ) : (
@@ -115,22 +115,25 @@ export const ImportModal = <T,>({
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-[var(--bg-elevated)] p-3 rounded-lg border border-[var(--border)] text-center">
                 <div className="text-2xl font-bold text-[var(--text-primary)]">{result.meta.total}</div>
-                <div className="text-xs text-[var(--text-secondary)] uppercase font-bold">Lignes trouvées</div>
+                <div className="text-xs text-[var(--text-secondary)] uppercase font-bold">
+                  {t('shared.import.rowsFound')}
+                </div>
               </div>
               <div className="bg-green-50 p-3 rounded-lg border border-green-200 text-center">
                 <div className="text-2xl font-bold text-green-600">{result.meta.success}</div>
-                <div className="text-xs text-green-600 uppercase font-bold">Valides</div>
+                <div className="text-xs text-green-600 uppercase font-bold">{t('shared.import.valid')}</div>
               </div>
               <div className="bg-red-50 p-3 rounded-lg border border-red-200 text-center">
                 <div className="text-2xl font-bold text-red-600">{result.meta.failed}</div>
-                <div className="text-xs text-red-600 uppercase font-bold">Erreurs</div>
+                <div className="text-xs text-red-600 uppercase font-bold">{t('shared.import.errors')}</div>
               </div>
             </div>
 
             {result.errors.length > 0 && (
               <div className="bg-red-50 border border-red-100 rounded-lg p-4 max-h-40 overflow-y-auto custom-scrollbar">
                 <h5 className="text-xs font-bold text-red-700 mb-2 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" /> Erreurs détectées ({result.errors.length})
+                  <AlertCircle className="w-4 h-4" />{' '}
+                  {t('shared.import.errorsDetected', { count: result.errors.length })}
                 </h5>
                 <ul className="space-y-1">
                   {result.errors.map((err, i) => (
@@ -148,7 +151,7 @@ export const ImportModal = <T,>({
         {sampleData && !file && (
           <div className="text-center">
             <button onClick={downloadTemplate} className="text-xs text-[var(--primary)] hover:underline font-medium">
-              Télécharger un modèle CSV
+              {t('shared.import.downloadTemplate')}
             </button>
           </div>
         )}
@@ -160,7 +163,7 @@ export const ImportModal = <T,>({
           onClick={handleClose}
           className="px-4 py-2 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
         >
-          Annuler
+          {t('shared.import.cancel')}
         </button>
         <button
           onClick={handleConfirm}
@@ -168,7 +171,9 @@ export const ImportModal = <T,>({
           className="px-4 py-2 text-sm font-bold text-white bg-[var(--primary)] hover:bg-[var(--primary-light)] rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
         >
           <CheckCircle className="w-4 h-4" />
-          Importer {result?.meta.success ? `${result.meta.success} éléments` : ''}
+          {result?.meta.success
+            ? t('shared.import.importWithCount', { count: result.meta.success })
+            : t('shared.import.import')}
         </button>
       </div>
     </Modal>

@@ -1134,7 +1134,7 @@ export const SubscriptionsView: React.FC<SubscriptionsViewProps> = ({ dateRange,
                                   { label: string; dot: string; text: string; bg: string }
                                 > = {
                                   [VehicleStatus.MOVING]: {
-                                    label: 'En mouvement',
+                                    label: 'En route',
                                     dot: 'bg-green-500',
                                     text: 'text-[var(--clr-success-strong)]',
                                     bg: 'bg-[var(--clr-success-dim)]',

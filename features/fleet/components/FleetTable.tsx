@@ -57,6 +57,7 @@ import { api } from '../../../services/apiLazy';
 import { FixedSizeList as List } from 'react-window';
 import { useAppearance } from '../../../contexts/AppearanceContext';
 import { FleetTableSkeleton } from '../../../components/Skeleton';
+import { useTranslation } from '../../../i18n';
 
 interface FleetTableProps {
   vehicles: Vehicle[];
@@ -153,6 +154,7 @@ const FilterDropdown = ({
   onClose: () => void;
   title: string;
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filteredOptions = options.filter((o) => o.toLowerCase().includes(search.toLowerCase()));
@@ -175,9 +177,9 @@ const FilterDropdown = ({
         style={{ backgroundColor: 'var(--bg-elevated)' }}
       >
         <span className="text-xs font-bold uppercase" style={{ color: 'var(--text-secondary)' }}>
-          Filtrer {title}
+          {t('fleet.filterDropdown.filterTitle', { title })}
         </span>
-        <button onClick={onClose} aria-label="Close filter">
+        <button onClick={onClose} aria-label={t('fleet.filterDropdown.filterTitle', { title })}>
           <X className="w-3 h-3 text-[var(--text-muted)] hover:text-[var(--text-primary)]" />
         </button>
       </div>
@@ -190,7 +192,7 @@ const FilterDropdown = ({
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-8 pr-2 py-1.5 text-xs border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
             style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)' }}
-            placeholder="Rechercher..."
+            placeholder={t('fleet.filterDropdown.searchPlaceholder')}
           />
         </div>
       </div>
@@ -211,7 +213,7 @@ const FilterDropdown = ({
           </label>
         ))}
         {filteredOptions.length === 0 && (
-          <div className="text-xs text-center py-4 text-[var(--text-muted)]">Aucun résultat</div>
+          <div className="text-xs text-center py-4 text-[var(--text-muted)]">{t('fleet.filterDropdown.noResults')}</div>
         )}
       </div>
       <div
@@ -223,9 +225,14 @@ const FilterDropdown = ({
           className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           disabled={selectedValues.length === 0}
         >
-          Réinitialiser
+          {t('fleet.filterDropdown.reset')}
         </button>
-        <span className="text-xs text-[var(--primary)] font-medium">{selectedValues.length} sélectionné(s)</span>
+        <span className="text-xs text-[var(--primary)] font-medium">
+          {t(
+            selectedValues.length === 1 ? 'fleet.filterDropdown.selected_one' : 'fleet.filterDropdown.selected_other',
+            { count: selectedValues.length }
+          )}
+        </span>
       </div>
     </div>
   );
@@ -237,6 +244,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   onLocationClick,
   onEditVehicle,
 }) => {
+  const { t } = useTranslation();
   // Ensure vehicles is always a valid array — wrapped in useMemo to stabilize reference
   const vehicles = useMemo(() => (Array.isArray(vehiclesProp) ? vehiclesProp : []), [vehiclesProp]);
 
@@ -289,7 +297,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         };
         addVehicle(vehicle);
       } catch {
-        console.warn("Élément d'import invalide ignoré");
+        console.warn(t('fleet.warnings.invalidImportItem'));
       }
     });
     showToast(TOAST.FLEET.VEHICLE_IMPORTED(data.length), 'success');
@@ -575,7 +583,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   onEditVehicle(vehicle);
                 }}
                 className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded transition-colors opacity-0 group-hover:opacity-100"
-                title="Modifier le véhicule"
+                title={t('fleet.rowActions.editVehicle')}
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
@@ -719,12 +727,15 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               onLocationClick?.(vehicle);
             }}
             className="flex flex-col gap-0.5 text-[var(--primary)] dark:text-[var(--primary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] cursor-pointer group p-1 rounded hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-all w-full min-w-0"
-            title="Voir sur la carte en direct"
+            title={t('fleet.rowActions.viewOnLiveMap')}
           >
             <div className="flex items-center gap-1.5 min-w-0">
               <MapPin className="w-3.5 h-3.5 shrink-0 group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-medium truncate" title={vehicle.address || 'Localisation'}>
-                {vehicle.address || (vehicle.geofence ? vehicle.geofence : 'Voir carte')}
+              <span
+                className="text-sm font-medium truncate"
+                title={vehicle.address || t('fleet.rowActions.locationFallback')}
+              >
+                {vehicle.address || (vehicle.geofence ? vehicle.geofence : t('fleet.rowActions.viewMapLink'))}
               </span>
               <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
             </div>
@@ -822,17 +833,16 @@ export const FleetTable: React.FC<FleetTableProps> = ({
     try {
       const vehiclesToExport = selectedIds.size > 0 ? vehicles.filter((v) => selectedIds.has(v.id)) : filteredVehicles;
 
-      const columns = ['Code ABO', 'Nom', 'Plaque', 'Client', 'Conducteur', 'Statut', 'Carburant', 'Kilométrage'];
-      const data = vehiclesToExport.map((v) => ({
-        'Code ABO': v.id,
-        Nom: v.name,
-        Plaque: v.plate || '-',
-        Client: v.client,
-        Conducteur: v.driver,
-        Statut: v.status,
-        Carburant: `${v.fuelLevel}%`,
-        Kilométrage: `${v.mileage} km`,
-      }));
+      const columns = [
+        t('fleet.export.col_aboCode'),
+        t('fleet.export.col_name'),
+        t('fleet.export.col_plate'),
+        t('fleet.export.col_client'),
+        t('fleet.export.col_driver'),
+        t('fleet.export.col_status'),
+        t('fleet.export.col_fuel'),
+        t('fleet.export.col_mileage'),
+      ];
 
       const rows = vehiclesToExport.map((v) => [
         v.id,
@@ -845,7 +855,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         `${v.mileage} km`,
       ]);
       await generateTablePDF({
-        title: 'Flotte de Véhicules',
+        title: t('fleet.export.pdfTitle'),
         headers: columns,
         rows,
         filename: `flotte_${new Date().toISOString().split('T')[0]}.pdf`,
@@ -863,25 +873,25 @@ export const FleetTable: React.FC<FleetTableProps> = ({
       const vehiclesToExport = selectedIds.size > 0 ? vehicles.filter((v) => selectedIds.has(v.id)) : filteredVehicles;
 
       const exportColumns = [
-        { key: 'id', header: 'Code ABO', format: 'text' as const },
-        { key: 'name', header: 'Nom', format: 'text' as const },
-        { key: 'plate', header: 'Plaque', format: 'text' as const },
-        { key: 'client', header: 'Client', format: 'text' as const },
-        { key: 'driver', header: 'Conducteur', format: 'text' as const },
-        { key: 'status', header: 'Statut', format: 'text' as const },
-        { key: 'fuelLevel', header: 'Carburant (%)', format: 'number' as const },
-        { key: 'mileage', header: 'Kilométrage', format: 'number' as const },
+        { key: 'id', header: t('fleet.export.col_aboCode'), format: 'text' as const },
+        { key: 'name', header: t('fleet.export.col_name'), format: 'text' as const },
+        { key: 'plate', header: t('fleet.export.col_plate'), format: 'text' as const },
+        { key: 'client', header: t('fleet.export.col_client'), format: 'text' as const },
+        { key: 'driver', header: t('fleet.export.col_driver'), format: 'text' as const },
+        { key: 'status', header: t('fleet.export.col_status'), format: 'text' as const },
+        { key: 'fuelLevel', header: t('fleet.export.col_fuelPct'), format: 'number' as const },
+        { key: 'mileage', header: t('fleet.export.col_mileage'), format: 'number' as const },
       ];
 
       exportToExcel(vehiclesToExport, {
         filename: `flotte_${new Date().toISOString().split('T')[0]}`,
-        title: 'Flotte de Véhicules',
+        title: t('fleet.export.pdfTitle'),
         columns: exportColumns,
-        sheetName: 'Flotte',
+        sheetName: t('fleet.export.sheetName'),
       });
       showToast(TOAST.IO.EXPORT_SUCCESS('Excel', vehiclesToExport.length), 'success');
     } catch (e) {
-      showToast(mapError(e, "Erreur lors de l'export Excel"), 'error');
+      showToast(mapError(e, t('fleet.export.excelError')), 'error');
     }
   };
 
@@ -938,20 +948,20 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 <button
                   onClick={() => onLocationClick(vehicle)}
                   className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors whitespace-nowrap"
-                  title="Voir sur la carte"
+                  title={t('fleet.rowActions.viewOnMap')}
                 >
                   <MapPin className="w-3 h-3" />
-                  <span className="hidden xl:inline">Carte</span>
+                  <span className="hidden xl:inline">{t('fleet.rowActions.mapShort')}</span>
                 </button>
               )}
               {onVehicleClick && (
                 <button
                   onClick={() => onVehicleClick(vehicle)}
                   className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors whitespace-nowrap"
-                  title="Voir le détail"
+                  title={t('fleet.rowActions.viewDetail')}
                 >
                   <ChevronRight className="w-3 h-3" />
-                  <span className="hidden xl:inline">Détail</span>
+                  <span className="hidden xl:inline">{t('fleet.rowActions.detailShort')}</span>
                 </button>
               )}
             </div>
@@ -969,7 +979,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
   const kpiPills = useMemo(
     () => [
       {
-        label: 'Total',
+        label: t('fleet.kpi.total'),
         value: stats.total,
         statusFilter: null,
         color: 'text-[var(--text-secondary)]',
@@ -977,7 +987,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         activeFg: 'text-[var(--text-primary)]',
       },
       {
-        label: 'En mouvement',
+        label: t('fleet.kpi.moving'),
         value: stats.moving,
         statusFilter: VehicleStatus.MOVING,
         color: 'text-[var(--clr-success-strong)]',
@@ -985,7 +995,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         activeFg: 'text-[var(--clr-success-strong)]',
       },
       {
-        label: "À l'arrêt",
+        label: t('fleet.kpi.stopped'),
         value: stats.stopped,
         statusFilter: VehicleStatus.STOPPED,
         color: 'text-red-500 dark:text-red-400',
@@ -993,7 +1003,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         activeFg: 'text-red-600 dark:text-red-400',
       },
       {
-        label: 'Idle',
+        label: t('fleet.kpi.idle'),
         value: stats.idle,
         statusFilter: VehicleStatus.IDLE,
         color: 'text-amber-500',
@@ -1001,7 +1011,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         activeFg: 'text-amber-600 dark:text-amber-400',
       },
       {
-        label: 'Hors ligne',
+        label: t('fleet.kpi.offline'),
         value: stats.offline,
         statusFilter: VehicleStatus.OFFLINE,
         color: 'text-[var(--text-muted)]',
@@ -1009,7 +1019,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         activeFg: 'text-[var(--text-secondary)]',
       },
       {
-        label: 'Alertes',
+        label: t('fleet.kpi.alerts'),
         value: stats.alertsCount,
         statusFilter: null,
         color: 'text-[var(--clr-danger)]',
@@ -1017,7 +1027,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
         activeFg: 'text-[var(--clr-danger)]',
       },
     ],
-    [stats]
+    [stats, t]
   );
 
   if (isLoading && vehicles.length === 0) {
@@ -1026,7 +1036,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
 
   return (
     <div className="h-full flex flex-col gap-4 p-3 sm:p-4 lg:p-6 pb-3 lg:pb-6">
-      <Card className="flex-1 flex flex-col" title={isMobileView ? undefined : 'Liste des Véhicules'}>
+      <Card className="flex-1 flex flex-col" title={isMobileView ? undefined : t('fleet.listTitle')}>
         {/* KPI Bar — une seule ligne, deux groupes */}
         {!isMobileView && (
           <div className="flex items-center gap-0 mb-4 overflow-x-auto custom-scrollbar pb-1">
@@ -1066,7 +1076,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   className="flex items-center gap-1 px-2 py-1.5 rounded-full border border-[var(--border)] text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors whitespace-nowrap"
                   style={{ backgroundColor: 'var(--bg-surface)' }}
                 >
-                  <X className="w-3 h-3" /> Tout
+                  <X className="w-3 h-3" /> {t('fleet.kpi.clearFilter')}
                 </button>
               )}
             </div>
@@ -1083,13 +1093,13 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   return Math.round(n).toString();
                 };
                 return [
-                  { label: 'Km total', value: fmtKm(aggregates.totalKm) + ' km' },
-                  { label: 'Distance (j)', value: fmtKm(aggregates.totalDailyKm) + ' km' },
-                  { label: 'Vit. max', value: aggregates.maxSpeed + ' km/h' },
-                  { label: 'Alertes', value: stats.alertsCount.toString() },
-                  { label: 'Carburant', value: Math.round(aggregates.totalFuelQty) + ' L' },
-                  { label: 'Recharges', value: Math.round(aggregates.totalRefuel) + ' L' },
-                  { label: 'Baisses', value: Math.round(aggregates.totalSuspectLoss) + ' L' },
+                  { label: t('fleet.aggregates.totalKm'), value: fmtKm(aggregates.totalKm) + ' km' },
+                  { label: t('fleet.aggregates.dailyKm'), value: fmtKm(aggregates.totalDailyKm) + ' km' },
+                  { label: t('fleet.aggregates.maxSpeed'), value: aggregates.maxSpeed + ' km/h' },
+                  { label: t('fleet.aggregates.alerts'), value: stats.alertsCount.toString() },
+                  { label: t('fleet.aggregates.fuel'), value: Math.round(aggregates.totalFuelQty) + ' L' },
+                  { label: t('fleet.aggregates.refuel'), value: Math.round(aggregates.totalRefuel) + ' L' },
+                  { label: t('fleet.aggregates.losses'), value: Math.round(aggregates.totalSuspectLoss) + ' L' },
                 ].map((kpi) => (
                   <div
                     key={kpi.label}
@@ -1112,7 +1122,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               <SearchBar
                 value={globalSearch}
                 onChange={setGlobalSearch}
-                placeholder={isMobileView ? 'Rechercher...' : 'Rechercher globalement (ID, Client, Nom)...'}
+                placeholder={isMobileView ? t('fleet.toolbar.searchMobile') : t('fleet.toolbar.searchPlaceholder')}
               />
             </div>
 
@@ -1126,7 +1136,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 className="w-full pl-3 pr-8 py-2 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] appearance-none cursor-pointer"
                 style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
               >
-                <option value="">Tous les clients</option>
+                <option value="">{t('fleet.toolbar.allClients')}</option>
                 {uniqueClients.map((c) => (
                   <option key={c} value={c}>
                     {c}
@@ -1147,7 +1157,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   className="w-full pl-3 pr-8 py-2 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] appearance-none cursor-pointer"
                   style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
                 >
-                  <option value="">Tous les groupes</option>
+                  <option value="">{t('fleet.toolbar.allGroups')}</option>
                   {uniqueGroups.map((g) => (
                     <option key={g} value={g}>
                       {g}
@@ -1165,13 +1175,14 @@ export const FleetTable: React.FC<FleetTableProps> = ({
               className="hidden sm:flex items-center gap-2 px-3 py-2 border border-[var(--border)] rounded-lg text-xs font-bold hover:bg-[var(--bg-elevated)] transition-colors"
               style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-primary)' }}
             >
-              <Upload className="w-3 h-3" /> <span className="hidden md:inline">Import CSV</span>
+              <Upload className="w-3 h-3" /> <span className="hidden md:inline">{t('fleet.toolbar.importCsv')}</span>
             </button>
             <button
               onClick={handleExportExcel}
               className="hidden sm:flex items-center gap-2 px-3 py-2 bg-[var(--clr-emerald-dim)] border border-emerald-200 dark:border-emerald-700 rounded-lg text-xs font-bold text-[var(--clr-emerald-strong)] hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
             >
-              <FileSpreadsheet className="w-3 h-3" /> <span className="hidden md:inline">Export Excel</span>
+              <FileSpreadsheet className="w-3 h-3" />{' '}
+              <span className="hidden md:inline">{t('fleet.toolbar.exportExcel')}</span>
             </button>
             {/* Mobile Filter Button */}
             {isMobileView && (
@@ -1204,28 +1215,28 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           {[
             {
               key: 'STANDARD' as const,
-              label: 'Standard',
+              label: t('fleet.views.standard'),
               icon: <LayoutGrid className="w-3 h-3" />,
               activeClass: 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--primary)]',
               inactiveClass: 'border-[var(--border)] hover:bg-[var(--bg-elevated)]',
             },
             {
               key: 'FUEL' as const,
-              label: 'Carburant',
+              label: t('fleet.views.fuel'),
               icon: <Fuel className="w-3 h-3" />,
               activeClass: 'bg-emerald-600 text-white border-emerald-600',
               inactiveClass: 'border-[var(--border)] hover:bg-[var(--clr-success-dim)] hover:border-emerald-400',
             },
             {
               key: 'TECHNIQUE' as const,
-              label: 'Technique',
+              label: t('fleet.views.technique'),
               icon: <Wrench className="w-3 h-3" />,
               activeClass: 'bg-orange-500 text-white border-orange-500',
               inactiveClass: 'border-[var(--border)] hover:bg-[var(--clr-warning-dim)] hover:border-orange-300',
             },
             {
               key: 'KILOMETRAGE' as const,
-              label: 'Kilométrage',
+              label: t('fleet.views.mileage'),
               icon: <Gauge className="w-3 h-3" />,
               activeClass: 'bg-violet-600 text-white border-violet-600',
               inactiveClass:
@@ -1260,18 +1271,20 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           {selectedIds.size > 0 && (
             <div className="absolute top-0 left-0 right-0 h-12 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-between px-4 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--primary)] dark:border-[var(--primary)]">
               <span className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)]">
-                {selectedIds.size} sélectionné(s)
+                {t(selectedIds.size === 1 ? 'fleet.bulk.selected_one' : 'fleet.bulk.selected_other', {
+                  count: selectedIds.size,
+                })}
               </span>
               <div className="flex gap-2">
                 <button
                   onClick={handleExport}
                   className="text-xs bg-[var(--bg-elevated)] border border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)] px-3 py-1.5 rounded shadow-sm hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] transition-colors"
                 >
-                  Exporter
+                  {t('fleet.bulk.export')}
                 </button>
                 <button
                   onClick={() => setSelectedIds(new Set())}
-                  aria-label="Clear selection"
+                  aria-label={t('fleet.bulk.clearSelection')}
                   className="p-1 hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded text-[var(--primary)] dark:text-[var(--primary)]"
                 >
                   <X className="w-4 h-4" />
@@ -1304,7 +1317,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   style={{ width: col.minWidth, flex: col.id === 'vehicle' ? '1 0 auto' : '0 0 auto' }}
                   onClick={() => handleSort(col.id)}
                 >
-                  {col.label}
+                  {t(`fleet.columns.${col.id}`)}
 
                   {sortConfig?.key === col.id ? (
                     sortConfig.direction === 'asc' ? (
@@ -1326,7 +1339,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 <button
                   onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
                   className={`p-1.5 rounded transition-colors ${isColumnMenuOpen ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] text-[var(--primary)]' : 'text-[var(--text-muted)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]'}`}
-                  title="Gérer les colonnes"
+                  title={t('fleet.columnMenu.manage')}
                 >
                   <LayoutTemplate className="w-4 h-4" />
                 </button>
@@ -1341,7 +1354,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       className="p-2 border-b border-[var(--border)] text-[10px] font-bold text-[var(--text-muted)] uppercase flex justify-between items-center"
                       style={{ backgroundColor: 'var(--bg-elevated)' }}
                     >
-                      <span>Colonnes visibles</span>
+                      <span>{t('fleet.columnMenu.visibleTitle')}</span>
                       <button
                         className="text-[var(--primary)] hover:underline"
                         onClick={() => {
@@ -1350,7 +1363,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                           );
                         }}
                       >
-                        Reset
+                        {t('fleet.columnMenu.reset')}
                       </button>
                     </div>
                     {/* Visible columns — draggable to reorder */}
@@ -1390,7 +1403,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                               className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                               style={{ backgroundColor: 'var(--bg-surface)' }}
                             />
-                            <span className="text-[var(--text-primary)] truncate">{col.label}</span>
+                            <span className="text-[var(--text-primary)] truncate">{t(`fleet.columns.${col.id}`)}</span>
                           </div>
                         );
                       })}
@@ -1402,7 +1415,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                           className="px-2 py-1 text-[10px] font-bold text-[var(--text-muted)] uppercase border-t border-[var(--border)]"
                           style={{ backgroundColor: 'var(--bg-elevated)' }}
                         >
-                          Colonnes masquées
+                          {t('fleet.columnMenu.hiddenTitle')}
                         </div>
                         <div className="max-h-32 overflow-y-auto custom-scrollbar p-1">
                           {ALL_COLUMNS.filter((c) => !visibleColumnIds.includes(c.id)).map((col) => (
@@ -1418,7 +1431,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                                 className="rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                                 style={{ backgroundColor: 'var(--bg-surface)' }}
                               />
-                              <span className="text-[var(--text-muted)] truncate">{col.label}</span>
+                              <span className="text-[var(--text-muted)] truncate">{t(`fleet.columns.${col.id}`)}</span>
                             </label>
                           ))}
                         </div>
@@ -1443,7 +1456,12 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 style={{ backgroundColor: 'var(--bg-surface)' }}
               >
                 <span className="text-sm font-semibold text-[var(--text-primary)]">
-                  {filteredVehicles.length} véhicule{filteredVehicles.length !== 1 ? 's' : ''}
+                  {t(
+                    filteredVehicles.length === 1
+                      ? 'fleet.mobileCards.vehiclesCount_one'
+                      : 'fleet.mobileCards.vehiclesCount_other',
+                    { count: filteredVehicles.length }
+                  )}
                 </span>
                 <div className="flex items-center gap-2.5">
                   <button
@@ -1451,7 +1469,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       setStatusFilter([VehicleStatus.MOVING]);
                     }}
                     className="flex items-center gap-1 text-xs font-medium"
-                    title="En mouvement"
+                    title={t('fleet.mobileCards.statusMoving')}
                   >
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                     <span className="text-[var(--clr-success)]">{stats.moving}</span>
@@ -1461,7 +1479,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       setStatusFilter([VehicleStatus.IDLE]);
                     }}
                     className="flex items-center gap-1 text-xs font-medium"
-                    title="Au ralenti"
+                    title={t('fleet.mobileCards.statusIdle')}
                   >
                     <span className="w-2 h-2 rounded-full bg-amber-400"></span>
                     <span className="text-[var(--clr-caution)]">{stats.idle}</span>
@@ -1471,7 +1489,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       setStatusFilter([VehicleStatus.STOPPED]);
                     }}
                     className="flex items-center gap-1 text-xs font-medium"
-                    title="Arrêté"
+                    title={t('fleet.mobileCards.statusStopped')}
                   >
                     <span className="w-2 h-2 rounded-full bg-red-400"></span>
                     <span className="text-red-500 dark:text-red-400">{stats.stopped}</span>
@@ -1481,7 +1499,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       setStatusFilter([VehicleStatus.OFFLINE]);
                     }}
                     className="flex items-center gap-1 text-xs font-medium"
-                    title="Hors ligne"
+                    title={t('fleet.mobileCards.statusOffline')}
                   >
                     <span className="w-2 h-2 rounded-full bg-[var(--text-secondary)]"></span>
                     <span className="text-[var(--text-secondary)]">{stats.offline}</span>
@@ -1491,7 +1509,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       onClick={() => setStatusFilter([])}
                       className="text-[10px] text-[var(--primary)] underline ml-1"
                     >
-                      Tout
+                      {t('fleet.kpi.clearFilter')}
                     </button>
                   )}
                 </div>
@@ -1513,24 +1531,29 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     if (min < 1440)
                       return `${Math.floor(min / 60)}h${min % 60 > 0 ? String(min % 60).padStart(2, '0') : ''}`;
                     const days = Math.floor(min / 1440);
-                    return `${days} jour${days > 1 ? 's' : ''}`;
+                    return `${days} ${t(days === 1 ? 'fleet.mobileCards.dayUnit_one' : 'fleet.mobileCards.dayUnit_other')}`;
                   };
-                  const durationStr = minutesAgo !== null ? ` depuis ${formatDuration(minutesAgo)}` : '';
+                  const durationStr =
+                    minutesAgo !== null
+                      ? ` ${t('fleet.mobileCards.durationSince', { duration: formatDuration(minutesAgo) })}`
+                      : '';
                   const statusLabel = isMoving
-                    ? `En mouvement${durationStr}`
+                    ? `${t('fleet.mobileCards.statusMoving')}${durationStr}`
                     : isIdle
-                      ? `Au ralenti${durationStr}`
+                      ? `${t('fleet.mobileCards.statusIdle')}${durationStr}`
                       : vehicle.status === VehicleStatus.STOPPED
-                        ? `Arrêté${durationStr}`
-                        : `Hors ligne${durationStr}`;
+                        ? `${t('fleet.mobileCards.statusStopped')}${durationStr}`
+                        : `${t('fleet.mobileCards.statusOffline')}${durationStr}`;
                   const relativeTime = vehicle.lastUpdated
                     ? (() => {
                         const diff = (Date.now() - new Date(vehicle.lastUpdated).getTime()) / 1000;
-                        if (diff < 60) return "À l'instant";
-                        if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-                        if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
+                        if (diff < 60) return t('fleet.mobileCards.justNow');
+                        if (diff < 3600) return t('fleet.mobileCards.minAgo', { n: Math.floor(diff / 60) });
+                        if (diff < 86400) return t('fleet.mobileCards.hourAgo', { n: Math.floor(diff / 3600) });
                         const days = Math.floor(diff / 86400);
-                        return `Il y a ${days} jour${days > 1 ? 's' : ''}`;
+                        return t(days === 1 ? 'fleet.mobileCards.dayAgo_one' : 'fleet.mobileCards.dayAgo_other', {
+                          n: days,
+                        });
                       })()
                     : '--';
                   const syncDate = vehicle.lastUpdated
@@ -1542,7 +1565,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     : '--';
 
                   // Address display: prefer reverse-geocoded address, fallback to geofence
-                  const locationText = vehicle.address || vehicle.geofence || 'Position inconnue';
+                  const locationText = vehicle.address || vehicle.geofence || t('fleet.mobileCards.unknownLocation');
 
                   const cardBg = isMoving
                     ? 'bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]'
@@ -1678,16 +1701,16 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                       <EmptyState
                         compact
                         icon={Truck}
-                        title="Aucun véhicule"
-                        description="Aucun véhicule n'est encore enregistré dans la flotte."
+                        title={t('fleet.emptyStates.noVehiclesTitle')}
+                        description={t('fleet.emptyStates.noVehiclesDesc')}
                       />
                     ) : (
                       <EmptyState
                         compact
                         icon={FilterX}
-                        title="Aucun résultat"
-                        description="Aucun véhicule ne correspond aux filtres actifs."
-                        actionLabel="Effacer les filtres"
+                        title={t('fleet.emptyStates.noResultsTitle')}
+                        description={t('fleet.emptyStates.noResultsDesc')}
+                        actionLabel={t('fleet.emptyStates.clearFilters')}
                         onAction={resetFilters}
                       />
                     )}
@@ -1700,7 +1723,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                     className="w-full py-3 text-sm font-medium text-[var(--primary)] border border-[var(--border)] rounded-xl hover:bg-[var(--primary-dim)] transition-colors"
                     style={{ backgroundColor: 'var(--bg-surface)' }}
                   >
-                    Afficher plus ({filteredVehicles.length - mobileDisplayCount} restants)
+                    {t('fleet.mobileCards.showMore', { count: filteredVehicles.length - mobileDisplayCount })}
                   </button>
                 )}
               </div>
@@ -1779,20 +1802,20 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                             <button
                               onClick={() => onLocationClick(vehicle)}
                               className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--primary)] hover:bg-[var(--primary-dim)] transition-colors whitespace-nowrap"
-                              title="Voir sur la carte"
+                              title={t('fleet.rowActions.viewOnMap')}
                             >
                               <MapPin className="w-3 h-3" />
-                              <span className="hidden xl:inline">Carte</span>
+                              <span className="hidden xl:inline">{t('fleet.rowActions.mapShort')}</span>
                             </button>
                           )}
                           {onVehicleClick && (
                             <button
                               onClick={() => onVehicleClick(vehicle)}
                               className="flex items-center gap-1 px-2 py-1 rounded text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] transition-colors whitespace-nowrap"
-                              title="Voir le détail"
+                              title={t('fleet.rowActions.viewDetail')}
                             >
                               <ChevronRight className="w-3 h-3" />
-                              <span className="hidden xl:inline">Détail</span>
+                              <span className="hidden xl:inline">{t('fleet.rowActions.detailShort')}</span>
                             </button>
                           )}
                         </div>
@@ -1805,15 +1828,15 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                   (vehicles.length === 0 ? (
                     <EmptyState
                       icon={Truck}
-                      title="Aucun véhicule"
-                      description="Aucun véhicule n'est encore enregistré dans la flotte."
+                      title={t('fleet.emptyStates.noVehiclesTitle')}
+                      description={t('fleet.emptyStates.noVehiclesDesc')}
                     />
                   ) : (
                     <EmptyState
                       icon={FilterX}
-                      title="Aucun résultat"
-                      description="Aucun véhicule ne correspond aux filtres actifs."
-                      actionLabel="Effacer les filtres"
+                      title={t('fleet.emptyStates.noResultsTitle')}
+                      description={t('fleet.emptyStates.noResultsDesc')}
+                      actionLabel={t('fleet.emptyStates.clearFilters')}
                       onAction={resetFilters}
                     />
                   ))}
@@ -1829,7 +1852,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
             style={{ backgroundColor: 'var(--bg-surface)' }}
           >
             <div className="flex items-center gap-2">
-              <span className="text-xs text-[var(--text-muted)]">Afficher</span>
+              <span className="text-xs text-[var(--text-muted)]">{t('fleet.pagination.show')}</span>
               <select
                 aria-label="Items per page"
                 value={itemsPerPage}
@@ -1842,7 +1865,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
                 <option value={50}>50</option>
                 <option value={100}>100</option>
               </select>
-              <span className="text-xs text-[var(--text-muted)]">par page</span>
+              <span className="text-xs text-[var(--text-muted)]">{t('fleet.pagination.perPage')}</span>
             </div>
             <Pagination currentPage={currentPage} totalPages={totalPages || 1} onPageChange={setCurrentPage} />
           </div>
@@ -1852,7 +1875,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           isOpen={isImportModalOpen}
           onClose={() => setIsImportModalOpen(false)}
           onImport={handleImport}
-          title="Importer des véhicules"
+          title={t('fleet.importTitle')}
           requiredColumns={['name', 'client', 'driver']}
           sampleData="name,client,driver,speed,fuelLevel,mileage\nPeugeot 308,Acme Corp,John Doe,0,85,12500\nRenault Clio,Tech Solutions,Jane Smith,0,45,8900"
         />
@@ -1869,7 +1892,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
           tabs={[
             {
               id: 'status',
-              label: 'Statut',
+              label: t('fleet.mobileFilter.status'),
               activeCount: statusFilter.length,
               content: Object.values(VehicleStatus).map((s) => (
                 <FilterCheckRow
@@ -1886,7 +1909,7 @@ export const FleetTable: React.FC<FleetTableProps> = ({
             },
             {
               id: 'client',
-              label: 'Client',
+              label: t('fleet.mobileFilter.client'),
               activeCount: activeFilters.client.length,
               content: uniqueClients.map((c) => (
                 <FilterCheckRow
@@ -1906,11 +1929,13 @@ export const FleetTable: React.FC<FleetTableProps> = ({
             },
             {
               id: 'group',
-              label: 'Groupe',
+              label: t('fleet.mobileFilter.group'),
               activeCount: activeFilters.group.length,
               content:
                 uniqueGroups.length === 0 ? (
-                  <p className="text-sm text-[var(--text-muted)] text-center py-8">Aucun groupe disponible</p>
+                  <p className="text-sm text-[var(--text-muted)] text-center py-8">
+                    {t('fleet.mobileFilter.noGroupAvailable')}
+                  </p>
                 ) : (
                   uniqueGroups.map((g) => (
                     <FilterCheckRow

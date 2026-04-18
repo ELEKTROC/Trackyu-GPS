@@ -974,8 +974,10 @@ export type SidebarGroup = 'operations' | 'business' | 'technique' | 'support' |
 
 export interface SidebarMenuItem {
   id: string; // Correspond à View enum
-  label: string; // Label affiché
+  label: string; // Label affiché (fallback FR)
+  labelKey?: string; // Clé i18n pour le label
   mobileLabel?: string; // Label court pour bottom nav (sinon label tronqué)
+  mobileLabelKey?: string; // Clé i18n pour le label mobile
   icon: string; // Nom de l'icône Lucide
   moduleId?: string; // ID du module de permissions (optionnel si toujours visible)
   permission?: string; // Permission requise (générée depuis moduleId si non spécifiée)
@@ -986,7 +988,8 @@ export interface SidebarMenuItem {
 
 export interface SidebarMenuGroup {
   id: SidebarGroup;
-  title: string;
+  title: string; // Fallback FR
+  titleKey?: string; // Clé i18n pour le titre du groupe
   order: number;
   items: SidebarMenuItem[];
 }
@@ -1003,12 +1006,15 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
   {
     id: 'operations',
     title: 'Opérations',
+    titleKey: 'nav.groups.operations',
     order: 1,
     items: [
       {
         id: 'DASHBOARD',
         label: 'Tableau de bord',
+        labelKey: 'nav.items.DASHBOARD.label',
         mobileLabel: 'Accueil',
+        mobileLabelKey: 'nav.items.DASHBOARD.mobileLabel',
         icon: 'LayoutDashboard',
         moduleId: 'dashboard',
         permission: 'VIEW_DASHBOARD',
@@ -1017,7 +1023,9 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'MAP',
         label: 'Carte en direct',
+        labelKey: 'nav.items.MAP.label',
         mobileLabel: 'Carte',
+        mobileLabelKey: 'nav.items.MAP.mobileLabel',
         icon: 'Map',
         moduleId: 'map',
         permission: 'VIEW_MAP',
@@ -1027,7 +1035,9 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'FLEET',
         label: 'Véhicules',
+        labelKey: 'nav.items.FLEET.label',
         mobileLabel: 'Flotte',
+        mobileLabelKey: 'nav.items.FLEET.mobileLabel',
         icon: 'Truck',
         moduleId: 'vehicles',
         permission: 'VIEW_FLEET',
@@ -1037,6 +1047,7 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'AGENDA',
         label: 'Agenda',
+        labelKey: 'nav.items.AGENDA.label',
         icon: 'Calendar',
         alwaysVisible: true,
         order: 4,
@@ -1045,7 +1056,9 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'REPORTS',
         label: 'Rapports',
+        labelKey: 'nav.items.REPORTS.label',
         mobileLabel: 'Rapports',
+        mobileLabelKey: 'nav.items.REPORTS.mobileLabel',
         icon: 'FileText',
         moduleId: 'reports',
         permission: 'VIEW_REPORTS',
@@ -1056,12 +1069,15 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
   {
     id: 'business',
     title: 'Business',
+    titleKey: 'nav.groups.business',
     order: 2,
     items: [
       {
         id: 'PRESALES',
         label: 'Prévente',
+        labelKey: 'nav.items.PRESALES.label',
         mobileLabel: 'Prévente',
+        mobileLabelKey: 'nav.items.PRESALES.mobileLabel',
         icon: 'Briefcase',
         moduleId: 'leads',
         permission: 'VIEW_CRM',
@@ -1071,7 +1087,9 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'SALES',
         label: 'Vente',
+        labelKey: 'nav.items.SALES.label',
         mobileLabel: 'Ventes',
+        mobileLabelKey: 'nav.items.SALES.mobileLabel',
         icon: 'ShoppingCart',
         moduleId: 'clients',
         permission: 'MANAGE_CLIENTS',
@@ -1081,7 +1099,9 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'ACCOUNTING',
         label: 'Comptabilité',
+        labelKey: 'nav.items.ACCOUNTING.label',
         mobileLabel: 'Compta',
+        mobileLabelKey: 'nav.items.ACCOUNTING.mobileLabel',
         icon: 'Calculator',
         moduleId: 'payments',
         permission: 'VIEW_FINANCE',
@@ -1093,12 +1113,15 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
   {
     id: 'technique',
     title: 'Technique',
+    titleKey: 'nav.groups.technique',
     order: 3,
     items: [
       {
         id: 'TECH',
         label: 'Interventions',
+        labelKey: 'nav.items.TECH.label',
         mobileLabel: 'Tech',
+        mobileLabelKey: 'nav.items.TECH.mobileLabel',
         icon: 'Wrench',
         moduleId: 'interventions',
         permission: 'VIEW_TECH',
@@ -1107,6 +1130,7 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'MONITORING',
         label: 'Monitoring',
+        labelKey: 'nav.items.MONITORING.label',
         icon: 'Activity',
         moduleId: 'interventions',
         permission: 'VIEW_TECH',
@@ -1116,7 +1140,9 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
       {
         id: 'STOCK',
         label: 'Matériel & Stock',
+        labelKey: 'nav.items.STOCK.label',
         mobileLabel: 'Stock',
+        mobileLabelKey: 'nav.items.STOCK.mobileLabel',
         icon: 'Package',
         moduleId: 'stock',
         permission: 'MANAGE_STOCK',
@@ -1127,12 +1153,15 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
   {
     id: 'support',
     title: 'Support',
+    titleKey: 'nav.groups.support',
     order: 4,
     items: [
       {
         id: 'SUPPORT',
         label: 'Tickets',
+        labelKey: 'nav.items.SUPPORT.label',
         mobileLabel: 'Tickets',
+        mobileLabelKey: 'nav.items.SUPPORT.mobileLabel',
         icon: 'Headset',
         moduleId: 'tickets',
         permission: 'VIEW_SUPPORT',
@@ -1144,17 +1173,26 @@ export const SIDEBAR_MENU: SidebarMenuGroup[] = [
   {
     id: 'admin',
     title: 'Admin',
+    titleKey: 'nav.groups.admin',
     order: 5,
     items: [
       {
         id: 'ADMIN',
         label: 'Administration',
+        labelKey: 'nav.items.ADMIN.label',
         icon: 'ShieldCheck',
         moduleId: 'admin',
         permission: 'VIEW_ADMIN',
         order: 1,
       },
-      { id: 'SETTINGS', label: 'Paramètres', icon: 'Settings', alwaysVisible: true, order: 2 },
+      {
+        id: 'SETTINGS',
+        label: 'Paramètres',
+        labelKey: 'nav.items.SETTINGS.label',
+        icon: 'Settings',
+        alwaysVisible: true,
+        order: 2,
+      },
     ],
   },
 ];

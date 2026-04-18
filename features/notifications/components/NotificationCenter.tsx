@@ -17,6 +17,7 @@ import {
   Search,
   Filter,
 } from 'lucide-react';
+import { useTranslation } from '../../../i18n';
 
 export interface Notification {
   id: string;
@@ -52,6 +53,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   onClearAll,
   onAction,
 }) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<'ALL' | 'UNREAD' | 'TYPE_ALERT' | 'TYPE_WARNING' | 'TYPE_INFO' | 'TYPE_SUCCESS'>(
     'ALL'
   );
@@ -112,10 +114,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     const now = new Date();
     const diff = (now.getTime() - date.getTime()) / 1000; // secondes
 
-    if (diff < 60) return "À l'instant";
-    if (diff < 3600) return `Il y a ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `Il y a ${Math.floor(diff / 3600)} h`;
-    return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    if (diff < 60) return t('notifications.time.justNow');
+    if (diff < 3600) return t('notifications.time.minutesAgo', { count: Math.floor(diff / 60) });
+    if (diff < 86400) return t('notifications.time.hoursAgo', { count: Math.floor(diff / 3600) });
+    return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
   };
 
   return (
@@ -137,7 +139,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[var(--bg-surface)]"></span>
               )}
             </div>
-            <h2 className="font-bold text-[var(--text-primary)]">Notifications</h2>
+            <h2 className="font-bold text-[var(--text-primary)]">{t('notifications.title')}</h2>
             <span className="bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] px-2 py-0.5 rounded-full text-xs font-bold">
               {unreadCount}
             </span>
@@ -145,7 +147,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <div className="flex items-center gap-1">
             <button
               onClick={onMarkAllAsRead}
-              title="Tout marquer comme lu"
+              title={t('notifications.markAllRead')}
               className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--bg-surface)] rounded-full text-[var(--text-secondary)] transition-colors"
             >
               <Check className="w-5 h-5" />
@@ -166,7 +168,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <input
                 type="text"
-                placeholder="Rechercher..."
+                placeholder={t('notifications.searchPlaceholder')}
                 className="w-full pl-9 pr-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-all placeholder-slate-400 text-[var(--text-primary)]"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -179,7 +181,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   ? 'bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border-[var(--border)] dark:border-[var(--primary)] text-[var(--primary)] dark:text-[var(--primary)]'
                   : 'bg-[var(--bg-elevated)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)]'
               }`}
-              title="Filtres"
+              title={t('notifications.filtersTitle')}
             >
               <Filter className="w-4 h-4" />
             </button>
@@ -188,11 +190,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           {isFilterMenuOpen ? (
             <div className="flex gap-2 overflow-x-auto pb-2 pt-1 animate-in slide-in-from-top-1 fade-in duration-200 custom-scrollbar">
               {[
-                { id: 'ALL', label: 'Tout' },
-                { id: 'TYPE_ALERT', label: 'Alertes' },
-                { id: 'TYPE_WARNING', label: 'Avertis.' },
-                { id: 'TYPE_INFO', label: 'Infos' },
-                { id: 'TYPE_SUCCESS', label: 'Succès' },
+                { id: 'ALL', label: t('notifications.filters.all') },
+                { id: 'TYPE_ALERT', label: t('notifications.filters.alerts') },
+                { id: 'TYPE_WARNING', label: t('notifications.filters.warnings') },
+                { id: 'TYPE_INFO', label: t('notifications.filters.infos') },
+                { id: 'TYPE_SUCCESS', label: t('notifications.filters.success') },
               ].map((type) => (
                 <button
                   key={type.id}
@@ -213,19 +215,19 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 onClick={() => setFilter('ALL')}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'ALL' ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-surface)]'}`}
               >
-                Tout
+                {t('notifications.filters.all')}
               </button>
               <button
                 onClick={() => setFilter('UNREAD')}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-colors whitespace-nowrap ${filter === 'UNREAD' ? 'bg-[var(--primary)] text-white border-[var(--primary)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border)] hover:bg-[var(--bg-surface)]'}`}
               >
-                Non lu
+                {t('notifications.filters.unread')}
               </button>
               <button
                 onClick={onClearAll}
                 className="ml-auto text-xs text-[var(--text-muted)] hover:text-red-500 flex items-center gap-1 px-2 whitespace-nowrap"
               >
-                <Trash2 className="w-3 h-3" /> Vider
+                <Trash2 className="w-3 h-3" /> {t('notifications.clearAll')}
               </button>
             </div>
           )}
@@ -236,7 +238,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           {filteredNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 text-[var(--text-muted)]">
               <Bell className="w-12 h-12 mb-4 opacity-20" />
-              <p className="text-sm">Aucune notification trouvée.</p>
+              <p className="text-sm">{t('notifications.empty')}</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -279,9 +281,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           }}
                           className="text-[10px] font-bold bg-[var(--bg-elevated)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text-secondary)] hover:text-[var(--primary)] dark:hover:text-[var(--primary)] hover:border-[var(--border)] dark:hover:border-[var(--primary)] transition-colors flex items-center gap-1 w-fit shadow-sm"
                         >
-                          {n.category === 'FLEET' && 'Voir le véhicule'}
-                          {n.category === 'SUPPORT' && 'Ouvrir le ticket'}
-                          {n.category === 'FINANCE' && 'Voir la facture'}
+                          {n.category === 'FLEET' && t('notifications.actions.viewVehicle')}
+                          {n.category === 'SUPPORT' && t('notifications.actions.openTicket')}
+                          {n.category === 'FINANCE' && t('notifications.actions.viewInvoice')}
                           <ChevronRight className="w-3 h-3" />
                         </button>
                       )}
@@ -292,7 +294,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       <button
                         onClick={() => onMarkAsRead(n.id)}
                         className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center hover:bg-[var(--bg-elevated)] text-[var(--primary)] transition-colors"
-                        title="Marquer comme lu"
+                        title={t('notifications.markAsRead')}
                       >
                         <div className="w-2 h-2 bg-[var(--primary-dim)]0 rounded-full group-hover:hidden"></div>
                         <Check className="w-4 h-4 hidden group-hover:block" />

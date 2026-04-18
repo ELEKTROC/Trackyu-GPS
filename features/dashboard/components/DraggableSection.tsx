@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, ChevronDown, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import type { DashboardSectionId } from '../../../hooks/useDashboardLayout';
+import { useTranslation } from '../../../i18n';
 
 interface DraggableSectionProps {
   id: DashboardSectionId;
@@ -27,6 +28,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
   children,
   showHeader = true,
 }) => {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style: React.CSSProperties = {
@@ -52,8 +54,8 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
             {...attributes}
             {...listeners}
             className={`p-1 rounded-md text-[var(--text-muted)] dark:text-[var(--text-secondary)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50 cursor-grab active:cursor-grabbing transition-colors ${editMode ? 'opacity-100' : 'opacity-0 group-hover/section:opacity-100 focus:opacity-100'}`}
-            aria-label={`Déplacer la section ${label}`}
-            title="Glisser pour réorganiser"
+            aria-label={t('dashboard.draggable.moveSection', { label })}
+            title={t('dashboard.draggable.dragToReorder')}
           >
             <GripVertical className="w-4 h-4" />
           </button>
@@ -75,7 +77,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
             <button
               onClick={() => onToggleHidden(id)}
               className={`p-1 rounded-md transition-colors ${hidden ? 'text-red-400 hover:text-red-500 hover:bg-[var(--clr-danger-dim)]' : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)] dark:hover:text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]/50'}`}
-              title={hidden ? 'Afficher cette section' : 'Masquer cette section'}
+              title={hidden ? t('dashboard.draggable.showSection') : t('dashboard.draggable.hideSection')}
             >
               {hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -97,7 +99,7 @@ export const DraggableSection: React.FC<DraggableSectionProps> = ({
       {/* Hidden placeholder in edit mode */}
       {hidden && editMode && (
         <div className="flex items-center justify-center py-4 text-xs text-[var(--text-muted)] dark:text-[var(--text-secondary)] italic">
-          Section masquée — cliquez sur l'œil pour réafficher
+          {t('dashboard.draggable.hiddenPlaceholder')}
         </div>
       )}
     </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Bell, AlertTriangle, Fuel, MapPin, Navigation, AlertCircle, Zap, Siren } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 // ============================================================
 // TrackYu GPS - NotificationToast Component
@@ -181,7 +182,7 @@ const ToastItem: React.FC<{
 
           {notification.timestamp && (
             <p className={`text-[10px] ${styles.subtext} opacity-60 mt-1`}>
-              {notification.timestamp.toLocaleTimeString('fr-FR')}
+              {notification.timestamp.toLocaleTimeString()}
             </p>
           )}
         </div>
@@ -220,6 +221,7 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
   position = 'top-right',
   maxVisible = 5,
 }) => {
+  const { t } = useTranslation();
   const visibleNotifications = notifications.slice(0, maxVisible);
   const hiddenCount = Math.max(0, notifications.length - maxVisible);
 
@@ -246,7 +248,7 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
           className="self-end pointer-events-auto px-3 py-1.5 text-xs rounded-full shadow-lg transition-colors flex items-center gap-1.5 bg-[var(--bg-elevated)] text-[var(--text-primary)] hover:bg-[var(--border-strong)]"
         >
           <X className="w-3 h-3" />
-          Tout fermer ({notifications.length})
+          {t('notifications.dismissAll', { count: notifications.length })}
         </button>
       )}
 
@@ -265,7 +267,7 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
         {/* Hidden count indicator */}
         {hiddenCount > 0 && (
           <div className="text-center py-2 px-4 bg-[var(--bg-elevated)] text-[var(--text-primary)] text-xs rounded-lg shadow-lg border border-[var(--border)]">
-            +{hiddenCount} autres notifications
+            {t('notifications.moreCount', { count: hiddenCount })}
           </div>
         )}
       </div>

@@ -1510,9 +1510,9 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                                         }`}
                                       >
                                         {vehicle.status === VehicleStatus.MOVING
-                                          ? 'En mouvement'
+                                          ? 'En route'
                                           : vehicle.status === VehicleStatus.IDLE
-                                            ? 'Au ralenti'
+                                            ? 'Ralenti'
                                             : vehicle.status === VehicleStatus.STOPPED
                                               ? 'Arrêté'
                                               : 'Hors ligne'}

@@ -3,6 +3,7 @@ import { Card } from '../../../../components/Card';
 import { ChevronLeft, ChevronRight, Wrench, Briefcase, User, MapPin, Clock, GripVertical } from 'lucide-react';
 import { format, isSameMonth, isSameDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useTranslation } from '../../../../i18n';
 
 interface AgendaCalendarProps {
   currentDate: Date;
@@ -29,6 +30,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
   onEventClick,
   onEventMove,
 }) => {
+  const { t } = useTranslation();
   const [hoveredEvent, setHoveredEvent] = useState<any>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [draggedEvent, setDraggedEvent] = useState<any>(null);
@@ -105,7 +107,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
             onClick={() => setCurrentDate(new Date())}
             className="px-3 py-1 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] rounded-lg"
           >
-            Aujourd'hui
+            {t('agenda.calendar.today')}
           </button>
           <button onClick={nextMonth} className="p-2 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors">
             <ChevronRight className="w-5 h-5 text-[var(--text-secondary)]" />
@@ -115,13 +117,13 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
 
       <div className="grid grid-cols-7 border-t border-l border-[var(--border)]">
         {[
-          ['L', 'Lun'],
-          ['M', 'Mar'],
-          ['M', 'Mer'],
-          ['J', 'Jeu'],
-          ['V', 'Ven'],
-          ['S', 'Sam'],
-          ['D', 'Dim'],
+          [t('agenda.calendar.days.monShort'), t('agenda.calendar.days.monFull')],
+          [t('agenda.calendar.days.tueShort'), t('agenda.calendar.days.tueFull')],
+          [t('agenda.calendar.days.wedShort'), t('agenda.calendar.days.wedFull')],
+          [t('agenda.calendar.days.thuShort'), t('agenda.calendar.days.thuFull')],
+          [t('agenda.calendar.days.friShort'), t('agenda.calendar.days.friFull')],
+          [t('agenda.calendar.days.satShort'), t('agenda.calendar.days.satFull')],
+          [t('agenda.calendar.days.sunShort'), t('agenda.calendar.days.sunFull')],
         ].map(([short, full]) => (
           <div
             key={full}
@@ -231,7 +233,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
                 <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{hoveredEvent.title}</p>
                 {hoveredEvent.clientName && hoveredEvent.clientName !== hoveredEvent.title && (
                   <p className="text-xs text-[var(--primary)] dark:text-[var(--primary)] font-medium truncate">
-                    Client: {hoveredEvent.clientName}
+                    {t('agenda.tooltip.clientLabel')}: {hoveredEvent.clientName}
                   </p>
                 )}
               </div>
@@ -249,7 +251,9 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
               {/* Agent */}
               <div className="flex items-center gap-2 text-xs">
                 <User className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                <span className="text-[var(--text-secondary)]">{hoveredEvent.agentName || 'Non assigné'}</span>
+                <span className="text-[var(--text-secondary)]">
+                  {hoveredEvent.agentName || t('agenda.tooltip.notAssigned')}
+                </span>
               </div>
 
               {/* Localisation */}
@@ -273,15 +277,15 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
                     }`}
                   >
                     {hoveredEvent.status === 'TODO'
-                      ? 'À faire'
+                      ? t('agenda.status.todo')
                       : hoveredEvent.status === 'IN_PROGRESS'
-                        ? 'En cours'
+                        ? t('agenda.status.inProgress')
                         : hoveredEvent.status === 'DONE'
-                          ? 'Terminé'
+                          ? t('agenda.status.done')
                           : hoveredEvent.status === 'COMPLETED'
-                            ? 'Terminé'
+                            ? t('agenda.status.done')
                             : hoveredEvent.status === 'SCHEDULED'
-                              ? 'Planifié'
+                              ? t('agenda.status.scheduled')
                               : hoveredEvent.status}
                   </span>
                 </div>
@@ -291,7 +295,7 @@ export const AgendaCalendar: React.FC<AgendaCalendarProps> = ({
             {/* Indication drag & drop */}
             {onEventMove && (
               <p className="text-[9px] text-[var(--text-muted)] italic pt-1 border-t border-[var(--border)] border-[var(--border)]">
-                💡 Glissez-déposez pour déplacer
+                {t('agenda.tooltip.dragHint')}
               </p>
             )}
           </div>

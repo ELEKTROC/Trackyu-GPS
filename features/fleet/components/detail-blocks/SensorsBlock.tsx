@@ -2,6 +2,7 @@ import React from 'react';
 import { Thermometer, Scale, Gauge, Zap, Wind, AlertCircle, Truck } from 'lucide-react';
 import { ConfigurableRow } from './SharedBlocks';
 import type { Vehicle } from '../../../../types';
+import { useTranslation } from '../../../../i18n';
 
 interface SensorsBlockProps {
   vehicle: Vehicle;
@@ -18,6 +19,7 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
   hiddenFields,
   toggleFieldVisibility,
 }) => {
+  const { t } = useTranslation();
   const can = vehicle.canData || {};
   const tpms = vehicle.tpms || {};
 
@@ -34,7 +36,9 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
           <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] border-[var(--border)]/50 rounded-lg flex items-center gap-3">
             <Gauge className="w-5 h-5 text-orange-500" />
             <div>
-              <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">Régime Moteur</div>
+              <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">
+                {t('fleet.sensors.engineRpm')}
+              </div>
               <div className="text-lg font-bold text-[var(--text-primary)]">
                 {can.rpm || '---'} <span className="text-xs font-normal text-[var(--text-muted)]">RPM</span>
               </div>
@@ -51,10 +55,12 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
           <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] border-[var(--border)]/50 rounded-lg flex items-center gap-3">
             <Zap className="w-5 h-5 text-yellow-500" />
             <div>
-              <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">Batterie</div>
+              <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">
+                {t('fleet.sensors.battery')}
+              </div>
               <div className="text-lg font-bold text-[var(--text-primary)]">
                 {can.batteryVoltage || vehicle.batteryLevel || '---'}{' '}
-                <span className="text-xs font-normal text-[var(--text-muted)]">V</span>
+                <span className="text-xs font-normal text-[var(--text-muted)]">%</span>
               </div>
             </div>
           </div>
@@ -69,7 +75,9 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
           <div className="p-3 bg-[var(--bg-elevated)] border border-[var(--border)] border-[var(--border)]/50 rounded-lg flex items-center gap-3">
             <Wind className="w-5 h-5 text-[var(--primary)]" />
             <div>
-              <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">Pression Air</div>
+              <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase">
+                {t('fleet.sensors.airPressure')}
+              </div>
               <div className="text-lg font-bold text-[var(--text-primary)]">
                 {can.airPressure || '---'} <span className="text-xs font-normal text-[var(--text-muted)]">bar</span>
               </div>
@@ -86,7 +94,9 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
           <div className="p-3 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] border border-[var(--primary)] dark:border-[var(--primary)] rounded-lg flex items-center gap-3">
             <Thermometer className="w-5 h-5 text-[var(--primary)]" />
             <div>
-              <div className="text-[10px] text-[var(--primary)] font-bold uppercase">Temp. Moteur</div>
+              <div className="text-[10px] text-[var(--primary)] font-bold uppercase">
+                {t('fleet.sensors.engineTemp')}
+              </div>
               <div className="text-lg font-bold text-[var(--primary)] dark:text-[var(--primary)]">
                 {can.engineTemp || vehicle.temperature || '---'}°C
               </div>
@@ -105,7 +115,7 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
         <div className="p-4 bg-slate-900 rounded-xl border border-slate-800 overflow-hidden relative">
           <div className="text-xs font-bold text-[var(--text-secondary)] uppercase mb-4 flex items-center gap-2">
             <AlertCircle className="w-3 h-3 text-orange-400" />
-            Monitoring Pression Pneus (TPMS)
+            {t('fleet.sensors.tpmsTitle')}
           </div>
 
           <div className="flex justify-center items-center gap-12 relative py-4">
@@ -116,14 +126,14 @@ export const SensorsBlock: React.FC<SensorsBlockProps> = ({
 
             {/* Tires column Left */}
             <div className="space-y-8 z-10">
-              <Tire value={tpms[1]} label="AV.G" />
-              <Tire value={tpms[3]} label="AR.G" />
+              <Tire value={tpms[1]} label={t('fleet.sensors.tireFrontLeft')} />
+              <Tire value={tpms[3]} label={t('fleet.sensors.tireRearLeft')} />
             </div>
 
             {/* Tires column Right */}
             <div className="space-y-8 z-10">
-              <Tire value={tpms[2]} label="AV.D" />
-              <Tire value={tpms[4]} label="AR.D" />
+              <Tire value={tpms[2]} label={t('fleet.sensors.tireFrontRight')} />
+              <Tire value={tpms[4]} label={t('fleet.sensors.tireRearRight')} />
             </div>
           </div>
         </div>

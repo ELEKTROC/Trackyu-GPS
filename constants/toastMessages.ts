@@ -1,292 +1,588 @@
 /**
  * Messages toast centralisés pour toute l'application TrackYu GPS.
- * 
+ *
  * Convention :
- * - Tous les messages visibles utilisateur sont en français
+ * - Les libellés sont résolus via i18n (clés `toasts.*` dans i18n/locales)
  * - Pas d'emojis dans les messages (les icônes du toast s'en chargent)
  * - Messages concis (max ~60 caractères)
  * - Ton professionnel et actionnable
- * 
+ *
  * Usage :
  *   import { TOAST } from '../constants/toastMessages';
  *   showToast(TOAST.CRUD.CREATED('Véhicule'), 'success');
  *   showToast(TOAST.CRUD.ERROR_CREATE('devis'), 'error');
  */
 
+import { tGlobal } from '../i18n';
+
 // ─── CRUD Générique ──────────────────────────────────────────────────
 export const CRUD = {
-  CREATED: (entity: string) => `${entity} créé(e) avec succès`,
-  UPDATED: (entity: string) => `${entity} mis(e) à jour`,
-  DELETED: (entity: string) => `${entity} supprimé(e)`,
-  DUPLICATED: (entity: string) => `${entity} dupliqué(e)`,
-  SAVED: (entity?: string) => entity ? `${entity} enregistré(e)` : 'Enregistrement effectué',
-  ARCHIVED: (entity: string) => `${entity} archivé(e)`,
-  ACTIVATED: (entity: string) => `${entity} activé(e)`,
-  DEACTIVATED: (entity: string) => `${entity} désactivé(e)`,
-  
-  ERROR_CREATE: (entity: string) => `Erreur lors de la création ${entity ? `du/de la ${entity}` : ''}`.trim(),
-  ERROR_UPDATE: (entity: string) => `Erreur lors de la mise à jour ${entity ? `du/de la ${entity}` : ''}`.trim(),
-  ERROR_DELETE: (entity: string) => `Erreur lors de la suppression ${entity ? `du/de la ${entity}` : ''}`.trim(),
-  ERROR_SAVE: (entity?: string) => `Erreur lors de l'enregistrement${entity ? ` du/de la ${entity}` : ''}`,
-  ERROR_LOAD: (entity?: string) => `Erreur lors du chargement${entity ? ` des ${entity}` : ''}`,
-  ERROR_DUPLICATE: (entity: string) => `Erreur lors de la duplication ${entity ? `du/de la ${entity}` : ''}`.trim(),
+  CREATED: (entity: string) => tGlobal('toasts.crud.created', { entity }),
+  UPDATED: (entity: string) => tGlobal('toasts.crud.updated', { entity }),
+  DELETED: (entity: string) => tGlobal('toasts.crud.deleted', { entity }),
+  DUPLICATED: (entity: string) => tGlobal('toasts.crud.duplicated', { entity }),
+  SAVED: (entity?: string) => (entity ? tGlobal('toasts.crud.saved', { entity }) : tGlobal('toasts.crud.savedGeneric')),
+  ARCHIVED: (entity: string) => tGlobal('toasts.crud.archived', { entity }),
+  ACTIVATED: (entity: string) => tGlobal('toasts.crud.activated', { entity }),
+  DEACTIVATED: (entity: string) => tGlobal('toasts.crud.deactivated', { entity }),
+
+  ERROR_CREATE: (entity: string) =>
+    entity ? tGlobal('toasts.crud.errorCreate', { entity }) : tGlobal('toasts.crud.errorCreateGeneric'),
+  ERROR_UPDATE: (entity: string) =>
+    entity ? tGlobal('toasts.crud.errorUpdate', { entity }) : tGlobal('toasts.crud.errorUpdateGeneric'),
+  ERROR_DELETE: (entity: string) =>
+    entity ? tGlobal('toasts.crud.errorDelete', { entity }) : tGlobal('toasts.crud.errorDeleteGeneric'),
+  ERROR_SAVE: (entity?: string) =>
+    entity ? tGlobal('toasts.crud.errorSave', { entity }) : tGlobal('toasts.crud.errorSaveGeneric'),
+  ERROR_LOAD: (entity?: string) =>
+    entity ? tGlobal('toasts.crud.errorLoad', { entity }) : tGlobal('toasts.crud.errorLoadGeneric'),
+  ERROR_DUPLICATE: (entity: string) =>
+    entity ? tGlobal('toasts.crud.errorDuplicate', { entity }) : tGlobal('toasts.crud.errorDuplicateGeneric'),
 } as const;
 
 // ─── Validation ──────────────────────────────────────────────────────
 export const VALIDATION = {
-  REQUIRED_FIELDS: 'Veuillez remplir tous les champs obligatoires',
-  REQUIRED_FIELD: (field: string) => `Le champ "${field}" est obligatoire`,
-  INVALID_EMAIL: 'Adresse email invalide',
-  INVALID_PHONE: 'Numéro de téléphone invalide',
-  INVALID_FORMAT: (field: string) => `Format invalide pour "${field}"`,
-  PASSWORD_TOO_SHORT: 'Le mot de passe doit contenir au moins 6 caractères',
-  PASSWORDS_MISMATCH: 'Les mots de passe ne correspondent pas',
-  FORM_ERRORS: 'Veuillez corriger les erreurs du formulaire',
-  DATE_RANGE_INVALID: 'La date de fin doit être postérieure à la date de début',
+  get REQUIRED_FIELDS() {
+    return tGlobal('toasts.validation.requiredFields');
+  },
+  REQUIRED_FIELD: (field: string) => tGlobal('toasts.validation.requiredField', { field }),
+  get INVALID_EMAIL() {
+    return tGlobal('toasts.validation.invalidEmail');
+  },
+  get INVALID_PHONE() {
+    return tGlobal('toasts.validation.invalidPhone');
+  },
+  INVALID_FORMAT: (field: string) => tGlobal('toasts.validation.invalidFormat', { field }),
+  get PASSWORD_TOO_SHORT() {
+    return tGlobal('toasts.validation.passwordTooShort');
+  },
+  get PASSWORDS_MISMATCH() {
+    return tGlobal('toasts.validation.passwordsMismatch');
+  },
+  get FORM_ERRORS() {
+    return tGlobal('toasts.validation.formErrors');
+  },
+  get DATE_RANGE_INVALID() {
+    return tGlobal('toasts.validation.dateRangeInvalid');
+  },
 } as const;
 
 // ─── Auth & Réseau ──────────────────────────────────────────────────
 export const AUTH = {
-  SESSION_EXPIRED: 'Session expirée, veuillez vous reconnecter',
-  UNAUTHORIZED: 'Accès non autorisé',
-  FORBIDDEN: 'Vous n\'avez pas les permissions nécessaires',
-  LOGIN_SUCCESS: 'Connexion réussie',
-  REGISTRATION_SENT: 'Demande d\'inscription envoyée',
-  RESET_EMAIL_SENT: 'Email de réinitialisation envoyé',
-  DEMO_REQUEST_SENT: 'Demande envoyée, vous recevrez vos accès par email',
-  PROFILE_UPDATED: 'Profil mis à jour avec succès',
-  PASSWORD_CHANGED: 'Mot de passe modifié avec succès',
-  PASSWORD_RESET: (email: string) => `Mot de passe réinitialisé pour ${email}`,
+  get SESSION_EXPIRED() {
+    return tGlobal('toasts.auth.sessionExpired');
+  },
+  get UNAUTHORIZED() {
+    return tGlobal('toasts.auth.unauthorized');
+  },
+  get FORBIDDEN() {
+    return tGlobal('toasts.auth.forbidden');
+  },
+  get LOGIN_SUCCESS() {
+    return tGlobal('toasts.auth.loginSuccess');
+  },
+  get REGISTRATION_SENT() {
+    return tGlobal('toasts.auth.registrationSent');
+  },
+  get RESET_EMAIL_SENT() {
+    return tGlobal('toasts.auth.resetEmailSent');
+  },
+  get DEMO_REQUEST_SENT() {
+    return tGlobal('toasts.auth.demoRequestSent');
+  },
+  get PROFILE_UPDATED() {
+    return tGlobal('toasts.auth.profileUpdated');
+  },
+  get PASSWORD_CHANGED() {
+    return tGlobal('toasts.auth.passwordChanged');
+  },
+  PASSWORD_RESET: (email: string) => tGlobal('toasts.auth.passwordReset', { email }),
 } as const;
 
 export const NETWORK = {
-  ERROR: 'Erreur de connexion au serveur',
-  TIMEOUT: 'La requête a expiré, veuillez réessayer',
-  OFFLINE: 'Vous êtes hors ligne',
-  RETRY: 'Erreur temporaire, nouvelle tentative...',
+  get ERROR() {
+    return tGlobal('toasts.network.error');
+  },
+  get TIMEOUT() {
+    return tGlobal('toasts.network.timeout');
+  },
+  get OFFLINE() {
+    return tGlobal('toasts.network.offline');
+  },
+  get RETRY() {
+    return tGlobal('toasts.network.retry');
+  },
 } as const;
 
 // ─── Finance ─────────────────────────────────────────────────────────
 export const FINANCE = {
-  PAYMENT_RECORDED: (amount: string) => `Paiement de ${amount} enregistré`,
-  PAYMENT_ERROR: 'Erreur lors de l\'enregistrement du paiement',
-  INVOICE_SENT: (email: string) => `Facture envoyée à ${email}`,
-  QUOTE_ACCEPTED: (ref: string) => `Devis ${ref} accepté`,
-  QUOTE_REJECTED: (ref: string) => `Devis ${ref} refusé`,
-  QUOTE_CONVERTED: 'Devis converti en facture',
-  QUOTE_CONVERT_ERROR: 'Erreur lors de la conversion du devis',
-  CREDIT_NOTE_CREATED: (ref?: string) => `Avoir${ref ? ` ${ref}` : ''} créé avec succès`,
-  CREDIT_NOTE_ERROR: 'Erreur lors de la création de l\'avoir',
-  CREDIT_NOTE_REASON_REQUIRED: 'Veuillez indiquer le motif de l\'avoir',
-  CREDIT_NOTE_AMOUNT_INVALID: 'Le montant doit être compris entre 0 et le montant de la facture',
-  CONTRACT_GENERATED: 'Contrat généré avec succès',
-  STATUS_CHANGED: (status: string) => `Statut changé : ${status}`,
-  RECOVERY_SENT: (count: number, channel: string) => `${count} relance(s) envoyée(s) via ${channel}`,
-  RECOVERY_PARTIAL: (success: number, errors: number) => `${success} envoyée(s), ${errors} erreur(s)`,
+  PAYMENT_RECORDED: (amount: string) => tGlobal('toasts.finance.paymentRecorded', { amount }),
+  get PAYMENT_ERROR() {
+    return tGlobal('toasts.finance.paymentError');
+  },
+  INVOICE_SENT: (email: string) => tGlobal('toasts.finance.invoiceSent', { email }),
+  QUOTE_ACCEPTED: (ref: string) => tGlobal('toasts.finance.quoteAccepted', { ref }),
+  QUOTE_REJECTED: (ref: string) => tGlobal('toasts.finance.quoteRejected', { ref }),
+  get QUOTE_CONVERTED() {
+    return tGlobal('toasts.finance.quoteConverted');
+  },
+  get QUOTE_CONVERT_ERROR() {
+    return tGlobal('toasts.finance.quoteConvertError');
+  },
+  CREDIT_NOTE_CREATED: (ref?: string) =>
+    ref ? tGlobal('toasts.finance.creditNoteCreated', { ref }) : tGlobal('toasts.finance.creditNoteCreatedGeneric'),
+  get CREDIT_NOTE_ERROR() {
+    return tGlobal('toasts.finance.creditNoteError');
+  },
+  get CREDIT_NOTE_REASON_REQUIRED() {
+    return tGlobal('toasts.finance.creditNoteReasonRequired');
+  },
+  get CREDIT_NOTE_AMOUNT_INVALID() {
+    return tGlobal('toasts.finance.creditNoteAmountInvalid');
+  },
+  get CONTRACT_GENERATED() {
+    return tGlobal('toasts.finance.contractGenerated');
+  },
+  STATUS_CHANGED: (status: string) => tGlobal('toasts.finance.statusChanged', { status }),
+  RECOVERY_SENT: (count: number, channel: string) => tGlobal('toasts.finance.recoverySent', { count, channel }),
+  RECOVERY_PARTIAL: (success: number, errors: number) => tGlobal('toasts.finance.recoveryPartial', { success, errors }),
 } as const;
 
 // ─── Fleet / GPS ─────────────────────────────────────────────────────
 export const FLEET = {
-  VEHICLE_IMPORTED: (count: number) => `${count} véhicule(s) importé(s)`,
-  DEVICE_APPROVED: 'Boîtier approuvé et ajouté au stock',
-  DEVICE_IGNORED: 'Boîtier ignoré',
-  COMMAND_SENT: (success: number, failed: number) => `Commandes envoyées : ${success} succès, ${failed} échec(s)`,
-  MATERIAL_DETECTED: (imei: string) => `Matériel détecté : ${imei}`,
-  SELECT_DEVICE_FIRST: 'Veuillez d\'abord sélectionner un boîtier (IMEI)',
+  VEHICLE_IMPORTED: (count: number) => tGlobal('toasts.fleet.vehicleImported', { count }),
+  get DEVICE_APPROVED() {
+    return tGlobal('toasts.fleet.deviceApproved');
+  },
+  get DEVICE_IGNORED() {
+    return tGlobal('toasts.fleet.deviceIgnored');
+  },
+  COMMAND_SENT: (success: number, failed: number) => tGlobal('toasts.fleet.commandSent', { success, failed }),
+  MATERIAL_DETECTED: (imei: string) => tGlobal('toasts.fleet.materialDetected', { imei }),
+  get SELECT_DEVICE_FIRST() {
+    return tGlobal('toasts.fleet.selectDeviceFirst');
+  },
 } as const;
 
 // ─── Tech / Interventions ────────────────────────────────────────────
 export const TECH = {
-  INTERVENTION_STARTED: 'Intervention démarrée',
-  INTERVENTION_COMPLETED: 'Intervention marquée comme terminée',
-  INTERVENTION_SAVED: 'Intervention sauvegardée',
-  INTERVENTION_SAVED_AND_PDF: 'Intervention sauvegardée et bon généré',
-  TECH_EN_ROUTE: 'Technicien en route',
-  TECH_STARTED: 'Intervention démarrée',
-  TICKET_LINKED: (status: string) => `Ticket lié passé en "${status}"`,
-  SIGNATURE_MISSING: (who: string, tab: number) => `Signature ${who} manquante (Onglet ${tab})`,
-  MUST_BE_IN_PROGRESS: 'L\'intervention doit être démarrée pour être clôturée',
-  TRANSFER_INITIATED: 'Transfert initié — en attente de réception',
-  TRANSFER_RECEIVED: 'Réception confirmée',
-  TRANSFER_REJECTED: 'Transfert rejeté',
-  INVENTORY_COMPLETE: 'Inventaire complet validé',
-  INVENTORY_PARTIAL: (checked: number, total: number) => `Inventaire partiel : ${checked}/${total} éléments validés`,
-  CALIBRATION_TABLE_GENERATED: (shape: string) => `Table de calibrage générée (${shape})`,
-  CALIBRATION_FIELDS_REQUIRED: 'Hauteur et Capacité requises',
+  get INTERVENTION_STARTED() {
+    return tGlobal('toasts.tech.interventionStarted');
+  },
+  get INTERVENTION_COMPLETED() {
+    return tGlobal('toasts.tech.interventionCompleted');
+  },
+  get INTERVENTION_SAVED() {
+    return tGlobal('toasts.tech.interventionSaved');
+  },
+  get INTERVENTION_SAVED_AND_PDF() {
+    return tGlobal('toasts.tech.interventionSavedAndPdf');
+  },
+  get TECH_EN_ROUTE() {
+    return tGlobal('toasts.tech.techEnRoute');
+  },
+  get TECH_STARTED() {
+    return tGlobal('toasts.tech.interventionStarted');
+  },
+  TICKET_LINKED: (status: string) => tGlobal('toasts.tech.ticketLinked', { status }),
+  SIGNATURE_MISSING: (who: string, tab: number) => tGlobal('toasts.tech.signatureMissing', { who, tab }),
+  get MUST_BE_IN_PROGRESS() {
+    return tGlobal('toasts.tech.mustBeInProgress');
+  },
+  get TRANSFER_INITIATED() {
+    return tGlobal('toasts.tech.transferInitiated');
+  },
+  get TRANSFER_RECEIVED() {
+    return tGlobal('toasts.tech.transferReceived');
+  },
+  get TRANSFER_REJECTED() {
+    return tGlobal('toasts.tech.transferRejected');
+  },
+  get INVENTORY_COMPLETE() {
+    return tGlobal('toasts.tech.inventoryComplete');
+  },
+  INVENTORY_PARTIAL: (checked: number, total: number) => tGlobal('toasts.tech.inventoryPartial', { checked, total }),
+  CALIBRATION_TABLE_GENERATED: (shape: string) => tGlobal('toasts.tech.calibrationTableGenerated', { shape }),
+  get CALIBRATION_FIELDS_REQUIRED() {
+    return tGlobal('toasts.tech.calibrationFieldsRequired');
+  },
 } as const;
 
 // ─── Support / Tickets ───────────────────────────────────────────────
 export const SUPPORT = {
-  TICKET_CREATED: 'Ticket créé avec succès',
-  TICKET_CREATED_WITH_ATTACHMENTS: (count: number) => `Ticket créé avec ${count} pièce(s) jointe(s)`,
-  TICKET_CREATED_ATTACHMENTS_FAILED: 'Ticket créé, mais échec de l\'envoi des pièces jointes',
-  TICKET_UPDATED: (id: string) => `Ticket ${id} mis à jour`,
-  TICKET_TAKEN: 'Ticket pris en charge',
-  TICKET_RESOLVED: 'Ticket résolu',
-  TICKET_ESCALATED: 'Ticket escaladé avec succès',
-  TICKET_STATUS_CHANGED: (status: string) => `Statut mis à jour : ${status}`,
-  TICKET_READONLY: 'Les tickets résolus ou clôturés ne peuvent pas être modifiés',
-  TICKET_TECH_ONLY: 'Les techniciens gèrent les interventions, pas les tickets',
-  BATCH_TAKEN: (success: number, failed: number) => `${success} ticket(s) pris en charge${failed ? `, ${failed} ignoré(s)` : ''}`,
-  BATCH_RESOLVED: (success: number, failed: number) => `${success} ticket(s) résolu(s)${failed ? `, ${failed} ignoré(s)` : ''}`,
-  REASON_REQUIRED: 'Le motif est obligatoire',
-  MESSAGE_SENT: 'Message envoyé',
-  MESSAGE_ERROR: 'Erreur lors de l\'envoi du message',
-  INTERVENTION_PLANNED: 'Intervention planifiée avec succès',
-  NEW_SUPPORT_REQUEST: (name: string) => `Nouvelle demande de support de ${name}`,
+  get TICKET_CREATED() {
+    return tGlobal('toasts.support.ticketCreated');
+  },
+  TICKET_CREATED_WITH_ATTACHMENTS: (count: number) => tGlobal('toasts.support.ticketCreatedWithAttachments', { count }),
+  get TICKET_CREATED_ATTACHMENTS_FAILED() {
+    return tGlobal('toasts.support.ticketCreatedAttachmentsFailed');
+  },
+  TICKET_UPDATED: (id: string) => tGlobal('toasts.support.ticketUpdated', { id }),
+  get TICKET_TAKEN() {
+    return tGlobal('toasts.support.ticketTaken');
+  },
+  get TICKET_RESOLVED() {
+    return tGlobal('toasts.support.ticketResolved');
+  },
+  get TICKET_ESCALATED() {
+    return tGlobal('toasts.support.ticketEscalated');
+  },
+  TICKET_STATUS_CHANGED: (status: string) => tGlobal('toasts.support.ticketStatusChanged', { status }),
+  get TICKET_READONLY() {
+    return tGlobal('toasts.support.ticketReadonly');
+  },
+  get TICKET_TECH_ONLY() {
+    return tGlobal('toasts.support.ticketTechOnly');
+  },
+  BATCH_TAKEN: (success: number, failed: number) =>
+    failed
+      ? tGlobal('toasts.support.batchTakenWithFailed', { success, failed })
+      : tGlobal('toasts.support.batchTaken', { success }),
+  BATCH_RESOLVED: (success: number, failed: number) =>
+    failed
+      ? tGlobal('toasts.support.batchResolvedWithFailed', { success, failed })
+      : tGlobal('toasts.support.batchResolved', { success }),
+  get REASON_REQUIRED() {
+    return tGlobal('toasts.support.reasonRequired');
+  },
+  get MESSAGE_SENT() {
+    return tGlobal('toasts.support.messageSent');
+  },
+  get MESSAGE_ERROR() {
+    return tGlobal('toasts.support.messageError');
+  },
+  get INTERVENTION_PLANNED() {
+    return tGlobal('toasts.support.interventionPlanned');
+  },
+  NEW_SUPPORT_REQUEST: (name: string) => tGlobal('toasts.support.newSupportRequest', { name }),
 } as const;
 
 // ─── Communication (Email, SMS, Chat) ────────────────────────────────
 export const COMM = {
-  EMAIL_SENT: (email: string) => `Email envoyé à ${email}`,
-  EMAIL_ERROR: 'Erreur lors de l\'envoi de l\'email',
-  SMS_SENT: 'SMS envoyé avec succès',
-  SMS_ERROR: 'Erreur lors de l\'envoi du SMS',
-  SMS_COMMAND_SENT: (cmd: string) => `SMS envoyé : ${cmd}`,
-  NOTIFICATION_SENT: 'Notification envoyée avec succès',
-  NOTIFICATION_SCHEDULED: 'Notification programmée',
-  NOTIFICATION_ERROR: 'Erreur lors de l\'envoi de la notification',
-  CHAT_CONVERSATION_STARTED: (name: string) => `Conversation démarrée avec ${name}`,
-  CHAT_CONVERSATION_EXISTS: (name: string) => `Conversation existante avec ${name}`,
-  CHAT_CLOSED: 'Conversation fermée',
-  CHAT_ERROR: 'Erreur lors de la création de la conversation',
-  RECIPIENTS_REQUIRED: 'Sélectionnez au moins un destinataire',
+  EMAIL_SENT: (email: string) => tGlobal('toasts.comm.emailSent', { email }),
+  get EMAIL_ERROR() {
+    return tGlobal('toasts.comm.emailError');
+  },
+  get SMS_SENT() {
+    return tGlobal('toasts.comm.smsSent');
+  },
+  get SMS_ERROR() {
+    return tGlobal('toasts.comm.smsError');
+  },
+  SMS_COMMAND_SENT: (cmd: string) => tGlobal('toasts.comm.smsCommandSent', { cmd }),
+  get NOTIFICATION_SENT() {
+    return tGlobal('toasts.comm.notificationSent');
+  },
+  get NOTIFICATION_SCHEDULED() {
+    return tGlobal('toasts.comm.notificationScheduled');
+  },
+  get NOTIFICATION_ERROR() {
+    return tGlobal('toasts.comm.notificationError');
+  },
+  CHAT_CONVERSATION_STARTED: (name: string) => tGlobal('toasts.comm.chatConversationStarted', { name }),
+  CHAT_CONVERSATION_EXISTS: (name: string) => tGlobal('toasts.comm.chatConversationExists', { name }),
+  get CHAT_CLOSED() {
+    return tGlobal('toasts.comm.chatClosed');
+  },
+  get CHAT_ERROR() {
+    return tGlobal('toasts.comm.chatError');
+  },
+  get RECIPIENTS_REQUIRED() {
+    return tGlobal('toasts.comm.recipientsRequired');
+  },
 } as const;
 
 // ─── Export / Import ─────────────────────────────────────────────────
 export const IO = {
-  EXPORT_SUCCESS: (format: string, count?: number) => count 
-    ? `${count} élément(s) exporté(s) en ${format.toUpperCase()}`
-    : `Export ${format.toUpperCase()} téléchargé`,
-  EXPORT_ERROR: (format?: string) => `Erreur lors de l'export${format ? ` ${format}` : ''}`,
-  IMPORT_SUCCESS: (count: number) => `${count} ligne(s) importée(s)`,
-  IMPORT_PARTIAL: (success: number, errors: number) => `${success} importé(s), ${errors} erreur(s)`,
-  IMPORT_ERROR: 'Erreur lors de l\'import. Vérifiez le format du fichier',
-  IMPORT_INVALID_FORMAT: 'Seuls les fichiers CSV sont acceptés',
-  IMPORT_EMPTY: 'Fichier vide ou invalide',
-  TEMPLATE_DOWNLOADED: 'Modèle téléchargé',
-  PDF_GENERATED: 'PDF généré',
-  PDF_DOWNLOADED: 'Document téléchargé',
-  PDF_ERROR: 'Erreur lors de la génération du PDF',
-  NOTHING_TO_EXPORT: 'Aucun élément à exporter',
+  EXPORT_SUCCESS: (format: string, count?: number) =>
+    count
+      ? tGlobal('toasts.io.exportSuccessCount', { count, format: format.toUpperCase() })
+      : tGlobal('toasts.io.exportSuccess', { format: format.toUpperCase() }),
+  EXPORT_ERROR: (format?: string) =>
+    format ? tGlobal('toasts.io.exportError', { format }) : tGlobal('toasts.io.exportErrorGeneric'),
+  IMPORT_SUCCESS: (count: number) => tGlobal('toasts.io.importSuccess', { count }),
+  IMPORT_PARTIAL: (success: number, errors: number) => tGlobal('toasts.io.importPartial', { success, errors }),
+  get IMPORT_ERROR() {
+    return tGlobal('toasts.io.importError');
+  },
+  get IMPORT_INVALID_FORMAT() {
+    return tGlobal('toasts.io.importInvalidFormat');
+  },
+  get IMPORT_EMPTY() {
+    return tGlobal('toasts.io.importEmpty');
+  },
+  get TEMPLATE_DOWNLOADED() {
+    return tGlobal('toasts.io.templateDownloaded');
+  },
+  get PDF_GENERATED() {
+    return tGlobal('toasts.io.pdfGenerated');
+  },
+  get PDF_DOWNLOADED() {
+    return tGlobal('toasts.io.pdfDownloaded');
+  },
+  get PDF_ERROR() {
+    return tGlobal('toasts.io.pdfError');
+  },
+  get NOTHING_TO_EXPORT() {
+    return tGlobal('toasts.io.nothingToExport');
+  },
 } as const;
 
 // ─── Stock ───────────────────────────────────────────────────────────
 export const STOCK = {
-  SIM_LINKED: 'SIM liée au boîtier avec succès',
-  DEVICE_INSTALLED: 'Appareil installé sur le véhicule',
-  DEVICE_ASSIGNED: 'Appareil assigné au client',
-  ASSIGNMENT_ERROR: 'Erreur lors de l\'assignation',
-  TRANSFERRED: (target: string) => `Transféré vers ${target}`,
-  BATCH_TRANSFERRED: (count: number, target: string) => `${count} éléments transférés vers ${target}`,
-  STATUS_UPDATED: (status: string) => `Statut mis à jour : ${status}`,
+  get SIM_LINKED() {
+    return tGlobal('toasts.stock.simLinked');
+  },
+  get DEVICE_INSTALLED() {
+    return tGlobal('toasts.stock.deviceInstalled');
+  },
+  get DEVICE_ASSIGNED() {
+    return tGlobal('toasts.stock.deviceAssigned');
+  },
+  get ASSIGNMENT_ERROR() {
+    return tGlobal('toasts.stock.assignmentError');
+  },
+  TRANSFERRED: (target: string) => tGlobal('toasts.stock.transferred', { target }),
+  BATCH_TRANSFERRED: (count: number, target: string) => tGlobal('toasts.stock.batchTransferred', { count, target }),
+  STATUS_UPDATED: (status: string) => tGlobal('toasts.stock.statusUpdated', { status }),
 } as const;
 
 // ─── Admin ───────────────────────────────────────────────────────────
 export const ADMIN = {
-  ROLE_CREATED: 'Rôle créé avec succès',
-  ROLE_UPDATED: 'Rôle mis à jour',
-  ROLE_DELETED: 'Rôle supprimé',
-  ROLE_DUPLICATED: 'Rôle dupliqué',
-  ROLE_SYSTEM_NO_EDIT: 'Le rôle Superadmin ne peut pas être modifié',
-  ROLE_SYSTEM_NO_DELETE: 'Les rôles système ne peuvent pas être supprimés',
-  ROLE_NAME_REQUIRED: 'Le nom du rôle est requis',
-  PERMISSIONS_SAVED: 'Permissions sauvegardées',
-  USER_CREATED: 'Utilisateur créé avec succès',
-  USER_UPDATED: 'Utilisateur mis à jour',
-  USER_DELETED: 'Utilisateur supprimé',
-  USER_ACTIVATED: 'Utilisateur activé',
-  USER_DEACTIVATED: 'Utilisateur désactivé',
-  USER_NO_DELETE_SUPERADMIN: 'Impossible de supprimer le Superadmin',
-  INVITATION_SENT: (email: string) => `Invitation envoyée à ${email}`,
-  INVITATION_ERROR: 'Erreur lors de l\'envoi de l\'invitation',
-  PASSWORD_GENERATED: (email: string) => `Mot de passe généré pour ${email}`,
-  PASSWORD_RESET_ERROR: 'Erreur lors de la réinitialisation du mot de passe',
-  REGISTRATION_APPROVED: 'Inscription approuvée avec succès',
-  REGISTRATION_REJECTED: 'Demande rejetée',
-  RESELLER_CREATED: (slug: string) => `Revendeur créé (Slug: ${slug})`,
-  RESELLER_UPDATED: 'Revendeur mis à jour',
-  RESELLER_IMPERSONATED: (name: string) => `Connecté en tant que ${name}`,
-  WEBHOOK_CREATED: 'Webhook créé',
-  WEBHOOK_UPDATED: 'Webhook mis à jour',
-  WEBHOOK_DELETED: 'Webhook supprimé',
-  WEBHOOK_TEST_SUCCESS: 'Test webhook réussi',
-  CONFIG_SAVED: 'Configuration sauvegardée',
-  CONFIG_RESET: 'Configuration réinitialisée aux valeurs système',
-  LOGS_REFRESHED: 'Logs actualisés',
-  TEMPLATE_CREATED: 'Modèle créé',
-  TEMPLATE_UPDATED: 'Modèle mis à jour',
-  TEMPLATE_DELETED: 'Modèle supprimé',
+  get ROLE_CREATED() {
+    return tGlobal('toasts.admin.roleCreated');
+  },
+  get ROLE_UPDATED() {
+    return tGlobal('toasts.admin.roleUpdated');
+  },
+  get ROLE_DELETED() {
+    return tGlobal('toasts.admin.roleDeleted');
+  },
+  get ROLE_DUPLICATED() {
+    return tGlobal('toasts.admin.roleDuplicated');
+  },
+  get ROLE_SYSTEM_NO_EDIT() {
+    return tGlobal('toasts.admin.roleSystemNoEdit');
+  },
+  get ROLE_SYSTEM_NO_DELETE() {
+    return tGlobal('toasts.admin.roleSystemNoDelete');
+  },
+  get ROLE_NAME_REQUIRED() {
+    return tGlobal('toasts.admin.roleNameRequired');
+  },
+  get PERMISSIONS_SAVED() {
+    return tGlobal('toasts.admin.permissionsSaved');
+  },
+  get USER_CREATED() {
+    return tGlobal('toasts.admin.userCreated');
+  },
+  get USER_UPDATED() {
+    return tGlobal('toasts.admin.userUpdated');
+  },
+  get USER_DELETED() {
+    return tGlobal('toasts.admin.userDeleted');
+  },
+  get USER_ACTIVATED() {
+    return tGlobal('toasts.admin.userActivated');
+  },
+  get USER_DEACTIVATED() {
+    return tGlobal('toasts.admin.userDeactivated');
+  },
+  get USER_NO_DELETE_SUPERADMIN() {
+    return tGlobal('toasts.admin.userNoDeleteSuperadmin');
+  },
+  INVITATION_SENT: (email: string) => tGlobal('toasts.admin.invitationSent', { email }),
+  get INVITATION_ERROR() {
+    return tGlobal('toasts.admin.invitationError');
+  },
+  PASSWORD_GENERATED: (email: string) => tGlobal('toasts.admin.passwordGenerated', { email }),
+  get PASSWORD_RESET_ERROR() {
+    return tGlobal('toasts.admin.passwordResetError');
+  },
+  get REGISTRATION_APPROVED() {
+    return tGlobal('toasts.admin.registrationApproved');
+  },
+  get REGISTRATION_REJECTED() {
+    return tGlobal('toasts.admin.registrationRejected');
+  },
+  RESELLER_CREATED: (slug: string) => tGlobal('toasts.admin.resellerCreated', { slug }),
+  get RESELLER_UPDATED() {
+    return tGlobal('toasts.admin.resellerUpdated');
+  },
+  RESELLER_IMPERSONATED: (name: string) => tGlobal('toasts.admin.resellerImpersonated', { name }),
+  get WEBHOOK_CREATED() {
+    return tGlobal('toasts.admin.webhookCreated');
+  },
+  get WEBHOOK_UPDATED() {
+    return tGlobal('toasts.admin.webhookUpdated');
+  },
+  get WEBHOOK_DELETED() {
+    return tGlobal('toasts.admin.webhookDeleted');
+  },
+  get WEBHOOK_TEST_SUCCESS() {
+    return tGlobal('toasts.admin.webhookTestSuccess');
+  },
+  get CONFIG_SAVED() {
+    return tGlobal('toasts.admin.configSaved');
+  },
+  get CONFIG_RESET() {
+    return tGlobal('toasts.admin.configReset');
+  },
+  get LOGS_REFRESHED() {
+    return tGlobal('toasts.admin.logsRefreshed');
+  },
+  get TEMPLATE_CREATED() {
+    return tGlobal('toasts.admin.templateCreated');
+  },
+  get TEMPLATE_UPDATED() {
+    return tGlobal('toasts.admin.templateUpdated');
+  },
+  get TEMPLATE_DELETED() {
+    return tGlobal('toasts.admin.templateDeleted');
+  },
 } as const;
 
 // ─── Clipboard ───────────────────────────────────────────────────────
 export const CLIPBOARD = {
-  COPIED: 'Copié dans le presse-papiers',
-  COMMAND_COPIED: (cmd: string) => `Commande copiée : ${cmd}`,
-  PASSWORD_COPIED: 'Mot de passe copié',
+  get COPIED() {
+    return tGlobal('toasts.clipboard.copied');
+  },
+  COMMAND_COPIED: (cmd: string) => tGlobal('toasts.clipboard.commandCopied', { cmd }),
+  get PASSWORD_COPIED() {
+    return tGlobal('toasts.clipboard.passwordCopied');
+  },
 } as const;
 
 // ─── CRM ─────────────────────────────────────────────────────────────
 export const CRM = {
-  LEAD_SAVED: (isEdit: boolean) => isEdit ? 'Lead modifié avec succès' : 'Lead enregistré avec succès',
-  LEAD_CONVERTED: (name: string) => `${name} converti en client`,
+  LEAD_SAVED: (isEdit: boolean) => (isEdit ? tGlobal('toasts.crm.leadSavedEdit') : tGlobal('toasts.crm.leadSavedNew')),
+  LEAD_CONVERTED: (name: string) => tGlobal('toasts.crm.leadConverted', { name }),
   LEAD_DUPLICATE_WARNING: (msg: string) => msg,
-  CLIENT_CREATED: (name: string) => `Client ${name} créé`,
-  CLIENT_UPDATED: (name: string) => `Client ${name} mis à jour`,
-  TIER_DELETED: 'Tiers supprimé',
-  TIER_BATCH_ACTIVATED: (count: number) => `${count} tiers activé(s)`,
-  TIER_BATCH_DEACTIVATED: (count: number) => `${count} tiers désactivé(s)`,
-  TIER_BATCH_DELETED: (count: number) => `${count} tiers supprimé(s)`,
-  BATCH_EMPTY_SELECTION: 'Aucun élément sélectionné',
-  BATCH_ERROR: 'Erreur lors de l\'action de masse',
-  CATALOG_ARTICLE_SAVED: (isEdit: boolean) => isEdit ? 'Article modifié' : 'Article ajouté',
-  CATALOG_ARTICLE_TOGGLED: (active: boolean) => active ? 'Article activé' : 'Article désactivé',
-  CATALOG_ARTICLE_DELETED: 'Article supprimé avec succès',
-  TASK_CREATED: 'Tâche créée avec succès',
-  TASK_UPDATED: 'Tâche mise à jour',
-  TASK_TITLE_REQUIRED: 'Le titre est obligatoire',
-  AUTOMATION_CREATED: 'Règle créée',
-  AUTOMATION_UPDATED: 'Règle mise à jour',
-  AUTOMATION_DELETED: 'Règle supprimée',
-  AUTOMATION_DUPLICATED: 'Règle dupliquée',
-  CONTRACT_CREATED: 'Contrat créé',
-  CONTRACT_UPDATED: 'Contrat mis à jour',
-  CONTRACT_DELETED: 'Contrat supprimé',
-  CONTRACT_STATUS_CHANGED: (status: string) => `Statut changé : ${status}`,
-  CONTRACT_INVOICE_GENERATED: 'Facture brouillon créée. Vérifiez dans le module Finance.',
-  COMMENT_ADDED: (type: 'appel' | 'commentaire') => type === 'appel' ? "Note d'appel enregistrée" : "Commentaire ajouté",
-  CONTACT_ADDED: (name: string) => `Contact ${name} ajouté`,
-  STATUS_CHANGE_REASON_REQUIRED: 'Veuillez sélectionner un statut et saisir un motif',
-  FEATURE_COMING_SOON: (action: string) => `${action} — fonctionnalité à venir`,
+  CLIENT_CREATED: (name: string) => tGlobal('toasts.crm.clientCreated', { name }),
+  CLIENT_UPDATED: (name: string) => tGlobal('toasts.crm.clientUpdated', { name }),
+  get TIER_DELETED() {
+    return tGlobal('toasts.crm.tierDeleted');
+  },
+  TIER_BATCH_ACTIVATED: (count: number) => tGlobal('toasts.crm.tierBatchActivated', { count }),
+  TIER_BATCH_DEACTIVATED: (count: number) => tGlobal('toasts.crm.tierBatchDeactivated', { count }),
+  TIER_BATCH_DELETED: (count: number) => tGlobal('toasts.crm.tierBatchDeleted', { count }),
+  get BATCH_EMPTY_SELECTION() {
+    return tGlobal('toasts.crm.batchEmptySelection');
+  },
+  get BATCH_ERROR() {
+    return tGlobal('toasts.crm.batchError');
+  },
+  CATALOG_ARTICLE_SAVED: (isEdit: boolean) =>
+    isEdit ? tGlobal('toasts.crm.catalogArticleSavedEdit') : tGlobal('toasts.crm.catalogArticleSavedNew'),
+  CATALOG_ARTICLE_TOGGLED: (active: boolean) =>
+    active ? tGlobal('toasts.crm.catalogArticleActivated') : tGlobal('toasts.crm.catalogArticleDeactivated'),
+  get CATALOG_ARTICLE_DELETED() {
+    return tGlobal('toasts.crm.catalogArticleDeleted');
+  },
+  get TASK_CREATED() {
+    return tGlobal('toasts.crm.taskCreated');
+  },
+  get TASK_UPDATED() {
+    return tGlobal('toasts.crm.taskUpdated');
+  },
+  get TASK_TITLE_REQUIRED() {
+    return tGlobal('toasts.crm.taskTitleRequired');
+  },
+  get AUTOMATION_CREATED() {
+    return tGlobal('toasts.crm.automationCreated');
+  },
+  get AUTOMATION_UPDATED() {
+    return tGlobal('toasts.crm.automationUpdated');
+  },
+  get AUTOMATION_DELETED() {
+    return tGlobal('toasts.crm.automationDeleted');
+  },
+  get AUTOMATION_DUPLICATED() {
+    return tGlobal('toasts.crm.automationDuplicated');
+  },
+  get CONTRACT_CREATED() {
+    return tGlobal('toasts.crm.contractCreated');
+  },
+  get CONTRACT_UPDATED() {
+    return tGlobal('toasts.crm.contractUpdated');
+  },
+  get CONTRACT_DELETED() {
+    return tGlobal('toasts.crm.contractDeleted');
+  },
+  CONTRACT_STATUS_CHANGED: (status: string) => tGlobal('toasts.crm.contractStatusChanged', { status }),
+  get CONTRACT_INVOICE_GENERATED() {
+    return tGlobal('toasts.crm.contractInvoiceGenerated');
+  },
+  COMMENT_ADDED: (type: 'appel' | 'commentaire') =>
+    type === 'appel' ? tGlobal('toasts.crm.commentAddedCall') : tGlobal('toasts.crm.commentAddedNote'),
+  CONTACT_ADDED: (name: string) => tGlobal('toasts.crm.contactAdded', { name }),
+  get STATUS_CHANGE_REASON_REQUIRED() {
+    return tGlobal('toasts.crm.statusChangeReasonRequired');
+  },
+  FEATURE_COMING_SOON: (action: string) => tGlobal('toasts.crm.featureComingSoon', { action }),
 } as const;
 
 // ─── FAQ ─────────────────────────────────────────────────────────────
 export const FAQ = {
-  CATEGORY_CREATED: 'Catégorie créée',
-  CATEGORY_UPDATED: 'Catégorie mise à jour',
-  CATEGORY_DELETED: 'Catégorie supprimée',
-  ARTICLE_CREATED: 'Article créé',
-  ARTICLE_UPDATED: 'Article mis à jour',
-  ARTICLE_DELETED: 'Article supprimé',
-  ARTICLE_PUBLISHED: 'Article publié',
-  ARTICLE_ARCHIVED: 'Article archivé',
-  FEEDBACK_THANKS: 'Merci pour votre retour !',
+  get CATEGORY_CREATED() {
+    return tGlobal('toasts.faq.categoryCreated');
+  },
+  get CATEGORY_UPDATED() {
+    return tGlobal('toasts.faq.categoryUpdated');
+  },
+  get CATEGORY_DELETED() {
+    return tGlobal('toasts.faq.categoryDeleted');
+  },
+  get ARTICLE_CREATED() {
+    return tGlobal('toasts.faq.articleCreated');
+  },
+  get ARTICLE_UPDATED() {
+    return tGlobal('toasts.faq.articleUpdated');
+  },
+  get ARTICLE_DELETED() {
+    return tGlobal('toasts.faq.articleDeleted');
+  },
+  get ARTICLE_PUBLISHED() {
+    return tGlobal('toasts.faq.articlePublished');
+  },
+  get ARTICLE_ARCHIVED() {
+    return tGlobal('toasts.faq.articleArchived');
+  },
+  get FEEDBACK_THANKS() {
+    return tGlobal('toasts.faq.feedbackThanks');
+  },
 } as const;
 
 // ─── Macro ───────────────────────────────────────────────────────────
 export const MACRO = {
-  CREATED: 'Macro créée',
-  UPDATED: 'Macro mise à jour',
-  DELETED: 'Macro supprimée',
-  LABEL_AND_TEXT_REQUIRED: 'Label et texte requis',
+  get CREATED() {
+    return tGlobal('toasts.macro.created');
+  },
+  get UPDATED() {
+    return tGlobal('toasts.macro.updated');
+  },
+  get DELETED() {
+    return tGlobal('toasts.macro.deleted');
+  },
+  get LABEL_AND_TEXT_REQUIRED() {
+    return tGlobal('toasts.macro.labelAndTextRequired');
+  },
 } as const;
 
 // ─── Données & Sync ──────────────────────────────────────────────────
 export const DATA = {
-  SYNC_SUCCESS: 'Synchronisation des données réussie',
-  SYNC_ERROR: 'Erreur lors de la synchronisation des données',
-  CACHE_CLEARED: 'Cache local vidé avec succès',
-  PREFS_RESET: 'Préférences réinitialisées',
+  get SYNC_SUCCESS() {
+    return tGlobal('toasts.data.syncSuccess');
+  },
+  get SYNC_ERROR() {
+    return tGlobal('toasts.data.syncError');
+  },
+  get CACHE_CLEARED() {
+    return tGlobal('toasts.data.cacheCleared');
+  },
+  get PREFS_RESET() {
+    return tGlobal('toasts.data.prefsReset');
+  },
 } as const;
 
 // ─── Objet unique d'export ──────────────────────────────────────────

@@ -19,6 +19,7 @@ import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 import { logger } from '../../../utils/logger';
+import { useTranslation } from '../../../i18n';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -36,6 +37,7 @@ const INPUT_CLASS = `
 export const LoginView: React.FC = () => {
   const { login } = useAuth();
   const { showToast } = useToast();
+  const { t } = useTranslation();
   const [isRegistering, setIsRegistering] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
@@ -80,19 +82,17 @@ export const LoginView: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || `Erreur d'inscription (${response.status})`);
+        throw new Error(errorData?.message || t('auth.errors.registrationFallback', { status: response.status }));
       }
 
       setIsRegistering(false);
-      setSuccessMessage(
-        "Votre demande d'inscription a été envoyée ! Vous recevrez un email une fois votre compte validé par notre équipe."
-      );
+      setSuccessMessage(t('auth.success.registration'));
       setFullName('');
       setContact('');
       setPassword('');
       showToast(TOAST.AUTH.REGISTRATION_SENT, 'success');
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Erreur lors de l'inscription";
+      const message = err instanceof Error ? err.message : t('auth.errors.registrationGeneric');
       showToast(message, 'error');
     }
   };
@@ -110,7 +110,7 @@ export const LoginView: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || 'Erreur lors de la demande');
+        throw new Error(errorData?.message || t('auth.errors.requestFallback'));
       }
 
       showToast(TOAST.AUTH.RESET_EMAIL_SENT, 'success');
@@ -140,7 +140,7 @@ export const LoginView: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || 'Erreur lors de la demande');
+        throw new Error(errorData?.message || t('auth.errors.requestFallback'));
       }
 
       showToast(TOAST.AUTH.DEMO_REQUEST_SENT, 'success');
@@ -176,7 +176,7 @@ export const LoginView: React.FC = () => {
       await login(email.trim(), password.trim());
     } catch (err: unknown) {
       logger.error('Login error details:', err);
-      const message = err instanceof Error ? err.message : 'Une erreur est survenue';
+      const message = err instanceof Error ? err.message : t('auth.errors.generic');
       setError(message);
       setIsLoading(false);
     }
@@ -200,19 +200,16 @@ export const LoginView: React.FC = () => {
             </div>
             <span className="text-3xl font-bold tracking-tight">TrackYU GPS</span>
           </div>
-          <h1 className="text-5xl font-bold mb-6 leading-tight">Le Futur de la Gestion de Flotte</h1>
-          <p className="text-lg text-[var(--text-muted)] mb-8 leading-relaxed">
-            Pilotez vos opérations logistiques avec la puissance de l'IA. Optimisation des trajets, maintenance
-            prédictive et sécurité en temps réel.
-          </p>
+          <h1 className="text-5xl font-bold mb-6 leading-tight">{t('auth.hero.title')}</h1>
+          <p className="text-lg text-[var(--text-muted)] mb-8 leading-relaxed">{t('auth.hero.subtitle')}</p>
           <div className="flex gap-4">
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur rounded-lg border border-white/10">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span className="text-sm font-medium">IA Gemini Intégrée</span>
+              <span className="text-sm font-medium">{t('auth.hero.feature1')}</span>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur rounded-lg border border-white/10">
               <CheckCircle className="w-5 h-5 text-green-400" />
-              <span className="text-sm font-medium">Temps Réel</span>
+              <span className="text-sm font-medium">{t('auth.hero.feature2')}</span>
             </div>
           </div>
         </div>
@@ -232,12 +229,10 @@ export const LoginView: React.FC = () => {
               <span className="font-bold text-[var(--text-primary)]">TrackYU GPS</span>
             </div>
             <h2 className="text-3xl font-bold text-[var(--text-primary)] tracking-tight">
-              {isRegistering ? 'Créer un compte' : 'Bienvenue'}
+              {isRegistering ? t('auth.form.registerTitle') : t('auth.form.welcomeTitle')}
             </h2>
             <p className="text-[var(--text-muted)] mt-2">
-              {isRegistering
-                ? 'Remplissez le formulaire pour commencer.'
-                : 'Entrez vos identifiants pour accéder au tableau de bord.'}
+              {isRegistering ? t('auth.form.registerSubtitle') : t('auth.form.welcomeSubtitle')}
             </p>
           </div>
 
@@ -254,7 +249,7 @@ export const LoginView: React.FC = () => {
                       onChange={(e) => setFullName(e.target.value)}
                       className={INPUT_CLASS}
                       style={{ focusRingColor: 'var(--primary)' } as React.CSSProperties}
-                      placeholder="Nom complet"
+                      placeholder={t('auth.form.fullNamePlaceholder')}
                     />
                   </div>
                   <div className="relative group">
@@ -265,14 +260,16 @@ export const LoginView: React.FC = () => {
                       value={contact}
                       onChange={(e) => setContact(e.target.value)}
                       className={INPUT_CLASS}
-                      placeholder="Contact (Téléphone)"
+                      placeholder={t('auth.form.phonePlaceholder')}
                     />
                   </div>
                 </>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">Compte</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                  {t('auth.form.accountLabel')}
+                </label>
                 <div className="relative group">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                   <input
@@ -281,13 +278,15 @@ export const LoginView: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={INPUT_CLASS}
-                    placeholder="Saisissez votre compte"
+                    placeholder={t('auth.form.accountPlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">Mot de passe</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1.5">
+                  {t('auth.form.passwordLabel')}
+                </label>
                 <div className="relative group">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                   <input
@@ -296,7 +295,7 @@ export const LoginView: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className={`${INPUT_CLASS} pr-12`}
-                    placeholder="Entrez votre mot de passe"
+                    placeholder={t('auth.form.passwordPlaceholder')}
                   />
                   <button
                     type="button"
@@ -347,7 +346,7 @@ export const LoginView: React.FC = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="w-4 h-4 rounded border-[var(--border)] accent-[var(--primary)]"
                   />
-                  <span className="text-[var(--text-secondary)]">Se souvenir de moi</span>
+                  <span className="text-[var(--text-secondary)]">{t('auth.form.rememberMe')}</span>
                 </label>
                 <button
                   type="button"
@@ -355,7 +354,7 @@ export const LoginView: React.FC = () => {
                   className="font-medium hover:underline"
                   style={{ color: 'var(--primary)' }}
                 >
-                  Mot de passe oublié ?
+                  {t('auth.form.forgotPassword')}
                 </button>
               </div>
             )}
@@ -370,32 +369,33 @@ export const LoginView: React.FC = () => {
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  {isRegistering ? "S'inscrire" : 'Se connecter'} <ArrowRight className="w-4 h-4" />
+                  {isRegistering ? t('auth.form.submitRegister') : t('auth.form.submitLogin')}{' '}
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
 
             <div className="text-center mt-4 space-y-3">
               <p className="text-sm text-[var(--text-secondary)]">
-                {isRegistering ? 'Déjà un compte ?' : 'Pas encore de compte ?'}
+                {isRegistering ? t('auth.form.haveAccount') : t('auth.form.noAccount')}
                 <button
                   type="button"
                   onClick={() => setIsRegistering(!isRegistering)}
                   className="ml-1 font-medium hover:underline focus:outline-none"
                   style={{ color: 'var(--primary)' }}
                 >
-                  {isRegistering ? 'Se connecter' : "S'inscrire"}
+                  {isRegistering ? t('auth.form.switchToLogin') : t('auth.form.switchToRegister')}
                 </button>
               </p>
               {!isRegistering && (
                 <p className="text-sm text-[var(--text-muted)]">
-                  Vous souhaitez tester la plateforme ?
+                  {t('auth.form.demoQuestion')}
                   <button
                     type="button"
                     onClick={() => setShowDemoRequest(true)}
                     className="ml-1 text-emerald-500 font-medium hover:underline focus:outline-none"
                   >
-                    Demander un accès démo
+                    {t('auth.form.demoCta')}
                   </button>
                 </p>
               )}
@@ -404,13 +404,13 @@ export const LoginView: React.FC = () => {
             {/* Boutons téléchargement apps mobiles */}
             {!isRegistering && (
               <div className="mt-8 pt-6 border-t border-[var(--border)]">
-                <p className="text-center text-sm text-[var(--text-muted)] mb-4">Téléchargez l'application mobile</p>
+                <p className="text-center text-sm text-[var(--text-muted)] mb-4">{t('auth.form.downloadMobile')}</p>
                 <div className="flex items-center justify-center gap-3">
                   <a href="/download.html" className="transition-transform hover:scale-105 active:scale-95">
-                    <img src="/images/google-play-badge.svg" alt="Télécharger sur Google Play" className="h-10" />
+                    <img src="/images/google-play-badge.svg" alt={t('auth.form.googlePlayAlt')} className="h-10" />
                   </a>
                   <a href="/download.html" className="transition-transform hover:scale-105 active:scale-95">
-                    <img src="/images/app-store-badge.svg" alt="Télécharger sur l'App Store" className="h-10" />
+                    <img src="/images/app-store-badge.svg" alt={t('auth.form.appStoreAlt')} className="h-10" />
                   </a>
                 </div>
               </div>
@@ -424,24 +424,24 @@ export const LoginView: React.FC = () => {
         <div className="fixed inset-0 bg-[var(--bg-overlay)] flex items-center justify-center z-50 p-4">
           <div className="bg-[var(--bg-surface)] rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200 border border-[var(--border)]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--text-primary)]">Demander un accès démo</h3>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">{t('auth.demo.title')}</h3>
               <button
                 onClick={() => setShowDemoRequest(false)}
                 className="p-1 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
-                title="Fermer"
-                aria-label="Fermer"
+                title={t('auth.common.close')}
+                aria-label={t('auth.common.close')}
               >
                 <X className="w-5 h-5 text-[var(--text-muted)]" />
               </button>
             </div>
 
-            <p className="text-sm text-[var(--text-secondary)] mb-4">
-              Remplissez ce formulaire et vous recevrez automatiquement vos accès de démonstration par email.
-            </p>
+            <p className="text-sm text-[var(--text-secondary)] mb-4">{t('auth.demo.intro')}</p>
 
             <form onSubmit={handleDemoRequest} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Nom complet</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                  {t('auth.demo.nameLabel')}
+                </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                   <input
@@ -450,13 +450,15 @@ export const LoginView: React.FC = () => {
                     value={demoName}
                     onChange={(e) => setDemoName(e.target.value)}
                     className={INPUT_CLASS}
-                    placeholder="Votre nom complet"
+                    placeholder={t('auth.demo.namePlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Email</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                  {t('auth.demo.emailLabel')}
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
                   <input
@@ -465,13 +467,15 @@ export const LoginView: React.FC = () => {
                     value={demoEmail}
                     onChange={(e) => setDemoEmail(e.target.value)}
                     className={INPUT_CLASS}
-                    placeholder="Votre adresse email"
+                    placeholder={t('auth.demo.emailPlaceholder')}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">Votre demande</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
+                  {t('auth.demo.messageLabel')}
+                </label>
                 <div className="relative">
                   <MessageSquare className="absolute left-3 top-3 w-5 h-5 text-[var(--text-muted)]" />
                   <textarea
@@ -480,7 +484,7 @@ export const LoginView: React.FC = () => {
                     onChange={(e) => setDemoMessage(e.target.value)}
                     rows={3}
                     className="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:border-[var(--primary)] resize-none transition-all"
-                    placeholder="Décrivez brièvement votre besoin..."
+                    placeholder={t('auth.demo.messagePlaceholder')}
                   />
                 </div>
               </div>
@@ -491,7 +495,7 @@ export const LoginView: React.FC = () => {
                   onClick={() => setShowDemoRequest(false)}
                   className="flex-1 px-4 py-2.5 border border-[var(--border)] rounded-xl text-[var(--text-secondary)] font-medium hover:bg-[var(--bg-elevated)] transition-colors"
                 >
-                  Annuler
+                  {t('auth.common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -503,16 +507,14 @@ export const LoginView: React.FC = () => {
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      Envoyer
+                      {t('auth.common.send')}
                     </>
                   )}
                 </button>
               </div>
             </form>
 
-            <p className="text-xs text-[var(--text-muted)] mt-4 text-center">
-              Votre demande sera envoyée à info@trackyugps.com
-            </p>
+            <p className="text-xs text-[var(--text-muted)] mt-4 text-center">{t('auth.demo.footer')}</p>
           </div>
         </div>
       )}
@@ -522,20 +524,18 @@ export const LoginView: React.FC = () => {
         <div className="fixed inset-0 bg-[var(--bg-overlay)] flex items-center justify-center z-50 p-4">
           <div className="bg-[var(--bg-surface)] rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200 border border-[var(--border)]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-[var(--text-primary)]">Réinitialiser le mot de passe</h3>
+              <h3 className="text-lg font-bold text-[var(--text-primary)]">{t('auth.forgot.title')}</h3>
               <button
                 onClick={() => setShowForgotPassword(false)}
                 className="p-1 hover:bg-[var(--bg-elevated)] rounded-lg transition-colors"
-                title="Fermer"
-                aria-label="Fermer"
+                title={t('auth.common.close')}
+                aria-label={t('auth.common.close')}
               >
                 <X className="w-5 h-5 text-[var(--text-muted)]" />
               </button>
             </div>
 
-            <p className="text-sm text-[var(--text-secondary)] mb-4">
-              Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
-            </p>
+            <p className="text-sm text-[var(--text-secondary)] mb-4">{t('auth.forgot.intro')}</p>
 
             <form onSubmit={handleForgotPassword} className="space-y-4">
               <div className="relative">
@@ -546,7 +546,7 @@ export const LoginView: React.FC = () => {
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   className={INPUT_CLASS}
-                  placeholder="Votre adresse email"
+                  placeholder={t('auth.forgot.emailPlaceholder')}
                 />
               </div>
 
@@ -556,7 +556,7 @@ export const LoginView: React.FC = () => {
                   onClick={() => setShowForgotPassword(false)}
                   className="flex-1 px-4 py-2.5 border border-[var(--border)] rounded-xl text-[var(--text-secondary)] font-medium hover:bg-[var(--bg-elevated)] transition-colors"
                 >
-                  Annuler
+                  {t('auth.common.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -569,7 +569,7 @@ export const LoginView: React.FC = () => {
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      Envoyer
+                      {t('auth.common.send')}
                     </>
                   )}
                 </button>

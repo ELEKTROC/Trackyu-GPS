@@ -3,6 +3,7 @@ import { Card } from '../../../../components/Card';
 import { Wrench, Briefcase, Clock, Users } from 'lucide-react';
 import type { Intervention, Task, User } from '../../../../types';
 import { isSameMonth, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend } from 'date-fns';
+import { useTranslation } from '../../../../i18n';
 
 interface AgendaStatsProps {
   currentDate: Date;
@@ -19,6 +20,7 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
   users,
   selectedAgentId,
 }) => {
+  const { t } = useTranslation();
   // Calcul du taux d'occupation
   // Formule: (Nombre d'événements planifiés / Capacité théorique) × 100
   // Capacité théorique = Nombre d'agents × Jours ouvrés du mois × 4 créneaux/jour (matin AM, matin PM, après-midi AM, après-midi PM)
@@ -96,9 +98,10 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
           <Wrench className="w-6 h-6" />
         </div>
         <div>
-          <p className="section-title">Interventions</p>
+          <p className="section-title">{t('agenda.stats.interventions')}</p>
           <p className="page-title">
-            {monthInterventionsCount} <span className="text-sm font-normal text-[var(--text-secondary)]">ce mois</span>
+            {monthInterventionsCount}{' '}
+            <span className="text-sm font-normal text-[var(--text-secondary)]">{t('agenda.stats.thisMonth')}</span>
           </p>
         </div>
       </Card>
@@ -108,9 +111,10 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
           <Briefcase className="w-6 h-6" />
         </div>
         <div>
-          <p className="section-title">Tâches / RdV</p>
+          <p className="section-title">{t('agenda.stats.tasksRdv')}</p>
           <p className="page-title">
-            {monthTasksCount} <span className="text-sm font-normal text-[var(--text-secondary)]">ce mois</span>
+            {monthTasksCount}{' '}
+            <span className="text-sm font-normal text-[var(--text-secondary)]">{t('agenda.stats.thisMonth')}</span>
           </p>
         </div>
       </Card>
@@ -120,10 +124,10 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
           <Clock className="w-6 h-6" />
         </div>
         <div>
-          <p className="section-title">Taux d'occupation</p>
+          <p className="section-title">{t('agenda.stats.occupationRate')}</p>
           <p className="page-title">{occupationRate.rate}%</p>
           <p className="text-[10px] text-[var(--text-muted)]">
-            {occupationRate.totalEvents}/{occupationRate.theoreticalCapacity} créneaux
+            {t('agenda.stats.slots', { used: occupationRate.totalEvents, total: occupationRate.theoreticalCapacity })}
           </p>
         </div>
       </Card>
@@ -133,9 +137,13 @@ export const AgendaStats: React.FC<AgendaStatsProps> = ({
           <Users className="w-6 h-6" />
         </div>
         <div>
-          <p className="section-title">{selectedAgentName ? 'Agent' : 'Agents'}</p>
-          <p className="page-title">{selectedAgentName || `${occupationRate.agentCount} actifs`}</p>
-          <p className="text-[10px] text-[var(--text-muted)]">{occupationRate.workDays} jours ouvrés</p>
+          <p className="section-title">{selectedAgentName ? t('agenda.stats.agent') : t('agenda.stats.agents')}</p>
+          <p className="page-title">
+            {selectedAgentName || t('agenda.stats.activeCount', { count: occupationRate.agentCount })}
+          </p>
+          <p className="text-[10px] text-[var(--text-muted)]">
+            {t('agenda.stats.workDays', { count: occupationRate.workDays })}
+          </p>
         </div>
       </Card>
     </div>

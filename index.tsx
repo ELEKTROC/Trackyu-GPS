@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -12,10 +11,11 @@ import { NotificationProvider } from './contexts/NotificationContext';
 import { AppearanceProvider } from './contexts/AppearanceContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { queryClient } from './lib/react-query';
+import { I18nProvider } from './i18n';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+  throw new Error('Could not find root element to mount to');
 }
 
 const root = ReactDOM.createRoot(rootElement);
@@ -23,19 +23,21 @@ root.render(
   <React.StrictMode>
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <AuthProvider>
-            <AppearanceProvider>
-              <DataProvider>
-                <NotificationProvider>
-                  <ToastProvider>
-                    <App />
-                  </ToastProvider>
-                </NotificationProvider>
-              </DataProvider>
-            </AppearanceProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <I18nProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <AppearanceProvider>
+                <DataProvider>
+                  <NotificationProvider>
+                    <ToastProvider>
+                      <App />
+                    </ToastProvider>
+                  </NotificationProvider>
+                </DataProvider>
+              </AppearanceProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </I18nProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>

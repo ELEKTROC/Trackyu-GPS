@@ -22,6 +22,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { getSortedSidebarMenu } from '../features/admin/permissions/permissionStructure';
 import { useAppearance } from '../contexts/AppearanceContext';
+import { useTranslation } from '../i18n';
 
 // Mapping des noms d'icônes vers les composants Lucide
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -51,17 +52,18 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isMobileMenuOpen }) => {
   const { user, logout, hasPermission } = useAuth();
   const { appearance } = useAppearance();
+  const { t } = useTranslation();
 
   // Génère les menus depuis le registre centralisé
   const userRole = user?.role?.toUpperCase() || '';
   const menuGroups = getSortedSidebarMenu()
     .map((group) => ({
-      title: group.title,
+      title: group.titleKey ? t(group.titleKey) : group.title,
       items: group.items
         .filter((item) => !item.hiddenForRoles?.some((r) => r.toUpperCase() === userRole))
         .map((item) => ({
           view: View[item.id as keyof typeof View],
-          label: item.label,
+          label: item.labelKey ? t(item.labelKey) : item.label,
           icon: ICON_MAP[item.icon] || LayoutDashboard,
           requiredPerm: item.alwaysVisible ? null : item.permission || null,
         })),
@@ -173,10 +175,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isMob
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate" style={{ color: 'var(--brand-sidebar-text)' }}>
-                {user?.name || 'Utilisateur'}
+                {user?.name || t('nav.common.user')}
               </p>
               <p className="text-xs truncate opacity-60" style={{ color: 'var(--brand-sidebar-text)' }}>
-                {user?.role || 'Rôle'}
+                {user?.role || t('nav.common.role')}
               </p>
             </div>
           </div>
@@ -201,7 +203,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isMob
             }}
           >
             <LogOut className="w-4 h-4" />
-            <span>Déconnexion</span>
+            <span>{t('nav.common.logout')}</span>
           </button>
 
           <div className="mt-4 text-center">
@@ -215,7 +217,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, isMob
                   : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
               }`}
             >
-              {IS_MOCK ? 'MODE SIMULATION' : 'MODE PRODUCTION'}
+              {IS_MOCK ? t('nav.common.modeSimulation') : t('nav.common.modeProduction')}
             </span>
           </div>
         </div>

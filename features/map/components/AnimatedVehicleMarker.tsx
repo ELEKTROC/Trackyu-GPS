@@ -4,6 +4,7 @@ import L from 'leaflet';
 import type { Vehicle } from '../../../types';
 import { VehicleStatus } from '../../../types';
 import { useAnimatedPosition } from '../../../hooks/useAnimatedPosition';
+import { useTranslation } from '../../../i18n';
 
 interface AnimatedVehicleMarkerProps {
   vehicle: Vehicle;
@@ -19,11 +20,11 @@ const STATUS_COLOR: Record<VehicleStatus, string> = {
   [VehicleStatus.OFFLINE]: '#64748b',
 };
 
-const STATUS_FR: Record<VehicleStatus, string> = {
-  [VehicleStatus.MOVING]: 'En route',
-  [VehicleStatus.IDLE]: 'Ralenti',
-  [VehicleStatus.STOPPED]: 'Arrêté',
-  [VehicleStatus.OFFLINE]: 'Hors ligne',
+const STATUS_KEY: Record<VehicleStatus, string> = {
+  [VehicleStatus.MOVING]: 'dashboard.fleetRealtime.status.moving',
+  [VehicleStatus.IDLE]: 'dashboard.fleetRealtime.status.idle',
+  [VehicleStatus.STOPPED]: 'dashboard.fleetRealtime.status.stopped',
+  [VehicleStatus.OFFLINE]: 'dashboard.fleetRealtime.status.offline',
 };
 
 export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
@@ -32,6 +33,7 @@ export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
   onClick,
   showLabel = true,
 }) => {
+  const { t } = useTranslation();
   const markerRef = useRef<L.Marker | null>(null);
   const prevHeadingRef = useRef<number>(vehicle.heading ?? 0);
 
@@ -71,7 +73,7 @@ export const AnimatedVehicleMarker: React.FC<AnimatedVehicleMarkerProps> = ({
   if (!animatedPosition) return null;
 
   const color = STATUS_COLOR[vehicle.status] ?? '#64748b';
-  const statusFr = STATUS_FR[vehicle.status] ?? vehicle.status;
+  const statusFr = STATUS_KEY[vehicle.status] ? t(STATUS_KEY[vehicle.status]) : vehicle.status;
   const plate = vehicle.licensePlate || vehicle.name || '—';
   const speed = Math.round(vehicle.speed ?? 0);
   const address = (vehicle as any).address as string | undefined;

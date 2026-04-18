@@ -60,6 +60,7 @@ import { ReplayControlPanel, type StopEvent, type SpeedEvent, type TripSegment }
 import { HeatmapLayer } from './HeatmapLayer';
 import { AnimatedVehicleMarker } from './AnimatedVehicleMarker';
 import { getHeaders } from '../../../services/api/client';
+import { useTranslation } from '../../../i18n';
 
 // Fix for default marker icon assets
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -233,6 +234,7 @@ const StopPopupContent: React.FC<{
   };
   index: number;
 }> = ({ stop, index }) => {
+  const { t } = useTranslation();
   const [address, setAddress] = React.useState<string | null>(stop.address || null);
   const [loading, setLoading] = React.useState(!stop.address);
 
@@ -252,7 +254,7 @@ const StopPopupContent: React.FC<{
   const fmt = (d: Date) => d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const color = stop.type === 'STOP' ? '#dc2626' : '#f97316';
   const emoji = stop.type === 'STOP' ? '🅿️' : '⏸️';
-  const label = stop.type === 'STOP' ? 'Arrêt moteur' : 'Ralenti';
+  const label = stop.type === 'STOP' ? t('map.view.engineStop') : t('map.view.idle');
 
   return (
     <div style={{ minWidth: 200, fontFamily: 'inherit' }}>
@@ -610,6 +612,7 @@ export const MapView: React.FC<MapViewProps> = ({
   onNavigate,
   onReplay,
 }) => {
+  const { t } = useTranslation();
   const { getVehicleHistory, clients, branches, isSocketConnected, isDataStale, isLoading } = useDataContext();
   const { showToast } = useToast();
   const { user } = useAuth();
@@ -1061,7 +1064,7 @@ export const MapView: React.FC<MapViewProps> = ({
           setSearchAddress('');
         }
       } else {
-        showToast('Adresse introuvable', 'info');
+        showToast(t('map.view.addressNotFound'), 'info');
       }
     } catch {
       showToast("Erreur lors de la recherche d'adresse", 'error');
@@ -1639,35 +1642,43 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 px-1 cursor-pointer transition-colors ${activeStatusFilter === null ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
             >
               <span className="font-bold text-xl leading-none">{stats.total}</span>
-              <span className="text-[8px] uppercase text-[var(--text-muted)] mt-1 truncate w-full">Total</span>
+              <span className="text-[8px] uppercase text-[var(--text-muted)] mt-1 truncate w-full">
+                {t('map.view.totalLabel')}
+              </span>
             </div>
             <div
               onClick={() => handleStatusFilterClick(VehicleStatus.MOVING)}
               className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-green-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.MOVING ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
             >
               <span className="font-bold text-xl leading-none">{stats.moving}</span>
-              <span className="text-[8px] uppercase text-green-400/70 mt-1 truncate w-full">Route</span>
+              <span className="text-[8px] uppercase text-green-400/70 mt-1 truncate w-full">
+                {t('map.view.statRoute')}
+              </span>
             </div>
             <div
               onClick={() => handleStatusFilterClick(VehicleStatus.IDLE)}
               className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-orange-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.IDLE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
             >
               <span className="font-bold text-xl leading-none">{stats.idle}</span>
-              <span className="text-[8px] uppercase text-orange-400/70 mt-1 truncate w-full">Ralenti</span>
+              <span className="text-[8px] uppercase text-orange-400/70 mt-1 truncate w-full">{t('map.view.idle')}</span>
             </div>
             <div
               onClick={() => handleStatusFilterClick(VehicleStatus.STOPPED)}
               className={`flex flex-col items-center justify-center h-full border-r border-slate-700/50 last:border-0 text-red-400 px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.STOPPED ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
             >
               <span className="font-bold text-xl leading-none">{stats.stopped}</span>
-              <span className="text-[8px] uppercase text-red-400/70 mt-1 truncate w-full">Arrêt</span>
+              <span className="text-[8px] uppercase text-red-400/70 mt-1 truncate w-full">
+                {t('map.view.statStop')}
+              </span>
             </div>
             <div
               onClick={() => handleStatusFilterClick(VehicleStatus.OFFLINE)}
               className={`flex flex-col items-center justify-center h-full text-[var(--text-muted)] px-1 cursor-pointer transition-colors ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10 rounded-md shadow-inner' : 'hover:bg-white/5'}`}
             >
               <span className="font-bold text-xl leading-none">{stats.offline}</span>
-              <span className="text-[8px] uppercase text-[var(--text-secondary)] mt-1 truncate w-full">Hors ligne</span>
+              <span className="text-[8px] uppercase text-[var(--text-secondary)] mt-1 truncate w-full">
+                {t('map.vehicleCard.offline')}
+              </span>
             </div>
           </div>
 
@@ -1676,7 +1687,7 @@ export const MapView: React.FC<MapViewProps> = ({
             <div className="flex gap-2">
               <button
                 onClick={handleAddVehicleClick}
-                title="Ajouter un véhicule"
+                title={t('map.view.addVehicle')}
                 className="p-2.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg hover:bg-[var(--primary-dim)] hover:bg-[var(--bg-elevated)] hover:text-[var(--primary)] transition-colors shadow-sm text-[var(--text-secondary)]"
               >
                 <Plus className="w-4 h-4" />
@@ -1699,7 +1710,7 @@ export const MapView: React.FC<MapViewProps> = ({
               </button>
               <button
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
-                title="Filtres avancés"
+                title={t('map.view.advancedFilters')}
                 className={`p-2 border border-[var(--border)] rounded hover:bg-[var(--bg-elevated)] transition-colors shadow-sm relative ${isFilterOpen ? 'bg-[var(--primary-dim)] text-[var(--primary)] border-[var(--border)]' : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'}`}
               >
                 <Filter className="w-4 h-4" />
@@ -1727,7 +1738,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     onChange={(e) => setCardConfig({ ...cardConfig, showSpeed: e.target.checked })}
                     className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
-                  Vitesse
+                  {t('map.view.speed')}
                 </label>
                 <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
@@ -1736,7 +1747,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     onChange={(e) => setCardConfig({ ...cardConfig, showFuel: e.target.checked })}
                     className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
-                  Carburant
+                  {t('map.view.fuel')}
                 </label>
                 <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
@@ -1745,7 +1756,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     onChange={(e) => setCardConfig({ ...cardConfig, showIgnition: e.target.checked })}
                     className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
-                  Contact
+                  {t('map.view.ignition')}
                 </label>
                 <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
@@ -1754,7 +1765,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     onChange={(e) => setCardConfig({ ...cardConfig, showDriver: e.target.checked })}
                     className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
-                  Chauffeur
+                  {t('map.view.driver')}
                 </label>
                 <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
@@ -1763,7 +1774,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     onChange={(e) => setCardConfig({ ...cardConfig, showTime: e.target.checked })}
                     className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
-                  Heure
+                  {t('map.view.time')}
                 </label>
                 <label className="flex items-center gap-2 text-xs text-[var(--text-primary)] cursor-pointer">
                   <input
@@ -1772,7 +1783,7 @@ export const MapView: React.FC<MapViewProps> = ({
                     onChange={(e) => setCardConfig({ ...cardConfig, showStatusText: e.target.checked })}
                     className="rounded text-[var(--primary)] focus:ring-[var(--primary)]"
                   />
-                  Statut (Texte)
+                  {t('map.view.statusText')}
                 </label>
 
                 <div className="mt-2 border-t border-[var(--border)] pt-2">
@@ -1813,7 +1824,9 @@ export const MapView: React.FC<MapViewProps> = ({
           {isFilterOpen && (
             <div className="p-3 bg-[var(--bg-elevated)] border-b border-[var(--border)] animate-in slide-in-from-top-2">
               <div className="flex justify-between items-center mb-3">
-                <h4 className="text-xs font-bold uppercase text-[var(--text-secondary)]">Filtres Avancés</h4>
+                <h4 className="text-xs font-bold uppercase text-[var(--text-secondary)]">
+                  {t('map.view.advancedFiltersUpper')}
+                </h4>
                 <div className="flex items-center gap-2">
                   {(filterClient || filterBranch || filterDeviceModel || filterVehicleType || filterContractStatus) && (
                     <button
@@ -1931,7 +1944,10 @@ export const MapView: React.FC<MapViewProps> = ({
                 </div>
               </div>
               <div className="mt-2 text-[10px] text-[var(--text-muted)]">
-                {filteredVehicles.length} véhicule(s) correspondant(s)
+                {t(
+                  filteredVehicles.length === 1 ? 'map.view.vehicleCountMatch_one' : 'map.view.vehicleCountMatch_other',
+                  { count: filteredVehicles.length }
+                )}
               </div>
             </div>
           )}
@@ -2010,13 +2026,13 @@ export const MapView: React.FC<MapViewProps> = ({
                 <div className="w-16 h-16 bg-[var(--bg-elevated)] rounded-full flex items-center justify-center mb-4">
                   <Car className="w-8 h-8 text-[var(--text-muted)] dark:text-[var(--text-secondary)]" />
                 </div>
-                <p className="text-[var(--text-muted)] text-sm font-medium">Aucun élément trouvé</p>
+                <p className="text-[var(--text-muted)] text-sm font-medium">{t('map.view.noResults')}</p>
                 <p className="text-[var(--text-muted)] dark:text-[var(--text-secondary)] text-xs mt-1">
                   {activeTab === 'vehicles'
-                    ? 'Modifiez vos filtres ou votre recherche'
+                    ? t('map.view.modifyFiltersOrSearch')
                     : activeTab === 'places'
-                      ? 'Créez une geofence pour commencer'
-                      : 'Aucun chauffeur assigné'}
+                      ? t('map.view.createGeofenceToStart')
+                      : t('map.view.noDriverAssigned')}
                 </p>
               </div>
             ) : (
@@ -2226,7 +2242,7 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === null ? 'bg-white/10' : ''}`}
             >
               <span className="font-bold text-sm">{stats.total}</span>
-              <span className="text-[8px] text-[var(--text-muted)]">Total</span>
+              <span className="text-[8px] text-[var(--text-muted)]">{t('map.view.totalLabel')}</span>
             </div>
             <div
               onClick={() => {
@@ -2236,7 +2252,7 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.MOVING ? 'bg-white/10' : ''}`}
             >
               <span className="font-bold text-sm text-green-400">{stats.moving}</span>
-              <span className="text-[8px] text-green-400/70">Route</span>
+              <span className="text-[8px] text-green-400/70">{t('map.view.statRoute')}</span>
             </div>
             <div
               onClick={() => {
@@ -2246,7 +2262,7 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.IDLE ? 'bg-white/10' : ''}`}
             >
               <span className="font-bold text-sm text-orange-400">{stats.idle}</span>
-              <span className="text-[8px] text-orange-400/70">Ralenti</span>
+              <span className="text-[8px] text-orange-400/70">{t('map.view.idle')}</span>
             </div>
             <div
               onClick={() => {
@@ -2256,7 +2272,7 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.STOPPED ? 'bg-white/10' : ''}`}
             >
               <span className="font-bold text-sm text-red-400">{stats.stopped}</span>
-              <span className="text-[8px] text-red-400/70">Arrêt</span>
+              <span className="text-[8px] text-red-400/70">{t('map.view.statStop')}</span>
             </div>
             <div
               onClick={() => {
@@ -2266,7 +2282,7 @@ export const MapView: React.FC<MapViewProps> = ({
               className={`flex-1 flex flex-col items-center py-1 rounded cursor-pointer ${activeStatusFilter === VehicleStatus.OFFLINE ? 'bg-white/10' : ''}`}
             >
               <span className="font-bold text-sm text-[var(--text-muted)]">{stats.offline}</span>
-              <span className="text-[8px] text-[var(--text-secondary)]">Offline</span>
+              <span className="text-[8px] text-[var(--text-secondary)]">{t('map.vehicleCard.offline')}</span>
             </div>
             {/* OSM / Google toggle */}
             <div className="flex items-center bg-white/10 rounded px-1 gap-0.5 ml-1">
@@ -2288,8 +2304,8 @@ export const MapView: React.FC<MapViewProps> = ({
             <button
               onClick={() => setShowMobileMapFilter(true)}
               className={`relative flex items-center justify-center w-7 h-7 rounded ml-1 transition-colors ${activeStatusFilter || filterClient || filterBranch ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
-              aria-label="Filtres"
-              title="Filtres"
+              aria-label={t('map.view.filters')}
+              title={t('map.view.filters')}
             >
               <Filter className="w-3.5 h-3.5" />
               {(activeStatusFilter || filterClient || filterBranch) && (
@@ -2417,10 +2433,8 @@ export const MapView: React.FC<MapViewProps> = ({
               {filteredVehicles.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
                   <Filter className="w-10 h-10 text-[var(--text-muted)] dark:text-[var(--text-secondary)] mb-3" />
-                  <p className="font-medium text-[var(--text-primary)] mb-1">Aucun véhicule trouvé</p>
-                  <p className="text-sm text-[var(--text-secondary)] mb-4">
-                    Aucun véhicule ne correspond aux filtres actifs.
-                  </p>
+                  <p className="font-medium text-[var(--text-primary)] mb-1">{t('map.view.noVehicleFound')}</p>
+                  <p className="text-sm text-[var(--text-secondary)] mb-4">{t('map.view.noVehicleMatch')}</p>
                   <button
                     onClick={() => {
                       setActiveStatusFilter(null);
@@ -2546,7 +2560,7 @@ export const MapView: React.FC<MapViewProps> = ({
             activeCount: filterBranch ? 1 : 0,
             content:
               uniqueMapBranches.length === 0 ? (
-                <p className="text-sm text-[var(--text-muted)] text-center py-4">Aucune branche disponible</p>
+                <p className="text-sm text-[var(--text-muted)] text-center py-4">{t('map.view.noBranch')}</p>
               ) : (
                 <>
                   <FilterRadioRow
@@ -2828,8 +2842,12 @@ export const MapView: React.FC<MapViewProps> = ({
                         <div style={{ minWidth: 150 }} className="text-sm">
                           <p className="font-bold text-red-600 mb-1">🚨 Excès #{index + 1}</p>
                           <p className="text-[var(--text-primary)] font-medium">{Math.round(event.speed)} km/h</p>
-                          <p className="text-xs text-[var(--text-secondary)]">Limite : {event.maxAllowed} km/h</p>
-                          <p className="text-xs text-[var(--text-secondary)]">Durée : {Math.round(event.duration)}s</p>
+                          <p className="text-xs text-[var(--text-secondary)]">
+                            {t('map.replay.limit')} : {event.maxAllowed} km/h
+                          </p>
+                          <p className="text-xs text-[var(--text-secondary)]">
+                            {t('map.view.duration')} : {Math.round(event.duration)}s
+                          </p>
                           <p className="text-xs text-[var(--text-secondary)] mt-1">
                             {new Date(event.timestamp).toLocaleTimeString('fr-FR', {
                               hour: '2-digit',
@@ -2864,7 +2882,7 @@ export const MapView: React.FC<MapViewProps> = ({
                           <Marker position={[replayPath[0].lat, replayPath[0].lng]} icon={startIcon}>
                             <Popup>
                               <div className="text-sm font-bold text-green-600">
-                                🏁 Départ
+                                🏁 {t('map.view.departure')}
                                 {first && (
                                   <p className="text-xs font-normal text-[var(--text-secondary)] mt-1">
                                     {new Date(first.timestamp).toLocaleTimeString('fr-FR', {
@@ -2882,7 +2900,7 @@ export const MapView: React.FC<MapViewProps> = ({
                           >
                             <Popup>
                               <div className="text-sm font-bold text-[var(--primary)]">
-                                📍 Arrivée
+                                📍 {t('map.view.arrival')}
                                 {last && (
                                   <p className="text-xs font-normal text-[var(--text-secondary)] mt-1">
                                     {new Date(last.timestamp).toLocaleTimeString('fr-FR', {
@@ -2963,7 +2981,7 @@ export const MapView: React.FC<MapViewProps> = ({
                 </button>
                 <button
                   onClick={() => setShowVehicleLabels(!showVehicleLabels)}
-                  title={showVehicleLabels ? 'Masquer les étiquettes véhicules' : 'Afficher les étiquettes véhicules'}
+                  title={showVehicleLabels ? t('map.view.hideLabels') : t('map.view.showLabels')}
                   className={`p-2 rounded-lg transition-all ${showVehicleLabels ? 'bg-[var(--primary)] text-white' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] hover:text-[var(--primary)]'}`}
                 >
                   <Tag className="w-4 h-4" />
@@ -3046,7 +3064,7 @@ export const MapView: React.FC<MapViewProps> = ({
                   value={searchAddress}
                   onChange={(e) => setSearchAddress(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && searchAddressLocation()}
-                  placeholder="Rechercher un lieu..."
+                  placeholder={t('map.view.searchLocation')}
                   className="bg-transparent border-none text-sm focus:outline-none w-40 text-[var(--text-primary)]"
                 />
                 <button

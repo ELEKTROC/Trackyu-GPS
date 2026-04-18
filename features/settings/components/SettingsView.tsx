@@ -802,7 +802,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         );
       if (colLower.includes('statut')) {
         const STATUS_FR: Record<string, { label: string; cls: string }> = {
-          MOVING: { label: 'En mouvement', cls: 'bg-green-100 text-green-700' },
+          MOVING: { label: 'En route', cls: 'bg-green-100 text-green-700' },
           IDLE: { label: 'Ralenti', cls: 'bg-yellow-100 text-yellow-700' },
           STOPPED: { label: 'Arrêté', cls: 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]' },
           OFFLINE: { label: 'Hors ligne', cls: 'bg-red-100 text-red-600' },

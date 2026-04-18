@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type {
   Vehicle,
@@ -301,8 +301,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // --- SOCKET CONNECTIVITY STATE ---
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [disconnectedSince, setDisconnectedSince] = useState<number | null>(null);
-  // isDataStale: socket was down for more than 2 minutes
-  const isDataStale = !isSocketConnected && disconnectedSince != null && Date.now() - disconnectedSince > 2 * 60 * 1000;
+
+  // Batching refs for vehicle updates — flush at most once every 100ms (#5 re-render cascade fix)
+  const pendingVehicleUpdates = useRef<Map<string, VehicleUpdatePayload>>(new Map());
+  const vehicleFlushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // isDataStale: socket was down for more than 30 seconds
+  const isDataStale = !isSocketConnected && disconnectedSince != null && Date.now() - disconnectedSince > 30 * 1000;
 
   // --- REAL-TIME SOCKET CONNECTION ---
   useEffect(() => {
@@ -317,11 +321,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDisconnectedSince(null);
       if (tenantId) {
         socket.emit('join:tenant', tenantId);
-      } else if (user?.role === 'SUPER_ADMIN' || user?.role === 'SUPERADMIN') {
-        socket.emit('join:superadmin');
       }
-      // Force-refresh live vehicle data after reconnection to fill the gap
-      queryClient.invalidateQueries({ queryKey: ['vehicles', tenantId] });
+      // SUPERADMIN joins superadmin room regardless of tenantId
+      const role = user?.role?.toUpperCase().replace('_', '');
+      if (role === 'SUPERADMIN') {
+        socket.emit('join:superadmin');
+      } else if (!tenantId) {
+        logger.warn('[Socket] No tenantId and not SUPERADMIN — no room joined, real-time updates disabled');
+      }
+      // Delay invalidate to avoid API spike on reconnect (esp. with large fleets)
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['vehicles', tenantId] });
+      }, 2000);
     });
 
     socket.on('disconnect', () => {
@@ -337,20 +348,41 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     socket.on('vehicle:update', (update: VehicleUpdatePayload) => {
       logger.debug('Vehicle Update Received:', update);
-      queryClient.setQueryData(['vehicles', tenantId], (oldVehicles: Vehicle[] = []) => {
-        if (!oldVehicles) return [];
-        return oldVehicles.map((v) => {
-          if (v.id === update.id) {
-            return {
-              ...v,
-              ...update,
-              location: update.location || v.location,
-              lastUpdated: new Date(update.lastUpdated),
-            };
-          }
-          return v;
-        });
-      });
+      // Accumulate update in the batch map (last-write-wins per vehicle)
+      pendingVehicleUpdates.current.set(update.id, update);
+      // Schedule a single flush 100ms from now — collapses burst into 1 React Query write
+      if (!vehicleFlushTimer.current) {
+        vehicleFlushTimer.current = setTimeout(() => {
+          const batch = new Map(pendingVehicleUpdates.current);
+          pendingVehicleUpdates.current.clear();
+          vehicleFlushTimer.current = null;
+          queryClient.setQueryData(['vehicles', tenantId], (oldVehicles: Vehicle[] = []) => {
+            if (!oldVehicles?.some((v) => batch.has(v.id))) return oldVehicles;
+            return oldVehicles.map((v) => {
+              const upd = batch.get(v.id);
+              if (!upd) return v;
+              // Only override GPS-relevant fields — don't let socket clobber static vehicle data
+              return {
+                ...v,
+                location: upd.location ?? v.location,
+                speed: (upd as any).speed ?? v.speed,
+                heading: (upd as any).heading ?? v.heading,
+                status: (upd as any).status ?? v.status,
+                // Utiliser l'heure de réception (Date.now) — le timestamp GPS du boîtier
+                // peut être décalé de plusieurs minutes (horloge interne, mise en file)
+                lastUpdated: new Date(),
+                address: (upd as any).address ?? v.address,
+              };
+            });
+          });
+        }, 100);
+      }
+    });
+
+    socket.on('vehicle:delete', (vehicleId: string) => {
+      queryClient.setQueryData(['vehicles', tenantId], (oldVehicles: Vehicle[] = []) =>
+        oldVehicles.filter((v) => v.id !== vehicleId)
+      );
     });
 
     socket.on('alert:new', (newAlert: AlertPayload) => {
@@ -375,8 +407,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       socket.off('disconnect');
       socket.off('connect_error');
       socket.off('vehicle:update');
+      socket.off('vehicle:delete');
       socket.off('alert:new');
       socket.disconnect();
+      // Flush any pending batched updates before cleanup
+      if (vehicleFlushTimer.current) {
+        clearTimeout(vehicleFlushTimer.current);
+        vehicleFlushTimer.current = null;
+        pendingVehicleUpdates.current.clear();
+      }
     };
   }, [tenantId, queryClient, user]);
 
@@ -402,6 +441,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return data.map((v) => ({ ...v, lastUpdated: new Date(v.lastUpdated) }));
     },
     enabled: !!user,
+    // Polling fallback: refresh every 10s when socket is down so data never freezes
+    refetchInterval: isSocketConnected ? false : 10_000,
   });
 
   const { data: zones = [], isLoading: loadingZones } = useQuery({
@@ -563,6 +604,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     queryFn: () => api.userActivity.list(),
     enabled: !!user && deferredEnabled,
     staleTime: 5 * 60 * 1000, // 5 min
+  });
+
+  const { data: rawAnomalies = [] } = useQuery({
+    queryKey: ['anomalies', tenantId],
+    queryFn: () => api.anomalies.list(),
+    enabled: !!user && deferredEnabled,
+    staleTime: 60 * 1000, // 1 min
+    refetchInterval: 60 * 1000,
   });
 
   const { data: rawMaintenanceRules = [], isLoading: loadingMaintenanceRules } = useQuery({
@@ -1862,7 +1911,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       toggleImmobilization: (vehicleId, immobilize) => toggleImmobilizationMutation.mutate({ vehicleId, immobilize }),
 
-      anomalies: [],
+      anomalies: rawAnomalies,
       userActivity: rawUserActivity,
 
       // Pull-to-refresh: Invalidate all primary queries
@@ -1883,7 +1932,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isSocketConnected,
       isDataStale,
       isLoading: loadingVehicles || loadingClients,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }),
     [
       vehicles,
@@ -1922,6 +1970,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       rawScheduleRules,
       rawEcoDrivingProfiles,
       rawUserActivity,
+      rawAnomalies,
       ticketCategories,
       ticketSubcategories,
       slaConfig,

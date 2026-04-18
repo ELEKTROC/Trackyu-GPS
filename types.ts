@@ -20,6 +20,7 @@
 
 export * from './types/index';
 import type { VehicleStatus } from './types/enums';
+import type { AlertType, AlertSeverity } from './types/alerts';
 
 // ---- LEGACY CONTENT BELOW (kept as reference, all definitions moved to types/) ----
 // This section is intentionally left empty.
@@ -1066,53 +1067,7 @@ export interface Alert {
   value?: number | string; // Valeur associée (vitesse, niveau, etc.)
 }
 
-// Types d'alertes système
-export type AlertType =
-  | 'SPEEDING' // Excès de vitesse
-  | 'GEOFENCE' // Entrée/Sortie zone
-  | 'FUEL_LEVEL' // Niveau carburant bas
-  | 'FUEL_THEFT' // Vol de carburant
-  | 'MAINTENANCE' // Alerte maintenance
-  | 'SOS' // Bouton SOS
-  | 'IGNITION' // Allumage/Extinction
-  | 'IDLING' // Ralenti excessif
-  | 'BATTERY' // Batterie faible (véhicule ou GPS)
-  | 'TOWING' // Remorquage détecté
-  | 'JAMMING' // Brouillage GPS
-  | 'OFFLINE' // Perte de signal
-  | 'POWER_CUT' // Coupure alimentation
-  | 'HARSH_BRAKING' // Freinage brusque
-  | 'HARSH_ACCEL' // Accélération brusque
-  | 'SHARP_TURN' // Virage brusque
-  | 'TAMPERING' // Sabotage/Vibration
-  | 'CRASH' // Détection accident
-  | 'RULE_VIOLATION'; // Violation de règle planifiée
-
-// Niveaux de sévérité
-export type AlertSeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-
-// Configuration des types d'alertes pour l'UI
-export const ALERT_TYPE_CONFIG: Record<AlertType, { label: string; icon: string; color: string }> = {
-  SPEEDING: { label: 'Excès de vitesse', icon: 'Gauge', color: 'orange' },
-  GEOFENCE: { label: 'Zone géographique', icon: 'MapPin', color: 'blue' },
-  FUEL_LEVEL: { label: 'Niveau carburant', icon: 'Fuel', color: 'yellow' },
-  FUEL_THEFT: { label: 'Vol de carburant', icon: 'AlertTriangle', color: 'red' },
-  MAINTENANCE: { label: 'Maintenance', icon: 'Wrench', color: 'purple' },
-  SOS: { label: 'SOS Urgence', icon: 'AlertOctagon', color: 'red' },
-  IGNITION: { label: 'Moteur', icon: 'Key', color: 'green' },
-  IDLING: { label: 'Ralenti excessif', icon: 'Clock', color: 'orange' },
-  BATTERY: { label: 'Batterie', icon: 'Battery', color: 'yellow' },
-  TOWING: { label: 'Remorquage', icon: 'Truck', color: 'red' },
-  JAMMING: { label: 'Brouillage', icon: 'WifiOff', color: 'red' },
-  OFFLINE: { label: 'Hors ligne', icon: 'WifiOff', color: 'slate' },
-  POWER_CUT: { label: 'Coupure alimentation', icon: 'Zap', color: 'red' },
-  HARSH_BRAKING: { label: 'Freinage brusque', icon: 'AlertTriangle', color: 'orange' },
-  HARSH_ACCEL: { label: 'Accélération brusque', icon: 'TrendingUp', color: 'orange' },
-  SHARP_TURN: { label: 'Virage brusque', icon: 'CornerUpRight', color: 'orange' },
-  TAMPERING: { label: 'Sabotage boîtier', icon: 'ShieldAlert', color: 'red' },
-  CRASH: { label: 'Accident détecté', icon: 'AlertOctagon', color: 'red' },
-  RULE_VIOLATION: { label: 'Violation de règle', icon: 'Ban', color: 'red' },
-};
+// AlertType, AlertSeverity, ALERT_TYPE_CONFIG : voir types/alerts.ts (re-export via export *)
 
 export interface Branch {
   id: string;

@@ -46,7 +46,9 @@ import {
 import { loadHtml2Canvas } from '../../../services/pdfLoader';
 import { PERIOD_PRESETS, type PeriodPreset } from '../../../hooks/useDateRange';
 import { exportToGPX, exportToKML, downloadFile } from '../../../utils/gpsExport';
+import { computeVehicleStats } from '../../../utils/computeVehicleStats';
 import { API_URL, getHeaders } from '../../../services/api/client';
+import { useTranslation } from '../../../i18n';
 
 // Types pour les événements et arrêts
 export interface StopEvent {
@@ -217,6 +219,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   onStopsDetected,
   onEventsDetected,
 }) => {
+  const { t } = useTranslation();
   const { showToast } = useToast();
   const [isBottomPanelOpen, setIsBottomPanelOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('STATS');
@@ -303,7 +306,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     switch (periodPreset) {
       case 'TODAY':
         start.setHours(0, 0, 0, 0);
-        end.setHours(23, 59, 59, 999);
+        // end = new Date() déjà initialisé → heure actuelle, pas 23:59:59
         break;
       case 'YESTERDAY':
         start.setDate(now.getDate() - 1);
@@ -348,13 +351,13 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   }, [periodPreset]);
 
   const tabs: { id: TabType; label: string; icon: React.ElementType }[] = [
-    { id: 'STATS', label: 'Résumé', icon: TrendingUp },
-    { id: 'STOPS', label: 'Arrêts', icon: MapPin },
-    { id: 'TRIPS', label: 'Trajets', icon: Navigation },
-    { id: 'EVENTS', label: 'Événements', icon: AlertCircle },
-    { id: 'SPEED', label: 'Vitesse', icon: Gauge },
-    { id: 'FUEL', label: 'Carburant', icon: Fuel },
-    { id: 'IDLE', label: 'Ralenti', icon: PauseCircle },
+    { id: 'STATS', label: t('map.replay.summary'), icon: TrendingUp },
+    { id: 'STOPS', label: t('map.replay.stops'), icon: MapPin },
+    { id: 'TRIPS', label: t('map.replay.trips'), icon: Navigation },
+    { id: 'EVENTS', label: t('map.replay.events'), icon: AlertCircle },
+    { id: 'SPEED', label: t('map.replay.speed'), icon: Gauge },
+    { id: 'FUEL', label: t('map.replay.fuel'), icon: Fuel },
+    { id: 'IDLE', label: t('map.replay.idle'), icon: PauseCircle },
   ];
 
   // Calculate stops and idle periods from history
@@ -528,7 +531,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       .filter((s): s is TripSegment => s !== null);
   }, [history, stops]);
 
-  // Calculate overall trip statistics
+  // Calculate overall trip statistics — via moteur partagé computeVehicleStats
   const tripStats = useMemo<TripStats>(() => {
     if (!history || history.length < 2) {
       return {
@@ -543,85 +546,22 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
         speedingEvents: 0,
       };
     }
-
-    const firstPoint = history[0];
-    const lastPoint = history[history.length - 1];
-    const startTime = new Date(firstPoint.timestamp || firstPoint.time);
-    const lastTs = new Date(lastPoint.timestamp || lastPoint.time);
-    // Aligner avec VehicleDetailPanel : si c'est aujourd'hui, étendre jusqu'à now (cap 30min)
     const now = new Date();
-    const isToday = lastTs.toDateString() === now.toDateString();
-    const endTime = isToday ? new Date(Math.min(now.getTime(), lastTs.getTime() + 30 * 60 * 1000)) : lastTs;
-    const totalDuration = (endTime.getTime() - startTime.getTime()) / 60000; // minutes
-
-    // Même logique que VehicleDetailPanel : classifier chaque intervalle par le statut du point courant
-    // speed >= 2 → MOVING, ignition true → IDLE, sinon → STOPPED
-    const getPointStatus = (p: any): 'MOVING' | 'IDLE' | 'STOPPED' => {
-      const speed = typeof p.speed === 'number' ? p.speed : parseFloat(p.speed ?? '0') || 0;
-      if (speed >= 2) return 'MOVING';
-      const ign = p.ignition;
-      if (ign === true || ign === 'true' || ign === 't') return 'IDLE';
-      return 'STOPPED';
-    };
-    const getTs = (p: any) => new Date(p.timestamp || p.time).getTime();
-
-    let totalDistance = 0;
-    let maxSpeed = 0;
-    let speedSum = 0;
-    let speedCount = 0;
-    let drivingMs = 0;
-    let idleMs = 0;
-    let stoppedMs = 0;
-
-    const sorted = [...history].sort((a, b) => getTs(a) - getTs(b));
-
-    for (let i = 0; i < sorted.length - 1; i++) {
-      const curr = sorted[i];
-      const next = sorted[i + 1];
-      const dt = getTs(next) - getTs(curr);
-      const status = getPointStatus(curr);
-      if (status === 'MOVING') drivingMs += dt;
-      else if (status === 'IDLE') idleMs += dt;
-      else stoppedMs += dt;
-
-      const prevLoc = curr.location || { lat: curr.lat, lng: curr.lng };
-      const currLoc = next.location || { lat: next.lat, lng: next.lng };
-      if (prevLoc && currLoc && dt < 10 * 60 * 1000) {
-        // ignorer gaps > 10min pour la distance
-        totalDistance += calculateDistance(prevLoc.lat, prevLoc.lng, currLoc.lat, currLoc.lng);
-      }
-      const speed = curr.speed || 0;
-      if (speed > maxSpeed) maxSpeed = speed;
-      if (speed > 0) {
-        speedSum += speed;
-        speedCount++;
-      }
-    }
-
-    // Dernier point → now (si aujourd'hui, cap 30min) — identique à VehicleDetailPanel
-    if (sorted.length > 0) {
-      const last = sorted[sorted.length - 1];
-      const lastStatus = getPointStatus(last);
-      const extraMs = Math.min(endTime.getTime() - getTs(last), 30 * 60 * 1000);
-      if (extraMs > 0) {
-        if (lastStatus === 'MOVING') drivingMs += extraMs;
-        else if (lastStatus === 'IDLE') idleMs += extraMs;
-        else stoppedMs += extraMs;
-      }
-    }
-
+    const periodEnd = dateRange.end > now ? now : dateRange.end;
+    const s = computeVehicleStats(history, selectedVehicle?.status ?? '', dateRange.start, periodEnd);
+    const totalDuration = (periodEnd.getTime() - dateRange.start.getTime()) / 60000;
     return {
-      totalDistance,
+      totalDistance: s.totalDistance,
       totalDuration,
-      drivingTime: drivingMs / 60000,
-      stoppedTime: stoppedMs / 60000,
-      idleTime: idleMs / 60000,
-      avgSpeed: speedCount > 0 ? speedSum / speedCount : 0,
-      maxSpeed,
+      drivingTime: s.movingMs / 60000,
+      stoppedTime: s.stoppedMs / 60000,
+      idleTime: s.idleMs / 60000,
+      avgSpeed: s.avgSpeed,
+      maxSpeed: s.maxSpeed,
       stopCount: stops.length,
       speedingEvents: speedingEvents.length,
     };
-  }, [history, stops, speedingEvents]);
+  }, [history, stops, speedingEvents, dateRange, selectedVehicle?.status]);
 
   // Sync stops and events to parent component (MapView)
   useEffect(() => {
@@ -730,33 +670,14 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     return withFuel.length > 0 ? (withFuel[withFuel.length - 1].fuelLevel as number) : null;
   }, [filteredHistory]);
 
-  // Coupures GPS (gaps > 5 min entre 2 points consécutifs)
+  // Coupures GPS — dérivées du même moteur que tripStats (source unique)
   const { offlineGaps, offlineTimeMin } = useMemo(() => {
     if (filteredHistory.length < 2) return { offlineGaps: 0, offlineTimeMin: 0 };
-    // Seuil : 30 minutes sans signal = période hors ligne
-    const GAP_MS = 30 * 60 * 1000;
-    // Filtrer les points dont le timestamp est dans la fenêtre sélectionnée
-    // Évite de compter le gap nuit (dernier point hier → premier point aujourd'hui)
-    const periodStart = dateRange.start.getTime();
-    const periodEnd = dateRange.end.getTime();
-    const inRange = filteredHistory.filter((p) => {
-      const t = new Date(p.timestamp || p.time).getTime();
-      return t >= periodStart && t <= periodEnd;
-    });
-    if (inRange.length < 2) return { offlineGaps: 0, offlineTimeMin: 0 };
-    let count = 0;
-    let totalOfflineMs = 0;
-    for (let i = 1; i < inRange.length; i++) {
-      const a = new Date(inRange[i - 1].timestamp || inRange[i - 1].time).getTime();
-      const b = new Date(inRange[i].timestamp || inRange[i].time).getTime();
-      const dt = b - a;
-      if (dt > GAP_MS) {
-        count++;
-        totalOfflineMs += dt;
-      }
-    }
-    return { offlineGaps: count, offlineTimeMin: totalOfflineMs / 60000 };
-  }, [filteredHistory, dateRange]);
+    const now = new Date();
+    const periodEnd = dateRange.end > now ? now : dateRange.end;
+    const s = computeVehicleStats(filteredHistory, selectedVehicle?.status ?? '', dateRange.start, periodEnd);
+    return { offlineGaps: s.offlineGaps, offlineTimeMin: s.offlineMs / 60000 };
+  }, [filteredHistory, dateRange, selectedVehicle?.status]);
 
   // Export screenshot
   const handleExportVideo = useCallback(async () => {
@@ -796,7 +717,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   // Export to GPX
   const handleExportGPX = useCallback(() => {
     if (!history || history.length === 0) {
-      showToast("Aucune donnée d'historique à exporter", 'warning');
+      showToast(t('map.replay.noHistoryToExport'), 'warning');
       return;
     }
 
@@ -813,12 +734,12 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
     const filename = `${selectedVehicle?.name || 'vehicle'}_${dateRange.start.toISOString().split('T')[0]}.gpx`;
     downloadFile(gpxContent, filename, 'application/gpx+xml');
-  }, [history, selectedVehicle, dateRange]);
+  }, [history, selectedVehicle, dateRange, t]);
 
   // Export to KML
   const handleExportKML = useCallback(() => {
     if (!history || history.length === 0) {
-      showToast("Aucune donnée d'historique à exporter", 'warning');
+      showToast(t('map.replay.noHistoryToExport'), 'warning');
       return;
     }
 
@@ -835,7 +756,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
     const filename = `${selectedVehicle?.name || 'vehicle'}_${dateRange.start.toISOString().split('T')[0]}.kml`;
     downloadFile(kmlContent, filename, 'application/vnd.google-earth.kml+xml');
-  }, [history, selectedVehicle, dateRange]);
+  }, [history, selectedVehicle, dateRange, t]);
 
   if (!isOpen) return null;
 
@@ -864,7 +785,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
               <Search size={16} className="text-[var(--text-muted)]" />
               <input
                 type="text"
-                placeholder="Rechercher véhicule ou client..."
+                placeholder={t('map.replay.searchPlaceholder')}
                 value={vehicleSearch}
                 onChange={(e) => {
                   setVehicleSearch(e.target.value);
@@ -881,7 +802,9 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
             {isVehicleDropdownOpen && (
               <div className="absolute top-full left-0 mt-1 w-[350px] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg shadow-xl z-50 max-h-[400px] overflow-y-auto">
                 {Object.entries(vehiclesByClient).length === 0 ? (
-                  <div className="p-4 text-center text-[var(--text-secondary)] text-sm">Aucun véhicule trouvé</div>
+                  <div className="p-4 text-center text-[var(--text-secondary)] text-sm">
+                    {t('map.replay.noVehicleFound')}
+                  </div>
                 ) : (
                   Object.entries(vehiclesByClient).map(([client, clientVehicles]) => (
                     <div key={client}>
@@ -922,7 +845,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value as PeriodPreset)}
                 className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                title="Période"
+                title={t('map.replay.period')}
               >
                 {Object.entries(PERIOD_PRESETS).map(([key, label]) => (
                   <option key={key} value={key}>
@@ -943,7 +866,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     date.setHours(0, 0, 0, 0);
                     onDateRangeChange({ ...dateRange, start: date });
                   }}
-                  title="Date de début"
+                  title={t('map.replay.startDate')}
                 />
                 <span className="text-[var(--text-muted)]">-</span>
                 <input
@@ -952,7 +875,13 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                   value={dateRange.end.toISOString().split('T')[0]}
                   onChange={(e) => {
                     const date = new Date(e.target.value);
-                    date.setHours(23, 59, 59, 999);
+                    const today = new Date();
+                    const isToday = date.toDateString() === today.toDateString();
+                    if (isToday) {
+                      date.setHours(today.getHours(), today.getMinutes(), today.getSeconds(), 0);
+                    } else {
+                      date.setHours(23, 59, 59, 999);
+                    }
                     onDateRangeChange({ ...dateRange, end: date });
                   }}
                   title="Date de fin"
@@ -1018,7 +947,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
             <button
               className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
               onClick={() => onProgressChange(Math.max(0, progress - 10))}
-              title="Reculer de 10%"
+              title={t('map.replay.back10')}
             >
               <Rewind size={20} />
             </button>
@@ -1036,12 +965,12 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
             <button
               className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
               onClick={() => onProgressChange(Math.min(100, progress + 10))}
-              title="Avancer de 10%"
+              title={t('map.replay.forward10')}
             >
               <FastForward size={20} />
             </button>
             <div className="h-4 w-px bg-[var(--border)] mx-2"></div>
-            <div className="flex items-center gap-1" title="Vitesse de lecture">
+            <div className="flex items-center gap-1" title={t('map.replay.playbackSpeed')}>
               {[1, 2, 5, 10, 20].map((s) => (
                 <button
                   key={s}
@@ -1155,7 +1084,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
             </div>
             <button
               className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] print:hidden"
-              title="Réduire/Agrandir"
+              title={t('map.replay.collapseToggle')}
             >
               {isBottomPanelOpen ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
             </button>
@@ -1168,34 +1097,36 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
               <div className="grid grid-cols-3 divide-x divide-[var(--border)] h-full">
                 {/* Colonne 1 — Trajet */}
                 <div className="flex flex-col overflow-y-auto px-4 py-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Trajet</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">
+                    {t('map.replay.tripSection')}
+                  </p>
                   <StatRow
                     icon={Route}
-                    label="Distance"
+                    label={t('map.replay.distance')}
                     value={`${tripStats.totalDistance.toFixed(1)} km`}
                     color="blue"
                   />
                   <StatRow
                     icon={Navigation}
-                    label="Temps conduite"
+                    label={t('map.replay.drivingTime')}
                     value={formatDuration(tripStats.drivingTime)}
                     color="green"
                   />
                   <StatRow
                     icon={StopCircle}
-                    label="Temps arrêt"
+                    label={t('map.replay.idleTime')}
                     value={formatDuration(tripStats.stoppedTime)}
                     color="red"
                   />
                   <StatRow
                     icon={PauseCircle}
-                    label="Temps ralenti"
+                    label={t('map.replay.idleTimeRow')}
                     value={formatDuration(tripStats.idleTime)}
                     color="orange"
                   />
                   <StatRow
                     icon={WifiOff}
-                    label="Temps hors ligne"
+                    label={t('map.replay.offlineTime')}
                     value={formatDuration(offlineTimeMin)}
                     color="gray"
                   />
@@ -1204,30 +1135,35 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                 {/* Colonne 2 — Vitesse & Alertes */}
                 <div className="flex flex-col overflow-y-auto px-4 py-3">
                   <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">
-                    Vitesse & Alertes
+                    {t('map.replay.speedAlertsSection')}
                   </p>
                   <StatRow
                     icon={Gauge}
-                    label="Vitesse moyenne"
+                    label={t('map.replay.avgSpeed')}
                     value={`${tripStats.avgSpeed.toFixed(0)} km/h`}
                     color="cyan"
                   />
                   <StatRow
                     icon={Zap}
-                    label="Vitesse max"
+                    label={t('map.replay.maxSpeed')}
                     value={`${tripStats.maxSpeed.toFixed(0)} km/h`}
                     color={tripStats.maxSpeed > (selectedVehicle?.maxSpeed || 120) ? 'red' : 'green'}
                   />
-                  <StatRow icon={MapPin} label="Arrêts détectés" value={`${tripStats.stopCount}`} color="blue" />
+                  <StatRow
+                    icon={MapPin}
+                    label={t('map.replay.stopsDetected')}
+                    value={`${tripStats.stopCount}`}
+                    color="blue"
+                  />
                   <StatRow
                     icon={AlertCircle}
-                    label="Excès de vitesse"
+                    label={t('map.replay.speeding')}
                     value={`${tripStats.speedingEvents}`}
                     color={tripStats.speedingEvents > 0 ? 'red' : 'green'}
                   />
                   <StatRow
                     icon={WifiOff}
-                    label="Coupures GPS"
+                    label={t('map.replay.gpsOutages')}
                     value={`${offlineGaps}`}
                     color={offlineGaps > 0 ? 'red' : 'green'}
                   />
@@ -1235,28 +1171,30 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
                 {/* Colonne 3 — Carburant */}
                 <div className="flex flex-col overflow-y-auto px-4 py-3">
-                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">Carburant</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mb-3">
+                    {t('map.replay.fuelSection')}
+                  </p>
                   <StatRow
                     icon={Fuel}
-                    label="Consommé"
+                    label={t('map.replay.consumed')}
                     value={fuelConsumed != null ? `${fuelConsumed.toFixed(1)}%` : '–'}
                     color="purple"
                   />
                   <StatRow
                     icon={Droplets}
-                    label="Niveau actuel"
+                    label={t('map.replay.currentLevel')}
                     value={currentFuelLevel != null ? `${currentFuelLevel.toFixed(0)}%` : '–'}
                     color={currentFuelLevel != null && currentFuelLevel < 20 ? 'red' : 'green'}
                   />
                   <StatRow
                     icon={TrendingDown}
-                    label="Baisses suspectes"
+                    label={t('map.replay.suspiciousDrops')}
                     value={`${fuelEvents.filter((e) => e.type === 'LOSS').length}`}
                     color={fuelEvents.some((e) => e.type === 'LOSS') ? 'red' : 'green'}
                   />
                   <StatRow
                     icon={TrendingUp}
-                    label="Recharges"
+                    label={t('map.replay.refills')}
                     value={`${fuelEvents.filter((e) => e.type === 'REFILL').length}`}
                     color="blue"
                   />
@@ -1274,10 +1212,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
                         <div className="text-center">
                           <MapPin className="w-12 h-12 mx-auto mb-2 opacity-30" />
-                          <p>Aucun arrêt moteur détecté pour cette période</p>
-                          <p className="text-sm text-[var(--text-muted)]">
-                            Les arrêts de moins de 2 minutes ne sont pas comptabilisés
-                          </p>
+                          <p>{t('map.replay.noStopsDetected')}</p>
+                          <p className="text-sm text-[var(--text-muted)]">{t('map.replay.noStopsHint')}</p>
                         </div>
                       </div>
                     ) : (
@@ -1285,11 +1221,11 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                         <thead className="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)]/50 sticky top-0">
                           <tr>
                             <th className="px-4 py-2">#</th>
-                            <th className="px-4 py-2">Heure début</th>
-                            <th className="px-4 py-2">Heure fin</th>
-                            <th className="px-4 py-2">Durée</th>
-                            <th className="px-4 py-2">Position</th>
-                            <th className="px-4 py-2">Actions</th>
+                            <th className="px-4 py-2">{t('map.replay.timeStart')}</th>
+                            <th className="px-4 py-2">{t('map.replay.timeEnd')}</th>
+                            <th className="px-4 py-2">{t('map.replay.duration')}</th>
+                            <th className="px-4 py-2">{t('map.replay.position')}</th>
+                            <th className="px-4 py-2">{t('map.replay.actions')}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-surface)]">
@@ -1327,7 +1263,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                                 <span
                                   className={`text-xs font-medium ${selectedRowId === stop.id ? 'text-[var(--primary)]' : 'text-[var(--text-muted)]'}`}
                                 >
-                                  {selectedRowId === stop.id ? '● Sur carte' : 'Cliquer'}
+                                  {selectedRowId === stop.id ? t('map.replay.onMap') : t('map.replay.clickAction')}
                                 </span>
                               </td>
                             </tr>
@@ -1346,14 +1282,14 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                   <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
                     <div className="text-center">
                       <div className="animate-spin w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full mx-auto mb-2" />
-                      <p className="text-sm">Chargement des trajets…</p>
+                      <p className="text-sm">{t('map.replay.loadingTrips')}</p>
                     </div>
                   </div>
                 ) : serverTrips.length === 0 ? (
                   <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
                     <div className="text-center">
                       <Navigation className="w-12 h-12 mx-auto mb-2 opacity-30" />
-                      <p>Aucun trajet enregistré sur cette période</p>
+                      <p>{t('map.replay.noTrips')}</p>
                     </div>
                   </div>
                 ) : (
@@ -1444,14 +1380,14 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           <div className="flex items-start gap-1 mt-1 text-xs text-[var(--text-secondary)] min-w-0">
                             {startAddr && (
                               <span className="truncate flex-1">
-                                <span className="font-semibold text-green-600">Départ </span>
+                                <span className="font-semibold text-green-600">{t('map.replay.departure')} </span>
                                 {startAddr}
                               </span>
                             )}
                             {startAddr && endAddr && <span className="flex-shrink-0">→</span>}
                             {endAddr && (
                               <span className="truncate flex-1 text-right">
-                                <span className="font-semibold text-red-500">Arrivée </span>
+                                <span className="font-semibold text-red-500">{t('map.replay.arrival')} </span>
                                 {endAddr}
                               </span>
                             )}
@@ -1474,8 +1410,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                   <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
                     <div className="text-center">
                       <AlertCircle className="w-12 h-12 mx-auto mb-2 opacity-30 text-green-500" />
-                      <p className="text-green-600 font-medium">Aucun excès de vitesse détecté</p>
-                      <p className="text-sm text-[var(--text-muted)]">Bonne conduite ! 🎉</p>
+                      <p className="text-green-600 font-medium">{t('map.replay.noSpeeding')}</p>
+                      <p className="text-sm text-[var(--text-muted)]">{t('map.replay.goodDriving')}</p>
                     </div>
                   </div>
                 ) : (
@@ -1483,12 +1419,12 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     <thead className="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)]/50 sticky top-0">
                       <tr>
                         <th className="px-4 py-2">#</th>
-                        <th className="px-4 py-2">Heure</th>
-                        <th className="px-4 py-2">Vitesse</th>
-                        <th className="px-4 py-2">Limite</th>
-                        <th className="px-4 py-2">Dépassement</th>
-                        <th className="px-4 py-2">Durée</th>
-                        <th className="px-4 py-2">Actions</th>
+                        <th className="px-4 py-2">{t('map.replay.time')}</th>
+                        <th className="px-4 py-2">{t('map.replay.speed')}</th>
+                        <th className="px-4 py-2">{t('map.replay.limit')}</th>
+                        <th className="px-4 py-2">{t('map.replay.excess')}</th>
+                        <th className="px-4 py-2">{t('map.replay.duration')}</th>
+                        <th className="px-4 py-2">{t('map.replay.actions')}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-surface)]">
@@ -1553,17 +1489,17 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     <Tooltip
                       contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}
                       formatter={(value: unknown, name: unknown) =>
-                        [`${(value as number).toFixed(0)} km/h`, name === 'speed' ? 'Vitesse' : 'Limite'] as [
-                          string,
-                          string,
-                        ]
+                        [
+                          `${(value as number).toFixed(0)} km/h`,
+                          name === 'speed' ? t('map.replay.speed') : t('map.replay.limit'),
+                        ] as [string, string]
                       }
                     />
                     <ReferenceLine
                       y={selectedVehicle?.maxSpeed || 120}
                       stroke="#ef4444"
                       strokeDasharray="5 5"
-                      label={{ value: 'Limite', position: 'right', fill: '#ef4444', fontSize: 12 }}
+                      label={{ value: t('map.replay.limit'), position: 'right', fill: '#ef4444', fontSize: 12 }}
                     />
                     <Line
                       type="linear"
@@ -1586,17 +1522,18 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                   <div className="flex items-center justify-between mb-2 px-2 flex-wrap gap-2">
                     <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
                       <Fuel className="w-4 h-4 text-green-500" />
-                      Carburant
+                      {t('map.replay.fuel')}
                     </h3>
 
                     {/* Stats */}
                     {chartData.length > 0 && chartData[0].fuel !== undefined && (
                       <div className="flex gap-3 text-xs">
                         <span className="text-[var(--text-secondary)]">
-                          Début: <strong className="text-[var(--text-primary)]">{chartData[0].fuel.toFixed(0)}%</strong>
+                          {t('map.replay.start')}:{' '}
+                          <strong className="text-[var(--text-primary)]">{chartData[0].fuel.toFixed(0)}%</strong>
                         </span>
                         <span className="text-[var(--text-secondary)]">
-                          Fin:{' '}
+                          {t('map.replay.end')}:{' '}
                           <strong className="text-[var(--text-primary)]">
                             {chartData[chartData.length - 1]?.fuel?.toFixed(0) || 0}%
                           </strong>
@@ -1619,7 +1556,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           className="w-3.5 h-3.5 rounded border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
                         />
                         <Gauge className="w-3.5 h-3.5 text-[var(--primary)]" />
-                        <span className="text-[var(--text-secondary)]">Vitesse</span>
+                        <span className="text-[var(--text-secondary)]">{t('map.replay.speed')}</span>
                       </label>
                       <label className="flex items-center gap-1.5 cursor-pointer select-none">
                         <input
@@ -1629,7 +1566,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           className="w-3.5 h-3.5 rounded border-[var(--border)] text-orange-600 focus:ring-orange-500"
                         />
                         <Key className="w-3.5 h-3.5 text-orange-500" />
-                        <span className="text-[var(--text-secondary)]">Contact</span>
+                        <span className="text-[var(--text-secondary)]">{t('map.replay.ignition')}</span>
                       </label>
                     </div>
                   </div>
@@ -1640,13 +1577,23 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       {fuelEvents.filter((e) => e.type === 'REFILL').length > 0 && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
                           <Fuel className="w-3 h-3" />
-                          {fuelEvents.filter((e) => e.type === 'REFILL').length} Ravitaillement(s)
+                          {fuelEvents.filter((e) => e.type === 'REFILL').length}{' '}
+                          {t(
+                            fuelEvents.filter((e) => e.type === 'REFILL').length === 1
+                              ? 'map.replay.refillsLabel_one'
+                              : 'map.replay.refillsLabel_other'
+                          )}
                         </span>
                       )}
                       {fuelEvents.filter((e) => e.type === 'LOSS').length > 0 && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
                           <TrendingDown className="w-3 h-3" />
-                          {fuelEvents.filter((e) => e.type === 'LOSS').length} Perte(s) suspecte(s)
+                          {fuelEvents.filter((e) => e.type === 'LOSS').length}{' '}
+                          {t(
+                            fuelEvents.filter((e) => e.type === 'LOSS').length === 1
+                              ? 'map.replay.lossesLabel_one'
+                              : 'map.replay.lossesLabel_other'
+                          )}
                         </span>
                       )}
                     </div>
@@ -1701,9 +1648,11 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           }}
                           formatter={(value: unknown, name: unknown) => {
                             const v = value as number;
-                            if (name === 'fuel') return [`${v.toFixed(1)}%`, 'Carburant'] as [string, string];
-                            if (name === 'speed') return [`${v.toFixed(0)} km/h`, 'Vitesse'] as [string, string];
-                            if (name === 'ignition') return [v > 0 ? 'ON' : 'OFF', 'Contact'] as [string, string];
+                            if (name === 'fuel') return [`${v.toFixed(1)}%`, t('map.replay.fuel')] as [string, string];
+                            if (name === 'speed')
+                              return [`${v.toFixed(0)} km/h`, t('map.replay.speed')] as [string, string];
+                            if (name === 'ignition')
+                              return [v > 0 ? 'ON' : 'OFF', t('map.replay.ignition')] as [string, string];
                             return [v, name as string] as [number, string];
                           }}
                         />
@@ -1712,7 +1661,12 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           y={20}
                           stroke="#ef4444"
                           strokeDasharray="5 5"
-                          label={{ value: 'Réserve', position: 'insideTopRight', fill: '#ef4444', fontSize: 9 }}
+                          label={{
+                            value: t('map.replay.reserve'),
+                            position: 'insideTopRight',
+                            fill: '#ef4444',
+                            fontSize: 9,
+                          }}
                         />
 
                         {/* Ignition area (background) */}
@@ -1760,10 +1714,10 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       <table className="w-full text-xs">
                         <thead className="text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)]">
                           <tr>
-                            <th className="px-2 py-1 text-left">Type</th>
-                            <th className="px-2 py-1 text-left">Heure</th>
-                            <th className="px-2 py-1 text-left">Avant</th>
-                            <th className="px-2 py-1 text-left">Après</th>
+                            <th className="px-2 py-1 text-left">{t('map.replay.type')}</th>
+                            <th className="px-2 py-1 text-left">{t('map.replay.time')}</th>
+                            <th className="px-2 py-1 text-left">{t('map.replay.before')}</th>
+                            <th className="px-2 py-1 text-left">{t('map.replay.after')}</th>
                             <th className="px-2 py-1 text-left">Δ</th>
                           </tr>
                         </thead>
@@ -1784,7 +1738,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                                   ) : (
                                     <TrendingDown className="w-3 h-3" />
                                   )}
-                                  {event.type === 'REFILL' ? 'Ravit.' : 'Perte'}
+                                  {event.type === 'REFILL' ? t('map.replay.refillShort') : t('map.replay.lossShort')}
                                 </span>
                               </td>
                               <td className="px-2 py-1 text-[var(--text-secondary)]">
@@ -1818,8 +1772,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     <div className="h-full flex items-center justify-center text-[var(--text-secondary)]">
                       <div className="text-center">
                         <PauseCircle className="w-12 h-12 mx-auto mb-2 opacity-30 text-green-500" />
-                        <p className="text-green-600 font-medium">Aucun ralenti détecté</p>
-                        <p className="text-sm text-[var(--text-muted)]">Moteur allumé à l'arrêt &gt; 1 min</p>
+                        <p className="text-green-600 font-medium">{t('map.replay.noIdle')}</p>
+                        <p className="text-sm text-[var(--text-muted)]">{t('map.replay.idleDescription')}</p>
                       </div>
                     </div>
                   ) : (
@@ -1828,8 +1782,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                         <div className="flex items-center gap-3">
                           <PauseCircle className="w-8 h-8 text-orange-500" />
                           <div>
-                            <p className="text-sm font-medium text-orange-700">Temps de ralenti total</p>
-                            <p className="text-xs text-orange-600">Moteur allumé sans mouvement (&gt;1 min)</p>
+                            <p className="text-sm font-medium text-orange-700">{t('map.replay.totalIdleTime')}</p>
+                            <p className="text-xs text-orange-600">{t('map.replay.idleSubtitle')}</p>
                           </div>
                         </div>
                         <p className="text-2xl font-bold text-orange-700">{formatDuration(totalIdleTime)}</p>
@@ -1838,11 +1792,11 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                         <thead className="text-xs text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)] sticky top-0">
                           <tr>
                             <th className="px-4 py-2">#</th>
-                            <th className="px-4 py-2">Heure début</th>
-                            <th className="px-4 py-2">Heure fin</th>
-                            <th className="px-4 py-2">Durée</th>
-                            <th className="px-4 py-2">Position</th>
-                            <th className="px-4 py-2">Carte</th>
+                            <th className="px-4 py-2">{t('map.replay.timeStart')}</th>
+                            <th className="px-4 py-2">{t('map.replay.timeEnd')}</th>
+                            <th className="px-4 py-2">{t('map.replay.duration')}</th>
+                            <th className="px-4 py-2">{t('map.replay.position')}</th>
+                            <th className="px-4 py-2">{t('map.replay.map')}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--border)] bg-[var(--bg-elevated)]">
@@ -1880,7 +1834,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                                 <span
                                   className={`text-xs font-medium ${selectedRowId === event.id ? 'text-orange-600' : 'text-[var(--text-muted)]'}`}
                                 >
-                                  {selectedRowId === event.id ? '● Sur carte' : 'Cliquer'}
+                                  {selectedRowId === event.id ? t('map.replay.onMap') : t('map.replay.clickAction')}
                                 </span>
                               </td>
                             </tr>

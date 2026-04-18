@@ -83,6 +83,7 @@ import {
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { DraggableSection } from './DraggableSection';
 import { useDashboardLayout, type DashboardSectionId } from '../../../hooks/useDashboardLayout';
+import { useTranslation } from '../../../i18n';
 
 // --- Helpers ---
 const safeToISODate = (dateValue: unknown): string | null => {
@@ -200,28 +201,31 @@ const SectionHeader: React.FC<{
   icon: React.ElementType;
   onViewAll?: () => void;
   badge?: string | number;
-}> = ({ title, icon: Icon, onViewAll, badge }) => (
-  <div className="flex items-center justify-between mb-3">
-    <div className="flex items-center gap-2">
-      <Icon className="w-4 h-4 text-[var(--text-muted)]" />
-      <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wide">{title}</h3>
-      {badge !== undefined && (
-        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--primary-dim)] text-[var(--primary)]">
-          {badge}
-        </span>
+}> = ({ title, icon: Icon, onViewAll, badge }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center gap-2">
+        <Icon className="w-4 h-4 text-[var(--text-muted)]" />
+        <h3 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-wide">{title}</h3>
+        {badge !== undefined && (
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[var(--primary-dim)] text-[var(--primary)]">
+            {badge}
+          </span>
+        )}
+      </div>
+      {onViewAll && (
+        <button
+          onClick={onViewAll}
+          className="flex items-center gap-1 text-xs font-medium hover:underline"
+          style={{ color: 'var(--primary)' }}
+        >
+          {t('dashboard.header.viewAll')} <ChevronRight className="w-3 h-3" />
+        </button>
       )}
     </div>
-    {onViewAll && (
-      <button
-        onClick={onViewAll}
-        className="flex items-center gap-1 text-xs font-medium hover:underline"
-        style={{ color: 'var(--primary)' }}
-      >
-        Voir tout <ChevronRight className="w-3 h-3" />
-      </button>
-    )}
-  </div>
-);
+  );
+};
 
 // =====================================================
 // ROLE-BASED DASHBOARD HELPERS
@@ -255,6 +259,7 @@ function isSectionAllowedForRole(sectionId: string, rf: RoleFamily): boolean {
 // DASHBOARD VIEW - Hub KPI Manager
 // =====================================================
 export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics, onNavigate }) => {
+  const { t } = useTranslation();
   const { isDarkMode } = useTheme();
   const { user } = useAuth();
   const roleFamily = getRoleFamily(user?.role);
@@ -295,7 +300,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
       } catch (err) {
         if (!cancelled) {
           console.warn('[Dashboard] Failed to fetch stats:', err);
-          setFetchError('Impossible de charger les statistiques. Vérifiez votre connexion.');
+          setFetchError(t('dashboard.header.fetchError'));
         }
       }
       if (!cancelled) {
@@ -308,6 +313,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
 
   // Polling interval - triggers refresh every 30 seconds
@@ -502,12 +508,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   const statusDonut = useMemo(() => {
     const data = (stats?.statusDistribution || {}) as Record<string, number>;
     return [
-      { name: 'En route', value: data[VehicleStatus.MOVING] || fleet.moving, color: '#22c55e' },
-      { name: 'Ralenti', value: data[VehicleStatus.IDLE] || fleet.idle, color: '#f97316' },
-      { name: 'Arrêté', value: data[VehicleStatus.STOPPED] || fleet.stopped, color: '#ef4444' },
-      { name: 'Hors ligne', value: data[VehicleStatus.OFFLINE] || fleet.offline, color: '#64748b' },
+      {
+        name: t('dashboard.fleetRealtime.status.moving'),
+        value: data[VehicleStatus.MOVING] || fleet.moving,
+        color: '#22c55e',
+      },
+      {
+        name: t('dashboard.fleetRealtime.status.idle'),
+        value: data[VehicleStatus.IDLE] || fleet.idle,
+        color: '#f97316',
+      },
+      {
+        name: t('dashboard.fleetRealtime.status.stopped'),
+        value: data[VehicleStatus.STOPPED] || fleet.stopped,
+        color: '#ef4444',
+      },
+      {
+        name: t('dashboard.fleetRealtime.status.offline'),
+        value: data[VehicleStatus.OFFLINE] || fleet.offline,
+        color: '#64748b',
+      },
     ];
-  }, [stats, fleet]);
+  }, [stats, fleet, t]);
 
   const activityData = useMemo(() => {
     if (!vehicles || vehicles.length === 0) return [];
@@ -668,9 +690,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     // KPIs communs à tous les rôles
     const kpiFleet = (
       <KPICard
-        label="Véhicules Actifs"
+        label={t('dashboard.kpi.activeVehicles')}
         value={`${fleet.moving + fleet.idle}/${fleet.total}`}
-        subtitle={`${fleet.utilization}% utilisation`}
+        subtitle={t('dashboard.kpi.utilizationSubtitle', { pct: fleet.utilization })}
         icon={Truck}
         color="text-[var(--primary)]"
         bgColor="bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)]"
@@ -679,9 +701,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiContracts = (
       <KPICard
-        label="Contrats Actifs"
+        label={t('dashboard.kpi.activeContracts')}
         value={fmt(business.activeContracts)}
-        subtitle={`MRR: ${fmt(business.mrr)}`}
+        subtitle={t('dashboard.kpi.mrrSubtitle', { value: fmt(business.mrr) })}
         icon={Briefcase}
         color="text-emerald-600"
         bgColor="bg-[var(--clr-emerald-dim)]"
@@ -690,9 +712,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiRevenue = (
       <KPICard
-        label="Revenus (période)"
+        label={t('dashboard.kpi.revenuePeriod')}
         value={fmt(business.revenue)}
-        subtitle={`Recouvrement: ${business.collectionRate}%`}
+        subtitle={t('dashboard.kpi.collectionSubtitle', { pct: business.collectionRate })}
         icon={TrendingUp}
         color="text-green-600"
         bgColor="bg-[var(--clr-success-dim)]"
@@ -701,10 +723,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiTickets = (
       <KPICard
-        label="Tickets Ouverts"
+        label={t('dashboard.kpi.openTickets')}
         value={support.total}
         subtitle={
-          support.critical > 0 ? `${support.critical} critique${support.critical > 1 ? 's' : ''}` : 'Aucun critique'
+          support.critical > 0
+            ? t(support.critical === 1 ? 'dashboard.kpi.criticalCount_one' : 'dashboard.kpi.criticalCount_other', {
+                count: support.critical,
+              })
+            : t('dashboard.kpi.noCritical')
         }
         icon={Headphones}
         color={support.critical > 0 ? 'text-red-600' : 'text-violet-600'}
@@ -714,9 +740,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiTech = (
       <KPICard
-        label="Interventions"
+        label={t('dashboard.kpi.interventions')}
         value={tech.total}
-        subtitle={`${tech.completed} terminée${tech.completed > 1 ? 's' : ''} - ${tech.successRate}%`}
+        subtitle={t(
+          tech.completed === 1 ? 'dashboard.kpi.completedSubtitle_one' : 'dashboard.kpi.completedSubtitle_other',
+          { count: tech.completed, pct: tech.successRate }
+        )}
         icon={Wrench}
         color="text-orange-600"
         bgColor="bg-[var(--clr-warning-dim)]"
@@ -725,9 +754,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiStock = (
       <KPICard
-        label="Stock Balises"
+        label={t('dashboard.kpi.stockBoxes')}
         value={stockStats.inStock}
-        subtitle={`${stockStats.installed} installée${stockStats.installed > 1 ? 's' : ''} | ${stockStats.rma} RMA`}
+        subtitle={t(
+          stockStats.installed === 1 ? 'dashboard.kpi.installedRma_one' : 'dashboard.kpi.installedRma_other',
+          { installed: stockStats.installed, rma: stockStats.rma }
+        )}
         icon={Package}
         color="text-cyan-600"
         bgColor="bg-cyan-50 dark:bg-cyan-900/30"
@@ -736,12 +768,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiAlerts = (
       <KPICard
-        label="Alertes Véhicules"
+        label={t('dashboard.kpi.vehicleAlerts')}
         value={fleet.alertsCount}
         subtitle={
           fleet.maintenanceDue > 0
-            ? `${fleet.maintenanceDue} entretien${fleet.maintenanceDue > 1 ? 's' : ''} dus`
-            : 'Aucun entretien dû'
+            ? t(
+                fleet.maintenanceDue === 1
+                  ? 'dashboard.kpi.maintenanceDueSubtitle_one'
+                  : 'dashboard.kpi.maintenanceDueSubtitle_other',
+                { count: fleet.maintenanceDue }
+              )
+            : t('dashboard.kpi.noMaintenanceDue')
         }
         icon={AlertCircle}
         color={fleet.alertsCount > 0 ? 'text-red-600' : 'text-green-600'}
@@ -751,9 +788,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiOverdue = (
       <KPICard
-        label="Impayés"
+        label={t('dashboard.kpi.overdue')}
         value={fmt(business.overdue)}
-        subtitle={`${business.overdueCount} facture${business.overdueCount > 1 ? 's' : ''} en retard`}
+        subtitle={t(
+          business.overdueCount === 1 ? 'dashboard.kpi.overdueInvoices_one' : 'dashboard.kpi.overdueInvoices_other',
+          { count: business.overdueCount }
+        )}
         icon={AlertTriangle}
         color={business.overdue > 0 ? 'text-red-600' : 'text-green-600'}
         bgColor={business.overdue > 0 ? 'bg-[var(--clr-danger-dim)]' : 'bg-[var(--clr-success-dim)]'}
@@ -762,9 +802,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
     );
     const kpiLeads = (
       <KPICard
-        label="Leads Actifs"
+        label={t('dashboard.kpi.activeLeads')}
         value={business.activeLeads}
-        subtitle={`${business.wonLeads} gagné${business.wonLeads > 1 ? 's' : ''} cette période`}
+        subtitle={t(
+          business.wonLeads === 1 ? 'dashboard.kpi.wonLeadsPeriod_one' : 'dashboard.kpi.wonLeadsPeriod_other',
+          { count: business.wonLeads }
+        )}
         icon={Users}
         color="text-indigo-600"
         bgColor="bg-indigo-50 dark:bg-indigo-900/30"
@@ -779,9 +822,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           {kpiFleet}
           {kpiAlerts}
           <KPICard
-            label="Km Aujourd'hui"
+            label={t('dashboard.kpi.kmToday')}
             value={fmt(fleet.kmToday)}
-            subtitle={`${fleet.utilization}% utilisation`}
+            subtitle={t('dashboard.kpi.utilizationSubtitle', { pct: fleet.utilization })}
             icon={Route}
             color="text-purple-600"
             bgColor="bg-[var(--clr-info-dim)]"
@@ -796,9 +839,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {kpiTech}
           <KPICard
-            label="En Attente"
+            label={t('dashboard.kpi.pending')}
             value={tech.pending}
-            subtitle={`${tech.inProgress} en cours`}
+            subtitle={t('dashboard.kpi.inProgressCount', { count: tech.inProgress })}
             icon={Wrench}
             color="text-amber-600"
             bgColor="bg-[var(--clr-caution-dim)]"
@@ -826,9 +869,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           {kpiOverdue}
           {kpiContracts}
           <KPICard
-            label="Taux Recouvrement"
+            label={t('dashboard.kpi.collectionRate')}
             value={`${business.collectionRate}%`}
-            subtitle={`MRR: ${fmt(business.mrr)}`}
+            subtitle={t('dashboard.kpi.mrrSubtitle', { value: fmt(business.mrr) })}
             icon={TrendingUp}
             color={business.collectionRate >= 80 ? 'text-green-600' : 'text-amber-600'}
             bgColor={business.collectionRate >= 80 ? 'bg-[var(--clr-success-dim)]' : 'bg-[var(--clr-caution-dim)]'}
@@ -842,18 +885,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {kpiTickets}
           <KPICard
-            label="Critiques"
+            label={t('dashboard.kpi.critical')}
             value={support.critical}
-            subtitle={`Rés. moy. ${support.avgResolution}h`}
+            subtitle={t('dashboard.kpi.avgResolutionSubtitle', { hours: support.avgResolution })}
             icon={AlertTriangle}
             color={support.critical > 0 ? 'text-red-600' : 'text-green-600'}
             bgColor={support.critical > 0 ? 'bg-[var(--clr-danger-dim)]' : 'bg-[var(--clr-success-dim)]'}
             onClick={() => nav(View.SUPPORT)}
           />
           <KPICard
-            label="Résolus (période)"
+            label={t('dashboard.kpi.resolvedPeriod')}
             value={support.resolved}
-            subtitle={`${support.inProgress} en cours`}
+            subtitle={t('dashboard.kpi.inProgressCount', { count: support.inProgress })}
             icon={Headphones}
             color="text-green-600"
             bgColor="bg-[var(--clr-success-dim)]"
@@ -881,37 +924,37 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
       {/* Fleet status cards + stats */}
       <div className="lg:col-span-2 space-y-3">
         <SectionHeader
-          title="Flotte en temps réel"
+          title={t('dashboard.fleetRealtime.title')}
           icon={Activity}
           onViewAll={() => nav(View.FLEET)}
-          badge={`${fleet.total} véhicules`}
+          badge={t('dashboard.fleetRealtime.vehicleCount', { count: fleet.total })}
         />
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             {
-              label: 'En Route',
+              label: t('dashboard.fleetRealtime.statusMoving'),
               value: fleet.moving,
               icon: Activity,
               color: 'text-[var(--status-moving)]',
               accentColor: 'var(--status-moving)',
             },
             {
-              label: 'Arrêté/Ralenti',
+              label: t('dashboard.fleetRealtime.statusIdle'),
               value: fleet.stopped + fleet.idle,
               icon: PauseCircle,
               color: 'text-[var(--status-idle)]',
               accentColor: 'var(--status-idle)',
             },
             {
-              label: 'Hors Ligne',
+              label: t('dashboard.fleetRealtime.statusOffline'),
               value: fleet.offline,
               icon: WifiOff,
               color: 'text-[var(--status-offline)]',
               accentColor: 'var(--status-offline)',
             },
             {
-              label: 'Alertes Véhicules',
+              label: t('dashboard.fleetRealtime.statusAlerts'),
               value: fleet.alertsCount,
               icon: AlertCircle,
               color: fleet.alertsCount > 0 ? 'text-[var(--status-stopped)]' : 'text-[var(--status-moving)]',
@@ -938,16 +981,26 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Km Aujourd'hui", value: fmt(fleet.kmToday), icon: Route, color: 'text-purple-600' },
-            { label: 'Utilisation', value: `${fleet.utilization}%`, icon: Gauge, color: 'text-emerald-600' },
             {
-              label: 'Maintenance 7j',
+              label: t('dashboard.fleetRealtime.kmToday'),
+              value: fmt(fleet.kmToday),
+              icon: Route,
+              color: 'text-purple-600',
+            },
+            {
+              label: t('dashboard.fleetRealtime.utilization'),
+              value: `${fleet.utilization}%`,
+              icon: Gauge,
+              color: 'text-emerald-600',
+            },
+            {
+              label: t('dashboard.fleetRealtime.maintenance7d'),
               value: fleet.maintenanceDue,
               icon: Calendar,
               color: fleet.maintenanceDue > 0 ? 'text-rose-600' : 'text-[var(--text-secondary)]',
             },
             {
-              label: 'Score Sécurité',
+              label: t('dashboard.fleetRealtime.safetyScore'),
               value: `${metrics.avgDriverScore}/100`,
               icon: Shield,
               color: metrics.avgDriverScore > 80 ? 'text-green-600' : 'text-amber-600',
@@ -970,7 +1023,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
       </div>
 
       {/* Donut: Vehicle Status */}
-      <Card title="Répartition Flotte">
+      <Card title={t('dashboard.fleetRealtime.distribution')}>
         <div className="h-[280px] flex flex-col items-center justify-center relative" style={{ minHeight: 260 }}>
           <ResponsiveContainer
             width="100%"
@@ -997,7 +1050,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               </Pie>
               <Tooltip
                 formatter={(value: unknown) =>
-                  `${value as number} véhicule${(value as number) > 1 ? 's' : ''}` as unknown as string
+                  t(
+                    (value as number) === 1
+                      ? 'dashboard.fleetRealtime.vehicleCountTooltip_one'
+                      : 'dashboard.fleetRealtime.vehicleCountTooltip_other',
+                    { count: value as number }
+                  ) as unknown as string
                 }
                 contentStyle={tooltipStyle}
                 itemStyle={tooltipItemStyle}
@@ -1012,7 +1070,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           </ResponsiveContainer>
           <div className="absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
             <span className="text-3xl font-bold text-[var(--text-primary)]">{fleet.total}</span>
-            <p className="text-[10px] text-[var(--text-muted)]">Véhicules</p>
+            <p className="text-[10px] text-[var(--text-muted)]">{t('dashboard.fleetRealtime.vehicles')}</p>
           </div>
         </div>
       </Card>
@@ -1022,33 +1080,33 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   const renderBusinessFinance = () => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <Card>
-        <SectionHeader title="Finance" icon={TrendingUp} onViewAll={() => nav(View.INVOICES)} />
+        <SectionHeader title={t('dashboard.business.finance')} icon={TrendingUp} onViewAll={() => nav(View.INVOICES)} />
         <div className="space-y-1">
           <MiniStat
-            label="Revenus (période)"
+            label={t('dashboard.business.revenuePeriod')}
             value={fmt(business.revenue)}
             color="text-green-600"
             onClick={() => nav(View.INVOICES)}
           />
           <MiniStat
-            label="MRR Contrats"
+            label={t('dashboard.business.mrrContracts')}
             value={fmt(business.mrr)}
             color="text-[var(--primary)]"
             onClick={() => nav(View.CONTRACTS)}
           />
           <MiniStat
-            label="Impayés"
+            label={t('dashboard.business.overdue')}
             value={fmt(business.overdue)}
             color={business.overdue > 0 ? 'text-red-600' : 'text-[var(--text-secondary)]'}
             onClick={() => nav(View.INVOICES)}
           />
           <MiniStat
-            label="Factures en retard"
+            label={t('dashboard.business.overdueInvoices')}
             value={business.overdueCount}
             color={business.overdueCount > 0 ? 'text-red-600' : 'text-[var(--text-secondary)]'}
           />
           <MiniStat
-            label="Taux Recouvrement"
+            label={t('dashboard.business.collectionRate')}
             value={`${business.collectionRate}%`}
             color={business.collectionRate >= 80 ? 'text-green-600' : 'text-amber-600'}
           />
@@ -1056,48 +1114,72 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
       </Card>
 
       <Card>
-        <SectionHeader title="CRM & Clients" icon={Users} onViewAll={() => nav(View.CLIENTS)} />
+        <SectionHeader title={t('dashboard.business.crmClients')} icon={Users} onViewAll={() => nav(View.CLIENTS)} />
         <div className="space-y-1">
-          <MiniStat label="Clients Actifs" value={fmt(business.totalClients)} onClick={() => nav(View.CLIENTS)} />
-          <MiniStat label="Revendeurs" value={business.resellers} />
           <MiniStat
-            label="Leads Actifs"
+            label={t('dashboard.business.activeClients')}
+            value={fmt(business.totalClients)}
+            onClick={() => nav(View.CLIENTS)}
+          />
+          <MiniStat label={t('dashboard.business.resellers')} value={business.resellers} />
+          <MiniStat
+            label={t('dashboard.business.activeLeads')}
             value={business.activeLeads}
             color="text-[var(--primary)]"
             onClick={() => nav(View.LEADS)}
           />
-          <MiniStat label="Leads Gagnés (période)" value={business.wonLeads} color="text-green-600" />
-          <MiniStat label="Contrats Actifs" value={business.activeContracts} onClick={() => nav(View.CONTRACTS)} />
+          <MiniStat label={t('dashboard.business.wonLeadsPeriod')} value={business.wonLeads} color="text-green-600" />
+          <MiniStat
+            label={t('dashboard.business.activeContracts')}
+            value={business.activeContracts}
+            onClick={() => nav(View.CONTRACTS)}
+          />
         </div>
       </Card>
 
       <Card>
-        <SectionHeader title="Support & Technique" icon={Headphones} onViewAll={() => nav(View.SUPPORT)} />
+        <SectionHeader
+          title={t('dashboard.business.supportTech')}
+          icon={Headphones}
+          onViewAll={() => nav(View.SUPPORT)}
+        />
         <div className="space-y-1">
           <MiniStat
-            label="Tickets Ouverts"
+            label={t('dashboard.business.openTickets')}
             value={support.open}
             color={support.open > 10 ? 'text-red-600' : 'text-[var(--text-primary)]'}
             onClick={() => nav(View.SUPPORT)}
           />
-          <MiniStat label="Tickets En Cours" value={support.inProgress} color="text-[var(--primary)]" />
           <MiniStat
-            label="Critiques"
+            label={t('dashboard.business.ticketsInProgress')}
+            value={support.inProgress}
+            color="text-[var(--primary)]"
+          />
+          <MiniStat
+            label={t('dashboard.business.critical')}
             value={support.critical}
             color={support.critical > 0 ? 'text-red-600' : 'text-green-600'}
           />
-          <MiniStat label="Résolus (période)" value={support.resolved} color="text-green-600" />
+          <MiniStat label={t('dashboard.business.resolvedPeriod')} value={support.resolved} color="text-green-600" />
           {support.avgResolution > 0 && (
-            <MiniStat label="Temps Résolution Moy." value={`${support.avgResolution}h`} color="text-violet-600" />
+            <MiniStat
+              label={t('dashboard.business.avgResolutionTime')}
+              value={`${support.avgResolution}h`}
+              color="text-violet-600"
+            />
           )}
         </div>
         <div className="border-t border-[var(--border)] mt-3 pt-3">
-          <SectionHeader title="Interventions" icon={Wrench} onViewAll={() => nav(View.TECH)} />
+          <SectionHeader title={t('dashboard.business.interventions')} icon={Wrench} onViewAll={() => nav(View.TECH)} />
           <div className="grid grid-cols-3 gap-2 text-center">
             {[
-              { label: 'En attente', value: tech.pending, color: 'text-amber-600' },
-              { label: 'En cours', value: tech.inProgress, color: 'text-[var(--primary)]' },
-              { label: 'Terminées', value: tech.completed, color: 'text-green-600' },
+              { label: t('dashboard.business.iStatusPending'), value: tech.pending, color: 'text-amber-600' },
+              {
+                label: t('dashboard.business.iStatusInProgress'),
+                value: tech.inProgress,
+                color: 'text-[var(--primary)]',
+              },
+              { label: t('dashboard.business.iStatusCompleted'), value: tech.completed, color: 'text-green-600' },
             ].map((s, i) => (
               <div key={i} className="bg-[var(--bg-elevated)] rounded-lg p-2">
                 <p className={`text-lg font-bold ${s.color}`}>{s.value}</p>
@@ -1107,7 +1189,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           </div>
           {tech.total > 0 && (
             <div className="flex items-center justify-between mt-2">
-              <span className="text-xs text-[var(--text-muted)]">Taux de succès</span>
+              <span className="text-xs text-[var(--text-muted)]">{t('dashboard.business.successRate')}</span>
               <div className="flex items-center gap-2">
                 <div className="w-20 h-1.5 bg-[var(--border-strong)] rounded-full overflow-hidden">
                   <div className="h-full bg-green-500 rounded-full" style={{ width: `${tech.successRate}%` }} />
@@ -1123,7 +1205,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
 
   const renderCharts = () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card icon={BarChart3} title="Activité Flotte">
+      <Card icon={BarChart3} title={t('dashboard.charts.fleetActivity')}>
         <div className="h-[250px] w-full" style={{ minHeight: 230 }}>
           {activityData.length > 0 ? (
             <ResponsiveContainer
@@ -1157,7 +1239,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#gSpeed)"
-                  name="Vitesse Moy."
+                  name={t('dashboard.charts.avgSpeed')}
                 />
                 <Area
                   type="monotone"
@@ -1165,7 +1247,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   stroke="#22C55E"
                   strokeWidth={2}
                   fill="transparent"
-                  name="Actifs"
+                  name={t('dashboard.charts.active')}
                 />
                 <Legend
                   verticalAlign="top"
@@ -1181,15 +1263,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               <EmptyState
                 compact
                 icon={Activity}
-                title="Aucune donnée"
-                description="Aucune activité sur cette période."
+                title={t('dashboard.charts.noData')}
+                description={t('dashboard.charts.noActivity')}
               />
             </div>
           )}
         </div>
       </Card>
 
-      <Card icon={AlertTriangle} title="Types d'Alertes (période)">
+      <Card icon={AlertTriangle} title={t('dashboard.charts.alertTypes')}>
         <div className="h-[250px] w-full" style={{ minHeight: 230 }}>
           {alertsChart.length > 0 ? (
             <ResponsiveContainer
@@ -1207,19 +1289,30 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   contentStyle={tooltipStyle}
                   itemStyle={tooltipItemStyle}
                 />
-                <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]} barSize={18} name="Alertes" />
+                <Bar
+                  dataKey="value"
+                  fill="#ef4444"
+                  radius={[0, 4, 4, 0]}
+                  barSize={18}
+                  name={t('dashboard.charts.alerts')}
+                />
               </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-full">
-              <EmptyState compact icon={Bell} title="Aucune alerte" description="Aucune alerte sur cette période." />
+              <EmptyState
+                compact
+                icon={Bell}
+                title={t('dashboard.charts.noAlerts')}
+                description={t('dashboard.charts.noAlertsPeriod')}
+              />
             </div>
           )}
         </div>
       </Card>
 
       {/* Revenue chart (from backend) */}
-      <Card icon={DollarSign} title="Revenus & Facturation (6 mois)">
+      <Card icon={DollarSign} title={t('dashboard.charts.revenueBilling')}>
         <div className="h-[250px] w-full" style={{ minHeight: 230 }}>
           {revenueChartData.length > 0 ? (
             <ResponsiveContainer
@@ -1243,9 +1336,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   itemStyle={tooltipItemStyle}
                   formatter={(value: unknown) => formatPrice(value as number)}
                 />
-                <Bar dataKey="revenue" fill="#22c55e" radius={[4, 4, 0, 0]} barSize={16} name="Encaissé" />
-                <Bar dataKey="invoiced" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={16} name="Facturé" />
-                <Bar dataKey="overdue" fill="#ef4444" radius={[4, 4, 0, 0]} barSize={16} name="Impayé" />
+                <Bar
+                  dataKey="revenue"
+                  fill="#22c55e"
+                  radius={[4, 4, 0, 0]}
+                  barSize={16}
+                  name={t('dashboard.charts.paid')}
+                />
+                <Bar
+                  dataKey="invoiced"
+                  fill="#3b82f6"
+                  radius={[4, 4, 0, 0]}
+                  barSize={16}
+                  name={t('dashboard.charts.invoiced')}
+                />
+                <Bar
+                  dataKey="overdue"
+                  fill="#ef4444"
+                  radius={[4, 4, 0, 0]}
+                  barSize={16}
+                  name={t('dashboard.charts.unpaid')}
+                />
                 <Legend
                   verticalAlign="top"
                   height={28}
@@ -1260,8 +1371,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               <EmptyState
                 compact
                 icon={Receipt}
-                title="Aucune facturation"
-                description="Aucune donnée de facturation sur cette période."
+                title={t('dashboard.charts.noBilling')}
+                description={t('dashboard.charts.noBillingPeriod')}
               />
             </div>
           )}
@@ -1269,7 +1380,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
       </Card>
 
       {/* Cost chart (from backend) */}
-      <Card icon={Wrench} title="Coûts Interventions (6 mois)">
+      <Card icon={Wrench} title={t('dashboard.charts.costInterventions')}>
         <div className="h-[250px] w-full" style={{ minHeight: 230 }}>
           {costChartData.length > 0 ? (
             <ResponsiveContainer
@@ -1298,7 +1409,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   contentStyle={tooltipStyle}
                   itemStyle={tooltipItemStyle}
                   formatter={(value: unknown, name: unknown) =>
-                    name === 'Coût' ? formatPrice(value as number) : (value as number)
+                    name === t('dashboard.charts.cost') ? formatPrice(value as number) : (value as number)
                   }
                 />
                 <Area
@@ -1308,7 +1419,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#gCost)"
-                  name="Coût"
+                  name={t('dashboard.charts.cost')}
                 />
                 <Area
                   type="monotone"
@@ -1316,7 +1427,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   stroke="#8b5cf6"
                   strokeWidth={2}
                   fill="transparent"
-                  name="Nb Interventions"
+                  name={t('dashboard.charts.interventionCount')}
                 />
                 <Legend
                   verticalAlign="top"
@@ -1332,8 +1443,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               <EmptyState
                 compact
                 icon={Wrench}
-                title="Aucune intervention"
-                description="Aucune donnée d'intervention sur cette période."
+                title={t('dashboard.charts.noIntervention')}
+                description={t('dashboard.charts.noInterventionPeriod')}
               />
             </div>
           )}
@@ -1345,35 +1456,39 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
   const renderBottomRow = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <Card>
-        <SectionHeader title="Stock Materiel" icon={Package} onViewAll={() => nav(View.STOCK)} />
+        <SectionHeader
+          title={t('dashboard.bottomRow.stockMaterial')}
+          icon={Package}
+          onViewAll={() => nav(View.STOCK)}
+        />
         <div className="space-y-2">
           <StatusBadge
             count={stockStats.inStock}
-            label="Balises en stock"
+            label={t('dashboard.bottomRow.boxesInStock')}
             color="text-green-600"
             dotColor="bg-green-500"
           />
           <StatusBadge
             count={stockStats.installed}
-            label="Balises installées"
+            label={t('dashboard.bottomRow.boxesInstalled')}
             color="text-[var(--primary)]"
             dotColor="bg-[var(--primary)]"
           />
           <StatusBadge
             count={stockStats.rma}
-            label="En SAV (RMA)"
+            label={t('dashboard.bottomRow.rma')}
             color={stockStats.rma > 0 ? 'text-amber-600' : 'text-[var(--text-secondary)]'}
             dotColor={stockStats.rma > 0 ? 'bg-amber-500' : 'bg-[var(--text-secondary)]'}
           />
           <StatusBadge
             count={stockStats.simsInStock}
-            label="SIM en stock"
+            label={t('dashboard.bottomRow.simInStock')}
             color="text-cyan-600"
             dotColor="bg-cyan-500"
           />
           <StatusBadge
             count={stockStats.simsActive}
-            label="SIM actives"
+            label={t('dashboard.bottomRow.simActive')}
             color="text-indigo-600"
             dotColor="bg-indigo-500"
           />
@@ -1381,7 +1496,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
         {stockStats.totalBoxes > 0 && (
           <div className="mt-3 pt-3 border-t border-[var(--border)]">
             <div className="flex items-center justify-between text-xs text-[var(--text-muted)] mb-1">
-              <span>Installation</span>
+              <span>{t('dashboard.bottomRow.installation')}</span>
               <span className="font-bold text-[var(--text-secondary)]">
                 {pct(stockStats.installed, stockStats.totalBoxes)}%
               </span>
@@ -1400,7 +1515,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
       </Card>
 
       <Card>
-        <SectionHeader title="Prochains Entretiens" icon={Calendar} onViewAll={() => nav(View.FLEET)} />
+        <SectionHeader
+          title={t('dashboard.bottomRow.upcomingMaintenance')}
+          icon={Calendar}
+          onViewAll={() => nav(View.FLEET)}
+        />
         <div className="space-y-2">
           {upcomingMaintenance.length > 0 ? (
             upcomingMaintenance.map((v, i) => (
@@ -1420,7 +1539,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                     {v.date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
                   </p>
                   <p className={`text-[10px] ${v.overdue ? 'text-red-500 font-bold' : 'text-[var(--text-muted)]'}`}>
-                    {v.overdue ? `${Math.abs(v.daysLeft)}j retard` : `${v.daysLeft}j`}
+                    {v.overdue
+                      ? t('dashboard.bottomRow.daysLate', { days: Math.abs(v.daysLeft) })
+                      : t('dashboard.bottomRow.daysLeft', { days: v.daysLeft })}
                   </p>
                 </div>
               </div>
@@ -1429,15 +1550,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             <EmptyState
               compact
               icon={Wrench}
-              title="Aucun entretien"
-              description="Aucun entretien prévu prochainement."
+              title={t('dashboard.bottomRow.noMaintenance')}
+              description={t('dashboard.bottomRow.noMaintenanceDesc')}
             />
           )}
         </div>
       </Card>
 
       <Card>
-        <SectionHeader title="Alertes Récentes" icon={AlertCircle} badge={recentAlerts.length || undefined} />
+        <SectionHeader
+          title={t('dashboard.bottomRow.recentAlerts')}
+          icon={AlertCircle}
+          badge={recentAlerts.length || undefined}
+        />
         <div className="space-y-1.5 max-h-[280px] overflow-y-auto">
           {recentAlerts.length > 0 ? (
             recentAlerts.map((alert: Alert, i: number) => (
@@ -1452,7 +1577,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0 mt-0.5" style={{ color: 'var(--status-stopped)' }} />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-[var(--text-primary)] truncate">
-                      {alert.vehicleName || alert.type || 'Alerte véhicule'}
+                      {alert.vehicleName || alert.type || t('dashboard.bottomRow.vehicleAlert')}
                     </p>
                     {alert.message && (
                       <p className="text-[10px] text-[var(--text-muted)] truncate leading-tight">{alert.message}</p>
@@ -1465,7 +1590,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
               </div>
             ))
           ) : (
-            <EmptyState compact icon={Bell} title="Aucune alerte" description="Aucune alerte récente à signaler." />
+            <EmptyState
+              compact
+              icon={Bell}
+              title={t('dashboard.charts.noAlerts')}
+              description={t('dashboard.bottomRow.noRecentAlerts')}
+            />
           )}
         </div>
       </Card>
@@ -1499,7 +1629,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             onClick={() => setRefreshTrigger((prev) => prev + 1)}
             className="ml-auto px-3 py-1 text-xs font-medium rounded transition-colors bg-red-100 dark:bg-red-800 hover:bg-red-200 dark:hover:bg-red-700"
           >
-            Réessayer
+            {t('dashboard.header.retry')}
           </button>
         </div>
       )}
@@ -1511,20 +1641,25 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             <h1 className="text-lg font-bold text-[var(--text-primary)]">
               {(() => {
                 const hour = new Date().getHours();
-                const greet = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
+                const greet =
+                  hour < 12
+                    ? t('dashboard.header.greetingMorning')
+                    : hour < 18
+                      ? t('dashboard.header.greetingAfternoon')
+                      : t('dashboard.header.greetingEvening');
                 const first = user?.name?.split(' ')[0];
                 if (roleFamily === 'CLIENT') return `${greet}${first ? `, ${first}` : ''}`;
-                if (roleFamily === 'TECH') return 'Tableau Technique';
-                if (roleFamily === 'COMMERCIAL') return 'Tableau Commercial';
-                if (roleFamily === 'FINANCE') return 'Tableau Finance';
-                if (roleFamily === 'SUPPORT') return 'Tableau Support';
-                return 'Tableau de Bord';
+                if (roleFamily === 'TECH') return t('dashboard.header.techTitle');
+                if (roleFamily === 'COMMERCIAL') return t('dashboard.header.commercialTitle');
+                if (roleFamily === 'FINANCE') return t('dashboard.header.financeTitle');
+                if (roleFamily === 'SUPPORT') return t('dashboard.header.supportTitle');
+                return t('dashboard.header.defaultTitle');
               })()}
             </h1>
             <span className="text-[10px] text-[var(--text-muted)] flex items-center gap-1">
               <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
               {loading
-                ? 'Chargement...'
+                ? t('dashboard.header.loading')
                 : lastRefresh.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
@@ -1541,7 +1676,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           />
           <button
             onClick={() => setEditMode((prev) => !prev)}
-            title={editMode ? 'Quitter le mode édition' : 'Personnaliser la disposition'}
+            title={editMode ? t('dashboard.header.exitEditMode') : t('dashboard.header.customizeLayout')}
             className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
               editMode
                 ? 'text-white border border-[var(--primary)]'
@@ -1554,12 +1689,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             }
           >
             <Settings2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{editMode ? 'Terminer' : ''}</span>
+            <span className="hidden sm:inline">{editMode ? t('dashboard.header.done') : ''}</span>
           </button>
           {editMode && (
             <button
               onClick={resetLayout}
-              title="Réinitialiser la disposition"
+              title={t('dashboard.header.resetLayout')}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
               style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
             >
@@ -1569,7 +1704,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           {hiddenCount > 0 && !editMode && (
             <button
               onClick={() => setEditMode(true)}
-              title={`${hiddenCount} section${hiddenCount > 1 ? 's' : ''} masquée${hiddenCount > 1 ? 's' : ''}`}
+              title={t(
+                hiddenCount === 1 ? 'dashboard.header.hiddenSections_one' : 'dashboard.header.hiddenSections_other',
+                { count: hiddenCount }
+              )}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-amber-600 bg-[var(--clr-caution-dim)] border border-amber-200 dark:border-amber-700 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
             >
               <EyeOff className="w-3.5 h-3.5" /> {hiddenCount}
@@ -1580,7 +1718,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-xs font-medium border border-[var(--border)] rounded-lg hover:bg-[var(--bg-elevated)] transition-colors"
             style={{ backgroundColor: 'var(--bg-surface)', color: 'var(--text-secondary)' }}
           >
-            <Download className="w-3.5 h-3.5" /> Export
+            <Download className="w-3.5 h-3.5" /> {t('dashboard.header.export')}
           </button>
         </div>
       </div>
@@ -1592,10 +1730,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
           style={{ backgroundColor: 'var(--primary-dim)', border: '1px solid var(--primary)', color: 'var(--primary)' }}
         >
           <Settings2 className="w-4 h-4 flex-shrink-0" />
-          <span className="font-bold">Mode édition</span>
-          <span style={{ opacity: 0.8 }}>
-            — Glissez les sections pour réorganiser, cliquez sur l'œil pour masquer/afficher
-          </span>
+          <span className="font-bold">{t('dashboard.header.editModeBanner')}</span>
+          <span style={{ opacity: 0.8 }}>{t('dashboard.header.editModeHint')}</span>
         </div>
       )}
 
@@ -1606,11 +1742,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ vehicles, metrics,
             {sections.map((section) => {
               // Sections non pertinentes pour ce rôle : masquées, non affichées même en edit
               if (!isSectionAllowedForRole(section.id, roleFamily)) return null;
+              const labelKey: Record<DashboardSectionId, string> = {
+                'banner-kpi': 'dashboard.sections.kpiMain',
+                'fleet-realtime': 'dashboard.sections.fleetRealtime',
+                'business-finance': 'dashboard.sections.businessFinance',
+                charts: 'dashboard.sections.charts',
+                'bottom-row': 'dashboard.sections.bottomRow',
+              };
               return (
                 <DraggableSection
                   key={section.id}
                   id={section.id}
-                  label={section.label}
+                  label={t(labelKey[section.id])}
                   collapsed={section.collapsed}
                   hidden={section.hidden}
                   editMode={editMode}

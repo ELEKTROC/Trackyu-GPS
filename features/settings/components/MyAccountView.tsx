@@ -29,6 +29,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
+import { useTranslation, SUPPORTED_LANGS, type Lang } from '../../../i18n';
 
 interface NotificationPreferences {
   email: boolean;
@@ -46,13 +47,19 @@ export const MyAccountView: React.FC = () => {
   const isB2B = clientType === 'B2B';
   const { isDarkMode, toggleTheme } = useTheme();
   const { showToast } = useToast();
+  const { lang, setLang, t } = useTranslation();
+  const LANG_LABELS: Record<Lang, string> = {
+    fr: t('settings.language.fr'),
+    en: t('settings.language.en'),
+    es: t('settings.language.es'),
+  };
 
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
     phone: user?.phone || '',
-    language: 'fr',
+    language: lang,
     // B2C field
     cin: user?.cin || '',
     // B2B fields (stored in linked client/tier data)
@@ -101,9 +108,13 @@ export const MyAccountView: React.FC = () => {
         });
         if (response.ok) {
           const prefs = await response.json();
+          const persistedLang = (
+            prefs.language && SUPPORTED_LANGS.includes(prefs.language) ? prefs.language : lang
+          ) as Lang;
+          if (persistedLang !== lang) setLang(persistedLang);
           setFormData((prev) => ({
             ...prev,
-            language: prefs.language || 'fr',
+            language: persistedLang,
             notifications: {
               email: prefs.notifications?.email ?? true,
               push: prefs.notifications?.push ?? true,
@@ -336,19 +347,25 @@ export const MyAccountView: React.FC = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="section-title">Langue</label>
+                  <label className="section-title">{t('common.language')}</label>
                   <div className="relative">
                     <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                     <select
-                      title="Langue de l'interface"
+                      title={t('settings.language.title')}
                       value={formData.language}
-                      onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                      onChange={(e) => {
+                        const next = e.target.value as Lang;
+                        setFormData({ ...formData, language: next });
+                        setLang(next);
+                        savePreferences({ language: next });
+                      }}
                       className="w-full pl-10 pr-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none transition-all appearance-none"
                     >
-                      <option value="fr">Français</option>
-                      <option value="en">English</option>
-                      <option value="ar">العربية (Arabe)</option>
-                      <option value="es">Español</option>
+                      {SUPPORTED_LANGS.map((code) => (
+                        <option key={code} value={code}>
+                          {LANG_LABELS[code]}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
