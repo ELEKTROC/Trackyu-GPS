@@ -307,8 +307,8 @@ export const invoicesApi = {
 export const quotesApi = {
   getAll: async (): Promise<Quote[]> => {
     try {
-      const res = await apiClient.get('/finance/quotes');
-      const raw: unknown[] = Array.isArray(res.data) ? res.data : [];
+      const res = await apiClient.get('/finance/quotes', { params: { limit: 100 } });
+      const raw: unknown[] = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       return raw.map((r) => normalizeQuote(r as Record<string, unknown>));
     } catch (error) {
       throw normalizeError(error);
@@ -350,8 +350,8 @@ export const quotesApi = {
 export const contractsApi = {
   getAll: async (): Promise<Contract[]> => {
     try {
-      const res = await apiClient.get('/contracts');
-      const raw: unknown[] = Array.isArray(res.data) ? res.data : [];
+      const res = await apiClient.get('/contracts', { params: { limit: 100 } });
+      const raw: unknown[] = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       return raw.map((r) => normalizeContract(r as Record<string, unknown>));
     } catch (error) {
       throw normalizeError(error);
@@ -378,8 +378,8 @@ export const contractsApi = {
 export const subscriptionsApi = {
   getAll: async (): Promise<Subscription[]> => {
     try {
-      const res = await apiClient.get('/subscriptions');
-      const raw: unknown[] = Array.isArray(res.data) ? res.data : [];
+      const res = await apiClient.get('/subscriptions', { params: { limit: 100 } });
+      const raw: unknown[] = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       return raw.map((r) => normalizeSub(r as Record<string, unknown>));
     } catch (error) {
       throw normalizeError(error);
@@ -390,8 +390,8 @@ export const subscriptionsApi = {
 export const paymentsApi = {
   getAll: async (): Promise<Payment[]> => {
     try {
-      const res = await apiClient.get('/finance/payments');
-      const raw: unknown[] = Array.isArray(res.data) ? res.data : [];
+      const res = await apiClient.get('/finance/payments', { params: { limit: 100 } });
+      const raw: unknown[] = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       return raw.map((r) => normalizePayment(r as Record<string, unknown>));
     } catch (error) {
       throw normalizeError(error);
