@@ -56,6 +56,7 @@ import { useVehicleStore } from '../../store/vehicleStore';
 import { FleetScreenSkeleton } from '../../components/SkeletonLoader';
 import { withErrorBoundary } from '../../components/ErrorBoundary';
 import { VehicleTypeIcon } from '../../components/VehicleTypeIcon';
+import { GeocodedAddress } from '../../components/GeocodedAddress';
 import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import type { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../theme';
@@ -448,10 +449,13 @@ function VehicleCard({ v, theme, onPress, onLongPress, visibleIcons, compact }: 
         {/* Adresse géocodée */}
         <View style={cs(theme).infoItem}>
           <MapPin size={11} color={theme.text.muted} />
-          <Text style={[cs(theme).infoText, { flex: 1 }]} numberOfLines={1}>
-            {v.address ??
-              (v.latitude !== 0 || v.longitude !== 0 ? `${v.latitude.toFixed(4)}, ${v.longitude.toFixed(4)}` : '–')}
-          </Text>
+          <GeocodedAddress
+            lat={v.latitude}
+            lng={v.longitude}
+            fallbackAddress={v.address}
+            style={[cs(theme).infoText, { flex: 1 }]}
+            numberOfLines={1}
+          />
         </View>
 
         {/* Expiration abonnement — visible 30j avant échéance */}

@@ -61,6 +61,7 @@ import {
 import { useTheme } from '../../theme';
 import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import { DashboardSkeleton } from '../../components/SkeletonLoader';
+import { GeocodedAddress } from '../../components/GeocodedAddress';
 import { useVehicleStore } from '../../store/vehicleStore';
 import { useAuthStore } from '../../store/authStore';
 import type { RootStackParamList } from '../../navigation/types';
@@ -2737,15 +2738,15 @@ export default function DashboardScreen() {
                         <Text style={{ fontSize: 12, color: theme.text.muted, fontFamily: 'monospace' }}>
                           {v.plate}
                         </Text>
-                        {v.address && (
-                          <>
-                            <Text style={{ fontSize: 12, color: theme.border }}>·</Text>
-                            <MapPin size={10} color={theme.text.muted} />
-                            <Text style={{ fontSize: 12, color: theme.text.muted, flex: 1 }} numberOfLines={1}>
-                              {v.address}
-                            </Text>
-                          </>
-                        )}
+                        <Text style={{ fontSize: 12, color: theme.border }}>·</Text>
+                        <MapPin size={10} color={theme.text.muted} />
+                        <GeocodedAddress
+                          lat={v.latitude}
+                          lng={v.longitude}
+                          fallbackAddress={v.address}
+                          style={{ fontSize: 12, color: theme.text.muted, flex: 1 }}
+                          numberOfLines={1}
+                        />
                       </View>
                     </View>
                     <ChevronRight size={15} color={theme.text.muted} style={{ marginRight: 10 }} />

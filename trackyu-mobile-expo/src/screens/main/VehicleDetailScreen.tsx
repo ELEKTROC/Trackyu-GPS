@@ -50,6 +50,7 @@ import { Svg, Polyline as SvgPolyline, Circle, Line, Text as SvgText } from 'rea
 import vehiclesApi, { type Vehicle, type DayStats, type FuelStats, type VehicleAlert } from '../../api/vehicles';
 import { useAuthStore } from '../../store/authStore';
 import { withErrorBoundary } from '../../components/ErrorBoundary';
+import { GeocodedAddress } from '../../components/GeocodedAddress';
 import { useTheme } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 import { storage } from '../../utils/storage';
@@ -249,13 +250,15 @@ function CollapsibleBlock({
 function InfoRow({
   label,
   value,
+  valueNode,
   theme,
   last,
   accent,
   copyable,
 }: {
   label: string;
-  value: string;
+  value?: string;
+  valueNode?: React.ReactNode;
   theme: ThemeType;
   last?: boolean;
   accent?: string;
@@ -273,7 +276,7 @@ function InfoRow({
         borderBottomColor: theme.border,
       }}
       onLongPress={
-        copyable
+        copyable && value
           ? () => {
               Share.share({ message: value });
             }
@@ -283,12 +286,14 @@ function InfoRow({
     >
       <Text style={{ fontSize: 13, color: theme.text.secondary }}>{label}</Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, maxWidth: '60%' }}>
-        <Text
-          style={{ fontSize: 13, fontWeight: '500', color: accent ?? theme.text.primary, textAlign: 'right' }}
-          numberOfLines={2}
-        >
-          {value}
-        </Text>
+        {valueNode ?? (
+          <Text
+            style={{ fontSize: 13, fontWeight: '500', color: accent ?? theme.text.primary, textAlign: 'right' }}
+            numberOfLines={2}
+          >
+            {value}
+          </Text>
+        )}
         {copyable && <Copy size={12} color={theme.text.muted} />}
       </View>
     </TouchableOpacity>
@@ -1297,7 +1302,19 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
             onToggle={() => toggleCollapsed(id)}
             theme={theme}
           >
-            <InfoRow label="Adresse" value={vehicle.address || '–'} theme={theme} />
+            <InfoRow
+              label="Adresse"
+              valueNode={
+                <GeocodedAddress
+                  lat={vehicle.latitude}
+                  lng={vehicle.longitude}
+                  fallbackAddress={vehicle.address}
+                  style={{ fontSize: 13, fontWeight: '500', color: theme.text.primary, textAlign: 'right' }}
+                  numberOfLines={2}
+                />
+              }
+              theme={theme}
+            />
             <InfoRow label="Dernière MAJ" value={formatDate(vehicle.lastUpdate)} theme={theme} />
             {vehicle.simPhoneNumber && <InfoRow label="SIM" value={vehicle.simPhoneNumber} theme={theme} copyable />}
             {hasValidCoords && (
