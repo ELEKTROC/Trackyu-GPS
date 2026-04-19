@@ -13,6 +13,7 @@ interface CreateTicketModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialClientId?: string;
+  defaultCategory?: string;
   onSuccess?: (ticket: Ticket) => void;
 }
 
@@ -20,6 +21,7 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   isOpen,
   onClose,
   initialClientId,
+  defaultCategory,
   onSuccess,
 }) => {
   const { addTicket, clients, vehicles, tiers, ticketCategories, ticketSubcategories } = useDataContext();
@@ -30,7 +32,11 @@ export const CreateTicketModal: React.FC<CreateTicketModalProps> = ({
   const defaultClientId = user?.role === 'CLIENT' ? user.tenantId : initialClientId;
 
   const [clientId, setClientId] = useState(defaultClientId || '');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(defaultCategory || '');
+
+  useEffect(() => {
+    if (isOpen && defaultCategory) setCategory(defaultCategory);
+  }, [isOpen, defaultCategory]);
   const [subCategory, setSubCategory] = useState('');
   const [priority, setPriority] = useState<any>('MEDIUM');
   const [vehicleId, setVehicleId] = useState('');

@@ -10,6 +10,7 @@ import {
   FileText,
   Wrench,
   Ticket,
+  ClipboardList,
   Search,
   Download,
   Eye,
@@ -49,7 +50,7 @@ import { SortableHeader } from '../../../components/SortableHeader';
 import { generateInvoicePDF, type InvoiceData } from '../../../services/pdfServiceV2';
 import { useTenantBranding } from '../../../hooks/useTenantBranding';
 
-type OperationTab = 'subscriptions' | 'interventions' | 'tickets' | 'payments' | 'invoices' | 'quotes';
+type OperationTab = 'subscriptions' | 'interventions' | 'requests' | 'tickets' | 'invoices' | 'quotes' | 'payments';
 
 export const MyOperationsView: React.FC = () => {
   const { contracts, interventions, tickets, invoices, vehicles, payments = [], branches = [] } = useDataContext();
@@ -62,6 +63,15 @@ export const MyOperationsView: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [branchFilter, setBranchFilter] = useState<string>('ALL');
+  const [periodFilter, setPeriodFilter] = useState<'ALL' | '7D' | '30D' | '90D' | '365D'>('ALL');
+
+  const matchesPeriod = (dateStr?: string | Date | null): boolean => {
+    if (periodFilter === 'ALL') return true;
+    if (!dateStr) return false;
+    const days = { '7D': 7, '30D': 30, '90D': 90, '365D': 365 }[periodFilter];
+    const cutoff = Date.now() - days * 86400000;
+    return new Date(dateStr).getTime() >= cutoff;
+  };
 
   // Factures et devis client
   const [clientInvoices, setClientInvoices] = useState<any[]>([]);
@@ -196,12 +206,13 @@ export const MyOperationsView: React.FC = () => {
   const itemsPerPage = 8;
 
   const tabs = [
-    { id: 'subscriptions', label: 'Abonnements', icon: FileText },
-    { id: 'interventions', label: 'Interventions', icon: Wrench },
-    { id: 'tickets', label: 'Tickets Support', icon: Ticket },
-    { id: 'payments', label: 'Paiements', icon: Receipt },
-    { id: 'invoices', label: 'Mes Factures', icon: FileBarChart },
-    { id: 'quotes', label: 'Mes Devis', icon: FileDown },
+    { id: 'subscriptions', label: 'Mes abonnements', icon: FileText },
+    { id: 'interventions', label: 'Mes interventions', icon: Wrench },
+    { id: 'requests', label: 'Mes demandes', icon: ClipboardList },
+    { id: 'tickets', label: 'Mes tickets', icon: Ticket },
+    { id: 'invoices', label: 'Mes factures', icon: FileBarChart },
+    { id: 'quotes', label: 'Mes devis', icon: FileDown },
+    { id: 'payments', label: 'Mes paiements', icon: Receipt },
   ];
 
   // Contract Detail Modal State
@@ -266,7 +277,7 @@ export const MyOperationsView: React.FC = () => {
     const matchesSearch =
       p.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.reference?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    return matchesSearch && matchesPeriod(p.date);
   });
 
   // Filter abonnements — sur clientSubscriptions (source réelle)
@@ -300,16 +311,19 @@ export const MyOperationsView: React.FC = () => {
       i.nature.toLowerCase().includes(searchTerm.toLowerCase()) ||
       i.status.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'ALL' || i.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesPeriod(i.scheduledDate);
   });
 
   const filteredTickets = tickets.filter((t) => {
+    const isServiceReq = (t.category || '').toLowerCase() === 'services';
+    if (activeTab === 'tickets' && isServiceReq) return false;
+    if (activeTab === 'requests' && !isServiceReq) return false;
     const matchesSearch =
       t.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.status.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'ALL' || t.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesPeriod(t.createdAt);
   });
 
   const {
@@ -364,6 +378,32 @@ export const MyOperationsView: React.FC = () => {
     return items.slice(startIndex, startIndex + itemsPerPage);
   };
 
+  const STATUS_LABELS: Record<'contract' | 'intervention' | 'ticket', Record<string, string>> = {
+    contract: {
+      ACTIVE: 'Actif',
+      INACTIVE: 'Inactif',
+      EXPIRED: 'Expiré',
+      TERMINATED: 'Résilié',
+      CANCELLED: 'Résilié',
+      SUSPENDED: 'Suspendu',
+    },
+    intervention: {
+      SCHEDULED: 'Planifiée',
+      PENDING: 'En attente',
+      IN_PROGRESS: 'En cours',
+      EN_ROUTE: 'En route',
+      COMPLETED: 'Terminée',
+      CANCELLED: 'Annulée',
+    },
+    ticket: {
+      OPEN: 'Ouvert',
+      IN_PROGRESS: 'En cours',
+      WAITING_CLIENT: 'En attente',
+      RESOLVED: 'Résolu',
+      CLOSED: 'Fermé',
+    },
+  };
+
   const renderStatusBadge = (status: string, type: 'contract' | 'intervention' | 'ticket') => {
     let colorClass = 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]';
 
@@ -383,7 +423,8 @@ export const MyOperationsView: React.FC = () => {
       if (status === 'WAITING_CLIENT') colorClass = 'bg-yellow-100 text-yellow-700';
     }
 
-    return <span className={`px-2 py-0.5 rounded-full text-xs font-semibold uppercase ${colorClass}`}>{status}</span>;
+    const label = STATUS_LABELS[type][status] || status;
+    return <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${colorClass}`}>{label}</span>;
   };
 
   if (!_user?.clientId && _user?.role !== 'CLIENT') {
@@ -406,15 +447,23 @@ export const MyOperationsView: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="page-title">Mes Opérations</h2>
-          <p className="text-[var(--text-secondary)]">Suivez vos contrats, interventions et tickets de support</p>
+          <p className="text-[var(--text-secondary)]">Abonnements, interventions, demandes, tickets, facturation</p>
         </div>
         <div className="flex gap-2">
-          {activeTab === 'tickets' && (
+          {(activeTab === 'tickets' || activeTab === 'requests') && (
             <button
               onClick={() => setIsTicketModalOpen(true)}
               className="px-4 py-2 bg-[var(--primary)] hover:bg-[var(--primary-light)] text-white rounded-lg transition-colors flex items-center gap-2 text-sm font-medium shadow-sm"
             >
-              <Ticket className="w-4 h-4" /> Nouveau Ticket
+              {activeTab === 'requests' ? (
+                <>
+                  <ClipboardList className="w-4 h-4" /> Nouvelle demande
+                </>
+              ) : (
+                <>
+                  <Ticket className="w-4 h-4" /> Nouveau ticket
+                </>
+              )}
             </button>
           )}
           <button
@@ -424,16 +473,21 @@ export const MyOperationsView: React.FC = () => {
 
               if (activeTab === 'subscriptions') {
                 data = [
-                  'Code;N° Contrat;Date Début;Date Fin;Plaques;Véhicules;Montant;Statut',
-                  ...filteredContracts.map((c) => {
-                    const plates =
-                      c.vehicleIds
-                        ?.map((vid) => vehicles.find((v) => v.id === vid)?.licensePlate)
-                        .filter(Boolean)
-                        .join(', ') ||
-                      (c as unknown as { licensePlate?: string }).licensePlate ||
-                      '-';
-                    return `${c.subscriptionNumber || '-'};${c.contractNumber || '-'};${new Date(c.startDate).toLocaleDateString('fr-FR')};${c.endDate ? new Date(c.endDate).toLocaleDateString('fr-FR') : '-'};${plates};${c.vehicleCount};${c.monthlyFee};${c.status}`;
+                  'Plaque;N° Contrat;Branche;Installation;Échéance;Proch. Fact.;Montant;Statut;Nb Factures;Impayés',
+                  ...sortedContracts.map((sub: any) => {
+                    const veh = getVehicle(sub.vehicle_id || sub.vehicleId);
+                    return [
+                      sub.vehicle_plate || sub.vehiclePlate || '',
+                      sub.contract_number || '',
+                      getBranchName(veh?.branchId),
+                      veh?.installDate ? new Date(veh.installDate).toLocaleDateString('fr-FR') : '',
+                      sub.end_date ? new Date(sub.end_date).toLocaleDateString('fr-FR') : '',
+                      sub.next_billing_date ? new Date(sub.next_billing_date).toLocaleDateString('fr-FR') : '',
+                      Math.floor(sub.monthly_fee || 0),
+                      sub.status,
+                      getSubInvoices(sub).length,
+                      getSubUnpaid(sub),
+                    ].join(';');
                   }),
                 ];
                 filename = 'mes_abonnements';
@@ -446,12 +500,12 @@ export const MyOperationsView: React.FC = () => {
                   ),
                 ];
                 filename = 'mes_interventions';
-              } else if (activeTab === 'tickets') {
+              } else if (activeTab === 'tickets' || activeTab === 'requests') {
                 data = [
                   'ID;Sujet;Catégorie;Priorité;Statut',
                   ...filteredTickets.map((t) => `${t.id};${t.subject};${t.category};${t.priority};${t.status}`),
                 ];
-                filename = 'mes_tickets';
+                filename = activeTab === 'requests' ? 'mes_demandes' : 'mes_tickets';
               } else if (activeTab === 'payments') {
                 data = [
                   'Référence;Date;Montant;Mode;Facture',
@@ -496,40 +550,78 @@ export const MyOperationsView: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            {/* Filtre statut */}
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              title="Filtrer par statut"
-              className="pl-3 pr-8 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none cursor-pointer"
-            >
-              <option value="ALL">Tous les statuts</option>
-              {activeTab === 'subscriptions' && (
-                <>
-                  <option value="ACTIVE">Actif</option>
-                  <option value="INACTIVE">Inactif</option>
-                  <option value="CANCELLED">Résilié</option>
-                  <option value="EXPIRED">Expiré</option>
-                  <option value="SUSPENDED">Suspendu</option>
-                </>
-              )}
-              {activeTab === 'interventions' && (
-                <>
-                  <option value="SCHEDULED">Planifié</option>
-                  <option value="IN_PROGRESS">En cours</option>
-                  <option value="COMPLETED">Terminé</option>
-                  <option value="CANCELLED">Annulé</option>
-                </>
-              )}
-              {activeTab === 'tickets' && (
-                <>
-                  <option value="OPEN">Ouvert</option>
-                  <option value="IN_PROGRESS">En cours</option>
-                  <option value="RESOLVED">Résolu</option>
-                  <option value="CLOSED">Fermé</option>
-                </>
-              )}
-            </select>
+            {/* Filtre statut — masqué pour paiements (pas de statut applicable) */}
+            {activeTab !== 'payments' && (
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                title="Filtrer par statut"
+                className="pl-3 pr-8 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none cursor-pointer"
+              >
+                <option value="ALL">Tous les statuts</option>
+                {activeTab === 'subscriptions' && (
+                  <>
+                    <option value="ACTIVE">Actif</option>
+                    <option value="INACTIVE">Inactif</option>
+                    <option value="CANCELLED">Résilié</option>
+                    <option value="EXPIRED">Expiré</option>
+                    <option value="SUSPENDED">Suspendu</option>
+                  </>
+                )}
+                {activeTab === 'interventions' && (
+                  <>
+                    <option value="SCHEDULED">Planifié</option>
+                    <option value="IN_PROGRESS">En cours</option>
+                    <option value="COMPLETED">Terminé</option>
+                    <option value="CANCELLED">Annulé</option>
+                  </>
+                )}
+                {(activeTab === 'tickets' || activeTab === 'requests') && (
+                  <>
+                    <option value="OPEN">Ouvert</option>
+                    <option value="IN_PROGRESS">En cours</option>
+                    <option value="RESOLVED">Résolu</option>
+                    <option value="CLOSED">Fermé</option>
+                  </>
+                )}
+                {activeTab === 'invoices' && (
+                  <>
+                    <option value="PAID">Payée</option>
+                    <option value="SENT">Envoyée</option>
+                    <option value="PENDING">En attente</option>
+                    <option value="OVERDUE">En retard</option>
+                    <option value="PARTIALLY_PAID">Partiellement payée</option>
+                    <option value="DRAFT">Brouillon</option>
+                    <option value="CANCELLED">Annulée</option>
+                  </>
+                )}
+                {activeTab === 'quotes' && (
+                  <>
+                    <option value="ACCEPTED">Accepté</option>
+                    <option value="SENT">Envoyé</option>
+                    <option value="DRAFT">Brouillon</option>
+                    <option value="EXPIRED">Expiré</option>
+                    <option value="REJECTED">Refusé</option>
+                  </>
+                )}
+              </select>
+            )}
+
+            {/* Filtre période — interventions / tickets / demandes / paiements */}
+            {['interventions', 'tickets', 'requests', 'payments'].includes(activeTab) && (
+              <select
+                value={periodFilter}
+                onChange={(e) => setPeriodFilter(e.target.value as typeof periodFilter)}
+                title="Filtrer par période"
+                className="pl-3 pr-8 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none appearance-none cursor-pointer"
+              >
+                <option value="ALL">Toutes périodes</option>
+                <option value="7D">7 derniers jours</option>
+                <option value="30D">30 derniers jours</option>
+                <option value="90D">90 derniers jours</option>
+                <option value="365D">12 derniers mois</option>
+              </select>
+            )}
 
             {/* Filtre branche — uniquement onglet abonnements */}
             {activeTab === 'subscriptions' && (branches as any[]).length > 0 && (
@@ -559,40 +651,6 @@ export const MyOperationsView: React.FC = () => {
                 className="w-full pl-9 pr-4 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm focus:ring-2 focus:ring-[var(--primary)] outline-none"
               />
             </div>
-
-            {/* Export abonnements */}
-            {activeTab === 'subscriptions' && (
-              <button
-                onClick={() => {
-                  const rows = [
-                    'Plaque;N° Contrat;Branche;Installation;Échéance;Proch. Fact.;Montant;Statut;Nb Factures;Impayés',
-                    ...sortedContracts.map((sub: any) => {
-                      const veh = getVehicle(sub.vehicle_id || sub.vehicleId);
-                      return [
-                        sub.vehicle_plate || sub.vehiclePlate || '',
-                        sub.contract_number || '',
-                        getBranchName(veh?.branchId),
-                        veh?.installDate ? new Date(veh.installDate).toLocaleDateString('fr-FR') : '',
-                        sub.end_date ? new Date(sub.end_date).toLocaleDateString('fr-FR') : '',
-                        sub.next_billing_date ? new Date(sub.next_billing_date).toLocaleDateString('fr-FR') : '',
-                        Math.floor(sub.monthly_fee || 0),
-                        sub.status,
-                        getSubInvoices(sub).length,
-                        getSubUnpaid(sub),
-                      ].join(';');
-                    }),
-                  ];
-                  const link = document.createElement('a');
-                  link.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(rows.join('\n'));
-                  link.download = `abonnements_${new Date().toISOString().split('T')[0]}.csv`;
-                  link.click();
-                  showToast('Export téléchargé', 'success');
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg text-sm text-[var(--text-secondary)] hover:bg-[var(--primary-dim)] hover:text-[var(--primary)] transition-colors"
-              >
-                <Download className="w-4 h-4" /> Exporter
-              </button>
-            )}
           </div>
         </div>
 
@@ -603,9 +661,8 @@ export const MyOperationsView: React.FC = () => {
             {/* Abonnements — mini dashboard + liste */}
             {activeTab === 'subscriptions' && (
               <div className="lg:col-span-3 space-y-4">
-                {/* Mini dashboard */}
+                {/* Mini dashboard — toujours visible */}
                 {!loadingSubs &&
-                  clientSubscriptions.length > 0 &&
                   (() => {
                     const now = new Date();
                     const in30 = new Date(now.getTime() + 30 * 86400000);
@@ -682,7 +739,7 @@ export const MyOperationsView: React.FC = () => {
 
                 {/* Table */}
                 <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden">
-                  <div className="hidden md:grid grid-cols-[80px_1fr_200px_80px_80px_80px_70px_65px_65px_70px_75px] gap-2 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
+                  <div className="hidden md:grid grid-cols-[80px_140px_1fr_80px_80px_80px_70px_65px_65px_70px_75px] gap-2 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
                     <div>Plaque</div>
                     <div>N° Contrat</div>
                     <div>Branche</div>
@@ -722,7 +779,7 @@ export const MyOperationsView: React.FC = () => {
                         <div
                           key={sub.id}
                           onClick={() => setSelectedSub(sub)}
-                          className="grid grid-cols-1 md:grid-cols-[80px_1fr_200px_80px_80px_80px_70px_65px_65px_70px_75px] gap-2 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors cursor-pointer"
+                          className="grid grid-cols-1 md:grid-cols-[80px_140px_1fr_80px_80px_80px_70px_65px_65px_70px_75px] gap-2 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors cursor-pointer"
                         >
                           <span className="font-mono text-xs font-bold text-[var(--primary)] bg-[var(--primary-dim)] px-2 py-0.5 rounded w-fit">
                             {sub.vehicle_plate || sub.vehiclePlate || '—'}
@@ -769,57 +826,54 @@ export const MyOperationsView: React.FC = () => {
             {/* Interventions — mini dashboard + cartes */}
             {activeTab === 'interventions' && (
               <div className="lg:col-span-3 space-y-4">
-                {/* Mini dashboard */}
-                {filteredInterventions.length > 0 &&
-                  (() => {
-                    const planifiees = filteredInterventions.filter((i) => i.status === 'SCHEDULED').length;
-                    const enCours = filteredInterventions.filter((i) =>
-                      ['IN_PROGRESS', 'EN_ROUTE'].includes(i.status)
-                    ).length;
-                    const terminees = filteredInterventions.filter((i) => i.status === 'COMPLETED').length;
-                    const annulees = filteredInterventions.filter((i) => i.status === 'CANCELLED').length;
-                    return (
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                        {[
-                          {
-                            label: 'Total',
-                            count: filteredInterventions.length,
-                            color: 'bg-[var(--primary-dim)] text-[var(--primary)]',
-                            icon: Wrench,
-                          },
-                          {
-                            label: 'Planifiées',
-                            count: planifiees,
-                            color: 'bg-blue-100 text-blue-600',
-                            icon: Calendar,
-                          },
-                          { label: 'En cours', count: enCours, color: 'bg-yellow-100 text-yellow-600', icon: Clock },
-                          {
-                            label: 'Terminées',
-                            count: terminees,
-                            color: 'bg-green-100 text-green-600',
-                            icon: CheckCircle2,
-                          },
-                          { label: 'Annulées', count: annulees, color: 'bg-red-100 text-red-600', icon: AlertTriangle },
-                        ].map(({ label, count, color, icon: Icon }) => (
-                          <div
-                            key={label}
-                            className="bg-[var(--bg-elevated)] rounded-xl p-3 border border-[var(--border)] flex items-center gap-3"
-                          >
-                            <div className={`p-2 rounded-lg ${color}`}>
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-semibold">
-                                {label}
-                              </p>
-                              <p className="text-lg font-black text-[var(--text-primary)]">{count}</p>
-                            </div>
+                {/* Mini dashboard (toujours visible, affiche 0 si aucune intervention) */}
+                {(() => {
+                  const planifiees = filteredInterventions.filter((i) => i.status === 'SCHEDULED').length;
+                  const enCours = filteredInterventions.filter((i) =>
+                    ['IN_PROGRESS', 'EN_ROUTE'].includes(i.status)
+                  ).length;
+                  const terminees = filteredInterventions.filter((i) => i.status === 'COMPLETED').length;
+                  const annulees = filteredInterventions.filter((i) => i.status === 'CANCELLED').length;
+                  return (
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                      {[
+                        {
+                          label: 'Total',
+                          count: filteredInterventions.length,
+                          color: 'bg-[var(--primary-dim)] text-[var(--primary)]',
+                          icon: Wrench,
+                        },
+                        {
+                          label: 'Planifiées',
+                          count: planifiees,
+                          color: 'bg-blue-100 text-blue-600',
+                          icon: Calendar,
+                        },
+                        { label: 'En cours', count: enCours, color: 'bg-yellow-100 text-yellow-600', icon: Clock },
+                        {
+                          label: 'Terminées',
+                          count: terminees,
+                          color: 'bg-green-100 text-green-600',
+                          icon: CheckCircle2,
+                        },
+                        { label: 'Annulées', count: annulees, color: 'bg-red-100 text-red-600', icon: AlertTriangle },
+                      ].map(({ label, count, color, icon: Icon }) => (
+                        <div
+                          key={label}
+                          className="bg-[var(--bg-elevated)] rounded-xl p-3 border border-[var(--border)] flex items-center gap-3"
+                        >
+                          <div className={`p-2 rounded-lg ${color}`}>
+                            <Icon className="w-4 h-4" />
                           </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
+                          <div>
+                            <p className="text-[10px] text-[var(--text-secondary)] uppercase font-semibold">{label}</p>
+                            <p className="text-lg font-black text-[var(--text-primary)]">{count}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 {/* Cartes interventions */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {getPaginatedItems(sortedInterventions).map((intervention) => {
@@ -873,8 +927,8 @@ export const MyOperationsView: React.FC = () => {
               </div>
             )}
 
-            {/* Tickets — mini dashboard + table pleine largeur */}
-            {activeTab === 'tickets' && (
+            {/* Tickets / Demandes — mini dashboard + table pleine largeur */}
+            {(activeTab === 'tickets' || activeTab === 'requests') && (
               <div className="lg:col-span-3 space-y-4">
                 {/* Mini dashboard tickets */}
                 <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
@@ -934,7 +988,7 @@ export const MyOperationsView: React.FC = () => {
                 {/* Table tickets */}
                 <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden">
                   {/* Header */}
-                  <div className="hidden sm:grid grid-cols-[4px_1fr_120px_100px_110px_100px_100px_80px] gap-3 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
+                  <div className="hidden sm:grid grid-cols-[4px_1fr_140px_100px_120px_100px_100px_80px] gap-3 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
                     <div />
                     <div>Sujet</div>
                     <div>Catégorie</div>
@@ -960,7 +1014,7 @@ export const MyOperationsView: React.FC = () => {
                         <div
                           key={ticket.id}
                           onClick={() => openTicketDetail(ticket)}
-                          className="grid grid-cols-1 sm:grid-cols-[4px_1fr_120px_100px_110px_100px_100px_80px] gap-3 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors cursor-pointer group"
+                          className="grid grid-cols-1 sm:grid-cols-[4px_1fr_140px_100px_120px_100px_100px_80px] gap-3 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors cursor-pointer group"
                         >
                           {/* Priorité */}
                           <div className={`hidden sm:block w-1 self-stretch rounded-full ${priorityColor}`} />
@@ -1020,9 +1074,19 @@ export const MyOperationsView: React.FC = () => {
 
                     {filteredTickets.length === 0 && (
                       <div className="text-center py-12">
-                        <Ticket className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
-                        <p className="font-semibold text-[var(--text-primary)]">Aucun ticket</p>
-                        <p className="text-sm text-[var(--text-secondary)]">Besoin d'aide ? Créez un ticket.</p>
+                        {activeTab === 'requests' ? (
+                          <ClipboardList className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
+                        ) : (
+                          <Ticket className="w-10 h-10 mx-auto mb-3 text-[var(--text-muted)]" />
+                        )}
+                        <p className="font-semibold text-[var(--text-primary)]">
+                          {activeTab === 'requests' ? 'Aucune demande' : 'Aucun ticket'}
+                        </p>
+                        <p className="text-sm text-[var(--text-secondary)]">
+                          {activeTab === 'requests'
+                            ? 'Demandez un service à tout moment.'
+                            : "Besoin d'aide ? Créez un ticket."}
+                        </p>
                       </div>
                     )}
                   </div>
@@ -1033,75 +1097,72 @@ export const MyOperationsView: React.FC = () => {
             {/* Paiements — liste */}
             {activeTab === 'payments' && (
               <div className="lg:col-span-3 space-y-4">
-                {/* Mini dashboard paiements */}
-                {sortedReceipts.length > 0 &&
-                  (() => {
-                    const totalMontant = sortedReceipts.reduce((s: number, p: any) => s + Math.floor(p.amount || 0), 0);
-                    const parMobileMoney = sortedReceipts.filter((p: any) => p.method === 'MOBILE_MONEY').length;
-                    const parVirement = sortedReceipts.filter((p: any) => p.method === 'BANK_TRANSFER').length;
-                    const parCheque = sortedReceipts.filter((p: any) => p.method === 'CHECK').length;
-                    const parEspeces = sortedReceipts.filter(
-                      (p: any) => !['MOBILE_MONEY', 'BANK_TRANSFER', 'CHECK'].includes(p.method || '')
-                    ).length;
-                    return (
-                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                        {[
-                          {
-                            label: 'Total encaissé',
-                            count: totalMontant,
-                            color: 'bg-green-100 text-green-600',
-                            icon: Wallet,
-                            fmt: true,
-                          },
-                          {
-                            label: 'Nb paiements',
-                            count: sortedReceipts.length,
-                            color: 'bg-[var(--primary-dim)] text-[var(--primary)]',
-                            icon: Receipt,
-                            fmt: false,
-                          },
-                          {
-                            label: 'Mobile Money',
-                            count: parMobileMoney,
-                            color: 'bg-blue-100 text-blue-600',
-                            icon: Smartphone,
-                            fmt: false,
-                          },
-                          {
-                            label: 'Virement',
-                            count: parVirement,
-                            color: 'bg-purple-100 text-purple-600',
-                            icon: Banknote,
-                            fmt: false,
-                          },
-                          {
-                            label: 'Espèces / Chèque',
-                            count: parEspeces + parCheque,
-                            color: 'bg-orange-100 text-orange-600',
-                            icon: CreditCard,
-                            fmt: false,
-                          },
-                        ].map(({ label, count, color, icon: Icon, fmt }) => (
-                          <div
-                            key={label}
-                            className="bg-[var(--bg-elevated)] rounded-xl p-3 border border-[var(--border)] flex items-center gap-3"
-                          >
-                            <div className={`p-2 rounded-lg ${color}`}>
-                              <Icon className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-[10px] text-[var(--text-secondary)] uppercase font-semibold">
-                                {label}
-                              </p>
-                              <p className="text-lg font-black text-[var(--text-primary)]">
-                                {fmt ? count.toLocaleString('fr-FR') : count}
-                              </p>
-                            </div>
+                {/* Mini dashboard paiements — toujours visible */}
+                {(() => {
+                  const totalMontant = sortedReceipts.reduce((s: number, p: any) => s + Math.floor(p.amount || 0), 0);
+                  const parMobileMoney = sortedReceipts.filter((p: any) => p.method === 'MOBILE_MONEY').length;
+                  const parVirement = sortedReceipts.filter((p: any) => p.method === 'BANK_TRANSFER').length;
+                  const parCheque = sortedReceipts.filter((p: any) => p.method === 'CHECK').length;
+                  const parEspeces = sortedReceipts.filter(
+                    (p: any) => !['MOBILE_MONEY', 'BANK_TRANSFER', 'CHECK'].includes(p.method || '')
+                  ).length;
+                  return (
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                      {[
+                        {
+                          label: 'Total encaissé',
+                          count: totalMontant,
+                          color: 'bg-green-100 text-green-600',
+                          icon: Wallet,
+                          fmt: true,
+                        },
+                        {
+                          label: 'Nb paiements',
+                          count: sortedReceipts.length,
+                          color: 'bg-[var(--primary-dim)] text-[var(--primary)]',
+                          icon: Receipt,
+                          fmt: false,
+                        },
+                        {
+                          label: 'Mobile Money',
+                          count: parMobileMoney,
+                          color: 'bg-blue-100 text-blue-600',
+                          icon: Smartphone,
+                          fmt: false,
+                        },
+                        {
+                          label: 'Virement',
+                          count: parVirement,
+                          color: 'bg-purple-100 text-purple-600',
+                          icon: Banknote,
+                          fmt: false,
+                        },
+                        {
+                          label: 'Espèces / Chèque',
+                          count: parEspeces + parCheque,
+                          color: 'bg-orange-100 text-orange-600',
+                          icon: CreditCard,
+                          fmt: false,
+                        },
+                      ].map(({ label, count, color, icon: Icon, fmt }) => (
+                        <div
+                          key={label}
+                          className="bg-[var(--bg-elevated)] rounded-xl p-3 border border-[var(--border)] flex items-center gap-3"
+                        >
+                          <div className={`p-2 rounded-lg ${color}`}>
+                            <Icon className="w-4 h-4" />
                           </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
+                          <div>
+                            <p className="text-[10px] text-[var(--text-secondary)] uppercase font-semibold">{label}</p>
+                            <p className="text-lg font-black text-[var(--text-primary)]">
+                              {fmt ? count.toLocaleString('fr-FR') : count}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden">
                   <div className="hidden md:grid grid-cols-[130px_85px_100px_80px_110px_85px_85px_60px_200px_44px] gap-2 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
                     <div>Référence</div>
@@ -1209,9 +1270,8 @@ export const MyOperationsView: React.FC = () => {
           {/* Factures — liste */}
           {activeTab === 'invoices' && (
             <div className="lg:col-span-3 space-y-4">
-              {/* Mini dashboard factures */}
+              {/* Mini dashboard factures — toujours visible */}
               {!loadingInvoices &&
-                sortedInvoices.length > 0 &&
                 (() => {
                   const getAmt = (inv: any) => Math.floor(inv.amount_ttc || inv.amountTTC || inv.amount || 0);
                   const listPayees = sortedInvoices.filter((inv: any) => (inv.status || '').toUpperCase() === 'PAID');
@@ -1290,7 +1350,7 @@ export const MyOperationsView: React.FC = () => {
                   );
                 })()}
               <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden">
-                <div className="hidden md:grid grid-cols-[120px_80px_200px_1fr_80px_80px_100px_90px_80px_40px] gap-2 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
+                <div className="hidden md:grid grid-cols-[120px_80px_160px_1fr_80px_80px_100px_80px_110px_40px] gap-2 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
                   <div>N° Facture</div>
                   <div>Plaque</div>
                   <div>Branche</div>
@@ -1330,7 +1390,7 @@ export const MyOperationsView: React.FC = () => {
                       return (
                         <div
                           key={inv.id}
-                          className="grid grid-cols-1 md:grid-cols-[120px_80px_200px_1fr_80px_80px_100px_90px_80px_40px] gap-2 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors"
+                          className="grid grid-cols-1 md:grid-cols-[120px_80px_160px_1fr_80px_80px_100px_80px_110px_40px] gap-2 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors"
                         >
                           <span className="font-mono text-xs font-bold text-[var(--primary)]">
                             {inv.number || inv.invoice_number || '—'}
@@ -1389,9 +1449,8 @@ export const MyOperationsView: React.FC = () => {
           {/* Devis — liste */}
           {activeTab === 'quotes' && (
             <div className="lg:col-span-3 space-y-4">
-              {/* Mini dashboard devis */}
+              {/* Mini dashboard devis — toujours visible */}
               {!loadingQuotes &&
-                sortedQuotes.length > 0 &&
                 (() => {
                   const acceptes = sortedQuotes.filter(
                     (q: any) => (q.status || '').toUpperCase() === 'ACCEPTED'
@@ -1460,7 +1519,7 @@ export const MyOperationsView: React.FC = () => {
                   );
                 })()}
               <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden">
-                <div className="hidden md:grid grid-cols-[130px_1fr_90px_90px_110px_100px_75px_40px] gap-2 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
+                <div className="hidden md:grid grid-cols-[130px_1fr_90px_90px_110px_130px_100px_40px] gap-2 px-4 py-2 bg-[var(--bg-surface)] border-b border-[var(--border)] text-[10px] font-semibold uppercase text-[var(--text-muted)]">
                   <div>N° Devis</div>
                   <div>Objet</div>
                   <div>Date</div>
@@ -1490,7 +1549,7 @@ export const MyOperationsView: React.FC = () => {
                       return (
                         <div
                           key={q.id}
-                          className="grid grid-cols-1 md:grid-cols-[130px_1fr_90px_90px_110px_100px_75px_40px] gap-2 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors"
+                          className="grid grid-cols-1 md:grid-cols-[130px_1fr_90px_90px_110px_130px_100px_40px] gap-2 items-center px-4 py-3 hover:bg-[var(--bg-surface)] transition-colors"
                         >
                           <span className="font-mono text-xs font-bold text-[var(--primary)]">
                             {q.number || q.quote_number || '—'}
@@ -1557,7 +1616,7 @@ export const MyOperationsView: React.FC = () => {
                 onPageChange={setCurrentPage}
               />
             )}
-            {activeTab === 'tickets' && sortedTickets.length > itemsPerPage && (
+            {(activeTab === 'tickets' || activeTab === 'requests') && sortedTickets.length > itemsPerPage && (
               <Pagination
                 currentPage={currentPage}
                 totalItems={sortedTickets.length}
@@ -1591,25 +1650,11 @@ export const MyOperationsView: React.FC = () => {
             )}
 
             {/* Empty States */}
-            {activeTab === 'subscriptions' && clientSubscriptions.length === 0 && !loadingSubs && (
-              <div className="text-center py-12">
-                <FileText className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">Aucun abonnement trouvé</h3>
-                <p className="text-[var(--text-secondary)]">Vos abonnements actifs apparaîtront ici.</p>
-              </div>
-            )}
             {activeTab === 'interventions' && filteredInterventions.length === 0 && (
               <div className="text-center py-12">
                 <Wrench className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
                 <h3 className="text-lg font-bold text-[var(--text-primary)]">Aucune intervention</h3>
                 <p className="text-[var(--text-secondary)]">Vous n'avez pas d'intervention planifiée ou passée.</p>
-              </div>
-            )}
-            {activeTab === 'payments' && sortedReceipts.length === 0 && (
-              <div className="text-center py-12">
-                <Receipt className="w-12 h-12 mx-auto mb-4 text-[var(--text-muted)]" />
-                <h3 className="text-lg font-bold text-[var(--text-primary)]">Aucun paiement</h3>
-                <p className="text-[var(--text-secondary)]">Vos reçus de paiement seront listés ici.</p>
               </div>
             )}
             {loadingSubs && (
@@ -1786,7 +1831,11 @@ export const MyOperationsView: React.FC = () => {
       )}
 
       {/* Modals */}
-      <CreateTicketModal isOpen={isTicketModalOpen} onClose={() => setIsTicketModalOpen(false)} />
+      <CreateTicketModal
+        isOpen={isTicketModalOpen}
+        onClose={() => setIsTicketModalOpen(false)}
+        defaultCategory={activeTab === 'requests' ? 'Services' : undefined}
+      />
 
       {isDetailModalOpen && viewingContract && (
         <ContractDetailModal
