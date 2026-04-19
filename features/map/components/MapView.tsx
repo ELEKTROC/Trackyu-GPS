@@ -657,6 +657,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const [mapProvider, setMapProvider] = useState<'leaflet' | 'google'>('leaflet');
   const [googleMapsKey, setGoogleMapsKey] = useState<string | null>(null);
   const [googleMapType, setGoogleMapType] = useState<'roadmap' | 'satellite' | 'terrain' | 'hybrid'>('roadmap');
+  const [showTraffic, setShowTraffic] = useState(false);
   const [osmLayer, setOsmLayer] = useState<OsmLayer>('standard');
   const [showLayerPicker, setShowLayerPicker] = useState(false);
 
@@ -2356,6 +2357,27 @@ export const MapView: React.FC<MapViewProps> = ({
                           {label}
                         </button>
                       ))}
+                      {mapProvider === 'google' && (
+                        <>
+                          <div className="border-t border-[var(--border)] my-2" />
+                          <button
+                            onClick={() => setShowTraffic((v) => !v)}
+                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors ${showTraffic ? 'bg-[var(--primary)] text-white' : 'hover:bg-[var(--primary-dim)] text-[var(--text-primary)]'}`}
+                          >
+                            <span className="flex items-center gap-2.5">
+                              <span className="text-base">🚦</span>
+                              Trafic
+                            </span>
+                            <span
+                              className={`relative inline-flex h-4 w-7 rounded-full transition-colors ${showTraffic ? 'bg-white/30' : 'bg-[var(--border)]'}`}
+                            >
+                              <span
+                                className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform ${showTraffic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
+                              />
+                            </span>
+                          </button>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
@@ -2588,6 +2610,7 @@ export const MapView: React.FC<MapViewProps> = ({
               onVehicleSelect={setSelectedVehicle}
               center={selectedVehicle ? selectedVehicle.location : undefined}
               mapType={googleMapType}
+              showTraffic={showTraffic}
             />
           </div>
         ) : (
@@ -3199,6 +3222,27 @@ export const MapView: React.FC<MapViewProps> = ({
                           {label}
                         </button>
                       ))}
+                      {mapProvider === 'google' && (
+                        <>
+                          <div className="border-t border-[var(--border)] my-2" />
+                          <button
+                            onClick={() => setShowTraffic((v) => !v)}
+                            className={`w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-sm transition-colors ${showTraffic ? 'bg-[var(--primary)] text-white' : 'hover:bg-[var(--primary-dim)] text-[var(--text-primary)]'}`}
+                          >
+                            <span className="flex items-center gap-2.5">
+                              <span className="text-base">🚦</span>
+                              Trafic
+                            </span>
+                            <span
+                              className={`relative inline-flex h-4 w-7 rounded-full transition-colors ${showTraffic ? 'bg-white/30' : 'bg-[var(--border)]'}`}
+                            >
+                              <span
+                                className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform ${showTraffic ? 'translate-x-3.5' : 'translate-x-0.5'}`}
+                              />
+                            </span>
+                          </button>
+                        </>
+                      )}
                     </>
                   )}
                 </div>

@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { GoogleMap, useJsApiLoader, Polyline, Polygon, Circle, OverlayView } from '@react-google-maps/api';
+import {
+  GoogleMap,
+  useJsApiLoader,
+  Polyline,
+  Polygon,
+  Circle,
+  OverlayView,
+  TrafficLayer,
+} from '@react-google-maps/api';
 import { type Vehicle, type Zone, type Coordinate, VehicleStatus } from '../../../types';
 import { Truck, Car, Bike, Bus, Hammer } from 'lucide-react';
 
@@ -13,6 +21,7 @@ interface GoogleMapComponentProps {
   center?: Coordinate;
   zoom?: number;
   mapType?: 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
+  showTraffic?: boolean;
 }
 
 const containerStyle: React.CSSProperties = {
@@ -67,6 +76,7 @@ export const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
   center,
   zoom = 12,
   mapType = 'roadmap',
+  showTraffic = false,
 }) => {
   const { isLoaded } = useJsApiLoader({
     id: 'fleet-google-map-script', // Unique ID to prevent HMR conflicts
@@ -148,6 +158,8 @@ export const GoogleMapComponent: React.FC<GoogleMapComponentProps> = ({
         ],
       }}
     >
+      {showTraffic && <TrafficLayer />}
+
       {/* ZONES */}
       {zones.map((zone) => {
         if (zone.type === 'CIRCLE' && zone.center && zone.radius) {
