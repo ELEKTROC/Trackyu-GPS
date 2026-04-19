@@ -104,7 +104,7 @@ const computeSeniority = (createdAt?: string | Date | null): string => {
 
 export const MyAccountView: React.FC = () => {
   const { user, logout, updateProfile } = useAuth();
-  const { updateUser, users, tiers, contracts } = useDataContext();
+  const { updateUser, users } = useDataContext();
   const { branding } = useTenantBranding();
   const { formatPrice } = useCurrency();
   const { showToast } = useToast();
@@ -116,18 +116,26 @@ export const MyAccountView: React.FC = () => {
     es: t('settings.language.es'),
   };
 
-  const linkedClient = useMemo(
-    () => (user?.clientId ? tiers.find((tier) => tier.id === user.clientId && tier.type === 'CLIENT') : null),
-    [user?.clientId, tiers]
-  );
+  const [linkedClient, setLinkedClient] = useState<any>(null);
+  const [userContract, setUserContract] = useState<any>(null);
   const clientType = linkedClient?.clientData?.type || 'B2C';
   const isB2B = clientType === 'B2B';
 
-  const userContract = useMemo(() => {
-    if (!user?.clientId) return null;
-    const active = contracts.find((c) => c.clientId === user.clientId && c.status === 'ACTIVE');
-    return active || contracts.find((c) => c.clientId === user.clientId) || null;
-  }, [contracts, user?.clientId]);
+  useEffect(() => {
+    if (!user?.clientId) {
+      setLinkedClient(null);
+      setUserContract(null);
+      return;
+    }
+    fetch(`${API_URL}/me/account`, { headers: getHeaders() })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => setLinkedClient(data))
+      .catch(() => setLinkedClient(null));
+    fetch(`${API_URL}/me/contract`, { headers: getHeaders() })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => setUserContract(data))
+      .catch(() => setUserContract(null));
+  }, [user?.clientId]);
 
   const [contractSubs, setContractSubs] = useState<any[]>([]);
   const [subsLoading, setSubsLoading] = useState(false);
@@ -168,6 +176,8 @@ export const MyAccountView: React.FC = () => {
     adresse: user?.adresse || linkedClient?.address || '',
     ville: user?.ville || linkedClient?.city || '',
     pays: user?.pays || linkedClient?.country || '',
+    emailSecondaire: user?.emailSecondaire || '',
+    telephoneSecondaire: user?.telephoneSecondaire || '',
     contactUrgenceNom: user?.contactUrgenceNom || '',
     contactUrgenceTel: user?.contactUrgenceTel || '',
     contactUrgenceLien: user?.contactUrgenceLien || '',
@@ -222,7 +232,28 @@ export const MyAccountView: React.FC = () => {
         /* fallback */
       }
     };
+    const loadProfile = async () => {
+      try {
+        const response = await fetch(`${API_URL}/settings/profile`, { headers: getHeaders() });
+        if (!response.ok) return;
+        const p = await response.json();
+        setFormData((prev) => ({
+          ...prev,
+          adresse: p.adresse || prev.adresse,
+          ville: p.ville || prev.ville,
+          pays: p.pays || prev.pays,
+          emailSecondaire: p.email_secondaire || prev.emailSecondaire,
+          telephoneSecondaire: p.telephone_secondaire || prev.telephoneSecondaire,
+          contactUrgenceNom: p.contact_urgence_nom || prev.contactUrgenceNom,
+          contactUrgenceTel: p.contact_urgence_tel || prev.contactUrgenceTel,
+          contactUrgenceLien: p.contact_urgence_lien || prev.contactUrgenceLien,
+        }));
+      } catch {
+        /* fallback */
+      }
+    };
     loadPreferences();
+    loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -252,6 +283,8 @@ export const MyAccountView: React.FC = () => {
         adresse: formData.adresse,
         ville: formData.ville,
         pays: formData.pays,
+        emailSecondaire: formData.emailSecondaire,
+        telephoneSecondaire: formData.telephoneSecondaire,
         contactUrgenceNom: formData.contactUrgenceNom,
         contactUrgenceTel: formData.contactUrgenceTel,
         contactUrgenceLien: formData.contactUrgenceLien,
@@ -280,6 +313,8 @@ export const MyAccountView: React.FC = () => {
         adresse: formData.adresse,
         ville: formData.ville,
         pays: formData.pays,
+        emailSecondaire: formData.emailSecondaire,
+        telephoneSecondaire: formData.telephoneSecondaire,
         contactUrgenceNom: formData.contactUrgenceNom,
         contactUrgenceTel: formData.contactUrgenceTel,
         contactUrgenceLien: formData.contactUrgenceLien,
@@ -299,6 +334,8 @@ export const MyAccountView: React.FC = () => {
             adresse: formData.adresse,
             ville: formData.ville,
             pays: formData.pays,
+            emailSecondaire: formData.emailSecondaire,
+            telephoneSecondaire: formData.telephoneSecondaire,
             contactUrgenceNom: formData.contactUrgenceNom,
             contactUrgenceTel: formData.contactUrgenceTel,
             contactUrgenceLien: formData.contactUrgenceLien,
@@ -564,10 +601,39 @@ export const MyAccountView: React.FC = () => {
                 </div>
               </div>
 
-              {/* Contact secondaire */}
+              {/* Contact secondaire (joignabilité alternative du client lui-même) */}
               <div className="pt-4 border-t border-[var(--border)]">
                 <p className="section-title flex items-center gap-1.5 mb-3">
-                  <UserPlus className="w-3.5 h-3.5" /> Contact secondaire
+                  <Mail className="w-3.5 h-3.5" /> Contact secondaire
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="section-title">Email secondaire</label>
+                    <input
+                      type="email"
+                      placeholder="email.alternatif@exemple.com"
+                      value={formData.emailSecondaire}
+                      onChange={(e) => setFormData({ ...formData, emailSecondaire: e.target.value })}
+                      className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="section-title">Téléphone secondaire</label>
+                    <input
+                      type="tel"
+                      placeholder="+225 00 00 00 00"
+                      value={formData.telephoneSecondaire}
+                      onChange={(e) => setFormData({ ...formData, telephoneSecondaire: e.target.value })}
+                      className="w-full px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--primary)] outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Personne à contacter (tierce personne en cas d'urgence) */}
+              <div className="pt-4 border-t border-[var(--border)]">
+                <p className="section-title flex items-center gap-1.5 mb-3">
+                  <UserPlus className="w-3.5 h-3.5" /> Personne à contacter
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">

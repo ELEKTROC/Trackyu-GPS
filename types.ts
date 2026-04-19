@@ -239,7 +239,11 @@ export interface SystemUser {
   manager?: string; // ID du manager
   salaire?: number; // Salaire (optionnel)
 
-  // Contacts d'urgence
+  // Second contact du client lui-même (joignabilité alternative)
+  emailSecondaire?: string;
+  telephoneSecondaire?: string;
+
+  // Personne à contacter (tierce personne en cas d'urgence)
   contactUrgenceNom?: string; // Nom contact urgence
   contactUrgenceTel?: string; // Téléphone contact urgence
   contactUrgenceLien?: string; // Lien de parenté
