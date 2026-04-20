@@ -100,6 +100,14 @@ export const NAV_SUPPORT_ROLES = [ROLE.SUPPORT, ROLE.SUPPORT_AGENT];
 /** Accès à l'écran AdminUsers (gestion des utilisateurs) */
 export const ADMIN_SCREEN_ROLES = [ROLE.SUPERADMIN, ROLE.ADMIN, ROLE.MANAGER];
 
+/**
+ * Accès réservé au staff SUPERADMIN (tenant_default TKY).
+ * Utilisé pour les écrans cross-tenant qui n'ont aucun sens pour un ADMIN/MANAGER
+ * de tenant isolé : liste des revendeurs, pool boîtiers global, journaux globaux,
+ * corbeille globale.
+ */
+export const SUPERADMIN_ONLY_ROLES = [ROLE.SUPERADMIN];
+
 /** Accès à l'écran CRMLeads */
 export const CRM_SCREEN_ROLES = [ROLE.SUPERADMIN, ROLE.ADMIN, ROLE.MANAGER, ROLE.COMMERCIAL];
 

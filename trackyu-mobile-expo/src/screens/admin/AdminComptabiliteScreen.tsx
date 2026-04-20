@@ -4,6 +4,9 @@
  *   • Vue d'ensemble → KPIs : CA, Encaissements, Impayés, Taux recouvrement
  *   • Paiements      → /api/finance/payments  (liste triée par date)
  *   • Recouvrement   → /api/finance/invoices  (filtrés OVERDUE / PARTIALLY_PAID)
+ *
+ * Filtres SUPERADMIN (tenant_default TKY) : client + année, appliqués côté client
+ * sur les 3 onglets pour permettre au staff TKY de slicer la vue cross-tenant.
  */
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl, ActivityIndicator } from 'react-native';
@@ -20,11 +23,14 @@ import {
   CheckCircle,
   Clock,
   CreditCard,
+  SlidersHorizontal,
 } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
 import { EmptyState } from '../../components/EmptyState';
-import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
+import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
+import { ADMIN_SCREEN_ROLES, ROLE } from '../../constants/roles';
+import { useAuthStore } from '../../store/authStore';
 import {
   invoicesApi,
   paymentsApi,
@@ -54,17 +60,46 @@ function fmtDate(str?: string): string {
   return new Date(str).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+// ── Filtrage commun ───────────────────────────────────────────────────────────
+
+interface AdminFilters {
+  clientName: string | null;
+  year: number | null;
+}
+
+function applyInvoiceFilters(list: Invoice[], f: AdminFilters): Invoice[] {
+  return list.filter((i) => {
+    if (f.clientName && i.clientName !== f.clientName) return false;
+    if (f.year) {
+      const y = i.date ? new Date(i.date).getFullYear() : null;
+      if (y !== f.year) return false;
+    }
+    return true;
+  });
+}
+
+function applyPaymentFilters(list: Payment[], f: AdminFilters): Payment[] {
+  return list.filter((p) => {
+    if (f.clientName && p.clientName !== f.clientName) return false;
+    if (f.year) {
+      const y = p.date ? new Date(p.date).getFullYear() : null;
+      if (y !== f.year) return false;
+    }
+    return true;
+  });
+}
+
 // ── Onglet Vue d'ensemble ─────────────────────────────────────────────────────
 
-function OverviewTab({ theme }: { theme: ThemeType }) {
+function OverviewTab({ theme, filters }: { theme: ThemeType; filters: AdminFilters }) {
   const invQ = useQuery({ queryKey: ['compta-invoices'], queryFn: invoicesApi.getAll, staleTime: 60_000 });
   const payQ = useQuery({ queryKey: ['compta-payments'], queryFn: paymentsApi.getAll, staleTime: 60_000 });
 
   const isLoading = invQ.isLoading || payQ.isLoading;
 
   const kpis = useMemo(() => {
-    const invoices: Invoice[] = invQ.data ?? [];
-    const payments: Payment[] = payQ.data ?? [];
+    const invoices: Invoice[] = applyInvoiceFilters(invQ.data ?? [], filters);
+    const payments: Payment[] = applyPaymentFilters(payQ.data ?? [], filters);
 
     const caTotal = invoices.reduce((s, i) => s + (i.amount ?? 0), 0);
     const encaisse = payments.reduce((s, p) => s + (p.amount ?? 0), 0);
@@ -77,7 +112,7 @@ function OverviewTab({ theme }: { theme: ThemeType }) {
     const paidCount = invoices.filter((i) => i.status === 'PAID').length;
 
     return { caTotal, encaisse, impayes, tauxRecouv, overdueCount, paidCount, totalInvoices: invoices.length };
-  }, [invQ.data, payQ.data]);
+  }, [invQ.data, payQ.data, filters]);
 
   if (isLoading) return <ActivityIndicator color={theme.primary} style={{ marginTop: 40 }} />;
 
@@ -179,7 +214,7 @@ const METHOD_LABELS: Record<string, string> = {
   ORANGE_MONEY: 'Orange Money',
 };
 
-function PaymentsTab({ theme }: { theme: ThemeType }) {
+function PaymentsTab({ theme, filters }: { theme: ThemeType; filters: AdminFilters }) {
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['compta-payments'],
     queryFn: paymentsApi.getAll,
@@ -187,8 +222,8 @@ function PaymentsTab({ theme }: { theme: ThemeType }) {
   });
 
   const payments: Payment[] = useMemo(
-    () => [...(data ?? [])].sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')),
-    [data]
+    () => applyPaymentFilters([...(data ?? [])], filters).sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '')),
+    [data, filters]
   );
 
   if (isLoading) return <ActivityIndicator color={theme.primary} style={{ marginTop: 40 }} />;
@@ -262,7 +297,7 @@ const RECOVERY_COLORS: Record<string, string> = {
   LITIGATION: '#7C3AED',
 };
 
-function RecoveryTab({ theme }: { theme: ThemeType }) {
+function RecoveryTab({ theme, filters }: { theme: ThemeType; filters: AdminFilters }) {
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['compta-invoices'],
     queryFn: invoicesApi.getAll,
@@ -271,10 +306,10 @@ function RecoveryTab({ theme }: { theme: ThemeType }) {
 
   const overdueInvoices: Invoice[] = useMemo(
     () =>
-      (data ?? [])
+      applyInvoiceFilters(data ?? [], filters)
         .filter((i) => i.status === 'OVERDUE' || i.status === 'PARTIALLY_PAID')
         .sort((a, b) => (a.dueDate ?? '').localeCompare(b.dueDate ?? '')),
-    [data]
+    [data, filters]
   );
 
   const totalImpayes = overdueInvoices.reduce((s, i) => s + ((i.balance != null ? i.balance : i.amount) ?? 0), 0);
@@ -380,6 +415,73 @@ export default function AdminComptabiliteScreen() {
   const nav = useNavigation();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
 
+  const user = useAuthStore((st) => st.user);
+  const isSuperAdmin = user?.role?.toUpperCase() === ROLE.SUPERADMIN;
+
+  const [showFilters, setShowFilters] = useState(false);
+  const [clientFilter, setClientFilter] = useState<string | null>(null);
+  const [yearFilter, setYearFilter] = useState<string | null>(null);
+
+  const filters: AdminFilters = useMemo(
+    () => ({ clientName: clientFilter, year: yearFilter ? Number(yearFilter) : null }),
+    [clientFilter, yearFilter]
+  );
+
+  // Facettes calculées depuis les caches React Query (mêmes keys que les onglets → pas de fetch dupliqué)
+  const invQ = useQuery({
+    queryKey: ['compta-invoices'],
+    queryFn: invoicesApi.getAll,
+    staleTime: 60_000,
+    enabled: isSuperAdmin,
+  });
+  const payQ = useQuery({
+    queryKey: ['compta-payments'],
+    queryFn: paymentsApi.getAll,
+    staleTime: 60_000,
+    enabled: isSuperAdmin,
+  });
+
+  const facets = useMemo(() => {
+    const clients = new Set<string>();
+    const years = new Set<number>();
+    for (const i of invQ.data ?? []) {
+      if (i.clientName) clients.add(i.clientName);
+      if (i.date) {
+        const y = new Date(i.date).getFullYear();
+        if (!isNaN(y)) years.add(y);
+      }
+    }
+    for (const p of payQ.data ?? []) {
+      if (p.clientName) clients.add(p.clientName);
+      if (p.date) {
+        const y = new Date(p.date).getFullYear();
+        if (!isNaN(y)) years.add(y);
+      }
+    }
+    return {
+      clients: Array.from(clients)
+        .sort()
+        .map((c) => ({ id: c, label: c })),
+      years: Array.from(years)
+        .sort((a, b) => b - a)
+        .map((y) => ({ id: String(y), label: String(y) })),
+    };
+  }, [invQ.data, payQ.data]);
+
+  const filterBlocks: FilterBlockDef[] = useMemo(
+    () => [
+      { key: 'client', label: 'Client', items: facets.clients, selected: clientFilter, onSelect: setClientFilter },
+      { key: 'year', label: 'Année', items: facets.years, selected: yearFilter, onSelect: setYearFilter },
+    ],
+    [facets, clientFilter, yearFilter]
+  );
+
+  const hasActiveFilters = !!(clientFilter || yearFilter);
+  const resetFilters = () => {
+    setClientFilter(null);
+    setYearFilter(null);
+  };
+
   return (
     <ProtectedScreen allowedRoles={ADMIN_SCREEN_ROLES}>
       <SafeAreaView style={st(theme).container} edges={['top']}>
@@ -397,7 +499,49 @@ export default function AdminComptabiliteScreen() {
             <Text style={st(theme).title}>Comptabilité</Text>
             <Text style={st(theme).subtitle}>Paiements · Recouvrement · KPIs financiers</Text>
           </View>
+          {isSuperAdmin ? (
+            <TouchableOpacity
+              onPress={() => setShowFilters((p) => !p)}
+              accessibilityRole="button"
+              accessibilityLabel="Filtres"
+              style={{
+                width: 40,
+                height: 40,
+                marginTop: 2,
+                borderRadius: 10,
+                backgroundColor: showFilters ? theme.primary : theme.bg.surface,
+                borderWidth: 1,
+                borderColor: theme.border,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SlidersHorizontal size={18} color={showFilters ? '#fff' : theme.text.primary} />
+              {hasActiveFilters && !showFilters ? (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: '#EF4444',
+                  }}
+                />
+              ) : null}
+            </TouchableOpacity>
+          ) : null}
         </View>
+
+        {isSuperAdmin ? (
+          <VehicleFilterPanel
+            visible={showFilters}
+            blocks={filterBlocks}
+            hasActiveFilters={hasActiveFilters}
+            onReset={resetFilters}
+          />
+        ) : null}
 
         {/* Onglets */}
         <View style={st(theme).tabsRow}>
@@ -426,9 +570,9 @@ export default function AdminComptabiliteScreen() {
         </View>
 
         {/* Contenu */}
-        {activeTab === 'overview' && <OverviewTab theme={theme} />}
-        {activeTab === 'payments' && <PaymentsTab theme={theme} />}
-        {activeTab === 'recovery' && <RecoveryTab theme={theme} />}
+        {activeTab === 'overview' && <OverviewTab theme={theme} filters={filters} />}
+        {activeTab === 'payments' && <PaymentsTab theme={theme} filters={filters} />}
+        {activeTab === 'recovery' && <RecoveryTab theme={theme} filters={filters} />}
       </SafeAreaView>
     </ProtectedScreen>
   );

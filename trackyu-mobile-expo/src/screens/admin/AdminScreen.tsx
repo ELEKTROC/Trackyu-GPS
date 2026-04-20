@@ -1,19 +1,33 @@
 /**
  * TrackYu Mobile — Administration Screen
- * Hub d'administration pour SUPERADMIN / ADMIN.
- * 3 sections : Équipe · Gestion · Système
+ * Hub d'administration pour SUPERADMIN / ADMIN / MANAGER.
+ * 4 sections : Équipe · Opérations · Finance · Système (SUPERADMIN only)
  */
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Users, Building2, Trash2, Cpu, ClipboardList, ChevronRight } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  Users,
+  Building2,
+  Trash2,
+  Cpu,
+  ClipboardList,
+  ChevronRight,
+  Activity,
+  TicketCheck,
+  Wrench,
+  Calendar,
+  Wallet,
+} from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
 import { useTheme } from '../../theme';
 import { usersApi } from '../../api/users';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
-import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
+import { ADMIN_SCREEN_ROLES, ROLE } from '../../constants/roles';
+import { useAuthStore } from '../../store/authStore';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -70,10 +84,23 @@ function Tile({
 
 // ── Section ───────────────────────────────────────────────────────────────────
 
-function Section({ title, children, theme }: { title: string; children: React.ReactNode; theme: ThemeType }) {
+function Section({
+  title,
+  hint,
+  children,
+  theme,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+  theme: ThemeType;
+}) {
   return (
     <View style={{ marginBottom: 24 }}>
-      <Text style={s(theme).sectionTitle}>{title.toUpperCase()}</Text>
+      <View style={s(theme).sectionTitleRow}>
+        <Text style={s(theme).sectionTitle}>{title.toUpperCase()}</Text>
+        {hint && <Text style={s(theme).sectionHint}>{hint}</Text>}
+      </View>
       <View style={s(theme).sectionBlock}>{children}</View>
     </View>
   );
@@ -84,6 +111,8 @@ function Section({ title, children, theme }: { title: string; children: React.Re
 export default function AdminScreen() {
   const { theme } = useTheme();
   const nav = useNavigation<Nav>();
+  const user = useAuthStore((st) => st.user);
+  const isSuperAdmin = user?.role?.toUpperCase() === ROLE.SUPERADMIN;
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['admin-users'],
@@ -140,53 +169,109 @@ export default function AdminScreen() {
             />
           </Section>
 
-          {/* ── Gestion ───────────────────────────────────────────────────── */}
-          <Section title="Gestion" theme={theme}>
+          {/* ── Opérations ────────────────────────────────────────────────── */}
+          <Section title="Opérations" theme={theme}>
             <Tile
-              icon={<Building2 size={22} color="#10B981" />}
-              label="Revendeurs"
-              subtitle="Gérer les tenants revendeurs"
-              color="#10B981"
-              onPress={() => nav.navigate('AdminResellers')}
+              icon={<Activity size={22} color="#22C55E" />}
+              label="Monitoring"
+              subtitle="Alertes, anomalies, santé flotte"
+              color="#22C55E"
+              onPress={() => nav.navigate('AdminMonitoring')}
               theme={theme}
               isFirst
               isLast={false}
             />
             <Tile
-              icon={<Trash2 size={22} color="#EF4444" />}
-              label="Corbeille"
-              subtitle="Éléments supprimés récemment"
-              color="#EF4444"
-              onPress={() => nav.navigate('AdminTrash')}
+              icon={<TicketCheck size={22} color="#F59E0B" />}
+              label="Tickets"
+              subtitle="Support et réclamations"
+              color="#F59E0B"
+              onPress={() => nav.navigate('AdminTickets')}
+              theme={theme}
+              isFirst={false}
+              isLast={false}
+            />
+            <Tile
+              icon={<Wrench size={22} color="#6366F1" />}
+              label="Interventions"
+              subtitle="Installations et maintenances"
+              color="#6366F1"
+              onPress={() => nav.navigate('AdminInterventions', { initialTab: 'interventions' })}
+              theme={theme}
+              isFirst={false}
+              isLast={false}
+            />
+            <Tile
+              icon={<Calendar size={22} color="#3B82F6" />}
+              label="Agenda"
+              subtitle="Planning équipe et interventions"
+              color="#3B82F6"
+              onPress={() => nav.navigate('AdminAgenda')}
               theme={theme}
               isFirst={false}
               isLast
             />
           </Section>
 
-          {/* ── Système ───────────────────────────────────────────────────── */}
-          <Section title="Système" theme={theme}>
+          {/* ── Finance ───────────────────────────────────────────────────── */}
+          <Section title="Finance" theme={theme}>
             <Tile
-              icon={<Cpu size={22} color="#8B5CF6" />}
-              label="Appareils GPS"
-              subtitle="État du pipeline et des trackers"
-              color="#8B5CF6"
-              onPress={() => nav.navigate('AdminDevices')}
+              icon={<Wallet size={22} color="#EC4899" />}
+              label="Comptabilité"
+              subtitle="Factures, paiements, relances"
+              color="#EC4899"
+              onPress={() => nav.navigate('AdminComptabilite')}
               theme={theme}
               isFirst
-              isLast={false}
-            />
-            <Tile
-              icon={<ClipboardList size={22} color="#F59E0B" />}
-              label="Journaux d'audit"
-              subtitle="Dernières actions et connexions"
-              color="#F59E0B"
-              onPress={() => nav.navigate('AdminAuditLogs')}
-              theme={theme}
-              isFirst={false}
               isLast
             />
           </Section>
+
+          {/* ── Système (SUPERADMIN only) ─────────────────────────────────── */}
+          {isSuperAdmin && (
+            <Section title="Système" hint="Superadmin" theme={theme}>
+              <Tile
+                icon={<Building2 size={22} color="#10B981" />}
+                label="Revendeurs"
+                subtitle="Tenants revendeurs et clients"
+                color="#10B981"
+                onPress={() => nav.navigate('AdminResellers')}
+                theme={theme}
+                isFirst
+                isLast={false}
+              />
+              <Tile
+                icon={<Cpu size={22} color="#8B5CF6" />}
+                label="Appareils GPS"
+                subtitle="Pool boîtiers et état pipeline"
+                color="#8B5CF6"
+                onPress={() => nav.navigate('AdminDevices')}
+                theme={theme}
+                isFirst={false}
+                isLast={false}
+              />
+              <Tile
+                icon={<ClipboardList size={22} color="#F59E0B" />}
+                label="Journaux d'audit"
+                subtitle="Actions et connexions globales"
+                color="#F59E0B"
+                onPress={() => nav.navigate('AdminAuditLogs')}
+                theme={theme}
+                isFirst={false}
+                isLast={false}
+              />
+              <Tile
+                icon={<Trash2 size={22} color="#EF4444" />}
+                label="Corbeille"
+                subtitle="Éléments supprimés récemment"
+                color="#EF4444"
+                onPress={() => nav.navigate('AdminTrash')}
+                theme={theme}
+                isFirst={false}
+                isLast
+              />
+            </Section>
+          )}
 
           <View style={{ height: 40 }} />
         </ScrollView>
@@ -215,13 +300,29 @@ const s = (theme: ThemeType) =>
     title: { fontSize: 22, fontWeight: '700', color: theme.text.primary },
     subtitle: { fontSize: 12, color: theme.text.muted, marginTop: 2 },
     content: { paddingHorizontal: 16, paddingTop: 24 },
+    sectionTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+      paddingHorizontal: 2,
+    },
     sectionTitle: {
       fontSize: 11,
       fontWeight: '700',
       color: theme.text.muted,
       letterSpacing: 1,
-      marginBottom: 8,
-      paddingHorizontal: 2,
+    },
+    sectionHint: {
+      fontSize: 10,
+      fontWeight: '700',
+      color: theme.primary,
+      letterSpacing: 0.5,
+      backgroundColor: theme.primary + '1A',
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 8,
+      textTransform: 'uppercase',
     },
     sectionBlock: {
       backgroundColor: theme.bg.surface,

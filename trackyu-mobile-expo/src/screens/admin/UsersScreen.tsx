@@ -23,11 +23,16 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 
 const ROLE_FILTER_ITEMS = [
+  { id: 'SUPERADMIN', label: 'Super Admin' },
   { id: 'ADMIN', label: 'Admin' },
   { id: 'MANAGER', label: 'Manager' },
-  { id: 'TECH', label: 'Tech' },
-  { id: 'SUPPORT_AGENT', label: 'Support' },
+  { id: 'COMPTABLE', label: 'Comptable' },
+  { id: 'RESELLER', label: 'Revendeur' },
   { id: 'COMMERCIAL', label: 'Commercial' },
+  { id: 'OPERATOR', label: 'Opérateur' },
+  { id: 'TECH', label: 'Tech' },
+  { id: 'SUPPORT', label: 'Support' },
+  { id: 'SUPPORT_AGENT', label: 'Support Agent' },
   { id: 'CLIENT', label: 'Client' },
 ];
 

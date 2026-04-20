@@ -1,7 +1,7 @@
 /**
  * TrackYu Mobile — Revendeurs Screen
  * Liste des tenants revendeurs avec statut, clients et véhicules.
- * Réservé SUPERADMIN / ADMIN.
+ * Réservé SUPERADMIN (staff TKY cross-tenant).
  */
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
@@ -12,7 +12,7 @@ import { ArrowLeft, Building2, Users, Truck, CheckCircle2, XCircle, PauseCircle 
 import { useTheme } from '../../theme';
 import { SearchBar } from '../../components/SearchBar';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
-import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
+import { SUPERADMIN_ONLY_ROLES } from '../../constants/roles';
 import tiersApi, { type Tier, type TierStatus } from '../../api/tiersApi';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
@@ -129,7 +129,7 @@ export default function ResellersScreen() {
     : data;
 
   return (
-    <ProtectedScreen allowedRoles={ADMIN_SCREEN_ROLES}>
+    <ProtectedScreen allowedRoles={SUPERADMIN_ONLY_ROLES}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
         {/* Header */}
         <View style={s(theme).header}>

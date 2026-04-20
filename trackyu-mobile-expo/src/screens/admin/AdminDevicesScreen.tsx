@@ -34,7 +34,7 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
-import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
+import { SUPERADMIN_ONLY_ROLES } from '../../constants/roles';
 import adminApi, { type GpsPipelineStats, type DeviceDiagnostic } from '../../api/adminApi';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
@@ -424,7 +424,7 @@ export default function AdminDevicesScreen() {
   const [tab, setTab] = useState<Tab>('pipeline');
 
   return (
-    <ProtectedScreen allowedRoles={ADMIN_SCREEN_ROLES}>
+    <ProtectedScreen allowedRoles={SUPERADMIN_ONLY_ROLES}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
         {/* Header */}
         <View style={s(theme).header}>

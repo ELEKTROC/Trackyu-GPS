@@ -3,7 +3,7 @@
  * Timeline des actions : connexions, modifications, suppressions.
  * Filtres : action, recherche texte, plage de dates (from/to).
  */
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   ArrowLeft,
@@ -39,7 +39,7 @@ import { useTheme } from '../../theme';
 import { SearchBar } from '../../components/SearchBar';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
 import { EmptyState } from '../../components/EmptyState';
-import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
+import { SUPERADMIN_ONLY_ROLES } from '../../constants/roles';
 import adminApi, { type AuditLog } from '../../api/adminApi';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
@@ -165,6 +165,18 @@ const row = (theme: ThemeType) =>
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const FILTERS = ['Tout', 'LOGIN', 'CREATE', 'UPDATE', 'DELETE'] as const;
+const ENTITY_FILTERS = [
+  'Tout',
+  'user',
+  'contract',
+  'invoice',
+  'quote',
+  'payment',
+  'vehicle',
+  'tier',
+  'device',
+] as const;
+const PAGE_SIZE = 100;
 type PickerField = 'from' | 'to' | null;
 
 // ── Main screen ───────────────────────────────────────────────────────────────
@@ -174,47 +186,58 @@ export default function AdminAuditLogsScreen() {
   const nav = useNavigation();
   const [search, setSearch] = useState('');
   const [actionFilter, setActionFilter] = useState<string>('Tout');
+  const [entityFilter, setEntityFilter] = useState<string>('Tout');
   const [dateFrom, setDateFrom] = useState<Date | null>(null);
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [pickerField, setPickerField] = useState<PickerField>(null);
 
-  const {
-    data = [],
-    isLoading,
-    isRefetching,
-    refetch,
-  } = useQuery({
-    queryKey: ['admin-audit-logs'],
-    queryFn: () => adminApi.auditLogs.list({ limit: 500 }),
+  // Filtres serveur (action, entity_type, from, to) → pagination propre
+  // Search reste client-side (pas de support texte fuzzy côté API)
+  const { data, isLoading, isRefetching, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: [
+      'admin-audit-logs',
+      actionFilter,
+      entityFilter,
+      dateFrom?.toISOString() ?? null,
+      dateTo?.toISOString() ?? null,
+    ],
+    queryFn: ({ pageParam }) =>
+      adminApi.auditLogs.list({
+        limit: PAGE_SIZE,
+        offset: (pageParam as number) ?? 0,
+        action: actionFilter !== 'Tout' ? actionFilter : undefined,
+        entity_type: entityFilter !== 'Tout' ? entityFilter : undefined,
+        from: dateFrom
+          ? (() => {
+              const d = new Date(dateFrom);
+              d.setHours(0, 0, 0, 0);
+              return d.toISOString();
+            })()
+          : undefined,
+        to: dateTo
+          ? (() => {
+              const d = new Date(dateTo);
+              d.setHours(23, 59, 59, 999);
+              return d.toISOString();
+            })()
+          : undefined,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => (lastPage.length === PAGE_SIZE ? allPages.length * PAGE_SIZE : undefined),
     staleTime: 60_000,
   });
 
-  const filtered = data.filter((log) => {
-    const matchAction = actionFilter === 'Tout' || (log.action?.toUpperCase() ?? '').includes(actionFilter);
-    const matchSearch =
-      !search.trim() ||
-      [log.user_name, log.user_email, log.action, log.entity_type].some((v) =>
-        v?.toLowerCase().includes(search.toLowerCase())
-      );
+  const allLogs = useMemo(() => data?.pages.flat() ?? [], [data]);
 
-    const ts = log.created_at ?? log.timestamp;
-    let matchDate = true;
-    if (ts) {
-      const d = new Date(ts);
-      if (dateFrom) {
-        const from = new Date(dateFrom);
-        from.setHours(0, 0, 0, 0);
-        if (d < from) matchDate = false;
-      }
-      if (dateTo && matchDate) {
-        const to = new Date(dateTo);
-        to.setHours(23, 59, 59, 999);
-        if (d > to) matchDate = false;
-      }
-    }
-
-    return matchAction && matchSearch && matchDate;
-  });
+  const filtered = useMemo(
+    () =>
+      allLogs.filter((log) => {
+        if (!search.trim()) return true;
+        const q = search.toLowerCase();
+        return [log.user_name, log.user_email, log.action, log.entity_type].some((v) => v?.toLowerCase().includes(q));
+      }),
+    [allLogs, search]
+  );
 
   const hasDateFilter = dateFrom !== null || dateTo !== null;
 
@@ -231,7 +254,7 @@ export default function AdminAuditLogsScreen() {
   }
 
   return (
-    <ProtectedScreen allowedRoles={ADMIN_SCREEN_ROLES}>
+    <ProtectedScreen allowedRoles={SUPERADMIN_ONLY_ROLES}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
         {/* Header */}
         <View style={s(theme).header}>
@@ -309,6 +332,24 @@ export default function AdminAuditLogsScreen() {
           })}
         </ScrollView>
 
+        {/* Entity type filter chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s(theme).chips}>
+          {ENTITY_FILTERS.map((f) => {
+            const active = entityFilter === f;
+            return (
+              <TouchableOpacity
+                key={f}
+                style={[s(theme).chip, active && { backgroundColor: theme.primary, borderColor: theme.primary }]}
+                onPress={() => setEntityFilter(f)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+              >
+                <Text style={[s(theme).chipLabel, active && { color: '#fff' }]}>{f}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+
         {/* List */}
         {isLoading ? (
           <View style={s(theme).center}>
@@ -332,6 +373,17 @@ export default function AdminAuditLogsScreen() {
             maxToRenderPerBatch={25}
             windowSize={5}
             removeClippedSubviews={true}
+            onEndReachedThreshold={0.3}
+            onEndReached={() => {
+              if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+            }}
+            ListFooterComponent={
+              isFetchingNextPage ? (
+                <View style={{ paddingVertical: 16 }}>
+                  <ActivityIndicator color={theme.primary} />
+                </View>
+              ) : null
+            }
             refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={theme.primary} />}
           />
         )}

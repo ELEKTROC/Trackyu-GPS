@@ -2,8 +2,9 @@
  * TrackYu Mobile — Corbeille Admin
  * Éléments supprimés : utilisateurs, contrats, tenants.
  * Actions : restaurer.
+ * Filtres client-side : search texte + plage de dates de suppression.
  */
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,14 +14,17 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Trash2, Users, FileText, Building2, RotateCcw } from 'lucide-react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { ArrowLeft, Trash2, Users, FileText, Building2, RotateCcw, Calendar, X } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
-import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
+import { SearchBar } from '../../components/SearchBar';
+import { SUPERADMIN_ONLY_ROLES } from '../../constants/roles';
 import adminApi, { type TrashUser, type TrashContract, type TrashTenant } from '../../api/adminApi';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
@@ -38,11 +42,21 @@ function dateLabel(iso?: string) {
   return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
+function fmtShort(d: Date) {
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: '2-digit' });
+}
+
+type PickerField = 'from' | 'to' | null;
+
 export default function AdminTrashScreen() {
   const { theme } = useTheme();
   const nav = useNavigation();
   const qc = useQueryClient();
   const [tab, setTab] = useState<SubTab>('all');
+  const [search, setSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState<Date | null>(null);
+  const [dateTo, setDateTo] = useState<Date | null>(null);
+  const [pickerField, setPickerField] = useState<PickerField>(null);
 
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['admin-trash'],
@@ -69,13 +83,65 @@ export default function AdminTrashScreen() {
     | { kind: 'contract'; data: TrashContract }
     | { kind: 'tenant'; data: TrashTenant };
 
-  const allItems: TrashItem[] = [
-    ...(data?.users ?? []).map((d) => ({ kind: 'user' as const, data: d })),
-    ...(data?.contracts ?? []).map((d) => ({ kind: 'contract' as const, data: d })),
-    ...(data?.tenants ?? []).map((d) => ({ kind: 'tenant' as const, data: d })),
-  ];
+  const allItems: TrashItem[] = useMemo(
+    () => [
+      ...(data?.users ?? []).map((d) => ({ kind: 'user' as const, data: d })),
+      ...(data?.contracts ?? []).map((d) => ({ kind: 'contract' as const, data: d })),
+      ...(data?.tenants ?? []).map((d) => ({ kind: 'tenant' as const, data: d })),
+    ],
+    [data]
+  );
 
-  const filtered = tab === 'all' ? allItems : allItems.filter((i) => i.kind === tab);
+  const getSearchText = (item: TrashItem): string => {
+    if (item.kind === 'user')
+      return [item.data.name, item.data.email, item.data.id, item.data.role].filter(Boolean).join(' ');
+    if (item.kind === 'contract')
+      return [item.data.contract_number, item.data.client_name, item.data.vehicle_plate, item.data.id]
+        .filter(Boolean)
+        .join(' ');
+    return [item.data.name, item.data.slug, item.data.contact_email, item.data.id].filter(Boolean).join(' ');
+  };
+
+  const filtered = useMemo(() => {
+    let list = tab === 'all' ? allItems : allItems.filter((i) => i.kind === tab);
+
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      list = list.filter((i) => getSearchText(i).toLowerCase().includes(q));
+    }
+
+    if (dateFrom || dateTo) {
+      const from = dateFrom ? new Date(dateFrom) : null;
+      if (from) from.setHours(0, 0, 0, 0);
+      const to = dateTo ? new Date(dateTo) : null;
+      if (to) to.setHours(23, 59, 59, 999);
+
+      list = list.filter((i) => {
+        const iso = i.data.deleted_at;
+        if (!iso) return false;
+        const d = new Date(iso);
+        if (from && d < from) return false;
+        if (to && d > to) return false;
+        return true;
+      });
+    }
+
+    return list;
+  }, [allItems, tab, search, dateFrom, dateTo]);
+
+  const hasDateFilter = dateFrom !== null || dateTo !== null;
+
+  function onPickerChange(_: unknown, selected?: Date) {
+    if (Platform.OS === 'android') setPickerField(null);
+    if (!selected) return;
+    if (pickerField === 'from') setDateFrom(selected);
+    if (pickerField === 'to') setDateTo(selected);
+  }
+
+  function clearDates() {
+    setDateFrom(null);
+    setDateTo(null);
+  }
 
   const renderItem = ({ item }: { item: TrashItem }) => {
     let label = '';
@@ -126,7 +192,7 @@ export default function AdminTrashScreen() {
   };
 
   return (
-    <ProtectedScreen allowedRoles={ADMIN_SCREEN_ROLES}>
+    <ProtectedScreen allowedRoles={SUPERADMIN_ONLY_ROLES}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
         {/* Header */}
         <View style={s(theme).header}>
@@ -146,6 +212,44 @@ export default function AdminTrashScreen() {
               </Text>
             )}
           </View>
+        </View>
+
+        <SearchBar value={search} onChangeText={setSearch} placeholder="Rechercher nom, email, numéro…" />
+
+        {/* Date range row */}
+        <View style={s(theme).dateRow}>
+          <Calendar size={14} color={theme.text.muted} />
+          <TouchableOpacity
+            style={[s(theme).datePill, dateFrom && { borderColor: theme.primary }]}
+            onPress={() => setPickerField('from')}
+            accessibilityLabel="Supprimé depuis"
+            accessibilityRole="button"
+          >
+            <Text style={[s(theme).datePillLabel, dateFrom && { color: theme.primary }]}>
+              {dateFrom ? fmtShort(dateFrom) : 'Du…'}
+            </Text>
+          </TouchableOpacity>
+          <Text style={{ fontSize: 12, color: theme.text.muted }}>→</Text>
+          <TouchableOpacity
+            style={[s(theme).datePill, dateTo && { borderColor: theme.primary }]}
+            onPress={() => setPickerField('to')}
+            accessibilityLabel="Supprimé jusqu'à"
+            accessibilityRole="button"
+          >
+            <Text style={[s(theme).datePillLabel, dateTo && { color: theme.primary }]}>
+              {dateTo ? fmtShort(dateTo) : 'Au…'}
+            </Text>
+          </TouchableOpacity>
+          {hasDateFilter && (
+            <TouchableOpacity
+              onPress={clearDates}
+              style={s(theme).clearBtn}
+              accessibilityLabel="Effacer dates"
+              accessibilityRole="button"
+            >
+              <X size={14} color={theme.text.muted} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Sub-tabs */}
@@ -193,6 +297,25 @@ export default function AdminTrashScreen() {
             refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={theme.primary} />}
           />
         )}
+
+        {/* Native date picker */}
+        {pickerField !== null && (
+          <DateTimePicker
+            value={
+              pickerField === 'from'
+                ? (dateFrom ?? new Date())
+                : pickerField === 'to'
+                  ? (dateTo ?? new Date())
+                  : new Date()
+            }
+            mode="date"
+            display={Platform.OS === 'ios' ? 'inline' : 'default'}
+            minimumDate={pickerField === 'to' && dateFrom ? dateFrom : undefined}
+            maximumDate={pickerField === 'from' && dateTo ? dateTo : new Date()}
+            onChange={onPickerChange}
+            onTouchCancel={() => setPickerField(null)}
+          />
+        )}
       </SafeAreaView>
     </ProtectedScreen>
   );
@@ -214,6 +337,23 @@ const s = (theme: ThemeType) =>
     back: { padding: 4, marginTop: 4 },
     title: { fontSize: 22, fontWeight: '700', color: theme.text.primary },
     subtitle: { fontSize: 12, color: theme.text.muted, marginTop: 2 },
+    dateRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      gap: 8,
+    },
+    datePill: {
+      borderWidth: 1,
+      borderColor: theme.border,
+      borderRadius: 16,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      backgroundColor: theme.bg.surface,
+    },
+    datePillLabel: { fontSize: 12, fontWeight: '500', color: theme.text.secondary },
+    clearBtn: { padding: 4 },
     tabs: { flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingVertical: 12, flexWrap: 'wrap' },
     tabBtn: {
       flexDirection: 'row',
