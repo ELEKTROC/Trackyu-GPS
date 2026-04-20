@@ -6,6 +6,8 @@ import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
 import { API_URL, getHeaders } from '../../../services/api/client';
 import { api } from '../../../services/apiLazy';
+import { usePasswordReveal } from '../../../services/api/usePasswordReveal';
+import { PasswordRevealModal } from '../../../services/api/PasswordRevealModal';
 import { useTenantBranding } from '../../../hooks/useTenantBranding';
 import { useCurrency } from '../../../hooks/useCurrency';
 import {
@@ -32,6 +34,9 @@ import {
   Hash,
   Download,
   Briefcase,
+  Eye,
+  XCircle,
+  Copy,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { useTranslation, SUPPORTED_LANGS, type Lang } from '../../../i18n';
@@ -259,6 +264,7 @@ export const MyAccountView: React.FC = () => {
 
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
   const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  const passwordReveal = usePasswordReveal();
 
   const savePreferences = useCallback(async (prefs: { language?: string; notifications?: NotificationPreferences }) => {
     try {
@@ -706,7 +712,7 @@ export const MyAccountView: React.FC = () => {
                   {
                     icon: Hash,
                     label: 'ID client',
-                    value: linkedClient.accountingCode || linkedClient.id?.slice(0, 8).toUpperCase() || '—',
+                    value: linkedClient.accountingCode || linkedClient.id || '—',
                   },
                   {
                     icon: Award,
@@ -732,6 +738,11 @@ export const MyAccountView: React.FC = () => {
                     icon: Building2,
                     label: 'Type de compte',
                     value: clientType,
+                  },
+                  {
+                    icon: Briefcase,
+                    label: 'Prestataire',
+                    value: linkedClient.resellerName || linkedClient.resellerId || '—',
                   },
                 ].map(({ icon: Icon, label, value }) => (
                   <div
@@ -1080,6 +1091,56 @@ export const MyAccountView: React.FC = () => {
               </button>
             </form>
 
+            {/* Voir mon mot de passe (self-reveal) */}
+            {user?.id && (
+              <div className="mt-6 pt-6 border-t border-[var(--border)]">
+                <p className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-1.5 mb-2">
+                  <Eye className="w-3.5 h-3.5" /> Voir mon mot de passe
+                </p>
+                <p className="text-xs text-[var(--text-secondary)] mb-3">
+                  Ré-authentifiez-vous pour afficher votre mot de passe actuel.
+                </p>
+                <div className="flex items-center gap-2">
+                  {passwordReveal.revealed[user.id] ? (
+                    <>
+                      <code className="text-xs font-mono bg-[var(--bg-surface)] px-2 py-1 rounded select-all flex-1 truncate">
+                        {passwordReveal.revealed[user.id]}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={() => passwordReveal.hide(user.id)}
+                        className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
+                        title="Masquer"
+                      >
+                        <XCircle className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(passwordReveal.revealed[user.id] ?? '');
+                          showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success');
+                        }}
+                        className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
+                        title="Copier"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => passwordReveal.requestReveal(user.id)}
+                      disabled={passwordReveal.loadingId === user.id}
+                      className="px-3 py-1.5 text-xs rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-surface)] transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Révéler
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* 2FA toggle inline */}
             <div className="mt-6 pt-6 border-t border-[var(--border)]">
               <div className="flex items-center justify-between gap-3">
@@ -1097,6 +1158,14 @@ export const MyAccountView: React.FC = () => {
           </Card>
         </div>
       </div>
+      <PasswordRevealModal
+        open={passwordReveal.showModal}
+        onCancel={passwordReveal.cancelModal}
+        onSubmit={passwordReveal.submitAdminPassword}
+        errorMessage={passwordReveal.error?.message}
+        title="Confirmer votre identité"
+        description="Entrez votre mot de passe pour l'afficher."
+      />
     </div>
   );
 };

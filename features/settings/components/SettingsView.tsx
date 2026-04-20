@@ -22,7 +22,6 @@ import {
   RefreshCw,
   Save,
   Download,
-  AlertTriangle,
   Clock,
   Smartphone,
   Search,
@@ -94,7 +93,8 @@ import { useDataContext } from '../../../contexts/DataContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { API_BASE_URL } from '../../../utils/apiConfig';
+import { usePasswordReveal } from '../../../services/api/usePasswordReveal';
+import { PasswordRevealModal } from '../../../services/api/PasswordRevealModal';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { VehicleSchema, type VehicleFormData } from '../../../schemas/vehicleSchema';
@@ -609,41 +609,9 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
   const columnMenuRef = useRef<HTMLDivElement>(null);
   const statusMenuRef = useRef<HTMLDivElement>(null);
 
-  // --- États révélation mot de passe ---
+  // --- État révélation mot de passe (hook partagé, call endpoint chiffré) ---
   const { user: currentUser } = useAuth();
-  const [passwordsRevealed, setPasswordsRevealed] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [adminPasswordInput, setAdminPasswordInput] = useState('');
-  const [passwordVerifyError, setPasswordVerifyError] = useState('');
-  const [passwordVerifying, setPasswordVerifying] = useState(false);
-
-  const handleVerifyAndReveal = async () => {
-    if (!currentUser?.email || !adminPasswordInput) return;
-    setPasswordVerifying(true);
-    setPasswordVerifyError('');
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_BASE_URL}/users/verify-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ email: currentUser.email, password: adminPasswordInput }),
-      });
-      if (res.ok) {
-        setPasswordsRevealed(true);
-        setShowPasswordModal(false);
-        setAdminPasswordInput('');
-      } else {
-        setPasswordVerifyError('Mot de passe incorrect. Veuillez réessayer.');
-      }
-    } catch {
-      setPasswordVerifyError('Erreur de connexion. Réessayez.');
-    } finally {
-      setPasswordVerifying(false);
-    }
-  };
+  const passwordReveal = usePasswordReveal();
 
   // Réinitialisation lors du changement d'onglet
   useEffect(() => {
@@ -867,15 +835,21 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
     if (colLower.includes('envoyé'))
       return <span className="text-xs text-[var(--text-secondary)]">{item.envoye || item.sentAt}</span>;
     if (colLower.includes('mot de passe')) {
-      const pwd = item.plain_password || item.plainPassword;
-      if (!passwordsRevealed) {
+      const revealedPwd = passwordReveal.revealed[item.id];
+      const isLoading = passwordReveal.loadingId === item.id;
+      const hasPwd = item.hasPassword !== false;
+      if (!hasPwd) {
+        return <span className="text-xs text-[var(--text-muted)] italic">Non disponible</span>;
+      }
+      if (!revealedPwd) {
         return (
           <div className="flex items-center gap-1.5">
             <span className="font-mono text-sm text-[var(--text-muted)] tracking-widest">••••••••</span>
             <button
-              onClick={() => setShowPasswordModal(true)}
-              className="p-1 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
-              title="Révéler les mots de passe"
+              onClick={() => passwordReveal.requestReveal(item.id)}
+              disabled={isLoading}
+              className="p-1 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors disabled:opacity-50"
+              title="Révéler le mot de passe de cet utilisateur"
             >
               <Eye className="w-3.5 h-3.5" />
             </button>
@@ -885,12 +859,12 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       return (
         <div className="flex items-center gap-1.5">
           <span className="font-mono text-xs text-[var(--text-primary)] select-all bg-[var(--bg-elevated)] px-2 py-0.5 rounded">
-            {pwd || '—'}
+            {revealedPwd}
           </span>
           <button
-            onClick={() => setPasswordsRevealed(false)}
+            onClick={() => passwordReveal.hide(item.id)}
             className="p-1 hover:bg-[var(--bg-elevated)] rounded text-[var(--text-secondary)] hover:text-red-500 transition-colors"
-            title="Masquer les mots de passe"
+            title="Masquer"
           >
             <EyeOff className="w-3.5 h-3.5" />
           </button>
@@ -1245,69 +1219,13 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         </div>
       </div>
 
-      {/* Modal confirmation mot de passe */}
-      {showPasswordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-[var(--bg-surface)] rounded-xl shadow-2xl border border-[var(--border)] w-full max-w-sm mx-4 p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-[var(--primary-dim)] flex items-center justify-center">
-                <Lock className="w-5 h-5 text-[var(--primary)]" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-[var(--text-primary)]">Confirmer votre identité</h3>
-                <p className="text-xs text-[var(--text-secondary)]">
-                  Entrez votre mot de passe pour révéler les accès clients
-                </p>
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-xs font-medium text-[var(--text-secondary)] mb-1.5">
-                Votre mot de passe
-              </label>
-              <input
-                type="password"
-                value={adminPasswordInput}
-                onChange={(e) => {
-                  setAdminPasswordInput(e.target.value);
-                  setPasswordVerifyError('');
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && handleVerifyAndReveal()}
-                placeholder="••••••••••"
-                autoFocus
-                className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-              />
-              {passwordVerifyError && (
-                <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" />
-                  {passwordVerifyError}
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => {
-                  setShowPasswordModal(false);
-                  setAdminPasswordInput('');
-                  setPasswordVerifyError('');
-                }}
-                className="px-4 py-2 text-sm rounded-lg border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors"
-              >
-                Annuler
-              </button>
-              <button
-                onClick={handleVerifyAndReveal}
-                disabled={!adminPasswordInput || passwordVerifying}
-                className="px-4 py-2 text-sm rounded-lg bg-[var(--primary)] text-white font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-              >
-                {passwordVerifying ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Eye className="w-3.5 h-3.5" />}
-                {passwordVerifying ? 'Vérification...' : 'Révéler'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PasswordRevealModal
+        open={passwordReveal.showModal}
+        onCancel={passwordReveal.cancelModal}
+        onSubmit={passwordReveal.submitAdminPassword}
+        errorMessage={passwordReveal.error?.message}
+        description="Entrez votre mot de passe pour révéler les accès clients"
+      />
     </div>
   );
 };

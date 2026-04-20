@@ -61,6 +61,8 @@ import { useCurrency } from '../../../../hooks/useCurrency';
 import { api } from '../../../../services/apiLazy';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import type { Tenant } from '../../../../types/admin';
+import { usePasswordReveal } from '../../../../services/api/usePasswordReveal';
+import { PasswordRevealModal } from '../../../../services/api/PasswordRevealModal';
 import { useIsMobile } from '../../../../hooks/useIsMobile';
 import { MobileCard, MobileCardList } from '../../../../components/MobileCard';
 
@@ -143,7 +145,6 @@ interface UserFormData {
 
 // Backend-enriched user fields not in SystemUser base type
 type StaffUser = SystemUser & {
-  plainPassword?: string;
   specialite?: string;
   niveau?: string;
   zone?: string;
@@ -277,7 +278,7 @@ export const StaffPanelV2: React.FC = () => {
     staleTime: 5 * 60 * 1000,
   });
   const clientTenants = tenantsList.filter((t) => t.id !== 'tenant_default');
-  const [visiblePasswords, setVisiblePasswords] = useState<Record<string, boolean>>({});
+  const passwordReveal = usePasswordReveal();
 
   // Organisations (Resellers) pour les checkboxes
   const organizations = useMemo(() => (tiers || []).filter((t) => t.type === 'RESELLER'), [tiers]);
@@ -988,35 +989,45 @@ export const StaffPanelV2: React.FC = () => {
                             {isSuperAdmin && (
                               <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex items-center gap-1">
-                                  {(user as StaffUser).plainPassword ? (
-                                    <>
-                                      <code className="text-xs font-mono bg-[var(--bg-elevated)] px-2 py-1 rounded select-all">
-                                        {visiblePasswords[user.id] ? (user as StaffUser).plainPassword : '••••••••'}
-                                      </code>
-                                      <button
-                                        onClick={() =>
-                                          setVisiblePasswords((prev) => ({ ...prev, [user.id]: !prev[user.id] }))
-                                        }
-                                        className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
-                                        title={visiblePasswords[user.id] ? 'Masquer' : 'Afficher'}
-                                      >
-                                        {visiblePasswords[user.id] ? (
+                                  {user.hasPassword ? (
+                                    passwordReveal.revealed[user.id] ? (
+                                      <>
+                                        <code className="text-xs font-mono bg-[var(--bg-elevated)] px-2 py-1 rounded select-all">
+                                          {passwordReveal.revealed[user.id]}
+                                        </code>
+                                        <button
+                                          onClick={() => passwordReveal.hide(user.id)}
+                                          className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
+                                          title="Masquer"
+                                        >
                                           <XCircle className="w-3.5 h-3.5" />
-                                        ) : (
+                                        </button>
+                                        <button
+                                          onClick={() => {
+                                            navigator.clipboard.writeText(passwordReveal.revealed[user.id] ?? '');
+                                            showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success');
+                                          }}
+                                          className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
+                                          title="Copier"
+                                        >
+                                          <Copy className="w-3.5 h-3.5" />
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <code className="text-xs font-mono bg-[var(--bg-elevated)] px-2 py-1 rounded">
+                                          ••••••••
+                                        </code>
+                                        <button
+                                          onClick={() => passwordReveal.requestReveal(user.id)}
+                                          disabled={passwordReveal.loadingId === user.id}
+                                          className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded disabled:opacity-50"
+                                          title="Révéler"
+                                        >
                                           <Eye className="w-3.5 h-3.5" />
-                                        )}
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          navigator.clipboard.writeText((user as StaffUser).plainPassword ?? '');
-                                          showToast(TOAST.CLIPBOARD.PASSWORD_COPIED, 'success');
-                                        }}
-                                        className="p-1 text-[var(--text-muted)] hover:text-[var(--primary)] rounded"
-                                        title="Copier"
-                                      >
-                                        <Copy className="w-3.5 h-3.5" />
-                                      </button>
-                                    </>
+                                        </button>
+                                      </>
+                                    )
                                   ) : (
                                     <span className="text-xs text-[var(--text-muted)] italic">Non disponible</span>
                                   )}
@@ -2066,6 +2077,13 @@ export const StaffPanelV2: React.FC = () => {
           />
         )}
       </Drawer>
+      <PasswordRevealModal
+        open={passwordReveal.showModal}
+        onCancel={passwordReveal.cancelModal}
+        onSubmit={passwordReveal.submitAdminPassword}
+        errorMessage={passwordReveal.error?.message}
+        description="Entrez votre mot de passe pour révéler l'accès de cet utilisateur"
+      />
       <ConfirmDialogComponent />
     </div>
   );
