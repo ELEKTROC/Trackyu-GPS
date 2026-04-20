@@ -59,7 +59,8 @@ backups/
 trackyu-mobile-expo/credentials/
 trackyu-mobile-expo/credentials.json
 trackyu-mobile-expo/secrets/
-trackyu-mobile-expo/google-services.json
+# google-services.json : volontairement tracké (repo privé, clé FCM restreinte
+# côté Firebase Console : package + SHA-1). Nécessaire aux builds EAS.
 trackyu-mobile-expo/node_modules/
 trackyu-mobile-expo/.expo/
 trackyu-mobile-expo/ios/
