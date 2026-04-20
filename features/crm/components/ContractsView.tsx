@@ -23,9 +23,6 @@ import {
   DollarSign,
   Users,
   Loader2,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
   Download,
   X,
   Building2,
@@ -45,6 +42,8 @@ import { useDateRange } from '../../../hooks/useDateRange';
 import { DateRangeSelector } from '../../../components/DateRangeSelector';
 import { useCurrency } from '../../../hooks/useCurrency';
 import { MobileFilterSheet, FilterRadioRow, type MobileFilterTab } from '../../../components/MobileFilterSheet';
+import { useTableSort } from '../../../hooks/useTableSort';
+import { SortableHeader } from '../../../components/SortableHeader';
 
 // --- Status & billing cycle translations ---
 const STATUS_LABELS: Record<string, string> = {
@@ -67,9 +66,6 @@ const BILLING_CYCLE_LABELS: Record<string, string> = {
   semi_annual: 'Semestriel',
   yearly: 'Annuel',
 };
-
-type SortField = 'clientName' | 'startDate' | 'endDate' | 'monthlyFee' | 'vehicleCount' | 'status' | 'billingCycle';
-type SortDir = 'asc' | 'desc';
 
 export const ContractsView: React.FC<{ dateRange?: { start: string; end: string } }> = ({
   dateRange: externalDateRange,
@@ -117,8 +113,6 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [resellerFilter, setResellerFilter] = useState<string>('ALL');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-  const [sortField, setSortField] = useState<SortField>('startDate');
-  const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [tenantTaxRate, setTenantTaxRate] = useState<number>(0);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -562,8 +556,8 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [contracts]);
 
-  // --- Search + filter + sort ---
-  const filteredContracts = useMemo(() => {
+  // --- Search + filter ---
+  const baseFilteredContracts = useMemo(() => {
     let result = filteredContractsByDate;
 
     // Status filter
@@ -590,62 +584,30 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
       );
     }
 
-    // Sort
-    result = [...result].sort((a, b) => {
-      let cmp = 0;
-      switch (sortField) {
-        case 'clientName':
-          cmp = getClientName(a).localeCompare(getClientName(b));
-          break;
-        case 'startDate':
-          cmp =
-            (a.startDate ? new Date(a.startDate).getTime() : 0) - (b.startDate ? new Date(b.startDate).getTime() : 0);
-          break;
-        case 'endDate':
-          cmp =
-            (a.endDate ? new Date(a.endDate).getTime() : Infinity) -
-            (b.endDate ? new Date(b.endDate).getTime() : Infinity);
-          break;
-        case 'monthlyFee':
-          cmp = (a.monthlyFee || 0) - (b.monthlyFee || 0);
-          break;
-        case 'vehicleCount':
-          cmp = (a.vehicleIds?.length || a.vehicleCount || 0) - (b.vehicleIds?.length || b.vehicleCount || 0);
-          break;
-        case 'billingCycle':
-          cmp = (a.billingCycle || '').localeCompare(b.billingCycle || '');
-          break;
-        case 'status':
-          cmp = (a.status || '').localeCompare(b.status || '');
-          break;
-      }
-      return sortDir === 'desc' ? -cmp : cmp;
-    });
-
     return result;
-  }, [filteredContractsByDate, statusFilter, resellerFilter, searchTerm, sortField, sortDir, getClientName]);
+  }, [filteredContractsByDate, statusFilter, resellerFilter, searchTerm, getClientName]);
+
+  const sortAccessors = useMemo(
+    () => ({
+      clientName: (c: Contract) => getClientName(c),
+      vehicleCount: (c: Contract) => c.vehicleIds?.length || c.vehicleCount || 0,
+    }),
+    [getClientName]
+  );
+
+  const {
+    sortedItems: filteredContracts,
+    sortConfig,
+    handleSort,
+  } = useTableSort(baseFilteredContracts, { key: 'startDate', direction: 'desc' }, sortAccessors);
 
   const totalPages = Math.ceil(filteredContracts.length / itemsPerPage);
   const paginatedContracts = filteredContracts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // Reset page on filter change
+  // Reset page on filter/sort change
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, statusFilter, resellerFilter, sortField, sortDir]);
-
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortField(field);
-      setSortDir('asc');
-    }
-  };
-
-  const SortIcon: React.FC<{ field: SortField }> = ({ field }) => {
-    if (sortField !== field) return <ArrowUpDown className="w-3 h-3 opacity-30" />;
-    return sortDir === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />;
-  };
+  }, [searchTerm, statusFilter, resellerFilter, sortConfig.key, sortConfig.direction]);
 
   // --- Export CSV ---
   const handleExportCSV = () => {
@@ -1013,52 +975,61 @@ export const ContractsView: React.FC<{ dateRange?: { start: string; end: string 
                     </button>
                   </th>
                   <th className="px-6 py-3">Réf. Contrat</th>
-                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('clientName')}>
-                    <span className="flex items-center gap-1">
-                      Client <SortIcon field="clientName" />
-                    </span>
-                  </th>
+                  <SortableHeader
+                    label="Client"
+                    sortKey="clientName"
+                    currentSortKey={sortConfig.key}
+                    currentDirection={sortConfig.direction}
+                    onSort={handleSort}
+                  />
                   <th className="px-6 py-3">Revendeur</th>
-                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('startDate')}>
-                    <span className="flex items-center gap-1">
-                      Début <SortIcon field="startDate" />
-                    </span>
-                  </th>
-                  <th className="px-6 py-3 cursor-pointer select-none" onClick={() => handleSort('endDate')}>
-                    <span className="flex items-center gap-1">
-                      Fin <SortIcon field="endDate" />
-                    </span>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-right cursor-pointer select-none"
-                    onClick={() => handleSort('monthlyFee')}
-                  >
-                    <span className="flex items-center gap-1 justify-end">
-                      Prix Unit. <SortIcon field="monthlyFee" />
-                    </span>
-                  </th>
-                  <th
-                    className="px-6 py-3 text-center cursor-pointer select-none"
-                    onClick={() => handleSort('vehicleCount')}
-                  >
-                    <span className="flex items-center gap-1 justify-center">
-                      Véhicules <SortIcon field="vehicleCount" />
-                    </span>
-                  </th>
+                  <SortableHeader
+                    label="Début"
+                    sortKey="startDate"
+                    currentSortKey={sortConfig.key}
+                    currentDirection={sortConfig.direction}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader
+                    label="Fin"
+                    sortKey="endDate"
+                    currentSortKey={sortConfig.key}
+                    currentDirection={sortConfig.direction}
+                    onSort={handleSort}
+                  />
+                  <SortableHeader
+                    label="Prix Unit."
+                    sortKey="monthlyFee"
+                    currentSortKey={sortConfig.key}
+                    currentDirection={sortConfig.direction}
+                    onSort={handleSort}
+                    className="text-right"
+                  />
+                  <SortableHeader
+                    label="Véhicules"
+                    sortKey="vehicleCount"
+                    currentSortKey={sortConfig.key}
+                    currentDirection={sortConfig.direction}
+                    onSort={handleSort}
+                    className="text-center"
+                  />
                   <th className="px-6 py-3 text-right">Total</th>
-                  <th
-                    className="px-6 py-3 text-center cursor-pointer select-none"
-                    onClick={() => handleSort('billingCycle')}
-                  >
-                    <span className="flex items-center gap-1 justify-center">
-                      Cycle <SortIcon field="billingCycle" />
-                    </span>
-                  </th>
-                  <th className="px-6 py-3 text-center cursor-pointer select-none" onClick={() => handleSort('status')}>
-                    <span className="flex items-center gap-1 justify-center">
-                      Statut <SortIcon field="status" />
-                    </span>
-                  </th>
+                  <SortableHeader
+                    label="Cycle"
+                    sortKey="billingCycle"
+                    currentSortKey={sortConfig.key}
+                    currentDirection={sortConfig.direction}
+                    onSort={handleSort}
+                    className="text-center"
+                  />
+                  <SortableHeader
+                    label="Statut"
+                    sortKey="status"
+                    currentSortKey={sortConfig.key}
+                    currentDirection={sortConfig.direction}
+                    onSort={handleSort}
+                    className="text-center"
+                  />
                   <th className="px-6 py-3 text-right">Actions</th>
                 </tr>
               </thead>
