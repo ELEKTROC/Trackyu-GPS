@@ -1,0 +1,91 @@
+{
+  "date": "2026-04-19T23:45:22Z",
+  "total_dist_runtime_files": 261,
+  "paired_src_dist": 152,
+  "only_dist_no_src": 109,
+  "only_src_no_dist (orphans)": 0,
+  "max_age_days_src_behind_dist": 90.7,
+  "top_20_drift": [
+    {
+      "path": "controllers/authController.js",
+      "age_days": 90.7
+    },
+    {
+      "path": "controllers/ApiKeyController.js",
+      "age_days": 90.7
+    },
+    {
+      "path": "controllers/ticketController.js",
+      "age_days": 90.7
+    },
+    {
+      "path": "middleware/rateLimiter.js",
+      "age_days": 90.6
+    },
+    {
+      "path": "routes/userRoutes.js",
+      "age_days": 90.6
+    },
+    {
+      "path": "config/database.js",
+      "age_days": 90.6
+    },
+    {
+      "path": "routes/fleetRoutes.js",
+      "age_days": 90.6
+    },
+    {
+      "path": "controllers/SettingsController.js",
+      "age_days": 90.5
+    },
+    {
+      "path": "routes/analyticsRoutes.js",
+      "age_days": 90.5
+    },
+    {
+      "path": "services/scheduler.js",
+      "age_days": 88.4
+    },
+    {
+      "path": "controllers/monitoringController.js",
+      "age_days": 88.3
+    },
+    {
+      "path": "gps-server/server.js",
+      "age_days": 88.3
+    },
+    {
+      "path": "services/socketThrottle.js",
+      "age_days": 88.2
+    },
+    {
+      "path": "routes/monitoringRoutes.js",
+      "age_days": 87.4
+    },
+    {
+      "path": "gps-server/parsers/gt06.js",
+      "age_days": 87.4
+    },
+    {
+      "path": "services/ruleEvaluationService.js",
+      "age_days": 87.4
+    },
+    {
+      "path": "routes/subscriptionRoutes.js",
+      "age_days": 86.9
+    },
+    {
+      "path": "controllers/deviceController.js",
+      "age_days": 86.4
+    },
+    {
+      "path": "socket.js",
+      "age_days": 86.3
+    },
+    {
+      "path": "routes/catalogRoutes.js",
+      "age_days": 86.3
+    }
+  ],
+  "orphans_src_without_dist": []
+}
