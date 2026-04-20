@@ -22,6 +22,7 @@ import { useTenantBranding } from '../../../hooks/useTenantBranding';
 import { useTableSort } from '../../../hooks/useTableSort';
 import { SortableHeader } from '../../../components/SortableHeader';
 import { api } from '../../../services/apiLazy';
+import { useToast } from '../../../contexts/ToastContext';
 import { PLAN_COMPTABLE } from '../constants';
 
 import type { Tier } from '../../../types';
@@ -54,6 +55,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
   const { formatPrice } = useCurrency();
   const { branding: tenantBranding } = useTenantBranding();
   const { createGroupedJournalEntry } = useDataContext();
+  const { showToast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isClosingModalOpen, setIsClosingModalOpen] = useState(false);
   const [transactionType, setTransactionType] = useState<'DEPOSIT' | 'WITHDRAWAL'>('WITHDRAWAL');
@@ -146,7 +148,7 @@ export const CashView: React.FC<CashViewProps> = ({ journalEntries, isSuperAdmin
     const numAmount = parseFloat(amount);
 
     if (transactionType === 'WITHDRAWAL' && numAmount > balance) {
-      alert(`Solde insuffisant. Solde actuel : ${formatPrice(balance)}`);
+      showToast(`Solde insuffisant. Solde actuel : ${formatPrice(balance)}`, 'error');
       return;
     }
 
