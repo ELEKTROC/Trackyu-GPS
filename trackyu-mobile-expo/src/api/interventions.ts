@@ -338,6 +338,32 @@ const interventionsApi = {
     }
   },
 
+  /**
+   * Crée une intervention (POST /tech/interventions).
+   * Champs strictement obligatoires côté backend : ticketId, clientId, type.
+   * Utilisé pour le bouton "Créer intervention depuis un ticket" (squelette PENDING).
+   */
+  create: async (data: {
+    ticketId: string;
+    clientId: string;
+    type: InterventionType;
+    vehicleId?: string | null;
+    technicianId?: string | null;
+    nature?: string | null;
+    scheduledDate?: string | null;
+    status?: InterventionStatus;
+  }): Promise<Intervention> => {
+    try {
+      const res = await apiClient.post('/tech/interventions', {
+        status: 'PENDING',
+        ...data,
+      });
+      return normalizeIntervention(res.data as Record<string, unknown>);
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
   update: async (id: string, data: Partial<Intervention>): Promise<Intervention> => {
     try {
       const res = await apiClient.put(`/tech/interventions/${id}`, data);

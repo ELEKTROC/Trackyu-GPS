@@ -15,15 +15,18 @@ import {
   Platform,
   StyleSheet,
   ActivityIndicator,
+  Modal,
+  Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Send, User, Clock } from 'lucide-react-native';
+import { ArrowLeft, Send, User, Clock, Wrench, X } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ticketsApi, { type TicketStatus, type TicketPriority } from '../../api/tickets';
+import interventionsApi, { type InterventionType } from '../../api/interventions';
 import {
   TICKET_STATUS_COLORS,
   TICKET_STATUS_LABELS,
@@ -32,6 +35,7 @@ import {
 } from '../../utils/portalColors';
 import type { RootStackParamList } from '../../navigation/types';
 import { useAuthStore } from '../../store/authStore';
+import { ROLE, normalizeRole } from '../../constants/roles';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'SupportTicketDetail'>;
@@ -40,6 +44,31 @@ type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 // ── Status change chips ───────────────────────────────────────────────────────
 
 const STATUS_FLOW: TicketStatus[] = ['OPEN', 'IN_PROGRESS', 'WAITING_CLIENT', 'RESOLVED', 'CLOSED'];
+
+// ── Intervention types offerts au créateur ───────────────────────────────────
+// Alignés sur intervention_type_configs en DB, ordre du plus fréquent au plus rare.
+
+const INTERVENTION_TYPES: { value: InterventionType; label: string; desc: string }[] = [
+  { value: 'DEPANNAGE', label: 'Dépannage', desc: 'Intervention sur panne existante' },
+  { value: 'INSTALLATION', label: 'Installation', desc: 'Pose boîtier + mise en service' },
+  { value: 'REMPLACEMENT', label: 'Remplacement', desc: 'Échange boîtier / SIM / capteur' },
+  { value: 'REINSTALLATION', label: 'Réinstallation', desc: 'Repose après retrait temporaire' },
+  { value: 'RETRAIT', label: 'Retrait', desc: 'Dépose définitive du matériel' },
+  { value: 'TRANSFERT', label: 'Transfert', desc: 'Changement de véhicule / client' },
+];
+
+// Rôles autorisés à créer une intervention depuis un ticket.
+// Aligne ADMIN_SCREEN_ROLES + COMMERCIAL + TECH + SUPPORT (les agents support créent le squelette,
+// le tech terrain complète dans InterventionDetailScreen).
+const CREATE_INTERVENTION_ROLES = [
+  ROLE.SUPERADMIN,
+  ROLE.ADMIN,
+  ROLE.MANAGER,
+  ROLE.COMMERCIAL,
+  ROLE.TECH,
+  ROLE.SUPPORT,
+  ROLE.SUPPORT_AGENT,
+];
 
 function StatusChip({ status, active, onPress }: { status: TicketStatus; active: boolean; onPress: () => void }) {
   const color = TICKET_STATUS_COLORS[status] ?? '#6B7280';
@@ -75,6 +104,9 @@ export default function SupportTicketDetailScreen() {
   const qc = useQueryClient();
   const scrollRef = useRef<ScrollView>(null);
   const [message, setMessage] = useState('');
+  const [typePickerOpen, setTypePickerOpen] = useState(false);
+  const userRole = user?.role ? normalizeRole(user.role) : '';
+  const canCreateIntervention = CREATE_INTERVENTION_ROLES.includes(userRole as never);
 
   const { data: ticket, isLoading } = useQuery({
     queryKey: ['support-ticket', ticketId],
@@ -84,6 +116,31 @@ export default function SupportTicketDetailScreen() {
   const updateMutation = useMutation({
     mutationFn: (status: TicketStatus) => ticketsApi.update(ticketId, { status }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['support-ticket', ticketId] }),
+  });
+
+  const createInterventionMutation = useMutation({
+    mutationFn: (type: InterventionType) => {
+      if (!ticket?.client_id) {
+        throw new Error("Ce ticket n'est rattaché à aucun client — impossible de créer une intervention.");
+      }
+      return interventionsApi.create({
+        ticketId,
+        clientId: ticket.client_id,
+        vehicleId: ticket.vehicle_id ?? null,
+        type,
+        scheduledDate: new Date().toISOString(),
+        status: 'PENDING',
+      });
+    },
+    onSuccess: (newIntervention) => {
+      setTypePickerOpen(false);
+      qc.invalidateQueries({ queryKey: ['support-ticket', ticketId] });
+      qc.invalidateQueries({ queryKey: ['interventions'] });
+      nav.navigate('InterventionDetail', { interventionId: newIntervention.id });
+    },
+    onError: (err: Error) => {
+      Alert.alert('Création impossible', err.message || 'Une erreur est survenue.');
+    },
   });
 
   const sendMutation = useMutation({
@@ -184,6 +241,23 @@ export default function SupportTicketDetailScreen() {
           ))}
         </ScrollView>
 
+        {/* Action : créer intervention depuis le ticket */}
+        {canCreateIntervention && ticket.client_id ? (
+          <View style={{ paddingHorizontal: 16, paddingBottom: 10 }}>
+            <TouchableOpacity
+              onPress={() => setTypePickerOpen(true)}
+              activeOpacity={0.8}
+              style={s.createInterventionBtn}
+              disabled={createInterventionMutation.isPending}
+            >
+              <Wrench size={16} color={theme.text.onPrimary} />
+              <Text style={s.createInterventionBtnText}>
+                {createInterventionMutation.isPending ? 'Création...' : 'Créer une intervention'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
         {/* Description + messages */}
         <ScrollView
           ref={scrollRef}
@@ -251,6 +325,49 @@ export default function SupportTicketDetailScreen() {
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
+
+      {/* Type-picker modal pour créer une intervention depuis le ticket */}
+      <Modal
+        visible={typePickerOpen}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setTypePickerOpen(false)}
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
+          <View style={s.pickerHeader}>
+            <Text style={s.pickerTitle}>Type d'intervention</Text>
+            <TouchableOpacity onPress={() => setTypePickerOpen(false)} style={{ padding: 4 }}>
+              <X size={22} color={theme.text.primary} />
+            </TouchableOpacity>
+          </View>
+          <Text style={s.pickerHint}>
+            L'intervention sera créée en statut <Text style={{ fontWeight: '700' }}>À planifier</Text> avec les infos du
+            ticket. Le technicien pourra la compléter ensuite.
+          </Text>
+          <ScrollView contentContainerStyle={{ padding: 16, gap: 10 }}>
+            {INTERVENTION_TYPES.map((t) => (
+              <TouchableOpacity
+                key={t.value}
+                onPress={() => createInterventionMutation.mutate(t.value)}
+                activeOpacity={0.75}
+                disabled={createInterventionMutation.isPending}
+                style={s.typeCard}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={s.typeLabel}>{t.label}</Text>
+                  <Text style={s.typeDesc}>{t.desc}</Text>
+                </View>
+                <Wrench size={16} color={theme.primary} />
+              </TouchableOpacity>
+            ))}
+            {createInterventionMutation.isPending ? (
+              <View style={{ alignItems: 'center', paddingTop: 10 }}>
+                <ActivityIndicator color={theme.primary} />
+              </View>
+            ) : null}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -338,5 +455,63 @@ const styles = (theme: ThemeType) =>
       borderRadius: 12,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    createInterventionBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      backgroundColor: theme.primary,
+      borderRadius: 10,
+      paddingVertical: 10,
+      paddingHorizontal: 14,
+    },
+    createInterventionBtnText: {
+      color: theme.text.onPrimary,
+      fontSize: 13,
+      fontWeight: '700',
+    },
+    pickerHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 16,
+      paddingTop: 8,
+      paddingBottom: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
+    pickerTitle: {
+      fontSize: 17,
+      fontWeight: '700',
+      color: theme.text.primary,
+    },
+    pickerHint: {
+      fontSize: 12,
+      color: theme.text.muted,
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 4,
+      lineHeight: 17,
+    },
+    typeCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+      backgroundColor: theme.bg.surface,
+      borderRadius: 12,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    typeLabel: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: theme.text.primary,
+    },
+    typeDesc: {
+      fontSize: 12,
+      color: theme.text.muted,
+      marginTop: 2,
     },
   });
