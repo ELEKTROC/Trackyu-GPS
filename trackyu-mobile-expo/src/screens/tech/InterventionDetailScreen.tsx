@@ -1138,6 +1138,7 @@ function ContentVehicule({
 
 interface TechDevice {
   id: string;
+  type?: 'BOX' | 'SIM' | 'SENSOR' | string;
   imei?: string;
   serialNumber?: string;
   serial_number?: string;
@@ -2062,9 +2063,9 @@ export default function InterventionDetailScreen() {
     enabled: !!user?.id,
     staleTime: 120_000,
   });
-  const techBoxes = techStock.filter((d) => (d as any).type === 'BOX');
-  const techSims = techStock.filter((d) => (d as any).type === 'SIM');
-  const sondesStock = techStock.filter((d) => (d as any).type === 'SENSOR');
+  const techBoxes = techStock.filter((d) => d.type === 'BOX');
+  const techSims = techStock.filter((d) => d.type === 'SIM');
+  const sondesStock = techStock.filter((d) => d.type === 'SENSOR');
   const sondesSerials = sondesStock.map((d) => d.serialNumber ?? d.serial_number).filter((s): s is string => !!s);
 
   // React Query v5 efface `data` quand isError=true — on conserve la dernière valeur connue

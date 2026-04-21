@@ -254,7 +254,7 @@ export default function PortalContractDocumentScreen() {
   const company = 'TrackYu';
   const clientName = user?.name ?? '—';
   const clientEmail = user?.email ?? '';
-  const clientPhone = (user as any)?.phone ?? '';
+  const clientPhone = user?.phone ?? '';
 
   const handleDownload = async () => {
     if (!contract) return;

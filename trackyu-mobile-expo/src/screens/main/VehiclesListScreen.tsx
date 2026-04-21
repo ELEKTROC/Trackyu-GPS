@@ -548,7 +548,7 @@ export default function VehiclesListScreen() {
           renderItem={({ item: v, index }) => {
             const statusColor = VEHICLE_STATUS_COLORS[v.status] ?? '#6B7280';
             const branch = v.clientName ?? v.groupName ?? '—';
-            const installDate = fmtDate((v as any).installDate ?? (v as any).install_date);
+            const installDate = fmtDate(v.installDate);
             return (
               <View
                 style={{

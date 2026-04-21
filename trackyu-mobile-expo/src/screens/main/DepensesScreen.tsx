@@ -80,7 +80,7 @@ function InlinePicker<T extends string>({
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {options.map((o) => {
           const on = value === o.value;
-          const color = (CAT_COLOR as any)[o.value] ?? theme.primary;
+          const color = (CAT_COLOR as Record<string, string>)[o.value] ?? theme.primary;
           return (
             <TouchableOpacity
               key={o.value}
