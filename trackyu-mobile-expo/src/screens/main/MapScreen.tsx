@@ -69,13 +69,14 @@ const INITIAL_REGION = {
 
 type MapModeKey = 'osm' | 'standard' | 'satellite' | 'hybrid' | 'terrain';
 const MAP_MODES: { key: MapModeKey; label: string; mapType: MapType; icon: string }[] = [
-  { key: 'osm', label: 'OSM', mapType: 'none', icon: '🗺️' },
-  { key: 'standard', label: 'Standard', mapType: 'standard', icon: '🏙️' },
+  { key: 'standard', label: 'Google Maps', mapType: 'standard', icon: '🏙️' },
   { key: 'satellite', label: 'Satellite', mapType: 'satellite', icon: '🛰️' },
   { key: 'hybrid', label: 'Hybride', mapType: 'hybrid', icon: '🌐' },
   { key: 'terrain', label: 'Terrain', mapType: 'terrain', icon: '⛰️' },
+  { key: 'osm', label: 'OSM', mapType: 'none', icon: '🗺️' },
 ];
-const OSM_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+// Carto Voyager (données OSM, CDN Carto) — pas de 403, fonctionne en Expo Go
+const OSM_TILE_URL = 'https://a.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png';
 
 // ── Cluster Marker ────────────────────────────────────────────────────────────
 
@@ -156,7 +157,8 @@ export function MapScreen() {
   const { data: allVehicles = [], isFetching: viewportFetching } = useQuery({
     queryKey: QK.vehicles.all(),
     queryFn: () => vehiclesApi.getAll(),
-    staleTime: 60_000,
+    staleTime: wsConnected ? 60_000 : 10_000,
+    refetchInterval: wsConnected ? false : 10_000,
     throwOnError: false,
   });
 
@@ -564,7 +566,7 @@ export function MapScreen() {
             <Marker
               key={`v-${marker.id}`}
               coordinate={{ latitude: lat, longitude: lng }}
-              anchor={{ x: 0.5, y: 0.68 }}
+              anchor={{ x: 0.5, y: 0.72 }}
               tracksViewChanges={tracksViewChanges}
               onPress={() => setSelectedMarker(marker)}
             >
@@ -576,7 +578,7 @@ export function MapScreen() {
                 </View>
                 <Image
                   source={getMarkerImage(marker.type ?? '', marker.status, marker.hasGps ?? false)}
-                  style={{ width: 32, height: 32 }}
+                  style={s.markerIcon}
                   fadeDuration={0}
                 />
               </View>
@@ -1331,19 +1333,25 @@ const styles = (theme: ReturnType<typeof import('../../theme').useTheme>['theme'
 
     // ── Marker plate label ────────────────────────────────────────────────────
     markerPlate: {
-      backgroundColor: 'rgba(0,0,0,0.72)',
-      borderRadius: 4,
-      paddingHorizontal: 5,
-      paddingVertical: 2,
+      backgroundColor: 'rgba(0,0,0,0.82)',
+      borderRadius: 5,
+      paddingHorizontal: 7,
+      paddingVertical: 3,
       marginBottom: 3,
-      maxWidth: 90,
+      maxWidth: 110,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.9)',
     },
     markerPlateText: {
-      fontSize: 8,
+      fontSize: 11,
       color: '#fff',
       fontWeight: '700' as const,
       fontFamily: 'monospace',
-      letterSpacing: 0.3,
+      letterSpacing: 0.5,
+    },
+    markerIcon: {
+      width: 42,
+      height: 42,
     },
   });
 
@@ -1356,8 +1364,8 @@ const DARK_MAP_STYLE = [
   { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#1a1a2e' }] },
   { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#2d2d50' }] },
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0a0a1a' }] },
-  { featureType: 'poi', stylers: [{ visibility: 'off' }] },
-  { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+  { featureType: 'poi', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+  { featureType: 'transit', elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
   { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#2a2a4a' }] },
 ];
 

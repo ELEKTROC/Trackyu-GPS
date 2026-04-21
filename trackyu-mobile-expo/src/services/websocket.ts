@@ -34,7 +34,7 @@ class WebSocketService {
   private commandAckHandlers: Set<CommandAckHandler> = new Set();
   private connectionHandlers: Set<ConnectionHandler> = new Set();
   private reconnectAttempts = 0;
-  private readonly MAX_RECONNECT_ATTEMPTS = 10;
+  private readonly MAX_RECONNECT_ATTEMPTS = Infinity;
 
   async connect(): Promise<void> {
     if (this.socket?.connected) return;
