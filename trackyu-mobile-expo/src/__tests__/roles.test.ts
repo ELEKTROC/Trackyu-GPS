@@ -132,8 +132,8 @@ describe('Routing MainNavigator', () => {
     expect(getNavigatorName(ROLE.COMMERCIAL)).toBe('StaffNavigator');
   });
 
-  it('OPERATOR → StaffNavigator', () => {
-    expect(getNavigatorName(ROLE.OPERATOR)).toBe('StaffNavigator');
+  it('OPERATOR → ClientNavigator (agent terrain, pas accès staff)', () => {
+    expect(getNavigatorName(ROLE.OPERATOR)).toBe('ClientNavigator');
   });
 
   it('RESELLER → StaffNavigator', () => {
