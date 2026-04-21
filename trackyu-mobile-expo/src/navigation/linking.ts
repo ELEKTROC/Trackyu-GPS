@@ -88,6 +88,14 @@ export const linking: LinkingOptions<RootStackParamList> = {
       CreateTicket: 'ticket/new',
       Help: 'help',
 
+      // ── Services auto ───────────────────────────────────────────────────────
+      Services: 'services',
+      ServiceAssurance: 'services/assurance',
+      ServicePieces: 'services/pieces',
+      ServiceDepannage: 'services/depannage',
+      ServiceVisiteTechnique: 'services/visite-technique',
+      MesDemandesServices: 'services/mes-demandes',
+
       // ── Paramètres ──────────────────────────────────────────────────────────
       SettingsMenu: 'settings/menu',
       Profile: 'settings/profile',
