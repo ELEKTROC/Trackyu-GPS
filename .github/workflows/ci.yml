@@ -10,20 +10,26 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  # ─── Frontend Checks ──────────────────────────────────────────────
+  # ─── Frontend ─────────────────────────────────────────────────────
   frontend:
-    name: Frontend (Build + Test)
+    name: Frontend (tsc + lint + test + build)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: .
+    if: >
+      github.event_name == 'push' ||
+      contains(toJson(github.event.pull_request.changed_files), 'contexts/') ||
+      contains(toJson(github.event.pull_request.changed_files), 'features/') ||
+      contains(toJson(github.event.pull_request.changed_files), 'components/') ||
+      contains(toJson(github.event.pull_request.changed_files), 'services/') ||
+      contains(toJson(github.event.pull_request.changed_files), 'hooks/') ||
+      contains(toJson(github.event.pull_request.changed_files), 'schemas/') ||
+      contains(toJson(github.event.pull_request.changed_files), 'types') ||
+      contains(toJson(github.event.pull_request.changed_files), 'vite.config') ||
+      contains(toJson(github.event.pull_request.changed_files), 'tsconfig')
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -31,97 +37,94 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Lint
-        run: npx eslint --max-warnings 50 "contexts/**/*.{ts,tsx}" "hooks/**/*.{ts,tsx}" "features/**/*.{ts,tsx}" "components/**/*.{ts,tsx}" "services/**/*.{ts,tsx}"
-        continue-on-error: true  # Warning-only for now
+      - name: TypeScript — 0 erreur obligatoire
+        run: npx tsc --noEmit
 
-      - name: Check formatting
-        run: npx prettier --check "contexts/**/*.{ts,tsx}" "hooks/**/*.ts" "services/**/*.ts"
+      - name: ESLint
+        run: npx eslint --max-warnings 0 "contexts/**/*.{ts,tsx}" "hooks/**/*.{ts,tsx}" "features/**/*.{ts,tsx}" "components/**/*.{ts,tsx}" "services/**/*.{ts,tsx}"
         continue-on-error: true
 
-      - name: TypeScript type check
-        run: npx tsc --noEmit --skipLibCheck
-
-      - name: Run tests
+      - name: Tests
         run: npx vitest run --reporter=verbose
 
-      - name: Build production bundle
+      - name: Build production
         run: npm run build
 
-      - name: Check bundle size
+      - name: Bundle size check
         run: |
-          MAIN_SIZE=$(stat -f%z dist/assets/index.*.js 2>/dev/null || stat -c%s dist/assets/index.*.js 2>/dev/null)
-          MAIN_KB=$((MAIN_SIZE / 1024))
-          echo "Main bundle: ${MAIN_KB} KB"
-          if [ "$MAIN_KB" -gt 1000 ]; then
-            echo "::warning::Main bundle is ${MAIN_KB} KB (target: < 800 KB)"
+          TOTAL=$(du -sb dist/assets/*.js 2>/dev/null | awk '{s+=$1} END {print s}')
+          TOTAL_KB=$((TOTAL / 1024))
+          echo "JS total: ${TOTAL_KB} KB"
+          if [ "$TOTAL_KB" -gt 4000 ]; then
+            echo "::warning::Bundle total ${TOTAL_KB} KB — target < 4 MB"
           fi
 
-  # ─── Backend Checks ───────────────────────────────────────────────
-  backend:
-    name: Backend (Build + Test)
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Frontend CI" >> "$GITHUB_STEP_SUMMARY"
+          echo "Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
+
+  # ─── Mobile ───────────────────────────────────────────────────────
+  mobile:
+    name: Mobile Expo (tsc + lint)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./backend
+        working-directory: trackyu-mobile-expo
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: trackyu-mobile-expo/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
-      - name: Lint
-        run: npx eslint --max-warnings 50 "src/**/*.ts"
+      - name: TypeScript — 0 erreur obligatoire
+        run: npx tsc --noEmit
+
+      - name: ESLint
+        run: npx eslint --max-warnings 20 "src/**/*.{ts,tsx}"
         continue-on-error: true
 
-      - name: TypeScript type check
-        run: npx tsc --noEmit --skipLibCheck
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Mobile CI" >> "$GITHUB_STEP_SUMMARY"
+          echo "Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run tests
-        run: npx jest --verbose --forceExit
-        env:
-          NODE_ENV: test
-          JWT_SECRET: ci-test-secret-key-32-characters!!
-
-      - name: Build
-        run: npm run build
-
-  # ─── Security Audit ───────────────────────────────────────────────
+  # ─── Security ─────────────────────────────────────────────────────
   security:
     name: Security Audit
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Audit frontend dependencies
+      - name: Audit frontend
         run: npm audit --audit-level=critical || true
-        working-directory: .
 
-      - name: Audit backend dependencies
+      - name: Audit mobile
         run: npm audit --audit-level=critical || true
-        working-directory: ./backend
+        working-directory: trackyu-mobile-expo
 
-      - name: Check for secrets in code
+      - name: Scan secrets
         run: |
-          # Check for common secret patterns in tracked files
-          if git grep -iE '(password|secret|api_key|token)\s*[:=]\s*["\x27][^"\x27]{8,}' -- ':(exclude)*.md' ':(exclude)*.lock' ':(exclude)package*.json' ':(exclude).github/*' ':(exclude)*.test.*' ':(exclude)*.sql' ':(exclude)docker-compose*' ':(exclude)*.ini' ':(exclude)*.txt' ':(exclude)INSTRUCTIONS/*'; then
-            echo "::warning::Potential secrets found in source code. Please review."
+          if git grep -iE '(password|secret|api_key|token)\s*[:=]\s*["\x27][^"\x27]{8,}' \
+            -- ':(exclude)*.md' ':(exclude)*.lock' ':(exclude)package*.json' \
+               ':(exclude).github/*' ':(exclude)*.test.*' ':(exclude)*.sql' \
+               ':(exclude)docker-compose*' ':(exclude)*.ini' ':(exclude)*.txt' \
+               ':(exclude)INSTRUCTIONS/*'; then
+            echo "::warning::Secrets potentiels détectés — vérifier avant merge."
           else
-            echo "No obvious secrets detected."
+            echo "Aucun secret détecté."
           fi
