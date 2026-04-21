@@ -698,10 +698,10 @@ export function FleetScreen() {
   const serverStatus = statusFilter === 'all' ? undefined : statusFilter.toUpperCase();
 
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch, isRefetching } = useInfiniteQuery({
-    queryKey: ['vehicles-page', serverStatus, debouncedSearch],
+    queryKey: ['vehicles-page', serverStatus, debouncedSearch, clientFilter],
     queryFn: ({ pageParam }) =>
       vehiclesApi.getPage(
-        { status: serverStatus, q: debouncedSearch || undefined },
+        { status: serverStatus, q: debouncedSearch || undefined, filterClientId: clientFilter ?? undefined },
         pageParam as number,
         FLEET_PAGE_SIZE
       ),
@@ -777,15 +777,17 @@ export function FleetScreen() {
     const base = resellerFilter
       ? effectiveVehicles.filter((v) => v.resellerName === resellerFilter)
       : effectiveVehicles;
-    const set = new Set<string>();
+    const map = new Map<string, string>(); // clientId → clientName
     base.forEach((v) => {
-      if (v.clientName) set.add(v.clientName);
+      if (v.clientId && v.clientName) map.set(v.clientId, v.clientName);
     });
-    return Array.from(set).sort();
+    return Array.from(map.entries())
+      .map(([id, label]) => ({ id, label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
   }, [effectiveVehicles, resellerFilter]);
 
   const uniqueBranches = useMemo(() => {
-    const base = clientFilter ? effectiveVehicles.filter((v) => v.clientName === clientFilter) : effectiveVehicles;
+    const base = clientFilter ? effectiveVehicles.filter((v) => v.clientId === clientFilter) : effectiveVehicles;
     const set = new Set<string>();
     base.forEach((v) => {
       if (v.groupName) set.add(v.groupName);
@@ -796,7 +798,7 @@ export function FleetScreen() {
   const filteredVehicles = useMemo(() => {
     return effectiveVehicles.filter((v) => {
       if (resellerFilter && v.resellerName !== resellerFilter) return false;
-      if (clientFilter && v.clientName !== clientFilter) return false;
+      if (clientFilter && v.clientId !== clientFilter) return false;
       if (branchFilter && v.groupName !== branchFilter) return false;
       if (vehicleFilter && v.id !== vehicleFilter) return false;
       return true;
@@ -983,7 +985,7 @@ export function FleetScreen() {
             {
               key: 'clients',
               label: 'Clients',
-              items: uniqueClients.map((c) => ({ id: c, label: c })),
+              items: uniqueClients,
               selected: clientFilter,
               onSelect: setClientFilter,
             },

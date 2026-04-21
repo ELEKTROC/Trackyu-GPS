@@ -50,6 +50,7 @@ interface RawVehicle {
   imei?: string;
   driver_name?: string;
   driverName?: string;
+  client_id?: string;
   client_name?: string;
   clientName?: string;
   group_name?: string;
@@ -100,6 +101,7 @@ export interface Vehicle {
   imei?: string;
   driverName?: string;
   driverPhone?: string;
+  clientId?: string;
   clientName?: string;
   groupName?: string;
   resellerName?: string;
@@ -315,6 +317,7 @@ function normalizeVehicle(raw: RawVehicle): Vehicle {
     vin: raw.vin,
     imei: raw.imei,
     driverName: raw.driver_name ?? raw.driverName,
+    clientId: raw.client_id,
     clientName: raw.client_name ?? raw.clientName,
     groupName: raw.group_name ?? raw.groupName,
     resellerName: raw.reseller_name ?? raw.resellerName,
@@ -574,7 +577,7 @@ export const vehiclesApi = {
    * Fallback : si le backend retourne un tableau nu, on l'encapsule.
    */
   async getPage(
-    filters: { status?: string; q?: string; groupId?: string } = {},
+    filters: { status?: string; q?: string; groupId?: string; filterClientId?: string } = {},
     offset = 0,
     limit = 50
   ): Promise<VehiclePage> {
@@ -583,6 +586,7 @@ export const vehiclesApi = {
       if (filters.status) params.status = filters.status;
       if (filters.q) params.q = filters.q;
       if (filters.groupId) params.groupId = filters.groupId;
+      if (filters.filterClientId) params.filter_client_id = filters.filterClientId;
 
       const response = await apiClient.get<
         { data: RawVehicle[]; total: number; limit: number; offset: number } | RawVehicle[]
