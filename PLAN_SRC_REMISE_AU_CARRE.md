@@ -1,31 +1,22 @@
 # Plan — Remise au carré `backend/src/`
 
 **Référence audit** : [AUDIT_BACKEND_DETTE.md § D1](AUDIT_BACKEND_DETTE.md)
-**Date** : 2026-04-19
-**Statut** : 📝 Plan — exécution à cadrer avec l'équipe
+**Créé** : 2026-04-19 | **Mis à jour** : 2026-04-21
+**Statut** : 🟡 Phase 2 en cours (Phase 2.8 controllers : 43/52 = 82.7%)
 **Criticité** : 🚨 Critique (blocage de toute autre dette code tant que non fait)
 
 ---
 
-## Diagnostic (2026-04-19)
+## Diagnostic initial (2026-04-19)
 
-| Métrique                                                   | Valeur                                           |
-| ---------------------------------------------------------- | ------------------------------------------------ |
-| `dist/` fichiers runtime (hors migrations/scripts/archive) | **241**                                          |
-| `src/` fichiers TS                                         | **234**                                          |
-| `dist/` dernière modif                                     | 2026-04-19 (patches Python quotidiens)           |
-| `src/` dernière modif typique                              | **2026-01-19** (3 mois d'écart)                  |
-| `dist/controllers/` modifié                                | 2026-04-06 (source sur VPS, peut différer local) |
-| `tsc --noEmit` sur `src/`                                  | ❌ cassé (non vérifié ce sprint)                 |
-| CI                                                         | ❌ aucune                                        |
-| Règles ESLint                                              | ⚠️ incomplètes                                   |
-
-**Conséquence concrète** :
-
-- Chaque correctif = un script Python qui patche `dist/*.js` sur le VPS
-- Aucune revue de code, aucun diff lisible en Git, aucun type-check
-- Les patches divergent progressivement de `src/` → re-build TS écraserait les corrections
-- Risque récurrent de bugs type "placeholder SQL perdu" ([S1 vehicleExtrasRoutes](AUDIT_BACKEND_SECURITE.md))
+| Métrique                                                   | Valeur                                 |
+| ---------------------------------------------------------- | -------------------------------------- |
+| `dist/` fichiers runtime (hors migrations/scripts/archive) | **241**                                |
+| `src/` fichiers TS                                         | **234**                                |
+| `dist/` dernière modif                                     | 2026-04-19 (patches Python quotidiens) |
+| `src/` dernière modif typique                              | **2026-01-19** (3 mois d'écart)        |
+| `tsc --noEmit` sur `src/`                                  | ❌ cassé (non vérifié ce sprint)       |
+| CI                                                         | ❌ aucune                              |
 
 **Patches déjà appliqués depuis l'audit (hors src/)** :
 S1, S2, S3, S4, S6, S7, S10, S11 (sécurité) · P1, P2, P5, P7, P8 (perf) · D2 (partiel), D4, D5, D8 (dette) · S5 P1 bcrypt · endpoint reveal-password. **~15 patches**.
@@ -34,122 +25,118 @@ S1, S2, S3, S4, S6, S7, S10, S11 (sécurité) · P1, P2, P5, P7, P8 (perf) · D2
 
 ## Principe directeur
 
-**Ne pas tenter un big-bang**. Faire une remise au carré **progressive** avec dist/ et src/ en parallèle pendant une fenêtre bornée, puis bascule.
-
-Les patches Python continuent tant que src/ n'est pas prêt. Chaque patch important est **aussi appliqué à src/** (coût marginal faible) pour éviter de creuser l'écart pendant la migration.
+**Ne pas tenter un big-bang**. Remise au carré **progressive** avec dist/ comme source de vérité, src/ reconstruit fichier par fichier depuis les `.js` compilés. Les patches Python continuent tant que src/ n'est pas prêt.
 
 ---
 
-## Phases
+## Phases — État au 2026-04-21
 
-### Phase 0 — Inventaire + freeze léger (2 j)
+### ✅ Phase 0 — Inventaire + freeze léger
 
-**Goal** : savoir exactement où on en est.
+**Terminée** — 2026-04-19/20
 
-1. **Diff dist/ ↔ src/** :
-   - Pour chaque fichier `dist/X.js`, retrouver `src/X.ts` correspondant.
-   - Cas 1 : paire existante, dist récent → fichier à reconstruire ou à transpiler depuis src.
-   - Cas 2 : dist sans src (128 fichiers selon audit) → fichier ajouté post-abandon, à ré-introduire dans src.
-   - Cas 3 : src sans dist → fichier mort à supprimer.
-
-   Script : `scripts/inventory_src_dist_drift.js` — produit un CSV `{file, has_src, has_dist, last_src_mod, last_dist_mod, size_diff}`.
-
-2. **tsc dry run** : `cd backend && npx tsc --noEmit 2>&1 | tee /tmp/tsc_errors.log`. Compter les erreurs par type.
-
-3. **Freeze direct-dist** pour les **changements non urgents** : nouvelles features → passent par src. Bugs critiques et sécurité → patch direct-dist OK, **mais aussi appliqué à src** dans la même PR.
-
-**Livrable** : rapport `SRC_DIST_INVENTORY.md` avec décompte des 3 cas + top 20 fichiers modifiés depuis jan 2026.
+- Diff dist/ ↔ src/ effectué : 3 catégories (paires, dist-only, src-only)
+- `tsc --noEmit` baseline établi : **3 erreurs stables** (RoleController ZodError + alertConfigRoutes ×2)
+- Rapport `MIGRATION_PROGRESS.md` créé dans trackyu-backend
+- Repo Git `trackyu-backend` créé (github.com/ELEKTROC/trackyu-backend) — snapshot VPS src/ + outillage D1 Phase 1
 
 ---
 
-### Phase 1 — Outillage (2 j)
+### ✅ Phase 1 — Outillage
 
-1. **CI minimale GitHub Actions** :
-   - `ci.yml` : `npm ci && npx tsc --noEmit` sur PR touchant `backend/`.
-   - Objectif : que chaque PR soit type-checked avant merge, même si src/ casse encore à cet instant.
-   - Garde rails désactivables par label `type-check-skip` tant que la Phase 2 n'est pas finie.
+**Terminée** — 2026-04-20
 
-2. **ESLint config** :
-   - `no-restricted-imports` : interdire `import { pool } from 'pg'` dans `src/routes/**`.
-   - `@typescript-eslint/no-explicit-any` en warn (préparation pour strict plus tard).
-   - `no-console` en warn (cf. S8 : prépare le passage à `logger`).
-
-3. **Watch script** :
-   - `npm run build:watch` qui recompile TS → dist/ à la volée pendant dev.
-   - Permet aux patches Python d'être testés localement avant SSH.
-
-**Livrable** : `.github/workflows/ci.yml`, `.eslintrc.json` backend dédié, scripts package.json à jour.
+- Repo `trackyu-backend` sur GitHub = CI + historique Git dès le départ
+- Branch par lot, merge sur main avec `tsc --noEmit` vérifié avant chaque merge
+- Baseline tsc : 3 erreurs fixes (RoleController + alertConfigRoutes) = signal de régression immédiat
 
 ---
 
-### Phase 2 — Réconciliation src/ ↔ dist/ (5 j)
+### 🟡 Phase 2 — Réconciliation src/ ↔ dist/
 
-**Goal** : `npx tsc` passe sans erreur, `dist/` produit == `dist/` actuel en prod (iso-comportement).
+**En cours** — démarrée 2026-04-20
 
-Ordre suggéré (du moins risqué au plus risqué) :
+Découpée en sous-phases exécutées en lots numérotés (A–W+ pour controllers).
 
-1. **Utils purs** (`utils/`, `config/`) — 1 j.
-   Pas de logique métier, dépendances faibles. `utils/bcryptConfig.js` (créé S5 Phase 1) = à créer en `src/utils/bcryptConfig.ts`.
+#### Phase 2.5 — Utils + Config + Types + Schemas + Middleware + Services
 
-2. **Repositories** (`repositories/`) — 1 j.
-   SQL + mapping. `userRepository.js` a reçu les patches S11 → re-synchroniser sur src.
+**✅ Terminée** (Lots A–K, voir MIGRATION_PROGRESS.md §2.5)
 
-3. **Middleware + services** — 1 j.
-   `rateLimiter.js` (S10 + S11 ajouts), `auditMiddleware.js`, `AuditService.js`.
+Couvre : config/, types/, schemas/, utils/, middleware/, services/ — ~30 fichiers. Baseline tsc stable.
 
-4. **Controllers** (plus gros) — 2 j.
-   `authController.js` (S3, S4, S5, S11), `userController.js` (S4, S11), `tierController.js` (S5), `ApiKeyController.js` (S5).
+#### Phase 2.6 — Repositories
 
-   Approche : pour chaque controller, ouvrir `dist/X.js` et `src/X.ts` côte-à-côte, porter les modifs depuis jan 2026 en TypeScript (avec types corrects).
+**✅ Terminée** (Lots L, voir MIGRATION_PROGRESS.md §2.6)
 
-5. **Routes** — 0.5 j (simple, mostly plumbing).
+~30 repositories migrés. Patterns : `QueryResult<Row>`, types d'input dédiés.
 
-6. **Lancer `npx tsc --noEmit`** : boucler sur les erreurs résiduelles.
+#### Phase 2.7 — Jobs / Workers
 
-**Stratégie PR** : 1 PR par dossier top-level (`utils/`, `repositories/`, `middleware/`, etc.). Chaque PR :
+**⏳ Non démarrée** — 10 fichiers (0 paired + 10 new)
 
-- diff src/ visible
-- `tsc` passe
-- `node --check dist/X.js` identique à prod (ou diff documenté)
+`jobs/index`, `notificationJobs`, `queue`, `types`, `workers/emailWorker`, `notifWorker`, `pdfWorker`, `reportWorker`, `alertWorker`, `financeWorker`
 
-**Livrable** : `src/` à jour, `tsc --noEmit` vert en CI.
+#### Phase 2.8 — Controllers
+
+**🟡 En cours — 43/52 (82.7%)**
+
+| Lot | Controllers                                                                                                                    | Statut |
+| --- | ------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| M   | userController, tierController                                                                                                 | ✅     |
+| N   | authController, ApiKeyController, SettingsController                                                                           | ✅     |
+| O   | interventionController                                                                                                         | ✅     |
+| P   | vehicleController, clientController, auditController                                                                           | ✅     |
+| Q   | contractController, creditNoteController, paymentReminderController                                                            | ✅     |
+| R   | crmController, leadController, leadScoringController, crmActivityController                                                    | ✅     |
+| S   | faqController, manualNotificationController, numberingController, systemController                                             | ✅     |
+| T   | rmaController, stockMovementController, stockMovementControllerExtensions, supplierController                                  | ✅     |
+| U   | fleetController, vehicleReportController, interventionReportController, techController                                         | ✅     |
+| V   | smsCommandController, trashController, resellerStatsController, messageTemplatesController, recoveryController                 | ✅     |
+| W   | pushNotificationController, deviceCommandController, sendController, csvImportController, registrationRequestsController       | ✅     |
+| X   | integrationCredentialsController, WebhookDeliveryController, TenantController, salesPipelineController, adminFeatureController | ⏳     |
+| Y   | aiController, discoveredDeviceController, objectController, RoleController, financeController                                  | ⏳     |
+
+**Restant** : 9 controllers (Lots X + Y)
+
+#### Phase 2.9 — Routes
+
+**⏳ Non démarrée** — 77 fichiers (62 paired + 15 new)
 
 ---
 
-### Phase 3 — Bascule build → deploy (2 j)
+### ⏳ Phase 3 — Bascule build → deploy
 
-1. **Build local + comparaison** : `npm run build`, diff `dist-new/` ↔ `dist-prod/`.
-   Tolérer : espaces/ordre d'import. Ne pas tolérer : logique différente.
+**Non démarrée** — bloquée sur fin de Phase 2
 
-2. **Déploiement staging** (backend mis en place dédié si nécessaire) → smoke test 24 h.
-
-3. **Bascule prod** : `rm -rf dist && npm run build && scp dist → VPS → docker restart`.
-   Rollback prêt (backup full dist).
-
-4. **Verrou direct-dist** : ajouter README dans `/var/www/trackyu-gps/backend/dist/` qui dit "⛔ ne pas patcher direct. Modifier src → build → deploy".
-
-**Livrable** : prod tourne sur `dist/` issu d'un build CI reproductible.
+1. Build local + comparaison `dist-new/` ↔ `dist-prod/`
+2. Déploiement staging → smoke test 24 h
+3. Bascule prod : `rm -rf dist && npm run build && scp dist → VPS → restart`
+4. Verrou direct-dist (README dans `/var/www/…/dist/`)
 
 ---
 
-### Phase 4 — Gouvernance (continu)
+### ⏳ Phase 4 — Gouvernance (continu)
 
-- **1 PR = 1 modification src** obligatoire (sauf hotfix)
-- Hotfix direct-dist autorisé pour sécu/P1 uniquement, avec PR `backport-src` ouverte dans les 48 h
-- `deploy.ps1` (ou équivalent CI/CD) : recompile src → upload dist, jamais de scp dist patché
+- 1 PR = 1 modification src obligatoire (sauf hotfix)
+- Hotfix direct-dist autorisé pour sécu/P1 uniquement, avec PR `backport-src` dans les 48 h
+- `deploy.ps1` recompile src → upload dist, jamais scp dist patché
 - Cycle MAJ dépendances trimestriel (cf. D3)
 
 ---
 
-## Estimation
+## Estimation révisée
 
-| Phase                 | Jours     | Résultat                       |
-| --------------------- | --------- | ------------------------------ |
-| 0 Inventaire + freeze | 2         | Rapport de drift               |
-| 1 Outillage           | 2         | CI + ESLint                    |
-| 2 Réconciliation      | 5         | `tsc` vert, src iso-prod       |
-| 3 Bascule             | 2         | Prod sur build, rollback ready |
-| **Total**             | **~11 j** | **Dette tech éliminée**        |
+| Phase                             | Estimation | Statut   |
+| --------------------------------- | ---------- | -------- |
+| 0 Inventaire + freeze             | 2 j        | ✅ Fait  |
+| 1 Outillage (repo + CI)           | 2 j        | ✅ Fait  |
+| 2.5 Utils/Config/Types/Middleware | 2 j        | ✅ Fait  |
+| 2.6 Repositories                  | 1 j        | ✅ Fait  |
+| 2.7 Jobs/Workers                  | 1 j        | ⏳ Reste |
+| 2.8 Controllers (43/52 faits)     | ~1 j reste | 🟡 82.7% |
+| 2.9 Routes (77 fichiers)          | 3–4 j      | ⏳ Reste |
+| 3 Bascule                         | 2 j        | ⏳ Reste |
+| **Total restant estimé**          | **~7 j**   |          |
 
 ---
 
@@ -164,20 +151,20 @@ Ordre suggéré (du moins risqué au plus risqué) :
 
 ---
 
-## Interdépendances avec autres items d'audit
+## Interdépendances
 
 | Item                       | Relation                                                                           |
 | -------------------------- | ---------------------------------------------------------------------------------- |
 | **D2** bcrypt 6            | Doit être testé **après** Phase 3 (risque upgrade bcrypt + migration en parallèle) |
 | **D3** MAJ majeures        | À cadencer après Phase 4                                                           |
-| **A1** pattern repository  | Profitable à traiter pendant Phase 2 (refactor tant qu'on touche les controllers)  |
-| **A5** splitter monolithes | Idem A1, opportuniste en Phase 2                                                   |
-| **S8** console.log         | Nettoyage pendant Phase 2 (ESLint warn déjà activé Phase 1)                        |
+| **A1** pattern repository  | ✅ Traité pendant Phase 2 (controllers refactorés en même temps)                   |
+| **A5** splitter monolithes | ✅ Opportuniste en Phase 2 — controllers slim avec repos                           |
+| **S8** console.log         | ✅ Nettoyé pendant Phase 2 (logger structuré partout)                              |
 
 ---
 
-## Prochaine étape immédiate
+## Prochaine étape
 
-**Phase 0 à démarrer** : écrire `scripts/inventory_src_dist_drift.js` et produire le rapport CSV. Estime 2 h de travail.
+**Lot X** (5 controllers) : `integrationCredentialsController`, `WebhookDeliveryController`, `TenantController`, `salesPipelineController`, `adminFeatureController` — fetch dist/ depuis VPS + migration.
 
-Attendre validation utilisateur avant de lancer.
+Voir `MIGRATION_PROGRESS.md` dans `trackyu-backend/` pour le détail des fichiers restants.
