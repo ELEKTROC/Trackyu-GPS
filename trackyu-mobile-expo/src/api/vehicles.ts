@@ -182,6 +182,10 @@ export interface VehicleSubscriptionInfo {
   clientName?: string | null;
   expirationDate?: string | null;
   status?: string | null;
+  // Impayés liés au véhicule (exposés par /fleet/vehicles/:id/subscription)
+  unpaidCount?: number | null;
+  unpaidAmount?: number | null;
+  unpaidCurrency?: string | null;
 }
 
 export interface VehicleStats {
@@ -190,6 +194,17 @@ export interface VehicleStats {
   fuelConsumed: number;
   maxSpeed: number;
   avgSpeed: number;
+}
+
+export interface UpdateVehicleRequest {
+  name?: string;
+  plate?: string;
+  type?: string;
+  brand?: string;
+  model?: string;
+  year?: number;
+  color?: string;
+  status?: 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE';
 }
 
 /** Trajet calculé serveur-side (table trips) */
@@ -646,6 +661,16 @@ export const vehiclesApi = {
     >
   ): Promise<void> {
     await apiClient.put(`/objects/${id}`, data);
+  },
+
+  /** PUT /fleet/vehicles/:id — édition infos administratives (EDIT_VEHICLES) */
+  async updateVehicle(id: string, data: UpdateVehicleRequest): Promise<Vehicle> {
+    try {
+      const res = await apiClient.put<RawVehicle>(`/fleet/vehicles/${id}`, data);
+      return normalizeVehicle(res.data);
+    } catch (error) {
+      throw normalizeError(error);
+    }
   },
 };
 

@@ -15,6 +15,9 @@ import {
   Switch,
   Modal,
   ActivityIndicator,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker, Polyline as MapPolyline, PROVIDER_GOOGLE, type MapType } from 'react-native-maps';
@@ -45,9 +48,17 @@ import {
   Wrench,
   TicketCheck,
   Calendar,
+  Pencil,
+  X,
 } from 'lucide-react-native';
 import { Svg, Polyline as SvgPolyline, Circle, Line, Text as SvgText } from 'react-native-svg';
-import vehiclesApi, { type Vehicle, type DayStats, type FuelStats, type VehicleAlert } from '../../api/vehicles';
+import vehiclesApi, {
+  type Vehicle,
+  type DayStats,
+  type FuelStats,
+  type VehicleAlert,
+  type UpdateVehicleRequest,
+} from '../../api/vehicles';
 import { useAuthStore } from '../../store/authStore';
 import { withErrorBoundary } from '../../components/ErrorBoundary';
 import { GeocodedAddress } from '../../components/GeocodedAddress';
@@ -55,12 +66,77 @@ import { useTheme } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
 import { storage } from '../../utils/storage';
 import { haptics } from '../../utils/haptics';
-import { IMMO_SMS_ROLES } from '../../constants/roles';
+import { IMMO_SMS_ROLES, ROLE, normalizeRole } from '../../constants/roles';
 import { MARKER_IMAGES } from '../../assets/markers';
 import { getTypeKey } from '../../utils/mapUtils';
+import { formatCurrency } from '../../utils/formatCurrency';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VehicleDetail'>;
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
+
+// ── Constantes édition véhicule ───────────────────────────────────────────────
+
+const VEHICLE_TYPES = [
+  { value: 'CAR', label: 'Voiture' },
+  { value: 'TRUCK', label: 'Camion' },
+  { value: 'VAN', label: 'Fourgon' },
+  { value: 'MOTORCYCLE', label: 'Moto' },
+  { value: 'BUS', label: 'Bus' },
+  { value: 'OTHER', label: 'Autre' },
+];
+
+const VEHICLE_ADMIN_STATUSES: { value: 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE'; label: string; color: string }[] = [
+  { value: 'ACTIVE', label: 'Actif', color: '#22C55E' },
+  { value: 'INACTIVE', label: 'Inactif', color: '#6B7280' },
+  { value: 'MAINTENANCE', label: 'Maintenance', color: '#F59E0B' },
+];
+
+const EDIT_VEHICLE_ROLES = [ROLE.SUPERADMIN, ROLE.ADMIN, ROLE.MANAGER];
+
+// ── Composant champ texte (top-level — évite le remontage clavier) ────────────
+
+interface VfProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  theme: ThemeType;
+  placeholder?: string;
+  keyboardType?: 'default' | 'numeric';
+  autoCapitalize?: 'none' | 'words' | 'sentences' | 'characters';
+}
+function VehicleField({
+  label,
+  value,
+  onChange,
+  theme,
+  placeholder,
+  keyboardType = 'default',
+  autoCapitalize = 'sentences',
+}: VfProps) {
+  return (
+    <View style={{ marginBottom: 14 }}>
+      <Text style={{ fontSize: 12, color: theme.text.muted, marginBottom: 5 }}>{label}</Text>
+      <TextInput
+        style={{
+          backgroundColor: theme.bg.elevated,
+          borderWidth: 1,
+          borderColor: theme.border,
+          borderRadius: 10,
+          paddingHorizontal: 12,
+          paddingVertical: 10,
+          fontSize: 14,
+          color: theme.text.primary,
+        }}
+        value={value}
+        onChangeText={onChange}
+        placeholder={placeholder ?? label}
+        placeholderTextColor={theme.text.muted}
+        keyboardType={keyboardType}
+        autoCapitalize={autoCapitalize}
+      />
+    </View>
+  );
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -137,7 +213,7 @@ const DEFAULT_ORDER: BlockId[] = [
   'driver',
 ];
 const BLOCK_LABELS: Record<BlockId, string> = {
-  position: 'Position & GPS',
+  position: 'Localisation',
   immobilize: 'Immobilisation',
   depart: 'Départ & Dernier arrêt',
   activity: 'Activité du jour',
@@ -303,10 +379,22 @@ function InfoRow({
 function StatPill({ label, value, color, theme }: { label: string; value: string; color: string; theme: ThemeType }) {
   return (
     <View
-      style={{ flex: 1, alignItems: 'center', gap: 3, padding: 10, backgroundColor: color + '15', borderRadius: 12 }}
+      style={{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 4,
+        paddingVertical: 14,
+        paddingHorizontal: 8,
+        backgroundColor: color + '15',
+        borderRadius: 12,
+        minHeight: 68,
+      }}
     >
       <Text style={{ fontSize: 15, fontWeight: '700', color }}>{value}</Text>
-      <Text style={{ fontSize: 10, color: theme.text.muted, textAlign: 'center' }}>{label}</Text>
+      <Text style={{ fontSize: 11, color: theme.text.muted, textAlign: 'center' }} numberOfLines={2}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -750,8 +838,12 @@ function ImmoHistoryModal({
 
 // ── FuelDetailModal ───────────────────────────────────────────────────────────
 
-type FuelPeriod = 'yesterday' | 'week';
-const FUEL_PERIOD_LABELS: Record<FuelPeriod, string> = { yesterday: 'Hier', week: 'Cette semaine' };
+type FuelPeriod = 'today' | 'yesterday' | 'week';
+const FUEL_PERIOD_LABELS: Record<FuelPeriod, string> = {
+  today: "Aujourd'hui",
+  yesterday: 'Hier',
+  week: 'Cette semaine',
+};
 
 function FuelDetailModal({
   visible,
@@ -766,11 +858,16 @@ function FuelDetailModal({
   theme: ThemeType;
   onClose: () => void;
 }) {
-  const [period, setPeriod] = useState<FuelPeriod>('yesterday');
+  const [period, setPeriod] = useState<FuelPeriod>('today');
 
   function getRange(p: FuelPeriod): { start: string; end: string } {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    if (p === 'today') {
+      return { start: today.toISOString().slice(0, 10), end: tomorrow.toISOString().slice(0, 10) };
+    }
     if (p === 'yesterday') {
       const y = new Date(today);
       y.setDate(y.getDate() - 1);
@@ -865,7 +962,7 @@ function FuelDetailModal({
 
         {/* Filtre période */}
         <View style={{ flexDirection: 'row', gap: 8, marginBottom: 16 }}>
-          {(['yesterday', 'week'] as FuelPeriod[]).map((p) => (
+          {(['today', 'yesterday', 'week'] as FuelPeriod[]).map((p) => (
             <TouchableOpacity
               key={p}
               onPress={() => setPeriod(p)}
@@ -1000,6 +1097,7 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
   const { vehicleId } = route.params;
   const userRole = useAuthStore((s) => s.user?.role?.toUpperCase() ?? '');
   const isStaff = (IMMO_SMS_ROLES as string[]).includes(userRole);
+  const canEdit = (EDIT_VEHICLE_ROLES as string[]).includes(normalizeRole(userRole));
   const qc = useQueryClient();
 
   // Bloc order + collapsed state
@@ -1024,6 +1122,17 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
   const [showImmoHistory, setShowImmoHistory] = useState(false);
   const [alertPeriod] = useState<AlertPeriod>('today');
   const [showFuelModal, setShowFuelModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    plate: '',
+    brand: '',
+    model: '',
+    year: '',
+    color: '',
+    type: '',
+    status: '' as '' | 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE',
+  });
 
   // Panne optimistic
   const [optimisticPanne, setOptimisticPanne] = useState<boolean | null>(null);
@@ -1182,6 +1291,52 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: (data: UpdateVehicleRequest) => vehiclesApi.updateVehicle(vehicleId, data),
+    onSuccess: () => {
+      haptics.success();
+      qc.invalidateQueries({ queryKey: ['vehicle', vehicleId] });
+      qc.invalidateQueries({ queryKey: ['vehicles'] });
+      setShowEditModal(false);
+    },
+    onError: () => {
+      haptics.error();
+      Alert.alert('Erreur', 'Impossible de mettre à jour le véhicule.');
+    },
+  });
+
+  const openEdit = useCallback(() => {
+    if (!vehicle) return;
+    setEditForm({
+      name: vehicle.name ?? '',
+      plate: vehicle.plate ?? '',
+      brand: vehicle.brand ?? '',
+      model: vehicle.model ?? '',
+      year: vehicle.year?.toString() ?? '',
+      color: vehicle.color ?? '',
+      type: vehicle.type ?? '',
+      status: '',
+    });
+    setShowEditModal(true);
+  }, [vehicle]);
+
+  const saveEdit = useCallback(() => {
+    if (!editForm.name.trim()) {
+      Alert.alert('Champ requis', 'Le nom du véhicule est obligatoire.');
+      return;
+    }
+    const payload: UpdateVehicleRequest = { name: editForm.name.trim() };
+    if (editForm.plate.trim()) payload.plate = editForm.plate.trim();
+    if (editForm.brand.trim()) payload.brand = editForm.brand.trim();
+    if (editForm.model.trim()) payload.model = editForm.model.trim();
+    const yr = parseInt(editForm.year, 10);
+    if (!isNaN(yr) && yr > 1900) payload.year = yr;
+    if (editForm.color.trim()) payload.color = editForm.color.trim();
+    if (editForm.type) payload.type = editForm.type;
+    if (editForm.status) payload.status = editForm.status;
+    updateMutation.mutate(payload);
+  }, [editForm, updateMutation]);
+
   const panneMutation = useMutation({
     mutationFn: (next: boolean) => vehiclesApi.togglePanne(vehicleId, next),
     onMutate: (next) => {
@@ -1291,12 +1446,12 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
   // Render block
   const renderBlock = (id: BlockId) => {
     switch (id) {
-      // ── Position & GPS ──────────────────────────────────────────────────────
+      // ── Localisation ────────────────────────────────────────────────────────
       case 'position':
         return (
           <CollapsibleBlock
             key={id}
-            title="Position & GPS"
+            title="Localisation"
             icon={<MapPin size={16} color={theme.primary} />}
             collapsed={collapsed[id]}
             onToggle={() => toggleCollapsed(id)}
@@ -1316,7 +1471,6 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
               theme={theme}
             />
             <InfoRow label="Dernière MAJ" value={formatDate(vehicle.lastUpdate)} theme={theme} />
-            {vehicle.simPhoneNumber && <InfoRow label="SIM" value={vehicle.simPhoneNumber} theme={theme} copyable />}
             {hasValidCoords && (
               <View style={{ paddingHorizontal: 14, paddingVertical: 12 }}>
                 <Text style={{ fontSize: 12, color: theme.text.muted, marginBottom: 6 }}>Coordonnées</Text>
@@ -1405,23 +1559,6 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                  <TouchableOpacity
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 4,
-                      paddingHorizontal: 10,
-                      paddingVertical: 6,
-                      borderRadius: 8,
-                      backgroundColor: theme.bg.primary,
-                      borderWidth: 1,
-                      borderColor: theme.border,
-                    }}
-                    onPress={() => setShowImmoHistory(true)}
-                  >
-                    <History size={13} color={theme.text.muted} />
-                    <Text style={{ fontSize: 12, color: theme.text.secondary, fontWeight: '500' }}>Historique</Text>
-                  </TouchableOpacity>
                   {immoMutation.isPending ? (
                     <ActivityIndicator size="small" color={theme.primary} />
                   ) : (
@@ -1444,6 +1581,23 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                       }
                     />
                   )}
+                  <TouchableOpacity
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 4,
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 8,
+                      backgroundColor: theme.bg.primary,
+                      borderWidth: 1,
+                      borderColor: theme.border,
+                    }}
+                    onPress={() => setShowImmoHistory(true)}
+                  >
+                    <History size={13} color={theme.text.muted} />
+                    <Text style={{ fontSize: 12, color: theme.text.secondary, fontWeight: '500' }}>Historique</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -1525,49 +1679,75 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
             theme={theme}
           >
             {dayStats ? (
-              <View style={{ padding: 14, gap: 10 }}>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <StatPill
-                    label="Distance"
-                    value={`${Math.round(dayDistanceKm)} km`}
-                    color={theme.primary}
-                    theme={theme}
-                  />
-                  <StatPill label="Trajets" value={String(dayStats.tripsCount)} color="#8B5CF6" theme={theme} />
-                  <StatPill
-                    label="Vit. max"
-                    value={`${Math.round(dayStats.maxSpeed)} km/h`}
-                    color="#F59E0B"
-                    theme={theme}
-                  />
-                </View>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <StatPill
-                    label={`En conduite`}
-                    value={secsToHHMM(dayStats.drivingSeconds)}
-                    color={theme.status.moving}
-                    theme={theme}
-                  />
-                  <StatPill
-                    label="Arrêté"
-                    value={secsToHHMM(dayStats.stoppedSeconds)}
-                    color={theme.status.stopped}
-                    theme={theme}
-                  />
-                  <StatPill
-                    label="Ralenti"
-                    value={secsToHHMM(dayStats.idleSeconds)}
-                    color={theme.status.idle}
-                    theme={theme}
-                  />
-                  <StatPill
-                    label="Hors ligne"
-                    value={secsToHHMM(dayStats.offlineSeconds)}
-                    color={theme.status.offline}
-                    theme={theme}
-                  />
-                </View>
-              </View>
+              (() => {
+                const hasActivity =
+                  dayDistanceKm > 0 ||
+                  dayStats.tripsCount > 0 ||
+                  dayStats.maxSpeed > 0 ||
+                  dayStats.drivingSeconds > 0 ||
+                  dayStats.stoppedSeconds > 0 ||
+                  dayStats.idleSeconds > 0;
+                if (!hasActivity) {
+                  return (
+                    <View style={{ padding: 18, alignItems: 'center', gap: 14 }}>
+                      <Text style={{ fontSize: 13, color: theme.text.muted }}>Aucune activité aujourd'hui</Text>
+                      <View style={{ width: '50%' }}>
+                        <StatPill
+                          label="Hors ligne"
+                          value={secsToHHMM(dayStats.offlineSeconds)}
+                          color={theme.status.offline}
+                          theme={theme}
+                        />
+                      </View>
+                    </View>
+                  );
+                }
+                return (
+                  <View style={{ padding: 14, gap: 10 }}>
+                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                      <StatPill
+                        label="Distance"
+                        value={`${Math.round(dayDistanceKm)} km`}
+                        color={theme.primary}
+                        theme={theme}
+                      />
+                      <StatPill label="Trajets" value={String(dayStats.tripsCount)} color="#8B5CF6" theme={theme} />
+                      <StatPill
+                        label="Vit. max"
+                        value={`${Math.round(dayStats.maxSpeed)} km/h`}
+                        color="#F59E0B"
+                        theme={theme}
+                      />
+                    </View>
+                    <View style={{ flexDirection: 'row', gap: 8 }}>
+                      <StatPill
+                        label={`En conduite`}
+                        value={secsToHHMM(dayStats.drivingSeconds)}
+                        color={theme.status.moving}
+                        theme={theme}
+                      />
+                      <StatPill
+                        label="Arrêté"
+                        value={secsToHHMM(dayStats.stoppedSeconds)}
+                        color={theme.status.stopped}
+                        theme={theme}
+                      />
+                      <StatPill
+                        label="Ralenti"
+                        value={secsToHHMM(dayStats.idleSeconds)}
+                        color={theme.status.idle}
+                        theme={theme}
+                      />
+                      <StatPill
+                        label="Hors ligne"
+                        value={secsToHHMM(dayStats.offlineSeconds)}
+                        color={theme.status.offline}
+                        theme={theme}
+                      />
+                    </View>
+                  </View>
+                );
+              })()
             ) : (
               <View style={{ padding: 20, alignItems: 'center' }}>
                 <ActivityIndicator size="small" color={theme.primary} />
@@ -1589,14 +1769,14 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
             accent="#F59E0B"
           >
             <View style={{ padding: 14, gap: 12 }}>
-              {/* Niveau actuel */}
-              {fuelLevel != null && (
+              {/* Niveau actuel — uniquement si capteur configuré */}
+              {vehicle.fuelSensorType && fuelLevel != null ? (
                 <View style={{ gap: 6 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ fontSize: 12, color: theme.text.muted }}>Niveau actuel</Text>
                     <Text style={{ fontSize: 12, fontWeight: '700', color: theme.text.primary }}>
-                      {vehicle.tankCapacity ? `${Math.round((fuelLevel * vehicle.tankCapacity) / 100)} L / ` : ''}
                       {fuelLevel}%
+                      {vehicle.tankCapacity ? ` (${Math.round((fuelLevel * vehicle.tankCapacity) / 100)} L)` : ''}
                     </Text>
                   </View>
                   <FuelBar level={fuelLevel} theme={theme} />
@@ -1606,9 +1786,32 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                     </Text>
                   )}
                 </View>
+              ) : (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: 12,
+                    borderRadius: 10,
+                    backgroundColor: theme.bg.primary,
+                    borderWidth: 1,
+                    borderColor: theme.border,
+                  }}
+                >
+                  <Fuel size={18} color={theme.text.muted} />
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: theme.text.secondary }}>
+                      Capteur carburant non installé
+                    </Text>
+                    <Text style={{ fontSize: 11, color: theme.text.muted, marginTop: 2 }}>
+                      Le niveau exact n'est pas disponible. Contactez-nous pour ajouter un capteur.
+                    </Text>
+                  </View>
+                </View>
               )}
               {/* Stats du jour (si capteur) */}
-              {fuelStats ? (
+              {fuelStats && (
                 <>
                   {fuelStats.totalConsumption > 0 && (
                     <InfoRow
@@ -1638,12 +1841,6 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                     last
                   />
                 </>
-              ) : (
-                !vehicle.fuelSensorType && (
-                  <Text style={{ fontSize: 12, color: theme.text.muted, fontStyle: 'italic' }}>
-                    Pas de capteur carburant configuré
-                  </Text>
-                )
               )}
               {(fuelStats || vehicle.fuelSensorType) && (
                 <TouchableOpacity
@@ -1824,8 +2021,17 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
             <InfoRow label="Marque" value={vehicle.brand || '–'} theme={theme} />
             <InfoRow label="Modèle" value={vehicle.model || '–'} theme={theme} />
             <InfoRow label="VIN" value={vehicle.vin || '–'} theme={theme} copyable />
-            <InfoRow label="IMEI" value={vehicle.imei || '–'} theme={theme} copyable />
-            {vehicle.simPhoneNumber && <InfoRow label="SIM" value={vehicle.simPhoneNumber} theme={theme} copyable />}
+            {isStaff && (
+              <>
+                <InfoRow label="IMEI boîtier" value={vehicle.imei || '–'} theme={theme} copyable />
+                <InfoRow
+                  label="SIM boîtier"
+                  value={vehicle.simPhoneNumber || '–'}
+                  theme={theme}
+                  copyable={!!vehicle.simPhoneNumber}
+                />
+              </>
+            )}
             <InfoRow
               label="Installation"
               value={vehicle.installDate ? formatDate(vehicle.installDate) : '–'}
@@ -1870,19 +2076,38 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                 theme={theme}
               />
             )}
-            <InfoRow
-              label="Statut"
-              value={subscriptionInfo?.status ?? '–'}
-              theme={theme}
-              last
-              accent={
-                subscriptionInfo?.status === 'ACTIVE'
-                  ? theme.functional.success
-                  : subscriptionInfo?.status
-                    ? theme.functional.warning
-                    : undefined
-              }
-            />
+            {(() => {
+              const hasUnpaid = (subscriptionInfo?.unpaidCount ?? 0) > 0;
+              return (
+                <>
+                  <InfoRow
+                    label="Statut"
+                    value={subscriptionInfo?.status ?? '–'}
+                    theme={theme}
+                    last={!hasUnpaid}
+                    accent={
+                      subscriptionInfo?.status === 'ACTIVE'
+                        ? theme.functional.success
+                        : subscriptionInfo?.status
+                          ? theme.functional.warning
+                          : undefined
+                    }
+                  />
+                  {hasUnpaid && (
+                    <InfoRow
+                      label="Impayés"
+                      value={`${subscriptionInfo!.unpaidCount}× · ${formatCurrency(
+                        subscriptionInfo!.unpaidAmount ?? 0,
+                        subscriptionInfo!.unpaidCurrency ?? undefined
+                      )}`}
+                      theme={theme}
+                      accent={theme.functional.error}
+                      last
+                    />
+                  )}
+                </>
+              );
+            })()}
           </CollapsibleBlock>
         );
 
@@ -1978,6 +2203,11 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
           </Text>
           <Text style={{ fontSize: 12, color: theme.text.muted, fontFamily: 'monospace' }}>{vehicle.plate}</Text>
         </View>
+        {canEdit && (
+          <TouchableOpacity style={{ padding: 6 }} onPress={openEdit} accessibilityLabel="Modifier le véhicule">
+            <Pencil size={18} color={theme.primary} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={{ padding: 6 }} onPress={() => setShowOrderModal(true)}>
           <Settings size={18} color={theme.text.muted} />
         </TouchableOpacity>
@@ -2057,40 +2287,40 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                 />
               </MapView>
               {/* Controls carte — haut droite (type + trafic) */}
-              <View style={{ position: 'absolute', top: 12, right: 12, gap: 6 }}>
+              {/* Boutons carte — bas droite, verticaux (Plan, Trafic, Carte, Rejouer) */}
+              <View style={{ position: 'absolute', bottom: 12, right: 12, gap: 8 }}>
                 <TouchableOpacity
                   onPress={() =>
                     setMapType((t) => (t === 'standard' ? 'satellite' : t === 'satellite' ? 'hybrid' : 'standard'))
                   }
                   style={{
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                    paddingVertical: 6,
-                    paddingHorizontal: 10,
-                    borderRadius: 8,
-                    minWidth: 74,
+                    flexDirection: 'row',
                     alignItems: 'center',
+                    gap: 6,
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    paddingVertical: 8,
+                    paddingHorizontal: 12,
+                    borderRadius: 10,
                   }}
                 >
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#fff' }}>
                     {mapType === 'standard' ? '🏙️ Plan' : mapType === 'satellite' ? '🛰️ Satellite' : '🌐 Hybride'}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => setShowTraffic((v) => !v)}
                   style={{
-                    backgroundColor: showTraffic ? '#E8771A' : 'rgba(0,0,0,0.7)',
-                    paddingVertical: 6,
-                    paddingHorizontal: 10,
-                    borderRadius: 8,
-                    minWidth: 74,
+                    flexDirection: 'row',
                     alignItems: 'center',
+                    gap: 6,
+                    backgroundColor: showTraffic ? '#E8771A' : 'rgba(0,0,0,0.7)',
+                    paddingVertical: 8,
+                    paddingHorizontal: 12,
+                    borderRadius: 10,
                   }}
                 >
-                  <Text style={{ fontSize: 11, fontWeight: '700', color: '#fff' }}>🚦 Trafic</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#fff' }}>🚦 Trafic</Text>
                 </TouchableOpacity>
-              </View>
-              {/* Boutons carte — bas droite, verticaux */}
-              <View style={{ position: 'absolute', bottom: 12, right: 12, gap: 8 }}>
                 <TouchableOpacity
                   style={{
                     flexDirection: 'row',
@@ -2181,11 +2411,11 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
               value: (() => {
                 const m = vehicle.mileage;
                 if (!m || m <= 0) return '–';
-                if (m >= 1_000_000) return `${(m / 1_000_000).toFixed(1)}M`;
-                if (m >= 10_000) return `${Math.round(m / 1000)}k`;
-                return Math.round(m).toLocaleString('fr-FR');
+                if (m >= 1_000_000) return `${(m / 1_000_000).toFixed(1)}M km`;
+                if (m >= 10_000) return `${Math.round(m / 1000)}k km`;
+                return `${Math.round(m).toLocaleString('fr-FR')} km`;
               })(),
-              label: 'km',
+              label: 'Compteur',
               color: theme.text.primary,
             },
           ].map((pill, idx, arr) => (
@@ -2327,7 +2557,9 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
                 borderWidth: 1,
                 borderColor: theme.border,
               }}
-              onPress={() => navigation.navigate('Portal')}
+              onPress={() => navigation.navigate('Portal', { screen: 'PortalSubscriptions' })}
+              accessibilityLabel="Voir mes abonnements"
+              accessibilityRole="button"
             >
               <View
                 style={{
@@ -2384,6 +2616,198 @@ export function VehicleDetailScreen({ route, navigation }: Props) {
         theme={theme}
         onClose={() => setShowFuelModal(false)}
       />
+
+      {/* ── Modal édition véhicule ── */}
+      <Modal
+        visible={showEditModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowEditModal(false)}
+      >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
+            {/* Header modal */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 16,
+                paddingVertical: 14,
+                borderBottomWidth: 1,
+                borderBottomColor: theme.border,
+                gap: 12,
+              }}
+            >
+              <TouchableOpacity onPress={() => setShowEditModal(false)} style={{ padding: 4 }}>
+                <X size={22} color={theme.text.secondary} />
+              </TouchableOpacity>
+              <Text style={{ flex: 1, fontSize: 17, fontWeight: '700', color: theme.text.primary }}>
+                Modifier le véhicule
+              </Text>
+              <TouchableOpacity
+                onPress={saveEdit}
+                disabled={updateMutation.isPending}
+                style={{
+                  backgroundColor: theme.primary,
+                  paddingHorizontal: 18,
+                  paddingVertical: 8,
+                  borderRadius: 10,
+                  opacity: updateMutation.isPending ? 0.6 : 1,
+                }}
+              >
+                {updateMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>Enregistrer</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }} keyboardShouldPersistTaps="handled">
+              {/* Informations générales */}
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: '700',
+                  color: theme.text.muted,
+                  marginBottom: 12,
+                  letterSpacing: 0.5,
+                  textTransform: 'uppercase',
+                }}
+              >
+                Informations générales
+              </Text>
+              <VehicleField
+                label="Nom"
+                value={editForm.name}
+                onChange={(v) => setEditForm((f) => ({ ...f, name: v }))}
+                theme={theme}
+              />
+              <VehicleField
+                label="Immatriculation"
+                value={editForm.plate}
+                onChange={(v) => setEditForm((f) => ({ ...f, plate: v }))}
+                theme={theme}
+                autoCapitalize="characters"
+              />
+
+              {/* Caractéristiques */}
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: '700',
+                  color: theme.text.muted,
+                  marginBottom: 12,
+                  marginTop: 8,
+                  letterSpacing: 0.5,
+                  textTransform: 'uppercase',
+                }}
+              >
+                Caractéristiques
+              </Text>
+              <VehicleField
+                label="Marque"
+                value={editForm.brand}
+                onChange={(v) => setEditForm((f) => ({ ...f, brand: v }))}
+                theme={theme}
+              />
+              <VehicleField
+                label="Modèle"
+                value={editForm.model}
+                onChange={(v) => setEditForm((f) => ({ ...f, model: v }))}
+                theme={theme}
+              />
+              <View style={{ flexDirection: 'row', gap: 12 }}>
+                <View style={{ flex: 1 }}>
+                  <VehicleField
+                    label="Année"
+                    value={editForm.year}
+                    onChange={(v) => setEditForm((f) => ({ ...f, year: v }))}
+                    theme={theme}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <VehicleField
+                    label="Couleur"
+                    value={editForm.color}
+                    onChange={(v) => setEditForm((f) => ({ ...f, color: v }))}
+                    theme={theme}
+                  />
+                </View>
+              </View>
+
+              {/* Type de véhicule */}
+              <Text style={{ fontSize: 12, color: theme.text.muted, marginBottom: 8 }}>Type de véhicule</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+                {VEHICLE_TYPES.map((t) => {
+                  const active = editForm.type === t.value;
+                  return (
+                    <TouchableOpacity
+                      key={t.value}
+                      onPress={() => setEditForm((f) => ({ ...f, type: f.type === t.value ? '' : t.value }))}
+                      style={{
+                        paddingHorizontal: 14,
+                        paddingVertical: 7,
+                        borderRadius: 20,
+                        backgroundColor: active ? theme.primary : theme.bg.elevated,
+                        borderWidth: 1,
+                        borderColor: active ? theme.primary : theme.border,
+                      }}
+                    >
+                      <Text style={{ fontSize: 13, fontWeight: '600', color: active ? '#fff' : theme.text.secondary }}>
+                        {t.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* Statut administratif */}
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: '700',
+                  color: theme.text.muted,
+                  marginBottom: 8,
+                  marginTop: 4,
+                  letterSpacing: 0.5,
+                  textTransform: 'uppercase',
+                }}
+              >
+                Statut administratif
+              </Text>
+              <Text style={{ fontSize: 12, color: theme.text.muted, marginBottom: 10 }}>
+                Laisser vide pour ne pas modifier le statut actuel.
+              </Text>
+              <View style={{ flexDirection: 'row', gap: 10, marginBottom: 32 }}>
+                {VEHICLE_ADMIN_STATUSES.map((s) => {
+                  const active = editForm.status === s.value;
+                  return (
+                    <TouchableOpacity
+                      key={s.value}
+                      onPress={() => setEditForm((f) => ({ ...f, status: f.status === s.value ? '' : s.value }))}
+                      style={{
+                        flex: 1,
+                        paddingVertical: 10,
+                        borderRadius: 10,
+                        alignItems: 'center',
+                        backgroundColor: active ? s.color + '22' : theme.bg.elevated,
+                        borderWidth: 1.5,
+                        borderColor: active ? s.color : theme.border,
+                      }}
+                    >
+                      <Text style={{ fontSize: 13, fontWeight: '600', color: active ? s.color : theme.text.secondary }}>
+                        {s.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
