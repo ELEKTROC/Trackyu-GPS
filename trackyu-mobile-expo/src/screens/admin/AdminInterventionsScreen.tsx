@@ -37,16 +37,21 @@ import {
   RotateCcw,
   X,
   SlidersHorizontal,
+  Plus,
+  Trash2,
 } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { SearchBar } from '../../components/SearchBar';
 import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 import { ProtectedScreen } from '../../components/ProtectedScreen';
 import { EmptyState } from '../../components/EmptyState';
-import { ADMIN_SCREEN_ROLES } from '../../constants/roles';
+import { ADMIN_SCREEN_ROLES, ROLE, normalizeRole } from '../../constants/roles';
+import { useAuthStore } from '../../store/authStore';
+import tiersApi, { type Tier } from '../../api/tiersApi';
 import interventionsApi, {
   type Intervention,
   type InterventionStatus,
+  type InterventionType,
   STATUS_LABELS,
   STATUS_COLORS,
 } from '../../api/interventions';
@@ -141,7 +146,17 @@ const INT_STATUS_CHIPS: { key: InterventionStatus | 'ALL'; label: string }[] = [
 
 // ── Items ─────────────────────────────────────────────────────────────────────
 
-function InterventionItem({ item, theme, onPress }: { item: Intervention; theme: ThemeType; onPress: () => void }) {
+function InterventionItem({
+  item,
+  theme,
+  onPress,
+  onDelete,
+}: {
+  item: Intervention;
+  theme: ThemeType;
+  onPress: () => void;
+  onDelete?: () => void;
+}) {
   const color = STATUS_COLORS[item.status] ?? '#6B7280';
   let dateStr = '–',
     timeStr = '';
@@ -190,7 +205,14 @@ function InterventionItem({ item, theme, onPress }: { item: Intervention; theme:
           ) : null}
         </View>
       </View>
-      <ChevronRight size={14} color={theme.text.muted} style={{ marginTop: 4 }} />
+      <View style={{ alignItems: 'flex-end', gap: 16 }}>
+        {onDelete && (
+          <TouchableOpacity onPress={onDelete} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+            <Trash2 size={15} color="#EF4444" />
+          </TouchableOpacity>
+        )}
+        <ChevronRight size={14} color={theme.text.muted} />
+      </View>
     </TouchableOpacity>
   );
 }
@@ -341,6 +363,53 @@ const li = (theme: ThemeType) =>
       borderRadius: 4,
     },
   });
+
+// ── Constantes création intervention ─────────────────────────────────────────
+
+const INT_TYPE_OPTS: { value: InterventionType; label: string }[] = [
+  { value: 'INSTALLATION', label: 'Installation' },
+  { value: 'DEPANNAGE', label: 'Dépannage' },
+  { value: 'REMPLACEMENT', label: 'Remplacement' },
+  { value: 'RETRAIT', label: 'Retrait' },
+  { value: 'REINSTALLATION', label: 'Réinstallation' },
+  { value: 'TRANSFERT', label: 'Transfert' },
+];
+
+// ── Champ texte top-level (évite le remontage clavier) ────────────────────────
+
+interface IFProps {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  theme: ThemeType;
+  placeholder?: string;
+  multiline?: boolean;
+}
+function IField({ label, value, onChange, theme, placeholder, multiline }: IFProps) {
+  return (
+    <View style={{ marginBottom: 14 }}>
+      <Text style={{ fontSize: 12, color: theme.text.muted, marginBottom: 5 }}>{label}</Text>
+      <TextInput
+        style={{
+          backgroundColor: theme.bg.elevated,
+          borderWidth: 1,
+          borderColor: theme.border,
+          borderRadius: 10,
+          paddingHorizontal: 12,
+          paddingVertical: 10,
+          fontSize: 14,
+          color: theme.text.primary,
+          ...(multiline ? { minHeight: 70, textAlignVertical: 'top' as const } : {}),
+        }}
+        value={value}
+        onChangeText={onChange}
+        placeholder={placeholder ?? label}
+        placeholderTextColor={theme.text.muted}
+        multiline={multiline}
+      />
+    </View>
+  );
+}
 
 // ── RMA Modal ─────────────────────────────────────────────────────────────────
 
@@ -578,6 +647,10 @@ export default function AdminInterventionsScreen() {
   const route = useRoute<RouteP>();
   const qc = useQueryClient();
 
+  const userRole = useAuthStore((s) => normalizeRole(s.user?.role?.toUpperCase() ?? ''));
+  const canCreate = ([ROLE.SUPERADMIN, ROLE.ADMIN, ROLE.MANAGER] as string[]).includes(userRole);
+  const canDelete = ([ROLE.SUPERADMIN, ROLE.ADMIN] as string[]).includes(userRole);
+
   const [activeTab, setActiveTab] = useState<TabKey>(route.params?.initialTab ?? 'interventions');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<InterventionStatus | 'ALL'>('ALL');
@@ -585,6 +658,20 @@ export default function AdminInterventionsScreen() {
   const [resellerFilter, setResellerFilter] = useState<string | null>(null);
   const [clientFilter, setClientFilter] = useState<string | null>(null);
   const [rmaDevice, setRmaDevice] = useState<DeviceItem | null>(null);
+
+  // Création d'intervention
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    type: '' as InterventionType | '',
+    clientId: '',
+    clientName: '',
+    scheduledDate: '',
+    address: '',
+    nature: '',
+    notes: '',
+  });
+  const [clientSearch, setClientSearch] = useState('');
+  const [clientPickerOpen, setClientPickerOpen] = useState(false);
 
   // ── Queries ──────────────────────────────────────────────────────────────────
 
@@ -640,6 +727,71 @@ export default function AdminInterventionsScreen() {
     },
     onError: () => Alert.alert('Erreur', 'Impossible de soumettre le SAV.'),
   });
+
+  // Clients pour le picker de création
+  const { data: clientsList = [] } = useQuery<Tier[]>({
+    queryKey: ['tiers-clients-create'],
+    queryFn: () => tiersApi.getAll({ type: 'CLIENT' }),
+    enabled: showCreateModal,
+    staleTime: 300_000,
+  });
+
+  const filteredClients = clientsList.filter(
+    (c) => !clientSearch || c.name.toLowerCase().includes(clientSearch.toLowerCase())
+  );
+
+  const createMutation = useMutation({
+    mutationFn: () =>
+      interventionsApi.create({
+        clientId: createForm.clientId,
+        type: createForm.type as InterventionType,
+        nature: createForm.nature || null,
+        scheduledDate: createForm.scheduledDate || null,
+        address: createForm.address || null,
+        notes: createForm.notes || null,
+        status: 'PENDING',
+      }),
+    onSuccess: (newIv) => {
+      qc.invalidateQueries({ queryKey: ['admin-interventions-all'] });
+      setShowCreateModal(false);
+      nav.navigate('InterventionDetail', { interventionId: newIv.id });
+    },
+    onError: () => Alert.alert('Erreur', "Impossible de créer l'intervention."),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => interventionsApi.deleteIntervention(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-interventions-all'] });
+    },
+    onError: () => Alert.alert('Erreur', "Impossible de supprimer l'intervention."),
+  });
+
+  const confirmDeleteIntervention = (id: string, label: string) => {
+    Alert.alert('Supprimer', `Supprimer "${label}" ?`, [
+      { text: 'Annuler', style: 'cancel' },
+      { text: 'Supprimer', style: 'destructive', onPress: () => deleteMutation.mutate(id) },
+    ]);
+  };
+
+  const openCreateModal = () => {
+    setCreateForm({ type: '', clientId: '', clientName: '', scheduledDate: '', address: '', nature: '', notes: '' });
+    setClientSearch('');
+    setClientPickerOpen(false);
+    setShowCreateModal(true);
+  };
+
+  const submitCreate = () => {
+    if (!createForm.type) {
+      Alert.alert('Champ requis', "Sélectionnez un type d'intervention.");
+      return;
+    }
+    if (!createForm.clientId) {
+      Alert.alert('Champ requis', 'Sélectionnez un client.');
+      return;
+    }
+    createMutation.mutate();
+  };
 
   const activeQuery = activeTab === 'interventions' ? intQuery : activeTab === 'devices' ? devQuery : stockQuery;
   const isLoading = activeQuery.isLoading;
@@ -897,6 +1049,7 @@ export default function AdminInterventionsScreen() {
             ) : (
               filteredInterventions.map((i) => (
                 <InterventionItem
+                  onDelete={canDelete ? () => confirmDeleteIntervention(i.id, i.nature ?? i.type) : undefined}
                   key={i.id}
                   item={i}
                   theme={theme}
@@ -934,6 +1087,274 @@ export default function AdminInterventionsScreen() {
           isLoading={rmaMutation.isPending}
           theme={theme}
         />
+
+        {/* FAB Nouvelle intervention */}
+        {canCreate && activeTab === 'interventions' && (
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              bottom: 24,
+              right: 20,
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: theme.primary,
+              justifyContent: 'center',
+              alignItems: 'center',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 8,
+              elevation: 6,
+            }}
+            onPress={openCreateModal}
+            accessibilityLabel="Nouvelle intervention"
+            accessibilityRole="button"
+          >
+            <Plus size={26} color="#fff" />
+          </TouchableOpacity>
+        )}
+
+        {/* Modal création intervention */}
+        <Modal
+          visible={showCreateModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setShowCreateModal(false)}
+        >
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+            <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg.primary }} edges={['top']}>
+              {/* Header modal */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: 16,
+                  paddingVertical: 14,
+                  borderBottomWidth: 1,
+                  borderBottomColor: theme.border,
+                  gap: 12,
+                }}
+              >
+                <TouchableOpacity onPress={() => setShowCreateModal(false)} style={{ padding: 4 }}>
+                  <X size={22} color={theme.text.secondary} />
+                </TouchableOpacity>
+                <Text style={{ flex: 1, fontSize: 17, fontWeight: '700', color: theme.text.primary }}>
+                  Nouvelle intervention
+                </Text>
+                <TouchableOpacity
+                  onPress={submitCreate}
+                  disabled={createMutation.isPending}
+                  style={{
+                    backgroundColor: theme.primary,
+                    paddingHorizontal: 18,
+                    paddingVertical: 8,
+                    borderRadius: 10,
+                    opacity: createMutation.isPending ? 0.6 : 1,
+                  }}
+                >
+                  {createMutation.isPending ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={{ color: '#fff', fontWeight: '600', fontSize: 14 }}>Créer</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ padding: 16 }}
+                keyboardShouldPersistTaps="handled"
+              >
+                {/* Type */}
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: '700',
+                    color: theme.text.muted,
+                    marginBottom: 10,
+                    letterSpacing: 0.5,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Type d'intervention *
+                </Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+                  {INT_TYPE_OPTS.map((opt) => {
+                    const active = createForm.type === opt.value;
+                    return (
+                      <TouchableOpacity
+                        key={opt.value}
+                        onPress={() => setCreateForm((f) => ({ ...f, type: opt.value }))}
+                        style={{
+                          paddingHorizontal: 14,
+                          paddingVertical: 8,
+                          borderRadius: 20,
+                          backgroundColor: active ? theme.primary : theme.bg.elevated,
+                          borderWidth: 1,
+                          borderColor: active ? theme.primary : theme.border,
+                        }}
+                      >
+                        <Text
+                          style={{ fontSize: 13, fontWeight: '600', color: active ? '#fff' : theme.text.secondary }}
+                        >
+                          {opt.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+
+                {/* Client */}
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: '700',
+                    color: theme.text.muted,
+                    marginBottom: 8,
+                    letterSpacing: 0.5,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Client *
+                </Text>
+                {createForm.clientId ? (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: theme.primaryDim,
+                      borderRadius: 10,
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                      marginBottom: 20,
+                      gap: 8,
+                    }}
+                  >
+                    <User size={16} color={theme.primary} />
+                    <Text style={{ flex: 1, fontSize: 14, fontWeight: '600', color: theme.primary }}>
+                      {createForm.clientName}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setCreateForm((f) => ({ ...f, clientId: '', clientName: '' }));
+                        setClientPickerOpen(true);
+                      }}
+                    >
+                      <X size={16} color={theme.primary} />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View style={{ marginBottom: 4 }}>
+                    <TextInput
+                      style={{
+                        backgroundColor: theme.bg.elevated,
+                        borderWidth: 1,
+                        borderColor: clientPickerOpen ? theme.primary : theme.border,
+                        borderRadius: 10,
+                        paddingHorizontal: 12,
+                        paddingVertical: 10,
+                        fontSize: 14,
+                        color: theme.text.primary,
+                        marginBottom: 8,
+                      }}
+                      value={clientSearch}
+                      onChangeText={setClientSearch}
+                      placeholder="Rechercher un client…"
+                      placeholderTextColor={theme.text.muted}
+                      onFocus={() => setClientPickerOpen(true)}
+                    />
+                    {clientPickerOpen && (
+                      <View
+                        style={{
+                          backgroundColor: theme.bg.surface,
+                          borderWidth: 1,
+                          borderColor: theme.border,
+                          borderRadius: 10,
+                          maxHeight: 200,
+                          marginBottom: 12,
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled>
+                          {filteredClients.length === 0 ? (
+                            <Text style={{ padding: 14, fontSize: 13, color: theme.text.muted, textAlign: 'center' }}>
+                              Aucun client trouvé
+                            </Text>
+                          ) : (
+                            filteredClients.slice(0, 30).map((c) => (
+                              <TouchableOpacity
+                                key={c.id}
+                                style={{
+                                  paddingHorizontal: 14,
+                                  paddingVertical: 10,
+                                  borderBottomWidth: 1,
+                                  borderBottomColor: theme.border,
+                                }}
+                                onPress={() => {
+                                  setCreateForm((f) => ({ ...f, clientId: c.id, clientName: c.name }));
+                                  setClientSearch('');
+                                  setClientPickerOpen(false);
+                                }}
+                              >
+                                <Text style={{ fontSize: 14, color: theme.text.primary }}>{c.name}</Text>
+                                {c.phone && <Text style={{ fontSize: 12, color: theme.text.muted }}>{c.phone}</Text>}
+                              </TouchableOpacity>
+                            ))
+                          )}
+                        </ScrollView>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {/* Planification */}
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: '700',
+                    color: theme.text.muted,
+                    marginBottom: 12,
+                    marginTop: 4,
+                    letterSpacing: 0.5,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Planification
+                </Text>
+                <IField
+                  label="Nature / prestation"
+                  value={createForm.nature}
+                  onChange={(v) => setCreateForm((f) => ({ ...f, nature: v }))}
+                  theme={theme}
+                  placeholder="Ex : Installation boîtier GPS"
+                />
+                <IField
+                  label="Date prévue (YYYY-MM-DD HH:mm)"
+                  value={createForm.scheduledDate}
+                  onChange={(v) => setCreateForm((f) => ({ ...f, scheduledDate: v }))}
+                  theme={theme}
+                  placeholder="2026-04-21 09:00"
+                />
+                <IField
+                  label="Adresse d'intervention"
+                  value={createForm.address}
+                  onChange={(v) => setCreateForm((f) => ({ ...f, address: v }))}
+                  theme={theme}
+                />
+                <IField
+                  label="Notes"
+                  value={createForm.notes}
+                  onChange={(v) => setCreateForm((f) => ({ ...f, notes: v }))}
+                  theme={theme}
+                  multiline
+                  placeholder="Instructions, contexte…"
+                />
+                <View style={{ height: 32 }} />
+              </ScrollView>
+            </SafeAreaView>
+          </KeyboardAvoidingView>
+        </Modal>
       </SafeAreaView>
     </ProtectedScreen>
   );

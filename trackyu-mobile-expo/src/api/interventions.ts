@@ -340,17 +340,18 @@ const interventionsApi = {
 
   /**
    * Crée une intervention (POST /tech/interventions).
-   * Champs strictement obligatoires côté backend : ticketId, clientId, type.
-   * Utilisé pour le bouton "Créer intervention depuis un ticket" (squelette PENDING).
+   * Champs obligatoires : clientId, type. ticketId requis uniquement si créé depuis un ticket.
    */
   create: async (data: {
-    ticketId: string;
+    ticketId?: string | null;
     clientId: string;
     type: InterventionType;
     vehicleId?: string | null;
     technicianId?: string | null;
     nature?: string | null;
     scheduledDate?: string | null;
+    address?: string | null;
+    notes?: string | null;
     status?: InterventionStatus;
   }): Promise<Intervention> => {
     try {
@@ -379,6 +380,15 @@ const interventionsApi = {
     if (status === 'IN_PROGRESS') timestamps.startTime = new Date().toISOString();
     if (status === 'COMPLETED') timestamps.endTime = new Date().toISOString();
     return interventionsApi.update(id, timestamps);
+  },
+
+  /** DELETE /tech/interventions/:id */
+  deleteIntervention: async (id: string): Promise<void> => {
+    try {
+      await apiClient.delete(`/tech/interventions/${id}`);
+    } catch (error) {
+      throw normalizeError(error);
+    }
   },
 };
 

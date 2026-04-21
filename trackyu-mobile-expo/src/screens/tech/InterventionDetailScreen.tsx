@@ -45,6 +45,7 @@ import {
   Ticket,
   X,
   Tag,
+  Trash2,
 } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import type { RootStackParamList } from '../../navigation/types';
@@ -55,6 +56,7 @@ import interventionsApi, {
   STATUS_COLORS,
 } from '../../api/interventions';
 import { useAuthStore } from '../../store/authStore';
+import { ROLE, normalizeRole } from '../../constants/roles';
 import apiClient from '../../api/client';
 import SignaturePad from '../../components/SignaturePad';
 import { downloadBonIntervention, downloadRapportIntervention } from '../../services/interventionPdfService';
@@ -2020,6 +2022,9 @@ export default function InterventionDetailScreen() {
   const { interventionId } = route.params;
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
+  const canDelete = [ROLE.SUPERADMIN as string, ROLE.ADMIN as string].includes(
+    normalizeRole(user?.role?.toUpperCase() ?? '')
+  );
 
   // Ouvrir la section Clôture automatiquement quand l'intervention est EN_ROUTE ou IN_PROGRESS
   const [openSection, setOpenSection] = useState<number | null>(0);
@@ -2223,6 +2228,23 @@ export default function InterventionDetailScreen() {
     onError: () => Alert.alert('Erreur', 'Impossible de mettre à jour le statut.'),
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: () => interventionsApi.deleteIntervention(interventionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-interventions-all'] });
+      queryClient.invalidateQueries({ queryKey: ['tech-interventions'] });
+      nav.goBack();
+    },
+    onError: () => Alert.alert('Erreur', "Impossible de supprimer l'intervention."),
+  });
+
+  const confirmDelete = () => {
+    Alert.alert("Supprimer l'intervention", 'Cette action est irréversible. Confirmer ?', [
+      { text: 'Annuler', style: 'cancel' },
+      { text: 'Supprimer', style: 'destructive', onPress: () => deleteMutation.mutate() },
+    ]);
+  };
+
   const toPayload = (f: FormState): Partial<Intervention> => ({
     // Identité véhicule
     licensePlate: f.licensePlate || undefined,
@@ -2396,6 +2418,20 @@ export default function InterventionDetailScreen() {
           </Text>
         ) : null}
       </View>
+      {canDelete && !isTerminal && (
+        <TouchableOpacity
+          onPress={confirmDelete}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          disabled={deleteMutation.isPending}
+          style={{ padding: 4 }}
+        >
+          {deleteMutation.isPending ? (
+            <ActivityIndicator size="small" color="#EF4444" />
+          ) : (
+            <Trash2 size={18} color="#EF4444" />
+          )}
+        </TouchableOpacity>
+      )}
       <View style={[ms.badge, { backgroundColor: statusColor + '22' }]}>
         <View style={[ms.dot, { backgroundColor: statusColor }]} />
         <Text style={{ fontSize: 11, fontWeight: '700', color: statusColor }}>{STATUS_LABELS[iv.status]}</Text>
