@@ -164,7 +164,7 @@ describe('quotesApi.getAll', () => {
   it('envoie un GET vers /finance/quotes', async () => {
     mockGet.mockResolvedValueOnce({ data: [] });
     await quotesApi.getAll();
-    expect(mockGet).toHaveBeenCalledWith('/finance/quotes');
+    expect(mockGet).toHaveBeenCalledWith('/finance/quotes', { params: { limit: 100 } });
   });
 
   it('retourne la liste des devis', async () => {
@@ -240,7 +240,7 @@ describe('contractsApi.getAll', () => {
   it('envoie un GET vers /contracts', async () => {
     mockGet.mockResolvedValueOnce({ data: [] });
     await contractsApi.getAll();
-    expect(mockGet).toHaveBeenCalledWith('/contracts');
+    expect(mockGet).toHaveBeenCalledWith('/contracts', { params: { limit: 100 } });
   });
 
   it('retourne la liste des contrats', async () => {
@@ -311,7 +311,7 @@ describe('paymentsApi.getAll', () => {
   it('envoie un GET vers /finance/payments', async () => {
     mockGet.mockResolvedValueOnce({ data: [] });
     await paymentsApi.getAll();
-    expect(mockGet).toHaveBeenCalledWith('/finance/payments');
+    expect(mockGet).toHaveBeenCalledWith('/finance/payments', { params: { limit: 100 } });
   });
 
   it('retourne la liste des paiements', async () => {

@@ -67,7 +67,7 @@ jobs:
 
   # ─── Mobile ───────────────────────────────────────────────────────
   mobile:
-    name: Mobile Expo (tsc + lint)
+    name: Mobile Expo (tsc + tests + lint)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -87,6 +87,9 @@ jobs:
 
       - name: TypeScript — 0 erreur obligatoire
         run: npx tsc --noEmit
+
+      - name: Tests — 915 tests
+        run: npm test -- --passWithNoTests --forceExit
 
       - name: ESLint
         run: npx eslint --max-warnings 20 "src/**/*.{ts,tsx}"
