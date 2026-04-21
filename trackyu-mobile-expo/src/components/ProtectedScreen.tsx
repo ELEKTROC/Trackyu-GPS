@@ -48,6 +48,8 @@ export function ProtectedScreen({ allowedRoles, children }: Props) {
             style={[styles.btn, { backgroundColor: theme.primary }]}
             onPress={() => nav.goBack()}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Retour"
           >
             <Text style={[styles.btnText, { color: theme.text.onPrimary }]}>Retour</Text>
           </TouchableOpacity>

@@ -72,7 +72,12 @@ export function VehicleFilterPanel({ visible, blocks, hasActiveFilters, onReset 
           autoCapitalize="characters"
         />
         {search.length > 0 && (
-          <TouchableOpacity onPress={() => setSearch('')} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
+          <TouchableOpacity
+            onPress={() => setSearch('')}
+            hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+            accessibilityRole="button"
+            accessibilityLabel="Effacer la recherche"
+          >
             <X size={11} color={theme.text.muted} />
           </TouchableOpacity>
         )}
@@ -94,6 +99,9 @@ export function VehicleFilterPanel({ visible, blocks, hasActiveFilters, onReset 
                   setSearch('');
                 }}
                 activeOpacity={0.75}
+                accessibilityRole="button"
+                accessibilityLabel={block.label}
+                accessibilityState={{ selected: isActive }}
               >
                 {hasSel && <View style={s.catDot} />}
                 <Text style={[s.catLabel, isActive && s.catLabelActive]} numberOfLines={1}>
@@ -105,7 +113,12 @@ export function VehicleFilterPanel({ visible, blocks, hasActiveFilters, onReset 
 
           {/* Reset global */}
           {hasActiveFilters && (
-            <TouchableOpacity style={s.resetBtn} onPress={onReset}>
+            <TouchableOpacity
+              style={s.resetBtn}
+              onPress={onReset}
+              accessibilityRole="button"
+              accessibilityLabel="Réinitialiser les filtres"
+            >
               <X size={10} color={theme.functional.error} />
               <Text style={[s.catLabel, { color: theme.functional.error }]}>Reset</Text>
             </TouchableOpacity>
@@ -115,7 +128,13 @@ export function VehicleFilterPanel({ visible, blocks, hasActiveFilters, onReset 
         {/* ── Droite : items ── */}
         <ScrollView style={s.itemCol} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           {/* "Tous" */}
-          <TouchableOpacity style={[s.item, isAllSelected && s.itemActive]} onPress={() => activeBlock.onSelect(null)}>
+          <TouchableOpacity
+            style={[s.item, isAllSelected && s.itemActive]}
+            onPress={() => activeBlock.onSelect(null)}
+            accessibilityRole="button"
+            accessibilityLabel="Tous"
+            accessibilityState={{ selected: isAllSelected }}
+          >
             <Text style={[s.itemLabel, isAllSelected && { color: theme.primary, fontWeight: '700' as const }]}>
               Tous
             </Text>
@@ -134,6 +153,9 @@ export function VehicleFilterPanel({ visible, blocks, hasActiveFilters, onReset 
                   style={[s.item, isSel && s.itemActive]}
                   onPress={() => activeBlock.onSelect(isSel ? null : item.id)}
                   activeOpacity={0.75}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.label}
+                  accessibilityState={{ selected: isSel }}
                 >
                   {item.statusColor && (
                     <View

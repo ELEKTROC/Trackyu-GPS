@@ -21,7 +21,12 @@ export function OfflineBanner({ visible }: OfflineBannerProps) {
   }, [visible, translateY]);
 
   return (
-    <Animated.View style={[styles.banner, { transform: [{ translateY }] }]}>
+    <Animated.View
+      style={[styles.banner, { transform: [{ translateY }] }]}
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
+      accessibilityLabel="Hors ligne — données non actualisées"
+    >
       <WifiOff size={14} color="#fff" />
       <Text style={styles.text}>Hors ligne — données non actualisées</Text>
     </Animated.View>

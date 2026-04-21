@@ -47,6 +47,7 @@ export function AIChatModal({ visible, onClose, userName = 'vous' }: AIChatModal
   const [convId, setConvId] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
   const listRef = useRef<FlatList>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (visible && messages.length === 0) {
@@ -59,7 +60,13 @@ export function AIChatModal({ visible, onClose, userName = 'vous' }: AIChatModal
         },
       ]);
     }
-  }, [visible]);
+  }, [visible, userName]);
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
 
   const send = async () => {
     const q = input.trim();
@@ -92,7 +99,7 @@ export function AIChatModal({ visible, onClose, userName = 'vous' }: AIChatModal
       );
     } finally {
       setSending(false);
-      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+      scrollTimerRef.current = setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
     }
   };
 
@@ -129,7 +136,12 @@ export function AIChatModal({ visible, onClose, userName = 'vous' }: AIChatModal
                 <Text style={[s.modalSub, { color: theme.functional.success }]}>• En ligne</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={onClose} style={s.closeBtn}>
+            <TouchableOpacity
+              onPress={onClose}
+              style={s.closeBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Fermer"
+            >
               <X size={20} color={theme.text.muted} />
             </TouchableOpacity>
           </View>
@@ -155,11 +167,14 @@ export function AIChatModal({ visible, onClose, userName = 'vous' }: AIChatModal
               onSubmitEditing={send}
               returnKeyType="send"
               multiline
+              accessibilityLabel="Message"
             />
             <TouchableOpacity
               style={[s.sendBtn, { backgroundColor: sending || !input.trim() ? theme.primaryDim : theme.primary }]}
               onPress={send}
               disabled={sending || !input.trim()}
+              accessibilityRole="button"
+              accessibilityLabel="Envoyer"
             >
               {sending ? <ActivityIndicator size="small" color="#fff" /> : <Send size={16} color="#fff" />}
             </TouchableOpacity>

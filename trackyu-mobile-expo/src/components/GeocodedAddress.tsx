@@ -46,10 +46,12 @@ export function GeocodedAddress({
 
   const short = formatShortAddress(fallbackAddress);
   const validCoords = hasValidCoords(lat, lng);
+  const latNum = lat as number;
+  const lngNum = lng as number;
 
   const { data: fetched, isLoading } = useQuery<string | null>({
-    queryKey: ['geocode', validCoords ? lat.toFixed(4) : '', validCoords ? (lng as number).toFixed(4) : ''],
-    queryFn: () => vehiclesApi.geocodeCoord(lat as number, lng as number),
+    queryKey: ['geocode', validCoords ? latNum.toFixed(4) : '', validCoords ? lngNum.toFixed(4) : ''],
+    queryFn: () => vehiclesApi.geocodeCoord(latNum, lngNum),
     staleTime: Infinity,
     enabled: validCoords && !short,
   });
@@ -82,7 +84,7 @@ export function GeocodedAddress({
   if (validCoords) {
     return (
       <Text style={[style, { fontFamily: 'monospace' }]} numberOfLines={numberOfLines}>
-        {formatCoords(lat, lng as number)}
+        {formatCoords(latNum, lngNum)}
       </Text>
     );
   }

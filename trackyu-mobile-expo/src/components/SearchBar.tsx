@@ -67,9 +67,15 @@ export function SearchBar({
         placeholderTextColor={theme.text.muted}
         autoCapitalize={autoCapitalize}
         autoCorrect={autoCorrect}
+        accessibilityLabel={placeholder}
       />
       {value.length > 0 && (
-        <TouchableOpacity onPress={() => onChangeText('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+        <TouchableOpacity
+          onPress={() => onChangeText('')}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel="Effacer"
+        >
           <X size={16} color={theme.text.muted} />
         </TouchableOpacity>
       )}

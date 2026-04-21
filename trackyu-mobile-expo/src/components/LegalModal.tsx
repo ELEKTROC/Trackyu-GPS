@@ -148,6 +148,8 @@ export function LegalModal({ visible, title, content, onClose }: LegalModalProps
             onPress={onClose}
             style={[legalStyles.closeBtn, { backgroundColor: theme.bg.elevated }]}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel="Fermer"
           >
             <X size={18} color={theme.text.muted} />
           </TouchableOpacity>

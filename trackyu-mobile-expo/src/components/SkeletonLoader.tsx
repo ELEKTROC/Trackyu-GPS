@@ -3,8 +3,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Animated, StyleSheet, View, type ViewStyle } from 'react-native';
-
-const SKELETON_COLOR = '#2A2A2E';
+import { useTheme } from '../theme';
 
 interface SkeletonBlockProps {
   width?: number | string;
@@ -14,6 +13,7 @@ interface SkeletonBlockProps {
 }
 
 export function SkeletonBlock({ width = '100%', height = 16, borderRadius = 8, style }: SkeletonBlockProps) {
+  const { theme } = useTheme();
   const [opacity] = useState(() => new Animated.Value(0.3));
 
   useEffect(() => {
@@ -29,14 +29,15 @@ export function SkeletonBlock({ width = '100%', height = 16, borderRadius = 8, s
 
   return (
     <Animated.View
-      style={[{ width: width as number, height, borderRadius, backgroundColor: SKELETON_COLOR, opacity }, style]}
+      style={[{ width: width as number, height, borderRadius, backgroundColor: theme.bg.elevated, opacity }, style]}
     />
   );
 }
 
 export function VehicleCardSkeleton() {
+  const { theme } = useTheme();
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: theme.bg.surface, borderColor: theme.border }]}>
       <View style={styles.cardHeader}>
         <SkeletonBlock width={36} height={36} borderRadius={10} />
         <View style={styles.cardMeta}>
@@ -49,7 +50,7 @@ export function VehicleCardSkeleton() {
         <SkeletonBlock width="70%" height={12} style={styles.mb6} />
         <SkeletonBlock width="45%" height={12} />
       </View>
-      <View style={styles.cardFooter}>
+      <View style={[styles.cardFooter, { borderTopColor: theme.border }]}>
         <SkeletonBlock width={80} height={11} />
       </View>
     </View>
@@ -67,9 +68,10 @@ export function FleetScreenSkeleton() {
 }
 
 export function VehicleDetailSkeleton() {
+  const { theme } = useTheme();
   return (
-    <View style={styles.detailContainer}>
-      <View style={styles.detailHeader}>
+    <View style={[styles.detailContainer, { backgroundColor: theme.bg.primary }]}>
+      <View style={[styles.detailHeader, { borderBottomColor: theme.border }]}>
         <SkeletonBlock width={36} height={36} borderRadius={10} />
         <View style={{ flex: 1, marginHorizontal: 12 }}>
           <SkeletonBlock width="50%" height={16} style={styles.mb6} />
@@ -80,7 +82,7 @@ export function VehicleDetailSkeleton() {
       <SkeletonBlock width="92%" height={200} borderRadius={14} style={styles.mapPlaceholder} />
       <View style={styles.kpiRow}>
         {[1, 2, 3].map((i) => (
-          <View key={i} style={styles.kpiCard}>
+          <View key={i} style={[styles.kpiCard, { backgroundColor: theme.bg.surface, borderColor: theme.border }]}>
             <SkeletonBlock width={28} height={28} borderRadius={8} style={styles.mb8} />
             <SkeletonBlock width={36} height={20} style={styles.mb6} />
             <SkeletonBlock width={48} height={11} />
@@ -90,9 +92,9 @@ export function VehicleDetailSkeleton() {
       {[1, 2].map((i) => (
         <View key={i} style={styles.section}>
           <SkeletonBlock width={100} height={11} style={styles.mb12} />
-          <View style={styles.infoCard}>
+          <View style={[styles.infoCard, { backgroundColor: theme.bg.surface, borderColor: theme.border }]}>
             {[1, 2, 3, 4].map((j) => (
-              <View key={j} style={styles.infoRow}>
+              <View key={j} style={[styles.infoRow, { borderBottomColor: theme.border }]}>
                 <SkeletonBlock width="32%" height={13} />
                 <SkeletonBlock width="42%" height={13} />
               </View>
@@ -105,8 +107,9 @@ export function VehicleDetailSkeleton() {
 }
 
 export function AlertCardSkeleton() {
+  const { theme } = useTheme();
   return (
-    <View style={styles.alertCard}>
+    <View style={[styles.alertCard, { backgroundColor: theme.bg.surface, borderColor: theme.border }]}>
       <SkeletonBlock width={36} height={36} borderRadius={18} />
       <View style={{ flex: 1, gap: 6 }}>
         <SkeletonBlock width="70%" height={14} />
@@ -129,11 +132,10 @@ export function AlertsListSkeleton() {
 }
 
 export function DashboardSkeleton() {
+  const { theme } = useTheme();
   return (
     <View style={{ padding: 16, gap: 14 }}>
-      {/* Section titre */}
       <SkeletonBlock width={160} height={14} style={styles.mb8} />
-      {/* Donut + slices */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
         <SkeletonBlock width={130} height={130} borderRadius={65} />
         <View style={{ flex: 1, gap: 8 }}>
@@ -145,10 +147,12 @@ export function DashboardSkeleton() {
           ))}
         </View>
       </View>
-      {/* KPI grid */}
       <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
         {[1, 2].map((i) => (
-          <View key={i} style={[styles.kpiCard, { flex: 1 }]}>
+          <View
+            key={i}
+            style={[styles.kpiCard, { flex: 1, backgroundColor: theme.bg.surface, borderColor: theme.border }]}
+          >
             <SkeletonBlock width={28} height={28} borderRadius={8} style={styles.mb8} />
             <SkeletonBlock width={50} height={18} style={styles.mb6} />
             <SkeletonBlock width={70} height={11} />
@@ -166,55 +170,46 @@ const styles = StyleSheet.create({
   mb12: { marginBottom: 12 },
 
   card: {
-    backgroundColor: '#1A1A1E',
     borderRadius: 14,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#2A2A2E',
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap: 10 },
   cardMeta: { flex: 1 },
   cardInfo: { marginBottom: 10 },
-  cardFooter: { paddingTop: 8, borderTopWidth: 1, borderTopColor: '#2A2A2E' },
+  cardFooter: { paddingTop: 8, borderTopWidth: 1 },
 
   alertCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     padding: 12,
-    backgroundColor: '#1A1A1E',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#2A2A2E',
   },
 
-  detailContainer: { flex: 1, backgroundColor: '#0D0D0F' },
+  detailContainer: { flex: 1 },
   detailHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#2A2A2E',
   },
   mapPlaceholder: { alignSelf: 'center', marginVertical: 16 },
   kpiRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginBottom: 8 },
   kpiCard: {
     flex: 1,
-    backgroundColor: '#1A1A1E',
     borderRadius: 14,
     padding: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#2A2A2E',
   },
   section: { marginTop: 20, paddingHorizontal: 16 },
   infoCard: {
-    backgroundColor: '#1A1A1E',
     borderRadius: 14,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: '#2A2A2E',
   },
   infoRow: {
     flexDirection: 'row',
@@ -223,6 +218,5 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     paddingHorizontal: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#2A2A2E',
   },
 });

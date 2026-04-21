@@ -31,15 +31,18 @@ export function SessionExpiredModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Ne pas afficher si pas de session précédente
-  if (!sessionExpired || !user?.email) return null;
-
   // Dès que la modale apparaît, tenter la biométrie automatiquement si disponible
   useEffect(() => {
     if (sessionExpired && bioAvailable) {
       handleBiometric();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionExpired, bioAvailable]);
+
+  // Ne pas afficher si pas de session précédente (placé APRÈS tous les hooks
+  // pour respecter les Rules of Hooks — l'ordre des hooks doit être stable
+  // entre les renders).
+  if (!sessionExpired || !user?.email) return null;
 
   const handleBiometric = async () => {
     setLoading(true);
@@ -112,6 +115,8 @@ export function SessionExpiredModal() {
               style={[s.bioBtn, { backgroundColor: theme.primary }]}
               onPress={handleBiometric}
               activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={`Se reconnecter avec ${bioLabel}`}
             >
               <BioIcon />
               <Text style={s.bioBtnText}>Se reconnecter avec {bioLabel}</Text>
@@ -139,10 +144,13 @@ export function SessionExpiredModal() {
                   }}
                   onSubmitEditing={handlePasswordLogin}
                   autoFocus
+                  accessibilityLabel="Mot de passe"
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword((v) => !v)}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
                 >
                   {showPassword ? (
                     <EyeOff size={16} color={theme.text.muted} />
@@ -157,6 +165,8 @@ export function SessionExpiredModal() {
                 onPress={handlePasswordLogin}
                 disabled={!password.trim() || loading}
                 activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="Se reconnecter"
               >
                 {loading ? (
                   <ActivityIndicator color="#fff" size="small" />
@@ -167,7 +177,12 @@ export function SessionExpiredModal() {
 
               {/* Réessayer la biométrie si disponible */}
               {bioAvailable && (
-                <TouchableOpacity style={s.retryBioBtn} onPress={handleBiometric}>
+                <TouchableOpacity
+                  style={s.retryBioBtn}
+                  onPress={handleBiometric}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Réessayer avec ${bioLabel}`}
+                >
                   <Text style={[s.retryBioText, { color: theme.primary }]}>Réessayer avec {bioLabel}</Text>
                 </TouchableOpacity>
               )}
@@ -176,7 +191,12 @@ export function SessionExpiredModal() {
 
           {error ? <Text style={[s.errorText, { color: theme.functional.error }]}>{error}</Text> : null}
 
-          <TouchableOpacity style={s.logoutBtn} onPress={dismissSessionExpired}>
+          <TouchableOpacity
+            style={s.logoutBtn}
+            onPress={dismissSessionExpired}
+            accessibilityRole="button"
+            accessibilityLabel="Se déconnecter"
+          >
             <Text style={[s.logoutText, { color: theme.text.muted }]}>Me déconnecter</Text>
           </TouchableOpacity>
         </View>
