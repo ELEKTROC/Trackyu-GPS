@@ -1,0 +1,63 @@
+name: Mobile E2E (Maestro)
+
+# Déclenchement manuel uniquement — nécessite un build EAS existant (profile: e2e)
+# Prérequis secrets GitHub : EAS_TOKEN, MAESTRO_CLOUD_API_KEY, E2E_EMAIL, E2E_PASSWORD
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Plateforme cible"
+        required: true
+        default: "android"
+        type: choice
+        options:
+          - android
+          - ios
+
+jobs:
+  e2e:
+    name: Maestro E2E (${{ github.event.inputs.platform }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Download EAS build
+        run: |
+          eas build:download \
+            --platform ${{ github.event.inputs.platform }} \
+            --profile e2e \
+            --output app-e2e.apk \
+            --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EAS_TOKEN }}
+        working-directory: trackyu-mobile-expo
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Run E2E flows (Maestro Cloud)
+        run: |
+          maestro cloud \
+            --apiKey ${{ secrets.MAESTRO_CLOUD_API_KEY }} \
+            --app-file app-e2e.apk \
+            .maestro/
+        env:
+          EMAIL_TEST: ${{ secrets.E2E_EMAIL }}
+          PASSWORD_TEST: ${{ secrets.E2E_PASSWORD }}
+        working-directory: trackyu-mobile-expo
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Mobile E2E — ${{ github.event.inputs.platform }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run: \`${{ github.run_number }}\` | Commit: \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
