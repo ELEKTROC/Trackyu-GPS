@@ -127,6 +127,7 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       clients = [],
       branches = [],
       vehicles = [],
+      resellers = [],
       hideClientSelector = false,
       forcedClientId,
     },
@@ -179,6 +180,12 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const selectedRole = watch('role');
     const allVehicles = watch('allVehicles');
     const selectedVehicleIds: string[] = watch('vehicleIds') || [];
+
+    const selectedClient = clients.find((c) => c.id === selectedClientId);
+    const derivedReseller = selectedClient?.resellerId
+      ? resellers.find((r) => r.id === selectedClient.resellerId)
+      : undefined;
+    const derivedResellerLabel = derivedReseller?.name || derivedReseller?.nom || selectedClient?.resellerId || '—';
 
     // Filtrer les clients selon le rôle de l'utilisateur connecté
     const accessibleClients = useMemo(() => {
@@ -337,6 +344,18 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   </Select>
                 </FormField>
               )}
+
+              <FormField
+                label="Revendeur"
+                hint={!selectedClientId ? "Sélectionnez d'abord un client" : 'Hérité automatiquement du client'}
+              >
+                <Input
+                  value={derivedResellerLabel}
+                  disabled
+                  readOnly
+                  className="bg-[var(--bg-elevated)] cursor-not-allowed"
+                />
+              </FormField>
 
               <FormField
                 label="Branche (optionnel)"

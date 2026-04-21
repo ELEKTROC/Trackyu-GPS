@@ -681,7 +681,22 @@ export function createFleetApi(lazyApi: () => any) {
         return [];
       }
       const response = await fetch(`${API_URL}/branches`, { headers: getHeaders() });
-      return response.json();
+      const raw = await response.json();
+      return (Array.isArray(raw) ? raw : []).map((b: any) => ({
+        id: b.id,
+        name: b.name || b.nom || b.id,
+        tenantId: b.tenant_id || b.tenantId || '',
+        clientId: b.client_id || b.clientId || '',
+        isDefault: b.is_default ?? b.isDefault ?? false,
+        createdAt: b.created_at || b.createdAt || '',
+        ville: b.ville,
+        responsable: b.responsable,
+        statut: b.statut,
+        email: b.email,
+        phone: b.phone,
+        description: b.description,
+        country: b.country,
+      }));
     },
     create: async (branch: Branch): Promise<Branch> => {
       if (USE_MOCK) {
@@ -1187,11 +1202,42 @@ export function createFleetApi(lazyApi: () => any) {
     // --- ALERTS ---
     alerts: alertsApi,
 
-    // --- ZONES ---
+    // --- ZONES (geofences) ---
+    // Branché sur le backend /monitoring/geofences.
+    // Le backend stocke `coordinates` en JSONB :
+    //   - CIRCLE : { center:{lat,lng}, radius }
+    //   - POLYGON/ROUTE : Array<{lat,lng}>
+    // On remappe vers la shape front `Zone` (center/radius pour CIRCLE,
+    // coordinates[] pour POLYGON).
     zones: {
       list: async (): Promise<Zone[]> => {
-        await sleep(NETWORK_DELAY);
-        return db.get(DB_KEYS.ZONES, [] as Zone[]);
+        if (USE_MOCK) {
+          await sleep(NETWORK_DELAY);
+          return db.get(DB_KEYS.ZONES, [] as Zone[]);
+        }
+        const response = await fetch(`${API_URL}/monitoring/geofences`, { headers: getHeaders() });
+        if (!response.ok) {
+          handleAuthError(response);
+          throw new Error(`Failed to fetch zones: ${response.status}`);
+        }
+        const rows = await response.json();
+        return (Array.isArray(rows) ? rows : []).map((g: any): Zone => {
+          const type = g.type === 'CIRCLE' ? 'CIRCLE' : 'POLYGON';
+          const coords = g.coordinates ?? {};
+          const center = type === 'CIRCLE' && coords.center ? coords.center : undefined;
+          const radius = type === 'CIRCLE' && typeof coords.radius === 'number' ? coords.radius : undefined;
+          const polygonPoints = type === 'POLYGON' && Array.isArray(g.coordinates) ? g.coordinates : undefined;
+          return {
+            id: g.id,
+            name: g.name,
+            type,
+            center,
+            radius,
+            coordinates: polygonPoints,
+            color: g.color || '#3B82F6',
+            category: (g.category as Zone['category']) || 'CLIENT',
+          };
+        });
       },
     },
 

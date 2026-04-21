@@ -25,8 +25,6 @@ export const AlertForm = React.forwardRef<
   BaseFormProps & {
     resellers?: Tier[];
     clients?: Tier[];
-    branches?: unknown[];
-    groups?: unknown[];
     vehicles?: Vehicle[];
     users?: User[];
     zones?: ZoneOption[];
@@ -71,12 +69,12 @@ export const AlertForm = React.forwardRef<
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
   const filteredVehicles = React.useMemo(() => {
-    if (!selectedClient) return vehicles;
+    if (!selectedClient) return [];
     return vehicles.filter((v: Vehicle) => v.client === selectedClient);
   }, [vehicles, selectedClient]);
 
   const filteredUsers = React.useMemo(() => {
-    if (!selectedClient) return users;
+    if (!selectedClient) return [];
     return users.filter(
       (u: User) =>
         (u as unknown as Record<string, unknown>)['client'] === selectedClient || u.clientId === selectedClient
@@ -84,8 +82,7 @@ export const AlertForm = React.forwardRef<
   }, [users, selectedClient]);
 
   const filteredZones = React.useMemo(() => {
-    // Assuming zones have client field
-    if (!selectedClient) return zones;
+    if (!selectedClient) return [];
     return zones.filter((z: ZoneOption) => !z.client || z.client === selectedClient);
   }, [zones, selectedClient]);
 

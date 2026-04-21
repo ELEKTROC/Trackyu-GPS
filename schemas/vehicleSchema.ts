@@ -12,29 +12,44 @@ export const VehicleSchema = z.object({
   color: z.string().optional(),
 
   // Tech
-  imei: z.string()
+  imei: z
+    .string()
     .min(15, "L'IMEI doit contenir au moins 15 chiffres")
     .max(17, "L'IMEI ne peut pas dépasser 17 chiffres")
-    .regex(/^\d+$/, "L'IMEI doit contenir uniquement des chiffres"),
+    .regex(/^\d+$/, "L'IMEI doit contenir uniquement des chiffres")
+    .or(z.literal(''))
+    .optional(),
   deviceId: z.string().optional(),
   sim: z.string().optional(),
   iccid: z.string().optional(),
   simOperator: z.string().optional(),
   deviceType: z.string().optional(),
-  deviceStatus: z.enum(['IN_STOCK', 'INSTALLED', 'DEFECTIVE', 'RETURNED', 'RMA', 'RMA_PENDING', 'SENT_TO_SUPPLIER', 'REPLACED_BY_SUPPLIER', 'SCRAPPED', 'LOST', 'REMOVED']).optional(),
+  deviceStatus: z
+    .enum([
+      'IN_STOCK',
+      'INSTALLED',
+      'RMA',
+      'RMA_PENDING',
+      'SENT_TO_SUPPLIER',
+      'REPLACED_BY_SUPPLIER',
+      'SCRAPPED',
+      'LOST',
+      'REMOVED',
+    ])
+    .optional(),
   installDate: z.string().optional(),
   deviceLocation: z.string().optional(),
   serverAddress: z.string().optional(),
   sensors: z.array(z.string()).optional(),
 
   // Hierarchy
-  resellerId: z.string().optional(),
-  client: z.string().optional(),
-  branchId: z.string().optional(),
+  resellerId: z.string().min(1, 'Le revendeur est requis'),
+  client: z.string().min(1, 'Le client est requis'),
+  branchId: z.string().min(1, 'La branche est requise'),
   group: z.string().optional(),
   driver: z.string().optional(),
 
-  status: z.enum(['MOVING', 'IDLE', 'STOPPED', 'OFFLINE']).default('STOPPED'),
+  status: z.enum(['MOVING', 'IDLE', 'STOPPED', 'OFFLINE', 'ONLINE']).default('STOPPED'),
   vehicleType: z.string().optional(),
 
   // Fuel
@@ -54,7 +69,7 @@ export const VehicleSchema = z.object({
   maxIdleTime: z.coerce.number().optional(),
   odometer: z.coerce.number().optional(),
   mileage: z.coerce.number().optional(),
-  odometerSource: z.enum(['GPS', 'CANBUS']).default('GPS'),
+  odometerSource: z.enum(['GPS', 'CANBUS', 'CAN']).default('GPS'),
   engineHours: z.coerce.number().optional(),
   distanceCounterSource: z.string().optional(),
   timezone: z.string().optional(),

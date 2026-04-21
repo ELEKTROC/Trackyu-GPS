@@ -11,24 +11,40 @@ export type BranchFormData = z.infer<typeof BranchSchema>;
 interface ClientOption {
   id: string;
   name: string;
+  resellerId?: string;
+}
+
+interface ResellerOption {
+  id: string;
+  name?: string;
+  nom?: string;
 }
 
 interface BaseFormProps {
   initialData?: Partial<BranchFormData>;
   onFormSubmit: (data: BranchFormData) => void;
   clients?: ClientOption[];
+  resellers?: ResellerOption[];
 }
 
 export const BranchForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
-  ({ initialData, onFormSubmit, clients = [] }, ref) => {
+  ({ initialData, onFormSubmit, clients = [], resellers = [] }, ref) => {
     const {
       register,
       handleSubmit,
+      watch,
       formState: { errors },
     } = useForm<BranchFormData>({
       resolver: zodResolver(BranchSchema) as Resolver<BranchFormData>,
       defaultValues: initialData || { status: 'ACTIVE', isDefault: false },
     });
+
+    const selectedClientId = watch('clientId');
+    const selectedClient = clients.find((c) => c.id === selectedClientId);
+    const derivedReseller = selectedClient?.resellerId
+      ? resellers.find((r) => r.id === selectedClient.resellerId)
+      : undefined;
+    const derivedResellerLabel = derivedReseller?.name || derivedReseller?.nom || selectedClient?.resellerId || '—';
 
     const onSubmit = (data: BranchFormData) => {
       onFormSubmit(data);
@@ -54,13 +70,27 @@ export const BranchForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
           </FormGrid>
 
           <FormGrid cols={2}>
+            <FormField
+              label="Revendeur"
+              hint={!selectedClientId ? "Sélectionnez d'abord un client" : 'Hérité automatiquement du client'}
+            >
+              <Input
+                value={derivedResellerLabel}
+                disabled
+                readOnly
+                className="bg-[var(--bg-elevated)] cursor-not-allowed"
+              />
+            </FormField>
             <FormField label="Statut">
               <Select {...register('status')}>
                 <option value="ACTIVE">Actif</option>
                 <option value="INACTIVE">Inactif</option>
               </Select>
             </FormField>
-            <div className="flex items-center pt-7">
+          </FormGrid>
+
+          <FormGrid cols={2}>
+            <div className="flex items-center pt-2">
               <label className="flex items-center gap-3 cursor-pointer group">
                 <input
                   {...register('isDefault')}

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EcoDrivingSchema } from '../../../../schemas/ecoDrivingSchema';
 import { Truck, Gauge, Car, RotateCcw, AlertTriangle } from 'lucide-react';
-import { FormField, Input, Select, FormGrid, FormSection } from '../../../../components/form';
+import { FormField, Input, Select, Textarea, FormGrid, FormSection } from '../../../../components/form';
 import type { z } from 'zod';
 
 export type EcoDrivingFormData = z.infer<typeof EcoDrivingSchema>;
@@ -23,6 +23,10 @@ interface VehicleOption {
   id: string;
   name?: string;
   immatriculation?: string;
+  licensePlate?: string;
+  plate?: string;
+  client?: string;
+  clientId?: string;
 }
 
 interface BaseFormProps {
@@ -38,6 +42,8 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const {
       register,
       handleSubmit,
+      watch,
+      setValue,
       formState: { errors },
     } = useForm<EcoDrivingFormData>({
       resolver: zodResolver(EcoDrivingSchema) as Resolver<EcoDrivingFormData>,
@@ -56,6 +62,22 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
         targetScore: 80,
       },
     });
+
+    const selectedClient = watch('client');
+    const allVehicles = watch('allVehicles');
+    const selectedVehicleIds = watch('vehicleIds') || [];
+    const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
+
+    const filteredVehicles = useMemo(() => {
+      if (!selectedClient) return [];
+      return vehicles.filter((v) => v.client === selectedClient || v.clientId === selectedClient);
+    }, [vehicles, selectedClient]);
+
+    const toggleVehicle = (id: string) => {
+      const current = selectedVehicleIds;
+      const updated = current.includes(id) ? current.filter((i: string) => i !== id) : [...current, id];
+      setValue('vehicleIds', updated);
+    };
 
     const [isSaving, setIsSaving] = useState(false);
     const onSubmit = async (data: EcoDrivingFormData) => {
@@ -81,7 +103,7 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               <option value="">Sélectionner...</option>
               {resellers.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {r.nom}
+                  {r.name || r.nom}
                 </option>
               ))}
             </Select>
@@ -119,19 +141,61 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             />
             <span className="text-sm text-[var(--text-secondary)]">Appliquer à tous les véhicules du client</span>
           </label>
-          <FormField label="Ou sélectionner des véhicules" hint="Ctrl+Clic pour sélection multiple">
-            <select
-              {...register('vehicleIds')}
-              multiple
-              className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm h-24 focus:ring-4 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
-            >
-              {vehicles.map((v) => (
-                <option key={v.id} value={v.id}>
-                  {v.name || v.immatriculation} {v.immatriculation ? `(${v.immatriculation})` : ''}
-                </option>
-              ))}
-            </select>
-          </FormField>
+          {!allVehicles && (
+            <div className="relative">
+              <label className="block text-xs font-semibold text-[var(--text-secondary)] uppercase tracking-wide mb-1.5">
+                Ou sélectionner des véhicules
+              </label>
+              <button
+                type="button"
+                onClick={() => selectedClient && setIsVehicleDropdownOpen(!isVehicleDropdownOpen)}
+                disabled={!selectedClient}
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-left flex justify-between items-center hover:border-[var(--border-strong)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span
+                  className={
+                    selectedVehicleIds.length === 0 ? 'text-[var(--text-muted)]' : 'text-[var(--text-primary)]'
+                  }
+                >
+                  {!selectedClient
+                    ? "Sélectionnez un client d'abord..."
+                    : selectedVehicleIds.length === 0
+                      ? 'Sélectionner les véhicules...'
+                      : `${selectedVehicleIds.length} véhicule(s) sélectionné(s)`}
+                </span>
+                <span className="text-xs text-[var(--text-muted)]">▼</span>
+              </button>
+              {isVehicleDropdownOpen && selectedClient && (
+                <div className="absolute z-10 w-full mt-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                  {filteredVehicles.length === 0 ? (
+                    <div className="p-3 text-sm text-[var(--text-secondary)]">
+                      Aucun véhicule trouvé pour ce client.
+                    </div>
+                  ) : (
+                    filteredVehicles.map((v) => {
+                      const plate = v.licensePlate || v.plate || v.immatriculation;
+                      return (
+                        <label
+                          key={v.id}
+                          className="flex items-center gap-2 p-2.5 hover:bg-[var(--bg-elevated)] cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedVehicleIds.includes(v.id)}
+                            onChange={() => toggleVehicle(v.id)}
+                            className="w-4 h-4 rounded-lg border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                          />
+                          <span className="text-sm text-[var(--text-primary)]">
+                            {v.name || plate} {plate ? `(${plate})` : ''}
+                          </span>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Excès de Vitesse */}
@@ -219,6 +283,11 @@ export const EcoDrivingForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             </Select>
           </FormField>
         </FormGrid>
+
+        {/* Description */}
+        <FormField label="Description / Notes">
+          <Textarea {...register('description')} rows={3} placeholder="Détails sur ce profil éco-conduite..." />
+        </FormField>
       </form>
     );
   }

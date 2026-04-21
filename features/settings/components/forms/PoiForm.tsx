@@ -20,25 +20,11 @@ interface ClientOption {
   resellerId?: string;
 }
 
-interface BranchOption {
-  id: string;
-  name?: string;
-  nom?: string;
-}
-
-interface GroupOption {
-  id: string;
-  nom?: string;
-  name?: string;
-}
-
 interface BaseFormProps {
   initialData?: Partial<PoiFormData>;
   onFormSubmit: (data: PoiFormData) => void | Promise<void>;
   resellers?: ResellerOption[];
   clients?: ClientOption[];
-  branches?: BranchOption[];
-  groups?: GroupOption[];
 }
 
 export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
@@ -71,7 +57,6 @@ export const PoiForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             rayon: 50,
             type: 'Station Service',
             color: '#3b82f6',
-            isShared: false,
             clientIds: [],
             allClients: false,
           },

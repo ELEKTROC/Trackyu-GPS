@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useIsMobile } from '../../../hooks/useIsMobile';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Receipt,
   DollarSign,
@@ -151,6 +152,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   navParams,
 }) => {
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
   const { formatPrice } = useCurrency();
   const { showToast } = useToast();
   const { hasPermission, user } = useAuth();
@@ -209,6 +211,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, _setItemsPerPage] = useState(10);
   const [actionMenuId, setActionMenuId] = useState<string | null>(null);
+  const [actionMenuPos, setActionMenuPos] = useState<{ top: number; right: number } | null>(null);
 
   // Payment Modal State
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -1330,20 +1333,8 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
         }
         // Mettre à jour le devis en ACCEPTED localement
         updateQuote({ ...quote, status: 'ACCEPTED' });
-        // Ajouter la facture créée par le backend
-        if (result.invoice) {
-          addInvoice({
-            ...result.invoice,
-            id: result.invoice.id,
-            clientId: result.invoice.tier_id,
-            number: result.invoice.invoice_number,
-            amount: parseFloat(result.invoice.amount_ttc || result.invoice.amount_ht || '0'),
-            vatRate: parseFloat(result.invoice.tax_rate || '0'),
-            status: result.invoice.status || 'DRAFT',
-            items: result.invoice.items || [],
-            createdAt: new Date(result.invoice.created_at),
-          });
-        }
+        // Rafraîchir les factures depuis le serveur (la facture a été créée par /convert)
+        queryClient.invalidateQueries({ queryKey: ['invoices'] });
         showToast(
           action === 'accept' ? TOAST.FINANCE.QUOTE_ACCEPTED(item.id) : TOAST.FINANCE.QUOTE_CONVERTED,
           'success'
@@ -1407,6 +1398,7 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
   };
 
   const isAllSelected = paginatedData.length > 0 && paginatedData.every((i) => selectedIds.has(i.id));
+  const activeActionItem = paginatedData.find((i) => i.id === actionMenuId) ?? null;
 
   return (
     <>
@@ -1871,11 +1863,11 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
         {!isMobile && (
           <Card className="flex-1 overflow-hidden p-0 relative">
             {selectedIds.size > 0 && (
-              <div className="absolute top-0 left-0 right-0 h-14 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-between px-6 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--primary)] dark:border-[var(--primary)]">
-                <span className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)]">
+              <div className="absolute top-0 left-0 right-0 min-h-14 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] flex items-center justify-between px-6 py-2 z-20 animate-in fade-in slide-in-from-top-1 border-b border-[var(--primary)] dark:border-[var(--primary)]">
+                <span className="text-sm font-bold text-[var(--primary)] dark:text-[var(--primary)] shrink-0 mr-4">
                   {selectedIds.size} sélectionné(s)
                 </span>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-2 justify-end">
                   <button
                     onClick={() => {
                       const selected = filteredData.filter((i) => selectedIds.has(i.id));
@@ -2155,158 +2147,20 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setActionMenuId(actionMenuId === item.id ? null : item.id);
+                                if (actionMenuId === item.id) {
+                                  setActionMenuId(null);
+                                  setActionMenuPos(null);
+                                } else {
+                                  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                                  setActionMenuPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+                                  setActionMenuId(item.id);
+                                }
                               }}
                               className="p-2 text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)] rounded-full"
                               title="Plus d'actions"
                             >
                               <MoreVertical className="w-4 h-4" />
                             </button>
-                            {actionMenuId === item.id && (
-                              <>
-                                <div className="fixed inset-0 z-40" onClick={() => setActionMenuId(null)} />
-                                <div className="absolute right-0 top-full mt-1 w-52 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl shadow-xl z-50 py-1 text-left animate-in fade-in slide-in-from-top-1 duration-150">
-                                  {mode === 'INVOICES' && item.status !== 'PAID' && (
-                                    <button
-                                      onClick={() => {
-                                        openPaymentModal(item as Invoice);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
-                                    >
-                                      <DollarSign className="w-4 h-4 text-green-500" /> Enregistrer un paiement
-                                    </button>
-                                  )}
-                                  {mode === 'INVOICES' && (
-                                    <button
-                                      onClick={() => {
-                                        openPaymentHistoryModal(item as Invoice);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
-                                    >
-                                      <Receipt className="w-4 h-4 text-amber-500" /> Historique paiements
-                                    </button>
-                                  )}
-                                  {mode === 'INVOICES' && item.status !== 'CANCELLED' && (
-                                    <button
-                                      onClick={() => {
-                                        handleAction('credit_note', item);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
-                                    >
-                                      <XCircle className="w-4 h-4 text-orange-500" /> Générer un avoir
-                                    </button>
-                                  )}
-                                  {mode === 'INVOICES' && (item as Invoice).category === 'INSTALLATION' && (
-                                    <button
-                                      onClick={() => {
-                                        handleGenerateContract(item);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
-                                    >
-                                      <FileText className="w-4 h-4 text-indigo-500" /> Générer contrat
-                                    </button>
-                                  )}
-                                  <button
-                                    onClick={() => {
-                                      handleAction('clone', item);
-                                      setActionMenuId(null);
-                                    }}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
-                                  >
-                                    <Copy className="w-4 h-4 text-purple-500" /> Dupliquer
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      handleAction('send', item);
-                                      setActionMenuId(null);
-                                    }}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
-                                  >
-                                    <Mail className="w-4 h-4 text-[var(--text-secondary)]" /> Envoyer par email
-                                  </button>
-                                  {item.status !== 'CANCELLED' && item.status !== 'PAID' && (
-                                    <button
-                                      onClick={() => {
-                                        handleAction('cancel', item);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-orange-600 hover:bg-[var(--clr-warning-dim)]"
-                                    >
-                                      <XCircle className="w-4 h-4" /> Annuler
-                                    </button>
-                                  )}
-                                  {mode === 'INVOICES' && (item.status === 'DRAFT' || item.status === 'SENT') && (
-                                    <button
-                                      onClick={() => {
-                                        handleAction('mark_sent', item);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
-                                    >
-                                      <CheckCircle className="w-4 h-4" /> Marquer comme envoyée
-                                    </button>
-                                  )}
-                                  {mode === 'QUOTES' && item.status === 'DRAFT' && (
-                                    <button
-                                      onClick={() => {
-                                        handleAction('mark_sent', item);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
-                                    >
-                                      <CheckCircle className="w-4 h-4" /> Marquer comme envoyé
-                                    </button>
-                                  )}
-                                  {mode === 'QUOTES' && item.status === 'SENT' && (
-                                    <>
-                                      <button
-                                        onClick={() => {
-                                          handleAction('accept', item);
-                                          setActionMenuId(null);
-                                        }}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-green-600 hover:bg-[var(--clr-success-dim)]"
-                                      >
-                                        <FileCheck className="w-4 h-4" /> Accepter le devis
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          handleAction('reject', item);
-                                          setActionMenuId(null);
-                                        }}
-                                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-[var(--clr-danger-dim)]"
-                                      >
-                                        <XCircle className="w-4 h-4" /> Refuser le devis
-                                      </button>
-                                    </>
-                                  )}
-                                  {mode === 'QUOTES' && (item.status === 'DRAFT' || item.status === 'SENT') && (
-                                    <button
-                                      onClick={() => {
-                                        handleAction('convert_to_invoice', item);
-                                        setActionMenuId(null);
-                                      }}
-                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
-                                    >
-                                      <FileCheck className="w-4 h-4" /> Convertir en facture
-                                    </button>
-                                  )}
-                                  <div className="border-t border-[var(--border)] border-[var(--border)] my-1" />
-                                  <button
-                                    onClick={() => {
-                                      handleAction('delete', item);
-                                      setActionMenuId(null);
-                                    }}
-                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-[var(--clr-danger-dim)]"
-                                  >
-                                    <Trash2 className="w-4 h-4" /> Supprimer
-                                  </button>
-                                </div>
-                              </>
-                            )}
                           </div>
                         </td>
                       </tr>
@@ -3250,6 +3104,163 @@ export const FinanceView: React.FC<FinanceViewProps> = ({
         )}
       </div>
       <ConfirmDialogComponent />
+      {activeActionItem &&
+        actionMenuPos &&
+        createPortal(
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => {
+                setActionMenuId(null);
+                setActionMenuPos(null);
+              }}
+            />
+            <div
+              className="fixed w-52 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl shadow-xl z-50 py-1 text-left animate-in fade-in slide-in-from-top-1 duration-150"
+              style={{ top: actionMenuPos.top, right: actionMenuPos.right }}
+            >
+              {mode === 'INVOICES' && activeActionItem.status !== 'PAID' && (
+                <button
+                  onClick={() => {
+                    openPaymentModal(activeActionItem as Invoice);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
+                >
+                  <DollarSign className="w-4 h-4 text-green-500" /> Enregistrer un paiement
+                </button>
+              )}
+              {mode === 'INVOICES' && (
+                <button
+                  onClick={() => {
+                    openPaymentHistoryModal(activeActionItem as Invoice);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
+                >
+                  <Receipt className="w-4 h-4 text-amber-500" /> Historique paiements
+                </button>
+              )}
+              {mode === 'INVOICES' && activeActionItem.status !== 'CANCELLED' && (
+                <button
+                  onClick={() => {
+                    handleAction('credit_note', activeActionItem);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
+                >
+                  <XCircle className="w-4 h-4 text-orange-500" /> Générer un avoir
+                </button>
+              )}
+              {mode === 'INVOICES' && (activeActionItem as Invoice).category === 'INSTALLATION' && (
+                <button
+                  onClick={() => {
+                    handleGenerateContract(activeActionItem);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
+                >
+                  <FileText className="w-4 h-4 text-indigo-500" /> Générer contrat
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  handleAction('clone', activeActionItem);
+                  setActionMenuId(null);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
+              >
+                <Copy className="w-4 h-4 text-purple-500" /> Dupliquer
+              </button>
+              <button
+                onClick={() => {
+                  handleAction('send', activeActionItem);
+                  setActionMenuId(null);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
+              >
+                <Mail className="w-4 h-4 text-[var(--text-secondary)]" /> Envoyer par email
+              </button>
+              {activeActionItem.status !== 'CANCELLED' && activeActionItem.status !== 'PAID' && (
+                <button
+                  onClick={() => {
+                    handleAction('cancel', activeActionItem);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-orange-600 hover:bg-[var(--clr-warning-dim)]"
+                >
+                  <XCircle className="w-4 h-4" /> Annuler
+                </button>
+              )}
+              {mode === 'INVOICES' && (activeActionItem.status === 'DRAFT' || activeActionItem.status === 'SENT') && (
+                <button
+                  onClick={() => {
+                    handleAction('mark_sent', activeActionItem);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
+                >
+                  <CheckCircle className="w-4 h-4" /> Marquer comme envoyée
+                </button>
+              )}
+              {mode === 'QUOTES' && activeActionItem.status === 'DRAFT' && (
+                <button
+                  onClick={() => {
+                    handleAction('mark_sent', activeActionItem);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
+                >
+                  <CheckCircle className="w-4 h-4" /> Marquer comme envoyé
+                </button>
+              )}
+              {mode === 'QUOTES' && activeActionItem.status === 'SENT' && (
+                <>
+                  <button
+                    onClick={() => {
+                      handleAction('accept', activeActionItem);
+                      setActionMenuId(null);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-green-600 hover:bg-[var(--clr-success-dim)]"
+                  >
+                    <FileCheck className="w-4 h-4" /> Accepter le devis
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleAction('reject', activeActionItem);
+                      setActionMenuId(null);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-[var(--clr-danger-dim)]"
+                  >
+                    <XCircle className="w-4 h-4" /> Refuser le devis
+                  </button>
+                </>
+              )}
+              {mode === 'QUOTES' && (activeActionItem.status === 'DRAFT' || activeActionItem.status === 'SENT') && (
+                <button
+                  onClick={() => {
+                    handleAction('convert_to_invoice', activeActionItem);
+                    setActionMenuId(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)]"
+                >
+                  <FileCheck className="w-4 h-4" /> Convertir en facture
+                </button>
+              )}
+              <div className="border-t border-[var(--border)] my-1" />
+              <button
+                onClick={() => {
+                  handleAction('delete', activeActionItem);
+                  setActionMenuId(null);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-[var(--clr-danger-dim)]"
+              >
+                <Trash2 className="w-4 h-4" /> Supprimer
+              </button>
+            </div>
+          </>,
+          document.body
+        )}
     </>
   );
 };

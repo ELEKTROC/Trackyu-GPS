@@ -146,11 +146,27 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     queryFn: () => getVehicleAlerts(vehicle.id),
   });
 
+  const todayAlerts = useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+    const inRange = (a: (typeof alerts)[0]) => {
+      const d = new Date(a.createdAt);
+      return d >= start && d <= end;
+    };
+    return {
+      system: alerts.filter((a) => inRange(a) && !a.ruleId),
+      violations: alerts.filter((a) => inRange(a) && !!a.ruleId),
+    };
+  }, [alerts]);
+
   // --- STATS CALCULATION ---
   const formattedFuelHistory = useMemo(() => {
     if (fuelHistory.length > 0) {
       return fuelHistory.map((h) => ({
         date: new Date(h.date).toLocaleDateString('fr-FR', { weekday: 'short', hour: '2-digit', minute: '2-digit' }),
+        rawDate: h.date,
         level: h.level,
         conso: h.consumption,
         volume: h.volume,
@@ -186,12 +202,13 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       statusDuration: formatDurationHHMM(s.statusDurationMs),
       engineHours: formatEngineHours(s.movingMs + s.idleMs),
       totalDistance: s.totalDistance,
+      idleMs: s.idleMs,
     };
   }, [history, vehicle.status]);
 
   // --- ÉTATS ---
   const [isConfigMode, setIsConfigMode] = useState(false);
-  const [activeFuelTab, setActiveFuelTab] = useState('Synthèse');
+  const [activeFuelTab, setActiveFuelTab] = useState("Aujourd'hui");
 
   // Clé localStorage pour la config
   const CONFIG_KEY = 'vehicleDetailPanelConfig';
@@ -348,15 +365,6 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     harshBraking: vehicle.behaviorStats?.harshBraking || 0,
     harshAccel: vehicle.behaviorStats?.harshAccel || 0,
     sharpTurn: vehicle.behaviorStats?.sharpTurn || 0,
-    // Violations (Règles)
-    violationsList:
-      alerts.length > 0
-        ? alerts.map((a) => ({
-            type: a.type,
-            time: new Date(a.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            details: a.message,
-          }))
-        : [],
     // Maintenance
     maintenanceList:
       maintenanceRecords.length > 0
@@ -413,7 +421,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       return <MaintenanceModalContent />;
     }
     if (activeModal === 'violations') {
-      return <ViolationsModalContent />;
+      return <ViolationsModalContent safetyScore={mockData.safetyScore} violations={todayAlerts.violations} />;
     }
     if (activeModal === 'fuel') {
       return (
@@ -453,7 +461,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               ))}
             </div>
           );
-        if (alerts.length === 0)
+        if (todayAlerts.system.length === 0)
           return (
             <div className="p-6 text-center text-sm text-[var(--text-muted)]">
               {t('fleet.detailPanel.emptyStates.noAlerts')}
@@ -461,7 +469,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           );
         return (
           <AlertsBlock
-            alerts={alerts}
+            alerts={todayAlerts.system}
             isConfigMode={isConfigMode}
             hiddenFields={hiddenFields}
             toggleFieldVisibility={toggleFieldVisibility}
@@ -474,17 +482,17 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             isConfigMode={isConfigMode}
             hiddenFields={hiddenFields}
             toggleFieldVisibility={toggleFieldVisibility}
+            setActiveModal={setActiveModal}
           />
         );
       case 'violations':
         return (
           <ViolationsBlock
             vehicle={vehicle}
-            mockData={mockData}
+            violations={todayAlerts.violations}
             isConfigMode={isConfigMode}
             hiddenFields={hiddenFields}
             toggleFieldVisibility={toggleFieldVisibility}
-            setActiveModal={setActiveModal}
           />
         );
       case 'maintenance':
@@ -547,6 +555,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             activeFuelTab={activeFuelTab}
             setActiveFuelTab={setActiveFuelTab}
             setActiveModal={setActiveModal}
+            idleMs={stats.idleMs ?? 0}
+            totalDistance={stats.totalDistance ?? 0}
           />
         );
       case 'sensors':

@@ -7,27 +7,57 @@ import {
   Activity,
   AlertTriangle,
   Battery,
+  Check,
   Cpu,
+  Edit2,
   Eye,
+  Package,
+  Plus,
   Radio,
   RefreshCw,
   Send,
   Settings,
   Shield,
+  Tag,
+  Trash2,
   Wifi,
   WifiOff,
+  X,
   Zap,
 } from 'lucide-react';
 import { getHeaders } from '../../../../services/api/client';
 
-type Tab =
-  | 'DASHBOARD'
-  | 'DEVICE_HEALTH'
-  | 'RAW_DATA'
-  | 'GLOBAL_CONFIG'
-  | 'BULK_COMMANDS'
-  | 'APN_PROFILES'
-  | 'DISCOVERY';
+type Tab = 'DASHBOARD' | 'DEVICE_HEALTH' | 'MODELS_PROTOCOLS' | 'DISCOVERY' | 'GLOBAL_CONFIG';
+
+interface DeviceModelConfig {
+  id: string;
+  brand: string | null;
+  model: string;
+  protocol: string | null;
+  imei_prefixes: string[];
+  specifications: Record<string, unknown>;
+  supported_commands: string[];
+  is_active: boolean;
+  is_system: boolean;
+  description: string | null;
+  default_price: number;
+  display_order: number;
+}
+
+interface ParcByModel {
+  model: string | null;
+  config_id: string | null;
+  brand: string | null;
+  protocol: string | null;
+  imei_prefixes: string[] | null;
+  total: number;
+  installed: number;
+}
+
+interface ParcByPrefix {
+  prefix: string;
+  nb: number;
+}
 
 interface GpsPipelineStats {
   timestamp: string;
@@ -545,6 +575,419 @@ function GlobalConfigTab() {
   );
 }
 
+// ─── Onglet Modèles & Protocoles ─────────────────────────────────────────────
+function ModelsProtocolsTab() {
+  const [models, setModels] = useState<DeviceModelConfig[]>([]);
+  const [parc, setParc] = useState<{ byModel: ParcByModel[]; byPrefix: ParcByPrefix[] } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editPrefixes, setEditPrefixes] = useState<string>('');
+  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newModel, setNewModel] = useState({ brand: '', model: '', protocol: 'GT06', imeiPrefixes: '' });
+  const [addStatus, setAddStatus] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const [modelsRes, parcRes] = await Promise.all([
+        fetch('/api/tech-settings/device-models', { headers: getHeaders() }),
+        fetch('/api/admin/device-parc', { headers: getHeaders() }),
+      ]);
+      if (modelsRes.ok) setModels(await modelsRes.json());
+      if (parcRes.ok) setParc(await parcRes.json());
+    } catch (e) {
+      console.error('[ModelsTab] load error', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const getParcForModel = (modelName: string | null): ParcByModel | undefined =>
+    parc?.byModel.find((p) => p.model === modelName);
+
+  const startEdit = (m: DeviceModelConfig) => {
+    setEditingId(m.id);
+    setEditPrefixes((m.imei_prefixes || []).join(', '));
+    setSaveStatus(null);
+  };
+
+  const savePrefixes = async (m: DeviceModelConfig) => {
+    setSaving(true);
+    try {
+      const prefixes = editPrefixes
+        .split(/[,\s]+/)
+        .map((p) => p.trim())
+        .filter((p) => p.length > 0);
+      const res = await fetch(`/api/tech-settings/device-models/${m.id}`, {
+        method: 'PUT',
+        headers: getHeaders(),
+        body: JSON.stringify({ imeiPrefixes: prefixes }),
+      });
+      if (res.ok) {
+        setModels((prev) => prev.map((x) => (x.id === m.id ? { ...x, imei_prefixes: prefixes } : x)));
+        setEditingId(null);
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus(null), 2000);
+      } else {
+        const data = await res.json();
+        setSaveStatus(`error: ${data.error || 'Erreur'}`);
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteModel = async (m: DeviceModelConfig) => {
+    if (!confirm(`Supprimer le modèle "${m.brand} ${m.model}" ?`)) return;
+    const res = await fetch(`/api/tech-settings/device-models/${m.id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    if (res.ok) setModels((prev) => prev.filter((x) => x.id !== m.id));
+  };
+
+  const addModel = async () => {
+    if (!newModel.model.trim()) {
+      setAddStatus('Modèle requis');
+      return;
+    }
+    setAddStatus(null);
+    const prefixes = newModel.imeiPrefixes
+      .split(/[,\s]+/)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+    const res = await fetch('/api/tech-settings/device-models', {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        brand: newModel.brand || null,
+        model: newModel.model,
+        protocol: newModel.protocol,
+        imeiPrefixes: prefixes,
+        type: 'BOX',
+        specifications: {},
+        isActive: true,
+      }),
+    });
+    if (res.ok) {
+      await load();
+      setShowAddForm(false);
+      setNewModel({ brand: '', model: '', protocol: 'GT06', imeiPrefixes: '' });
+    } else {
+      const data = await res.json();
+      setAddStatus(`Erreur: ${data.error || 'inconnue'}`);
+    }
+  };
+
+  if (loading)
+    return <div className="py-8 text-center text-sm text-[var(--text-secondary)]">Chargement des modèles…</div>;
+
+  // Group by brand for display
+  const uniqueBrands = [...new Set(models.map((m) => m.brand || '—'))].sort();
+
+  return (
+    <div className="space-y-4">
+      {/* KPIs Parc */}
+      {parc && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {parc.byModel.slice(0, 4).map((row) => (
+            <div
+              key={row.model || 'unknown'}
+              className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-3"
+            >
+              <div className="text-xs text-[var(--text-secondary)] mb-1 truncate">
+                {row.brand || '—'} {row.model || 'Inconnu'}
+              </div>
+              <div className="text-xl font-bold text-[var(--text-primary)]">{row.total}</div>
+              <div className="text-xs text-[var(--text-secondary)]">{row.installed} installés</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Bouton ajouter */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
+          <Package className="h-4 w-4 text-[var(--primary)]" />
+          Catalogue modèles ({models.length})
+        </h3>
+        <button
+          onClick={() => setShowAddForm((v) => !v)}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--primary)] text-white rounded-lg text-xs hover:bg-[var(--primary-light)]"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Nouveau modèle
+        </button>
+      </div>
+
+      {/* Formulaire ajout */}
+      {showAddForm && (
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-4 space-y-3">
+          <h4 className="text-sm font-medium text-[var(--text-primary)]">Nouveau modèle</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-[var(--text-secondary)] mb-1 block">Marque</label>
+              <input
+                value={newModel.brand}
+                onChange={(e) => setNewModel((n) => ({ ...n, brand: e.target.value }))}
+                placeholder="Concox, Teltonika…"
+                className="w-full border border-[var(--border)] rounded px-2 py-1.5 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[var(--text-secondary)] mb-1 block">Modèle *</label>
+              <input
+                value={newModel.model}
+                onChange={(e) => setNewModel((n) => ({ ...n, model: e.target.value }))}
+                placeholder="GT06N, FMB920…"
+                className="w-full border border-[var(--border)] rounded px-2 py-1.5 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-[var(--text-secondary)] mb-1 block">Protocole</label>
+              <select
+                value={newModel.protocol}
+                onChange={(e) => setNewModel((n) => ({ ...n, protocol: e.target.value }))}
+                className="w-full border border-[var(--border)] rounded px-2 py-1.5 text-sm"
+              >
+                <option value="GT06">GT06</option>
+                <option value="TELTONIKA">Teltonika</option>
+                <option value="Coban">Coban</option>
+                <option value="OSMAND">OsmAnd</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-[var(--text-secondary)] mb-1 block">Préfixes IMEI</label>
+              <input
+                value={newModel.imeiPrefixes}
+                onChange={(e) => setNewModel((n) => ({ ...n, imeiPrefixes: e.target.value }))}
+                placeholder="86287, 86730…"
+                className="w-full border border-[var(--border)] rounded px-2 py-1.5 text-sm font-mono"
+              />
+            </div>
+          </div>
+          {addStatus && <p className="text-xs text-red-600">{addStatus}</p>}
+          <div className="flex gap-2">
+            <button onClick={addModel} className="px-3 py-1.5 bg-[var(--primary)] text-white rounded text-sm">
+              Ajouter
+            </button>
+            <button
+              onClick={() => setShowAddForm(false)}
+              className="px-3 py-1.5 border border-[var(--border)] rounded text-sm"
+            >
+              Annuler
+            </button>
+          </div>
+        </div>
+      )}
+
+      {saveStatus === 'saved' && (
+        <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2 text-sm">
+          <Check className="h-4 w-4" /> Préfixes mis à jour
+        </div>
+      )}
+
+      {/* Table modèles par marque */}
+      {uniqueBrands.map((brand) => {
+        const brandModels = models.filter((m) => (m.brand || '—') === brand);
+        return (
+          <div key={brand} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
+            <div className="px-4 py-2 bg-[var(--bg-surface)] border-b flex items-center gap-2">
+              <Tag className="h-3.5 w-3.5 text-[var(--primary)]" />
+              <span className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wide">{brand}</span>
+              <span className="text-xs text-[var(--text-secondary)]">({brandModels.length} modèles)</span>
+            </div>
+            <div className="divide-y divide-[var(--border)]">
+              {brandModels.map((m) => {
+                const stats = getParcForModel(m.model);
+                const isEditing = editingId === m.id;
+                return (
+                  <div key={m.id} className="px-4 py-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold text-[var(--text-primary)]">{m.model}</span>
+                          {m.protocol && (
+                            <span className="px-1.5 py-0.5 bg-[var(--primary-dim)] text-[var(--primary)] text-xs rounded font-mono">
+                              {m.protocol}
+                            </span>
+                          )}
+                          {stats && (
+                            <span className="text-xs text-[var(--text-secondary)]">
+                              {stats.total} boîtiers · {stats.installed} installés
+                            </span>
+                          )}
+                        </div>
+                        {/* Préfixes IMEI */}
+                        <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                          {isEditing ? (
+                            <div className="flex items-center gap-2 w-full mt-1">
+                              <input
+                                value={editPrefixes}
+                                onChange={(e) => setEditPrefixes(e.target.value)}
+                                placeholder="86287, 86730 (séparés par virgule ou espace)"
+                                className="flex-1 border border-[var(--primary)] rounded px-2 py-1 text-xs font-mono"
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => savePrefixes(m)}
+                                disabled={saving}
+                                className="p-1.5 bg-[var(--primary)] text-white rounded hover:bg-[var(--primary-light)] disabled:opacity-50"
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={() => setEditingId(null)}
+                                className="p-1.5 border border-[var(--border)] rounded hover:bg-[var(--bg-surface)]"
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              {(m.imei_prefixes || []).length > 0 ? (
+                                (m.imei_prefixes || []).map((p) => (
+                                  <span
+                                    key={p}
+                                    className="px-1.5 py-0.5 bg-[var(--bg-surface)] border border-[var(--border)] text-xs rounded font-mono text-[var(--text-secondary)]"
+                                  >
+                                    {p}…
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-xs text-[var(--text-muted)] italic">Aucun préfixe IMEI</span>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {!isEditing && (
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => startEdit(m)}
+                            className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] rounded"
+                            title="Modifier les préfixes IMEI"
+                          >
+                            <Edit2 className="h-3.5 w-3.5" />
+                          </button>
+                          {!m.is_system && (
+                            <button
+                              onClick={() => deleteModel(m)}
+                              className="p-1.5 text-[var(--text-secondary)] hover:text-red-600 hover:bg-red-50 rounded"
+                              title="Supprimer"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      {/* Préfixes non mappés */}
+      {parc && parc.byPrefix.length > 0 && (
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="px-4 py-2 bg-[var(--bg-surface)] border-b">
+            <span className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wide">
+              Préfixes IMEI dans le parc
+            </span>
+          </div>
+          <div className="p-3 flex flex-wrap gap-2">
+            {parc.byPrefix.map((row) => {
+              const mapped = models.some((m) => (m.imei_prefixes || []).includes(row.prefix));
+              return (
+                <span
+                  key={row.prefix}
+                  className={`px-2 py-1 rounded text-xs font-mono border ${
+                    mapped
+                      ? 'bg-green-50 border-green-200 text-green-700'
+                      : 'bg-orange-50 border-orange-200 text-orange-700'
+                  }`}
+                >
+                  {row.prefix}… ({row.nb}){!mapped && <span className="ml-1 text-orange-500">⚠</span>}
+                </span>
+              );
+            })}
+          </div>
+          <div className="px-4 pb-3 text-xs text-[var(--text-secondary)]">
+            Vert = préfixe mappé à un modèle · Orange = préfixe sans correspondance
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Onglet IMEI Inconnus ─────────────────────────────────────────────────────
+function DiscoveryTab({ unknownImeis }: { unknownImeis: GpsPipelineStats['unknownImeis'] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)] flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-orange-500" />
+          IMEI inconnus détectés ({unknownImeis.length})
+        </h3>
+        <span className="text-xs text-[var(--text-secondary)]">
+          Boîtiers qui envoient des données sans être enregistrés
+        </span>
+      </div>
+
+      {unknownImeis.length === 0 ? (
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-6 text-center">
+          <Check className="h-8 w-8 text-green-500 mx-auto mb-2" />
+          <p className="text-sm text-[var(--text-secondary)]">
+            Aucun IMEI inconnu — tous les boîtiers sont enregistrés
+          </p>
+        </div>
+      ) : (
+        <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
+          <div className="divide-y divide-[var(--border)]">
+            {unknownImeis.map((item) => (
+              <div key={item.imei} className="px-4 py-3 flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full shrink-0" />
+                  <div>
+                    <div className="font-mono text-sm font-semibold text-[var(--text-primary)]">{item.imei}</div>
+                    <div className="text-xs text-[var(--text-secondary)]">
+                      Préfixe : <span className="font-mono">{item.imei.slice(0, 5)}…</span>
+                      {item.packetCount > 0 && ` · ${item.packetCount} paquets`}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-[var(--text-secondary)]">
+                    {item.lastSeen
+                      ? new Date(item.lastSeen).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                      : '—'}
+                  </div>
+                  <div className="text-xs text-orange-600 font-medium">Non enregistré</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs text-orange-800">
+        <strong>Action requise :</strong> Pour enregistrer un boîtier, allez dans Administration &gt; Flotte et créez un
+        véhicule avec cet IMEI. Le boîtier sera automatiquement associé dès le prochain paquet GPS.
+      </div>
+    </div>
+  );
+}
+
 // ─── Composant principal ──────────────────────────────────────────────────────
 export default function DeviceConfigPanelV2() {
   const [activeTab, setActiveTab] = useState<Tab>('DASHBOARD');
@@ -569,9 +1012,16 @@ export default function DeviceConfigPanelV2() {
     return () => clearInterval(interval);
   }, [fetchStats]);
 
-  const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
+  const tabs: { id: Tab; label: string; icon: React.ElementType; badge?: number }[] = [
     { id: 'DASHBOARD', label: 'Vue globale', icon: Activity },
     { id: 'DEVICE_HEALTH', label: 'Santé boîtier', icon: Cpu },
+    { id: 'MODELS_PROTOCOLS', label: 'Modèles & Protocoles', icon: Package },
+    {
+      id: 'DISCOVERY',
+      label: 'IMEI Inconnus',
+      icon: AlertTriangle,
+      badge: stats?.unknownImeis.length || 0,
+    },
     { id: 'GLOBAL_CONFIG', label: 'Configuration', icon: Settings },
   ];
 
@@ -592,11 +1042,11 @@ export default function DeviceConfigPanelV2() {
 
       {/* Onglets */}
       <div className="flex border-b bg-[var(--bg-elevated)] px-4">
-        {tabs.map(({ id, label, icon: Icon }) => (
+        {tabs.map(({ id, label, icon: Icon, badge }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
-            className={`flex items-center gap-1.5 px-3 py-2.5 text-sm border-b-2 transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-2.5 text-sm border-b-2 transition-colors whitespace-nowrap ${
               activeTab === id
                 ? 'border-[var(--primary)] text-[var(--primary)] font-medium'
                 : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
@@ -604,6 +1054,11 @@ export default function DeviceConfigPanelV2() {
           >
             <Icon className="h-4 w-4" />
             {label}
+            {badge != null && badge > 0 && (
+              <span className="ml-1 px-1.5 py-0.5 bg-orange-500 text-white text-xs rounded-full leading-none">
+                {badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -612,6 +1067,8 @@ export default function DeviceConfigPanelV2() {
       <div className="flex-1 overflow-y-auto p-4 bg-[var(--bg-surface)]">
         {activeTab === 'DASHBOARD' && <DashboardTab stats={stats} />}
         {activeTab === 'DEVICE_HEALTH' && <DeviceHealthTab />}
+        {activeTab === 'MODELS_PROTOCOLS' && <ModelsProtocolsTab />}
+        {activeTab === 'DISCOVERY' && <DiscoveryTab unknownImeis={stats?.unknownImeis ?? []} />}
         {activeTab === 'GLOBAL_CONFIG' && <GlobalConfigTab />}
       </div>
     </div>

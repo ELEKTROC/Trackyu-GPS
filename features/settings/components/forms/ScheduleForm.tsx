@@ -57,6 +57,31 @@ const getIconComponent = (iconName: string) => {
   return icons[iconName] || Settings;
 };
 
+const RULE_TYPE_STYLES: Record<string, { selected: string; icon: string }> = {
+  red: { selected: 'bg-red-50 dark:bg-red-900/30 border-red-500 ring-2 ring-red-500', icon: 'text-red-600' },
+  green: {
+    selected: 'bg-green-50 dark:bg-green-900/30 border-green-500 ring-2 ring-green-500',
+    icon: 'text-green-600',
+  },
+  orange: {
+    selected: 'bg-orange-50 dark:bg-orange-900/30 border-orange-500 ring-2 ring-orange-500',
+    icon: 'text-orange-600',
+  },
+  blue: { selected: 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 ring-2 ring-blue-500', icon: 'text-blue-600' },
+  purple: {
+    selected: 'bg-purple-50 dark:bg-purple-900/30 border-purple-500 ring-2 ring-purple-500',
+    icon: 'text-purple-600',
+  },
+  slate: {
+    selected: 'bg-slate-50 dark:bg-slate-900/30 border-slate-500 ring-2 ring-slate-500',
+    icon: 'text-slate-600',
+  },
+  indigo: {
+    selected: 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-500 ring-2 ring-indigo-500',
+    icon: 'text-indigo-600',
+  },
+};
+
 export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
   ({ initialData, onFormSubmit, clients = [], resellers = [], vehicles = [], zones = [], users = [] }, ref) => {
     const {
@@ -86,12 +111,20 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
     const ruleType = watch('ruleType');
     const selectedClient = watch('client');
     const allVehicles = watch('allVehicles');
+    const selectedVehicleIds = watch('vehicleIds') || [];
+    const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
 
     // Filtrer véhicules par client
     const filteredVehicles = useMemo(() => {
-      if (!selectedClient) return vehicles;
+      if (!selectedClient) return [];
       return vehicles.filter((v: Vehicle) => v.client === selectedClient);
     }, [vehicles, selectedClient]);
+
+    const toggleVehicle = (id: string) => {
+      const current = selectedVehicleIds;
+      const updated = current.includes(id) ? current.filter((i: string) => i !== id) : [...current, id];
+      setValue('vehicleIds', updated);
+    };
 
     // Filtrer zones par client
     const filteredZones = useMemo(() => {
@@ -154,6 +187,7 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             {RULE_TYPES.map((type) => {
               const IconComp = getIconComponent(type.icon);
               const isSelected = ruleType === type.id;
+              const styles = RULE_TYPE_STYLES[type.color] || RULE_TYPE_STYLES.slate;
               return (
                 <button
                   key={type.id}
@@ -161,13 +195,11 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                   onClick={() => setValue('ruleType', type.id as ScheduleFormData['ruleType'])}
                   className={`p-3 rounded-xl border text-left transition-all ${
                     isSelected
-                      ? `bg-${type.color}-50 dark:bg-${type.color}-900/30 border-${type.color}-500 ring-2 ring-${type.color}-500`
+                      ? styles.selected
                       : 'bg-[var(--bg-elevated)] border-[var(--border)] hover:border-[var(--border-strong)]'
                   }`}
                 >
-                  <IconComp
-                    className={`w-5 h-5 mb-1 ${isSelected ? `text-${type.color}-600` : 'text-[var(--text-muted)]'}`}
-                  />
+                  <IconComp className={`w-5 h-5 mb-1 ${isSelected ? styles.icon : 'text-[var(--text-muted)]'}`} />
                   <div className="text-xs font-semibold text-[var(--text-primary)]">{type.label}</div>
                 </button>
               );
@@ -198,19 +230,52 @@ export const ScheduleForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
             </label>
           </div>
           {!allVehicles && (
-            <div>
-              <select
-                {...register('vehicleIds')}
-                multiple
-                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm h-24"
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => selectedClient && setIsVehicleDropdownOpen(!isVehicleDropdownOpen)}
+                disabled={!selectedClient}
+                className="w-full px-3 py-2.5 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-left flex justify-between items-center hover:border-[var(--border-strong)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {filteredVehicles.map((v: Vehicle) => (
-                  <option key={v.id} value={v.id}>
-                    {v.name || v.licensePlate} {v.licensePlate ? `(${v.licensePlate})` : ''}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-[var(--text-secondary)] mt-1.5">Ctrl+Clic pour sélection multiple</p>
+                <span
+                  className={
+                    selectedVehicleIds.length === 0 ? 'text-[var(--text-muted)]' : 'text-[var(--text-primary)]'
+                  }
+                >
+                  {!selectedClient
+                    ? "Sélectionnez un client d'abord..."
+                    : selectedVehicleIds.length === 0
+                      ? 'Sélectionner les véhicules...'
+                      : `${selectedVehicleIds.length} véhicule(s) sélectionné(s)`}
+                </span>
+                <span className="text-xs text-[var(--text-muted)]">▼</span>
+              </button>
+              {isVehicleDropdownOpen && selectedClient && (
+                <div className="absolute z-10 w-full mt-1 bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                  {filteredVehicles.length === 0 ? (
+                    <div className="p-3 text-sm text-[var(--text-secondary)]">
+                      Aucun véhicule trouvé pour ce client.
+                    </div>
+                  ) : (
+                    filteredVehicles.map((v: Vehicle) => (
+                      <label
+                        key={v.id}
+                        className="flex items-center gap-2 p-2.5 hover:bg-[var(--bg-elevated)] cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedVehicleIds.includes(v.id)}
+                          onChange={() => toggleVehicle(v.id)}
+                          className="w-4 h-4 rounded-lg border-[var(--border)] text-[var(--primary)] focus:ring-[var(--primary)]"
+                        />
+                        <span className="text-sm text-[var(--text-primary)]">
+                          {v.name || v.licensePlate} {v.licensePlate ? `(${v.licensePlate})` : ''}
+                        </span>
+                      </label>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

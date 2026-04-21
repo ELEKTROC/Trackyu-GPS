@@ -59,6 +59,7 @@ interface ContractDetailModalProps {
   vehicles: Vehicle[];
   onStatusChange: (contract: Contract, newStatus: 'ACTIVE' | 'SUSPENDED' | 'TERMINATED') => void;
   onEdit: () => void;
+  initialTab?: 'OVERVIEW' | 'ABONNEMENTS' | 'INVOICES' | 'CONTRAT' | 'HISTORY';
 }
 
 export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
@@ -70,8 +71,12 @@ export const ContractDetailModal: React.FC<ContractDetailModalProps> = ({
   vehicles,
   onStatusChange,
   onEdit,
+  initialTab = 'OVERVIEW',
 }) => {
-  const [activeTab, setActiveTab] = useState('OVERVIEW');
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
+  useEffect(() => {
+    if (isOpen) setActiveTab(initialTab);
+  }, [isOpen, initialTab]);
   const { branding } = useTenantBranding();
   const { formatPrice } = useCurrency();
   const { showToast } = useToast();

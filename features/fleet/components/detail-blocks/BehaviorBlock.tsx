@@ -7,6 +7,7 @@ interface BehaviorBlockProps {
   isConfigMode: boolean;
   hiddenFields: Set<string>;
   toggleFieldVisibility: (id: string) => void;
+  setActiveModal: (modal: string) => void;
 }
 
 export const BehaviorBlock: React.FC<BehaviorBlockProps> = ({
@@ -14,6 +15,7 @@ export const BehaviorBlock: React.FC<BehaviorBlockProps> = ({
   isConfigMode,
   hiddenFields,
   toggleFieldVisibility,
+  setActiveModal,
 }) => {
   return (
     <div className="space-y-4">
@@ -74,6 +76,12 @@ export const BehaviorBlock: React.FC<BehaviorBlockProps> = ({
           </div>
         </ConfigurableRow>
       </div>
+      <button
+        onClick={() => setActiveModal('violations')}
+        className="w-full py-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] font-medium rounded transition-colors"
+      >
+        Voir le rapport de sécurité complet
+      </button>
     </div>
   );
 };

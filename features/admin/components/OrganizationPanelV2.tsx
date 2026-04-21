@@ -45,8 +45,13 @@ import {
   CalendarCheck,
   Scale,
   FileText,
+  Truck,
+  MessageCircle,
+  Wallet,
+  LifeBuoy,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
+import { TowProvidersPanel } from './panels/TowProvidersPanel';
 import { useToast } from '../../../contexts/ToastContext';
 import { TOAST } from '../../../constants/toastMessages';
 import { mapError } from '../../../utils/errorMapper';
@@ -94,6 +99,23 @@ interface BankAccount {
   isDefault: boolean;
 }
 
+type MobileMoneyProvider = 'ORANGE' | 'MTN' | 'MOOV' | 'WAVE' | 'OTHER';
+
+interface MobileMoneyAccount {
+  id: string;
+  provider: MobileMoneyProvider;
+  number: string;
+  label?: string;
+}
+
+const MOBILE_MONEY_PROVIDERS: { value: MobileMoneyProvider; label: string }[] = [
+  { value: 'ORANGE', label: 'Orange Money' },
+  { value: 'MTN', label: 'MTN MoMo' },
+  { value: 'MOOV', label: 'Moov Money' },
+  { value: 'WAVE', label: 'Wave' },
+  { value: 'OTHER', label: 'Autre' },
+];
+
 // Paramètres de facturation récurrente par cycle
 interface SubscriptionBillingSettings {
   monthly: {
@@ -127,6 +149,14 @@ interface OrganizationSettings {
   phone: string;
   website?: string;
   address: string;
+
+  // SAV (Service Après-Vente)
+  supportPhone?: string;
+  supportEmail?: string;
+  supportWhatsapp?: string;
+
+  // Paiement — Mobile Money (compte bancaire = bankAccounts dans Comptabilité)
+  mobileMoneyAccounts?: MobileMoneyAccount[];
 
   // Localisation
   country: string;
@@ -540,6 +570,7 @@ const DEFAULT_SETTINGS: OrganizationSettings = {
   taxName: 'TVA',
   paymentTerms: 30,
   bankAccounts: [],
+  mobileMoneyAccounts: [],
   numberingSeries: DEFAULT_NUMBERING_SERIES,
   subscriptionBilling: {
     monthly: {
@@ -587,6 +618,7 @@ const TABS = [
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Sécurité', icon: Shield },
   { id: 'mobile', label: 'Interface Mobile', icon: Smartphone },
+  { id: 'tow_providers', label: 'Dépanneurs', icon: Truck },
 ];
 
 // Pays disponibles
@@ -730,6 +762,37 @@ export const OrganizationPanelV2: React.FC = () => {
     setHasChanges(true);
   };
 
+  // Mobile Money — handlers liste
+  const addMobileMoneyAccount = () => {
+    const entry: MobileMoneyAccount = {
+      id: `mm-${Date.now()}`,
+      provider: 'ORANGE',
+      number: '',
+      label: '',
+    };
+    setSettings((prev) => ({
+      ...prev,
+      mobileMoneyAccounts: [...(prev.mobileMoneyAccounts || []), entry],
+    }));
+    setHasChanges(true);
+  };
+
+  const updateMobileMoneyAccount = (id: string, patch: Partial<MobileMoneyAccount>) => {
+    setSettings((prev) => ({
+      ...prev,
+      mobileMoneyAccounts: (prev.mobileMoneyAccounts || []).map((a) => (a.id === id ? { ...a, ...patch } : a)),
+    }));
+    setHasChanges(true);
+  };
+
+  const removeMobileMoneyAccount = (id: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      mobileMoneyAccounts: (prev.mobileMoneyAccounts || []).filter((a) => a.id !== id),
+    }));
+    setHasChanges(true);
+  };
+
   // Upload logo via /api/upload/logo
   const handleLogoUpload = async (file: File) => {
     if (file.size > 2 * 1024 * 1024) {
@@ -822,6 +885,32 @@ export const OrganizationPanelV2: React.FC = () => {
 
   // Sauvegarder vers l'API (avec support impersonation)
   const handleSave = async () => {
+    // Validation SAV / Paiement (optionnels — on ne valide que si renseignés)
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRe = /^\+\d{6,15}$/;
+    if (settings.supportEmail && !emailRe.test(settings.supportEmail)) {
+      showToast('Email SAV invalide', 'error');
+      return;
+    }
+    if (settings.supportPhone && !phoneRe.test(settings.supportPhone.replace(/\s/g, ''))) {
+      showToast('Téléphone SAV invalide (format international, ex. +22501020304)', 'error');
+      return;
+    }
+    if (settings.supportWhatsapp && !phoneRe.test(settings.supportWhatsapp.replace(/\s/g, ''))) {
+      showToast('WhatsApp SAV invalide (format international, ex. +22501020304)', 'error');
+      return;
+    }
+    for (const mm of settings.mobileMoneyAccounts || []) {
+      if (!mm.number.trim()) {
+        showToast('Un compte Mobile Money a un numéro vide', 'error');
+        return;
+      }
+      if (!phoneRe.test(mm.number.replace(/\s/g, ''))) {
+        showToast(`Numéro Mobile Money invalide (${mm.number}) — format international attendu`, 'error');
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       await api.tenants.updateSettings(settings);
@@ -1077,6 +1166,158 @@ export const OrganizationPanelV2: React.FC = () => {
                   placeholder="Description de votre activité..."
                 />
               </div>
+            </div>
+
+            {/* Section SAV */}
+            <div className="pt-6 border-t border-[var(--border)]">
+              <div className="flex items-center gap-2 mb-4">
+                <LifeBuoy className="w-5 h-5 text-[var(--primary)]" />
+                <h4 className="text-base font-bold text-[var(--text-primary)]">Service Après-Vente (SAV)</h4>
+              </div>
+              <p className="text-xs text-[var(--text-secondary)] mb-4">
+                Coordonnées affichées dans le Centre d'aide pour vos utilisateurs. Format international requis (ex.
+                +22501020304).
+              </p>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Téléphone SAV
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                    <input
+                      type="tel"
+                      value={settings.supportPhone || ''}
+                      onChange={(e) => handleChange('supportPhone', e.target.value)}
+                      className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
+                      placeholder="+22501020304"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    Email SAV
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                    <input
+                      type="email"
+                      value={settings.supportEmail || ''}
+                      onChange={(e) => handleChange('supportEmail', e.target.value)}
+                      className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
+                      placeholder="sav@exemple.com"
+                    />
+                  </div>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                    WhatsApp SAV
+                  </label>
+                  <div className="relative">
+                    <MessageCircle className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+                    <input
+                      type="tel"
+                      value={settings.supportWhatsapp || ''}
+                      onChange={(e) => handleChange('supportWhatsapp', e.target.value)}
+                      className="w-full pl-10 p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
+                      placeholder="+22501020304"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section Paiement — Mobile Money */}
+            <div className="pt-6 border-t border-[var(--border)]">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Wallet className="w-5 h-5 text-[var(--primary)]" />
+                  <h4 className="text-base font-bold text-[var(--text-primary)]">Paiement — Mobile Money</h4>
+                </div>
+                <button
+                  type="button"
+                  onClick={addMobileMoneyAccount}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg bg-[var(--primary)] text-white hover:opacity-90"
+                >
+                  <Plus className="w-4 h-4" />
+                  Ajouter
+                </button>
+              </div>
+              <p className="text-xs text-[var(--text-secondary)] mb-4">
+                Comptes Mobile Money acceptés pour le paiement. Pour le compte bancaire, utilisez l'onglet{' '}
+                <span className="font-semibold">Comptabilité → Banques</span>.
+              </p>
+
+              {(settings.mobileMoneyAccounts || []).length === 0 ? (
+                <div className="text-center py-8 text-sm text-[var(--text-muted)] border border-dashed border-[var(--border)] rounded-lg">
+                  Aucun compte Mobile Money configuré.
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {(settings.mobileMoneyAccounts || []).map((mm) => (
+                    <div
+                      key={mm.id}
+                      className="grid grid-cols-12 gap-3 items-center p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-surface)]"
+                    >
+                      <div className="col-span-3">
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                          Opérateur
+                        </label>
+                        <select
+                          value={mm.provider}
+                          onChange={(e) =>
+                            updateMobileMoneyAccount(mm.id, { provider: e.target.value as MobileMoneyProvider })
+                          }
+                          className="w-full p-2 border rounded-lg bg-[var(--bg-base)] border-[var(--border)]"
+                          title="Opérateur Mobile Money"
+                        >
+                          {MOBILE_MONEY_PROVIDERS.map((p) => (
+                            <option key={p.value} value={p.value}>
+                              {p.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="col-span-4">
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                          Numéro
+                        </label>
+                        <input
+                          type="tel"
+                          value={mm.number}
+                          onChange={(e) => updateMobileMoneyAccount(mm.id, { number: e.target.value })}
+                          className="w-full p-2 border rounded-lg bg-[var(--bg-base)] border-[var(--border)]"
+                          placeholder="+22501020304"
+                        />
+                      </div>
+                      <div className="col-span-4">
+                        <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">
+                          Libellé (optionnel)
+                        </label>
+                        <input
+                          type="text"
+                          value={mm.label || ''}
+                          onChange={(e) => updateMobileMoneyAccount(mm.id, { label: e.target.value })}
+                          className="w-full p-2 border rounded-lg bg-[var(--bg-base)] border-[var(--border)]"
+                          placeholder="Compte principal"
+                        />
+                      </div>
+                      <div className="col-span-1 flex justify-end items-end h-full">
+                        <button
+                          type="button"
+                          onClick={() => removeMobileMoneyAccount(mm.id)}
+                          className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg"
+                          title="Supprimer ce compte"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -2852,6 +3093,8 @@ export const OrganizationPanelV2: React.FC = () => {
             </div>
           </div>
         )}
+
+        {activeTab === 'tow_providers' && <TowProvidersPanel />}
       </Card>
       <ConfirmDialogComponent />
     </div>

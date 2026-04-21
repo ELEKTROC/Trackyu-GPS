@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { Tier, TierType } from '../../../types';
 import { Save, X, Building2, User, Truck, CreditCard, Globe, Shield, MapPin } from 'lucide-react';
 import { FormField, FormSection, FormGrid, Input, Select } from '../../../components/form';
@@ -27,24 +27,30 @@ export const TierForm: React.FC<TierFormProps> = ({ isOpen, initialData, initial
   const [formData, setFormData] = useState<Partial<Tier>>({
     type: initialType,
     status: 'ACTIVE',
-    country: 'France',
+    country: "Côte d'Ivoire",
+    city: 'Abidjan',
     ...initialData,
     // Charger resellerId depuis le champ direct OU depuis clientData (rétrocompatibilité)
     resellerId: initialData?.resellerId || initialData?.clientData?.resellerId || initialData?.supplierData?.resellerId,
   });
 
+  // Reset formData UNIQUEMENT lors de l'ouverture du modal (transition closed→open),
+  // pas à chaque render parent — sinon initialData={} littéral ré-initialise en boucle et
+  // efface ce que l'utilisateur a saisi.
+  const wasOpenRef = useRef(isOpen);
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !wasOpenRef.current) {
       setFormData({
         type: initialType,
         status: 'ACTIVE',
-        country: 'France',
+        country: "Côte d'Ivoire",
+        city: 'Abidjan',
         ...initialData,
-        // Charger resellerId depuis le champ direct OU depuis clientData (rétrocompatibilité)
         resellerId:
           initialData?.resellerId || initialData?.clientData?.resellerId || initialData?.supplierData?.resellerId,
       });
     }
+    wasOpenRef.current = isOpen;
   }, [isOpen, initialData, initialType]);
 
   // Determine if we are in a Reseller Context (Impersonation or Reseller Login)

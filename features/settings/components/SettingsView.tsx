@@ -104,6 +104,9 @@ import { BranchSchema } from '../../../schemas/branchSchema';
 import { z } from 'zod';
 import { Tabs } from '../../../components/Tabs';
 import { SortableHeader } from '../../../components/SortableHeader';
+import { useConfirmDialog } from '../../../components/ConfirmDialog';
+import { useQueryClient } from '@tanstack/react-query';
+import { api } from '../../../services/apiLazy';
 
 // Lazy loaded forms - only loaded when needed
 const VehicleForm = lazy(() => import('./forms/VehicleForm').then((m) => ({ default: m.VehicleForm })));
@@ -129,7 +132,6 @@ const MyNotificationsView = lazy(() =>
 );
 const HelpCenterView = lazy(() => import('./HelpCenterView').then((m) => ({ default: m.HelpCenterView })));
 const AboutView = lazy(() => import('./AboutView').then((m) => ({ default: m.AboutView })));
-const PrivacyView = lazy(() => import('./PrivacyView').then((m) => ({ default: m.PrivacyView })));
 const SyncView = lazy(() => import('./SyncView').then((m) => ({ default: m.SyncView })));
 const TierList = lazy(() => import('../../crm/components/TierList').then((m) => ({ default: m.TierList })));
 const TierDetailModal = lazy(() =>
@@ -178,7 +180,6 @@ type TabId =
   | 'schedule'
   | 'ecodriving'
   | 'about'
-  | 'privacy'
   | 'sync'
   | 'clients'
   | 'support_settings'
@@ -237,11 +238,8 @@ const MENU_GROUPS: MenuGroup[] = [
     ],
   },
   {
-    title: 'Aide',
-    items: [
-      { id: 'about', label: 'À propos', icon: Info },
-      { id: 'privacy', label: 'Confidentialité', icon: Shield },
-    ],
+    title: 'À propos',
+    items: [{ id: 'about', label: 'À propos', icon: Info }],
   },
 ];
 
@@ -505,6 +503,7 @@ interface GenericTableProps {
   notifications?: GenericItem[];
   onAddClick: () => void;
   onEdit: (item: GenericItem) => void;
+  onDelete?: (item: GenericItem) => void;
   onStatusChange?: (id: string, newStatus: string) => void;
 }
 
@@ -547,6 +546,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
   ecoDrivingProfiles,
   onAddClick,
   onEdit,
+  onDelete,
   onStatusChange,
   readOnly,
 }) => {
@@ -804,12 +804,20 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
     if (colLower.includes('email')) return <span className="text-[var(--text-secondary)] text-sm">{item.email}</span>;
     if (colLower.includes('clients'))
       return <span className="font-bold text-[var(--text-primary)] dark:text-[var(--text-muted)]">{item.clients}</span>;
-    if (colLower.includes('véhicules'))
+    if (colLower.includes('véhicules')) {
+      if (item.allVehicles) {
+        return (
+          <span className="text-xs bg-[var(--primary-dim)] text-[var(--primary)] px-2 py-0.5 rounded-full font-medium">
+            Tous
+          </span>
+        );
+      }
       return (
         <span className="font-bold text-[var(--text-primary)] dark:text-[var(--text-muted)]">
           {item.vehicules || item.vehicleCount || (item.vehicleIds ? item.vehicleIds.length : 0)}
         </span>
       );
+    }
     if (colLower.includes('créé le'))
       return <span className="text-xs text-[var(--text-secondary)]">{item.createdAt}</span>;
     if (colLower.includes('dernière connexion'))
@@ -1180,9 +1188,15 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded transition-colors">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(item)}
+                          className="p-1.5 text-[var(--text-muted)] hover:text-red-600 hover:bg-[var(--clr-danger-dim)] rounded transition-colors"
+                          title="Supprimer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -1245,10 +1259,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     updateClient,
     addUser,
     updateUser,
+    deleteUser,
     addVehicle,
     updateVehicle,
     addBranch,
     updateBranch,
+    deleteBranch,
     tiers,
     drivers,
     addDriver,
@@ -1301,6 +1317,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
 
   const { isDarkMode, toggleTheme } = useTheme();
   const { showToast } = useToast();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
+  const queryClient = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -1364,6 +1382,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           deviceType: vehicleToEdit.deviceType || vehicleToEdit.deviceModel || '',
           odometer: vehicleToEdit.odometer || vehicleToEdit.mileage || 0,
           driver: vehicleToEdit.driver || '',
+          status: (['MOVING', 'IDLE', 'STOPPED', 'OFFLINE', 'ONLINE'].includes(vehicleToEdit.status)
+            ? vehicleToEdit.status
+            : 'STOPPED') as 'MOVING' | 'IDLE' | 'STOPPED' | 'OFFLINE' | 'ONLINE',
+          odometerSource: (vehicleToEdit.odometerSource === 'CAN'
+            ? 'CANBUS'
+            : vehicleToEdit.odometerSource || 'GPS') as 'GPS' | 'CANBUS',
         };
         setActiveTab('objects');
         setEditingItem(enrichedVehicle);
@@ -1395,12 +1419,133 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
         deviceType: item.deviceType || item.deviceModel || '',
         odometer: item.odometer || item.mileage || 0,
         driver: item.driver || '',
+        status: (['MOVING', 'IDLE', 'STOPPED', 'OFFLINE', 'ONLINE'].includes(item.status) ? item.status : 'STOPPED') as
+          | 'MOVING'
+          | 'IDLE'
+          | 'STOPPED'
+          | 'OFFLINE'
+          | 'ONLINE',
+        odometerSource: (item.odometerSource === 'CAN' ? 'CANBUS' : item.odometerSource || 'GPS') as 'GPS' | 'CANBUS',
       };
       setEditingItem(enrichedItem);
     } else {
       setEditingItem(item);
     }
     setIsModalOpen(true);
+  };
+
+  const handleDelete = async (item: GenericItem) => {
+    const labelMap: Record<string, { title: string; message: string }> = {
+      drivers: {
+        title: 'Supprimer le conducteur',
+        message: `Supprimer le conducteur « ${item.nom || item.name || ''} » ? Cette action est irréversible.`,
+      },
+      techs: {
+        title: 'Supprimer le technicien',
+        message: `Supprimer le technicien « ${item.nom || item.name || ''} » ? Cette action est irréversible.`,
+      },
+      users: {
+        title: "Supprimer l'utilisateur",
+        message: `Supprimer l'utilisateur « ${item.name || item.email || ''} » ? Cette action est irréversible.`,
+      },
+      subaccounts: {
+        title: 'Supprimer le sous-compte',
+        message: `Supprimer le sous-compte « ${item.name || item.email || ''} » ? Cette action est irréversible.`,
+      },
+      branches: {
+        title: 'Supprimer la branche',
+        message: `Supprimer la branche « ${item.name || ''} » ? Cette action est irréversible.`,
+      },
+      groups: {
+        title: 'Supprimer le groupe',
+        message: `Supprimer le groupe « ${item.nom || item.name || ''} » ? Cette action est irréversible.`,
+      },
+      objects: {
+        title: 'Supprimer le véhicule',
+        message: `Supprimer le véhicule « ${item.licensePlate || item.plate || item.name || ''} » ? Cette action est irréversible.`,
+      },
+      commands: {
+        title: 'Supprimer la commande',
+        message: `Supprimer cette commande ? Cette action est irréversible.`,
+      },
+      poi: {
+        title: 'Supprimer le POI',
+        message: `Supprimer le POI « ${item.name || ''} » ? Cette action est irréversible.`,
+      },
+      alerts: { title: "Supprimer l'alerte", message: `Supprimer cette alerte ? Cette action est irréversible.` },
+      maintenance: {
+        title: 'Supprimer la règle de maintenance',
+        message: `Supprimer cette règle de maintenance ? Cette action est irréversible.`,
+      },
+      schedule: {
+        title: 'Supprimer la règle horaire',
+        message: `Supprimer cette règle horaire ? Cette action est irréversible.`,
+      },
+      ecodriving: {
+        title: 'Supprimer le profil éco-conduite',
+        message: `Supprimer ce profil éco-conduite ? Cette action est irréversible.`,
+      },
+    };
+    const labels = labelMap[activeTab] || {
+      title: 'Supprimer',
+      message: 'Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.',
+    };
+    const confirmed = await confirm({
+      title: labels.title,
+      message: labels.message,
+      variant: 'danger',
+      confirmLabel: 'Supprimer',
+      cancelLabel: 'Annuler',
+    });
+    if (!confirmed) return;
+    try {
+      switch (activeTab) {
+        case 'drivers':
+          deleteDriver(item.id);
+          break;
+        case 'techs':
+          deleteTech(item.id);
+          break;
+        case 'users':
+        case 'subaccounts':
+          deleteUser(item.id);
+          break;
+        case 'branches':
+          deleteBranch(item.id);
+          break;
+        case 'groups':
+          deleteGroup(item.id);
+          break;
+        case 'objects':
+          await api.objects.delete(item.id);
+          queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+          break;
+        case 'commands':
+          deleteCommand(item.id);
+          break;
+        case 'poi':
+          deletePOI(item.id);
+          break;
+        case 'alerts':
+          deleteAlertConfig(item.id);
+          break;
+        case 'maintenance':
+          deleteMaintenanceRule(item.id);
+          break;
+        case 'schedule':
+          deleteScheduleRule(item.id);
+          break;
+        case 'ecodriving':
+          deleteEcoDrivingProfile(item.id);
+          break;
+        default:
+          showToast('Suppression non disponible pour cet onglet', 'error');
+          return;
+      }
+      showToast('Élément supprimé', 'success');
+    } catch (err) {
+      showToast(`Erreur lors de la suppression : ${(err as Error).message}`, 'error');
+    }
   };
 
   const handleSaveClick = () => {
@@ -1768,7 +1913,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     sync: 'bg-[var(--text-secondary)]',
     support_settings: 'bg-[var(--bg-surface)]0',
     about: 'bg-cyan-500',
-    privacy: 'bg-[var(--text-secondary)]',
   };
 
   // --- STATE MANAGEMENT FOR 2-LEVEL TABS ---
@@ -1824,7 +1968,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
   };
 
   const renderContent = () => {
-    const commonProps = { onAddClick: handleCreate, onEdit: handleEdit };
+    const commonProps = { onAddClick: handleCreate, onEdit: handleEdit, onDelete: handleDelete };
 
     // Wrap lazy-loaded components with Suspense
     const withSuspense = (Component: React.ReactNode, label?: string) => (
@@ -1978,7 +2122,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Branche"
             type="branch"
             icon={GitBranch}
-            columns={['ID', 'Nom', 'Ville', 'Responsable', 'Statut']}
+            columns={['Nom', 'Ville', 'Responsable', 'Statut']}
             useRealBranches
             branches={branches}
             {...commonProps}
@@ -2216,8 +2360,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
               onFormSubmit={handleFormSubmit}
               resellers={resellers}
               clients={clients}
-              branches={branches}
-              groups={groups}
             />
           ) : activeTab === 'geofencing' ? (
             <GeofenceForm
@@ -2236,8 +2378,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
               onFormSubmit={handleFormSubmit}
               resellers={resellers}
               clients={clients as unknown as Tier[]}
-              branches={branches}
-              groups={groups}
               vehicles={vehicles}
               users={users}
             />
@@ -2248,7 +2388,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
               onFormSubmit={handleFormSubmit}
               resellers={resellers}
               clients={clients as unknown as Tier[]}
-              branches={groups}
               vehicles={vehicles}
               users={users}
               zones={zones}
@@ -2290,13 +2429,33 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
               clients={clients as unknown as { id: string; name: string }[]}
             />
           ) : activeTab === 'branches' ? (
-            <BranchForm ref={formRef} initialData={editingItem} onFormSubmit={handleFormSubmit} clients={clients} />
+            <BranchForm
+              ref={formRef}
+              initialData={editingItem}
+              onFormSubmit={handleFormSubmit}
+              clients={clients}
+              resellers={resellers}
+            />
           ) : activeTab === 'drivers' ? (
-            <DriverForm ref={formRef} initialData={editingItem} onFormSubmit={handleFormSubmit} />
+            <DriverForm
+              ref={formRef}
+              initialData={editingItem}
+              onFormSubmit={handleFormSubmit}
+              vehicles={vehicles}
+              clients={clients}
+              resellers={resellers}
+            />
           ) : activeTab === 'commands' ? (
-            <CommandForm ref={formRef} initialData={editingItem} onFormSubmit={handleFormSubmit} vehicles={vehicles} />
+            <CommandForm
+              ref={formRef}
+              initialData={editingItem}
+              onFormSubmit={handleFormSubmit}
+              vehicles={vehicles}
+              clients={clients}
+              resellers={resellers}
+            />
           ) : activeTab === 'groups' ? (
-            <GroupForm ref={formRef} initialData={editingItem} onFormSubmit={handleFormSubmit} />
+            <GroupForm ref={formRef} initialData={editingItem} onFormSubmit={handleFormSubmit} resellers={resellers} />
           ) : (
             <div className="p-4 text-center text-[var(--text-secondary)]">Formulaire non disponible</div>
           )}
@@ -2317,6 +2476,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           }}
         />
       </Suspense>
+
+      <ConfirmDialogComponent />
     </div>
   );
 };

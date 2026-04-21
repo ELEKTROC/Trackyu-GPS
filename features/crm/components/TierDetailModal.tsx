@@ -89,7 +89,7 @@ interface TierDetailModalProps {
 export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, onClose, onEdit, onQuickAction }) => {
   const { showToast } = useToast();
   const { formatPrice, currency } = useCurrency();
-  const { invoices, quotes, contracts, interventions, tickets, deleteTier, updateTier, payments, vehicles } =
+  const { invoices, quotes, contracts, interventions, tickets, deleteTier, updateTier, payments, vehicles, tiers } =
     useDataContext();
   const { confirm, ConfirmDialogComponent } = useConfirmDialog();
   const { user } = useAuth();
@@ -1144,11 +1144,11 @@ export const TierDetailModal: React.FC<TierDetailModalProps> = ({ tier, isOpen, 
                             </div>
                             {tier.clientData?.resellerId && (
                               <div className="col-span-2 mt-2 pt-2 border-t border-[var(--border)] border-[var(--border)]">
-                                <label className="block text-xs text-[var(--text-secondary)] mb-1">
-                                  Géré par (Revendeur)
-                                </label>
+                                <label className="block text-xs text-[var(--text-secondary)] mb-1">Prestataire</label>
                                 <div className="font-medium text-[var(--primary)] flex items-center gap-2">
-                                  <BriefcaseIcon className="w-3 h-3" /> {tier.clientData.resellerId}
+                                  <BriefcaseIcon className="w-3 h-3" />{' '}
+                                  {tiers.find((t) => t.id === tier.clientData?.resellerId)?.name ||
+                                    tier.clientData.resellerId}
                                 </div>
                               </div>
                             )}

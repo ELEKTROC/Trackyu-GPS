@@ -37,9 +37,11 @@ import {
   Eye,
   XCircle,
   Copy,
+  Scale,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { useTranslation, SUPPORTED_LANGS, type Lang } from '../../../i18n';
+import { ContractDetailModal } from '../../crm/components/ContractDetailModal';
 
 interface NotificationPreferences {
   email: boolean;
@@ -265,6 +267,42 @@ export const MyAccountView: React.FC = () => {
   const [passwordData, setPasswordData] = useState({ current: '', new: '', confirm: '' });
   const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   const passwordReveal = usePasswordReveal();
+
+  const [legalDocs, setLegalDocs] = useState<{
+    cgv?: string;
+    contract?: string;
+    policy?: string;
+    guide?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const loadLegalDocs = async () => {
+      try {
+        const data = await api.tenants.getCurrent();
+        const s = data?.settings || {};
+        setLegalDocs(s.legalDocuments || null);
+      } catch {
+        /* fallback */
+      }
+    };
+    loadLegalDocs();
+  }, []);
+
+  const handleDocClick = (e: React.MouseEvent<HTMLAnchorElement>, url?: string) => {
+    if (!url || url === '#') {
+      e.preventDefault();
+      showToast("Ce document n'est pas encore disponible.", 'info');
+    }
+  };
+
+  const [isContractModalOpen, setIsContractModalOpen] = useState(false);
+  const openContractDoc = () => {
+    if (!userContract) {
+      showToast('Aucun contrat actif trouvé.', 'info');
+      return;
+    }
+    setIsContractModalOpen(true);
+  };
 
   const savePreferences = useCallback(async (prefs: { language?: string; notifications?: NotificationPreferences }) => {
     try {
@@ -1156,6 +1194,74 @@ export const MyAccountView: React.FC = () => {
               </div>
             </div>
           </Card>
+
+          {/* ── Documentation ────────────────────────────────── */}
+          <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--border)]">
+              <div className="p-2 bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
+                <FileText className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-lg text-[var(--text-primary)]">Documentation</h3>
+            </div>
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href={legalDocs?.guide || '#'}
+                  onClick={(e) => handleDocClick(e, legalDocs?.guide)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors w-full text-left"
+                >
+                  <FileText className="w-4 h-4" />
+                  Guide de l'utilisateur (PDF)
+                </a>
+              </li>
+            </ul>
+          </Card>
+
+          {/* ── Documents Juridiques ─────────────────────────── */}
+          <Card className="bg-[var(--bg-elevated)] border-[var(--border)]">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--border)]">
+              <div className="p-2 bg-[var(--primary-dim)] rounded-lg text-[var(--primary)]">
+                <Scale className="w-5 h-5" />
+              </div>
+              <h3 className="font-bold text-lg text-[var(--text-primary)]">Documents juridiques</h3>
+            </div>
+            <ul className="space-y-3">
+              <li>
+                <button
+                  type="button"
+                  onClick={openContractDoc}
+                  className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors w-full text-left"
+                >
+                  <Shield className="w-4 h-4 text-[var(--primary)]" />
+                  Contrat de service
+                </button>
+              </li>
+              <li>
+                <a
+                  href="https://live.trackyugps.com/cgu"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors w-full text-left"
+                >
+                  <Scale className="w-4 h-4 text-[var(--primary)]" />
+                  Conditions générales d'utilisation
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://live.trackyugps.com/privacy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors w-full text-left"
+                >
+                  <Shield className="w-4 h-4 text-[var(--primary)]" />
+                  Politique de confidentialité
+                </a>
+              </li>
+            </ul>
+          </Card>
         </div>
       </div>
       <PasswordRevealModal
@@ -1166,6 +1272,19 @@ export const MyAccountView: React.FC = () => {
         title="Confirmer votre identité"
         description="Entrez votre mot de passe pour l'afficher."
       />
+      {isContractModalOpen && userContract && (
+        <ContractDetailModal
+          isOpen={isContractModalOpen}
+          contract={userContract}
+          onClose={() => setIsContractModalOpen(false)}
+          client={undefined}
+          invoices={[]}
+          vehicles={[]}
+          onStatusChange={() => {}}
+          onEdit={() => {}}
+          initialTab="CONTRAT"
+        />
+      )}
     </div>
   );
 };

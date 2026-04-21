@@ -50,6 +50,8 @@ import { useTableSort } from '../../../hooks/useTableSort';
 import { SortableHeader } from '../../../components/SortableHeader';
 
 // Types
+type HelpAudience = 'ALL' | 'CLIENT' | 'STAFF';
+
 interface HelpArticle {
   id: string;
   title: string;
@@ -64,7 +66,14 @@ interface HelpArticle {
   updatedAt: string;
   videoUrl?: string;
   duration?: string; // Pour les vidéos
+  audience: HelpAudience;
 }
+
+const AUDIENCE_OPTIONS: Array<{ id: HelpAudience; label: string; hint: string }> = [
+  { id: 'ALL', label: 'Tous', hint: 'Visible par tous les utilisateurs' },
+  { id: 'CLIENT', label: 'Clients', hint: 'Utilisateurs finaux (web & mobile)' },
+  { id: 'STAFF', label: 'Staff', hint: 'Agents support, techniciens, admins' },
+];
 
 interface Category {
   id: string;
@@ -168,6 +177,7 @@ Le véhicule apparaîtra immédiatement sur la carte.`,
     views: 342,
     createdAt: '2024-01-15',
     updatedAt: '2024-12-01',
+    audience: 'CLIENT',
   },
   {
     id: '2',
@@ -190,6 +200,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     views: 256,
     createdAt: '2024-02-10',
     updatedAt: '2024-11-15',
+    audience: 'CLIENT',
   },
   {
     id: '3',
@@ -203,6 +214,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     views: 189,
     createdAt: '2024-03-05',
     updatedAt: '2024-10-20',
+    audience: 'STAFF',
   },
   {
     id: '4',
@@ -216,6 +228,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     views: 98,
     createdAt: '2024-04-12',
     updatedAt: '2024-09-01',
+    audience: 'STAFF',
   },
   {
     id: '5',
@@ -231,6 +244,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     duration: '5:32',
     createdAt: '2024-01-01',
     updatedAt: '2024-12-10',
+    audience: 'ALL',
   },
   {
     id: '6',
@@ -244,6 +258,7 @@ Les géofences permettent de définir des zones et recevoir des alertes.
     views: 423,
     createdAt: '2024-01-10',
     updatedAt: '2024-08-15',
+    audience: 'ALL',
   },
 ];
 
@@ -265,6 +280,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'articles' | 'categories' | 'stats'>('articles');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [selectedAudience, setSelectedAudience] = useState<'all' | HelpAudience>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -283,6 +299,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
     tags: [],
     isPublished: true,
     isFeatured: false,
+    audience: 'ALL',
   });
   const [tagInput, setTagInput] = useState('');
 
@@ -290,8 +307,22 @@ export const HelpArticlesPanelV2: React.FC = () => {
   const loadArticles = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await api.adminFeatures.helpArticles.list();
+      // audience=ALL → admin panel voit tout (CLIENT + STAFF + ALL)
+      const data = await api.adminFeatures.helpArticles.list({ audience: 'ALL' });
       if (Array.isArray(data) && data.length > 0) {
+        const normalizeTags = (raw: unknown): string[] => {
+          if (Array.isArray(raw)) return raw.filter((t): t is string => typeof t === 'string');
+          if (typeof raw === 'string') {
+            try {
+              const parsed = JSON.parse(raw);
+              return Array.isArray(parsed) ? parsed.filter((t): t is string => typeof t === 'string') : [];
+            } catch {
+              return [];
+            }
+          }
+          return [];
+        };
+        const normalizeAudience = (raw: unknown): HelpAudience => (raw === 'CLIENT' || raw === 'STAFF' ? raw : 'ALL');
         // Mapper snake_case → camelCase
         const mapped = data.map(
           (a: {
@@ -300,7 +331,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
             content: string;
             category?: string;
             type?: string;
-            tags?: string[];
+            tags?: unknown;
             is_published?: boolean;
             is_featured?: boolean;
             view_count?: number;
@@ -308,13 +339,14 @@ export const HelpArticlesPanelV2: React.FC = () => {
             updated_at?: string;
             video_url?: string;
             duration?: string;
+            audience?: string;
           }) => ({
             id: a.id,
             title: a.title,
             content: a.content,
             category: a.category || 'getting-started',
             type: (a.type || 'article') as 'article' | 'video' | 'faq' | 'tutorial',
-            tags: Array.isArray(a.tags) ? a.tags : [],
+            tags: normalizeTags(a.tags),
             isPublished: a.is_published ?? true,
             isFeatured: a.is_featured ?? false,
             views: a.view_count || 0,
@@ -322,6 +354,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
             updatedAt: a.updated_at ?? '',
             videoUrl: a.video_url,
             duration: a.duration,
+            audience: normalizeAudience(a.audience),
           })
         );
         setArticles(mapped);
@@ -362,8 +395,12 @@ export const HelpArticlesPanelV2: React.FC = () => {
       result = result.filter((a) => a.type === selectedType);
     }
 
+    if (selectedAudience !== 'all') {
+      result = result.filter((a) => a.audience === selectedAudience);
+    }
+
     return result;
-  }, [articles, searchQuery, selectedCategory, selectedType]);
+  }, [articles, searchQuery, selectedCategory, selectedType, selectedAudience]);
 
   const {
     sortedItems: sortedArticles,
@@ -401,6 +438,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
       tags: [],
       isPublished: true,
       isFeatured: false,
+      audience: 'ALL',
     });
     setIsModalOpen(true);
   };
@@ -433,6 +471,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
       is_featured: formData.isFeatured ?? false,
       video_url: formData.videoUrl || null,
       duration: formData.duration || null,
+      audience: formData.audience || 'ALL',
     };
 
     try {
@@ -493,6 +532,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
         is_published: article.isPublished,
         type: article.type,
         tags: article.tags,
+        audience: article.audience,
       });
       setArticles((prev) => prev.map((a) => (a.id === id ? { ...a, isFeatured: !a.isFeatured } : a)));
     } catch (error) {
@@ -512,6 +552,7 @@ export const HelpArticlesPanelV2: React.FC = () => {
         is_featured: article.isFeatured,
         type: article.type,
         tags: article.tags,
+        audience: article.audience,
       });
       setArticles((prev) => prev.map((a) => (a.id === id ? { ...a, isPublished: !a.isPublished } : a)));
     } catch (error) {
@@ -615,6 +656,20 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 ))}
               </select>
 
+              <select
+                value={selectedAudience}
+                onChange={(e) => setSelectedAudience(e.target.value as 'all' | HelpAudience)}
+                className="px-3 py-2 border rounded-lg text-sm bg-[var(--bg-elevated)] border-[var(--border)]"
+                title="Audience (Clients / Staff)"
+              >
+                <option value="all">Toutes audiences</option>
+                {AUDIENCE_OPTIONS.map((aud) => (
+                  <option key={aud.id} value={aud.id}>
+                    {aud.label}
+                  </option>
+                ))}
+              </select>
+
               <div className="flex border rounded-lg overflow-hidden">
                 <button
                   onClick={() => setViewMode('grid')}
@@ -684,9 +739,24 @@ export const HelpArticlesPanelV2: React.FC = () => {
 
                       <h3 className="font-bold text-[var(--text-primary)] mb-2 line-clamp-2">{article.title}</h3>
 
-                      <p className="text-sm text-[var(--text-secondary)] line-clamp-2 mb-4">
+                      <p className="text-sm text-[var(--text-secondary)] line-clamp-2 mb-3">
                         {article.content.replace(/[#*`]/g, '').substring(0, 100)}...
                       </p>
+
+                      <div className="mb-3">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold ${
+                            article.audience === 'CLIENT'
+                              ? 'bg-[var(--primary-dim)] text-[var(--primary)]'
+                              : article.audience === 'STAFF'
+                                ? 'bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border)]'
+                                : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)]'
+                          }`}
+                          title="Audience"
+                        >
+                          {article.audience === 'CLIENT' ? 'Clients' : article.audience === 'STAFF' ? 'Staff' : 'Tous'}
+                        </span>
+                      </div>
 
                       <div className="flex items-center justify-between text-xs text-[var(--text-muted)]">
                         <div className="flex items-center gap-3">
@@ -992,6 +1062,25 @@ export const HelpArticlesPanelV2: React.FC = () => {
                 ))}
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[var(--text-secondary)] uppercase mb-1">Audience</label>
+            <select
+              value={formData.audience || 'ALL'}
+              onChange={(e) => setFormData({ ...formData, audience: e.target.value as HelpAudience })}
+              className="w-full p-3 border rounded-lg bg-[var(--bg-surface)] border-[var(--border)]"
+              title="Qui peut voir ce contenu ?"
+            >
+              {AUDIENCE_OPTIONS.map((aud) => (
+                <option key={aud.id} value={aud.id}>
+                  {aud.label} — {aud.hint}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
+              « Clients » = utilisateurs finaux (clients, sous-comptes). « Staff » = support, techniciens, admins.
+            </p>
           </div>
 
           {formData.type === 'video' && (

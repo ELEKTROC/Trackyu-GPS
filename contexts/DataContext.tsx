@@ -125,6 +125,7 @@ interface DataContextType {
   deleteTier: (id: string) => void;
 
   markAlertAsRead: (id: string) => void;
+  markAllAlertsAsRead: () => void;
   addAlertComment: (id: string, comment: string) => void;
 
   addVehicle: (vehicle: Vehicle, options?: { onSuccess?: () => void; onError?: (error: unknown) => void }) => void;
@@ -844,6 +845,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
   });
 
+  const markAllAlertsAsReadMutation = useMutation({
+    mutationFn: () => api.alerts.markAllAsRead(),
+    onSuccess: () => {
+      queryClient.setQueryData(['alerts', tenantId], (old: Alert[] = []) => old.map((a) => ({ ...a, isRead: true })));
+    },
+    onError: (error: unknown) => {
+      logger.error('[DataContext] markAllAlertsAsRead failed:', error);
+    },
+  });
+
   const addAlertCommentMutation = useMutation({
     mutationFn: ({ id, comment }: { id: string; comment: string }) => api.alerts.comment(id, comment),
     onSuccess: (updatedAlert) => {
@@ -1214,6 +1225,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       api.quotes.create({ ...quote, tenantId: tenantId || quote.tenantId || 'tenant_default' }),
     onSuccess: (newQuote) => {
       queryClient.setQueryData(['quotes', tenantId], (old: Quote[] = []) => [...old, newQuote]);
+      queryClient.invalidateQueries({ queryKey: ['quotes'] });
     },
   });
 
@@ -1731,6 +1743,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ({
         ...a,
         createdAt: typeof a.createdAt === 'string' ? a.createdAt : String(a.createdAt),
+        ruleId: (a as any).rule_id ?? (a as any).ruleId ?? null,
       }) as Alert
   );
 
@@ -1776,6 +1789,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       deleteTier: deleteTierMutation.mutate,
 
       markAlertAsRead: (id: string) => markAlertAsReadMutation.mutate(id),
+      markAllAlertsAsRead: () => markAllAlertsAsReadMutation.mutate(),
       addAlertComment: (id: string, comment: string) => addAlertCommentMutation.mutate({ id, comment }),
 
       addVehicle: addVehicleMutation.mutate,

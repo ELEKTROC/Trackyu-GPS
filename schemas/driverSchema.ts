@@ -2,8 +2,9 @@ import { z } from 'zod';
 
 export const DriverSchema = z.object({
   id: z.string().optional(),
-  nom: z.string().min(1, "Le nom est requis"),
-  email: z.string().email("Email invalide").optional().or(z.literal('')),
+  nom: z.string().min(1, 'Le nom est requis'),
+  clientId: z.string().min(1, 'Le client est requis'),
+  email: z.string().email('Email invalide').optional().or(z.literal('')),
   telephone: z.string().optional(),
   adresse: z.string().optional(),
   permis: z.string().optional(),

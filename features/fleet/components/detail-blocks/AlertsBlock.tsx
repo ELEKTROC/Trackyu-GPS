@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { ConfigurableRow } from './SharedBlocks';
 import type { Alert } from '../../../../types';
+
+const PREVIEW_COUNT = 3;
 
 interface AlertsBlockProps {
   alerts: Alert[];
@@ -16,13 +18,18 @@ export const AlertsBlock: React.FC<AlertsBlockProps> = ({
   hiddenFields,
   toggleFieldVisibility,
 }) => {
+  const [expanded, setExpanded] = useState(false);
+
   if (!alerts || alerts.length === 0) {
-    return <div className="text-xs text-[var(--text-muted)] italic p-2">Aucune alerte récente.</div>;
+    return <div className="text-xs text-[var(--text-muted)] italic p-2">Aucune alerte aujourd'hui.</div>;
   }
+
+  const visible = expanded ? alerts : alerts.slice(0, PREVIEW_COUNT);
+  const hasMore = alerts.length > PREVIEW_COUNT;
 
   return (
     <div className="space-y-2">
-      {alerts.map((alert) => (
+      {visible.map((alert) => (
         <ConfigurableRow
           key={alert.id}
           id={`alert-${alert.id}`}
@@ -31,7 +38,13 @@ export const AlertsBlock: React.FC<AlertsBlockProps> = ({
           onToggle={() => toggleFieldVisibility(`alert-${alert.id}`)}
         >
           <div
-            className={`p-3 rounded border-l-4 ${alert.severity === 'HIGH' || alert.severity === 'CRITICAL' ? 'border-red-500 bg-red-50' : alert.severity === 'MEDIUM' ? 'border-orange-400 bg-orange-50' : 'border-yellow-400 bg-yellow-50'}`}
+            className={`p-3 rounded border-l-4 ${
+              alert.severity === 'HIGH' || alert.severity === 'CRITICAL'
+                ? 'border-red-500 bg-red-50'
+                : alert.severity === 'MEDIUM'
+                  ? 'border-orange-400 bg-orange-50'
+                  : 'border-yellow-400 bg-yellow-50'
+            }`}
           >
             <div className="flex justify-between items-start">
               <span className="text-xs font-bold text-[var(--text-primary)]">{alert.type}</span>
@@ -43,6 +56,15 @@ export const AlertsBlock: React.FC<AlertsBlockProps> = ({
           </div>
         </ConfigurableRow>
       ))}
+
+      {hasMore && (
+        <button
+          onClick={() => setExpanded((e) => !e)}
+          className="w-full py-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] font-medium rounded transition-colors"
+        >
+          {expanded ? 'Réduire' : `Voir toutes les alertes (${alerts.length})`}
+        </button>
+      )}
     </div>
   );
 };

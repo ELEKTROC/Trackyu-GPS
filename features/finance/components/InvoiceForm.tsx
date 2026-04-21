@@ -73,13 +73,11 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   // Ensure tiers and tenants are always arrays (API may return objects)
   const tiers = Array.isArray(rawTiers) ? rawTiers : [];
   const sourceTenants = Array.isArray(rawTenants) ? rawTenants : [];
-  const tenants = useMemo(() => {
-    const list = [...sourceTenants];
-    if (!list.some((t) => t.id === 'tenant_trackyu')) {
-      list.push({ id: 'tenant_trackyu', name: 'TrackYu System', slug: 'trackyu' } as unknown as Tenant);
-    }
-    return list;
-  }, [sourceTenants]);
+  // Exclure tenant_default du dropdown revendeur : pas de clients directs, créerait une liste vide
+  const tenants = useMemo(
+    () => sourceTenants.filter((t) => t.id !== 'tenant_default' && t.id !== 'tenant_trackyu'),
+    [sourceTenants]
+  );
   const safeVehicles = Array.isArray(vehicles) ? vehicles : [];
   const { formatPrice } = useCurrency();
   const { showToast } = useToast();
@@ -213,7 +211,8 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const filteredClients = useMemo(() => {
     const clients = tiers.filter((t) => t.type === 'CLIENT');
     if (!formState.resellerId) return clients;
-    return clients.filter((c) => c.tenantId === formState.resellerId);
+    const filtered = clients.filter((c) => c.tenantId === formState.resellerId);
+    return filtered;
   }, [tiers, formState.resellerId]);
 
   // Catalogue filtré par revendeur sélectionné
@@ -348,18 +347,25 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
         items: computedItems,
       };
 
-      // Pour une nouvelle entrée, toujours générer le numéro définitif via l'API
-      // (le preview est juste visuel — le vrai compteur s'incrémente ici)
+      // Pour une nouvelle entrée :
+      // - QUOTES : le backend réserve atomiquement le numéro (pas de numéro brûlé sur échec)
+      //   on envoie number: undefined sauf si l'utilisateur a modifié le champ (≠ preview)
+      // - INVOICES : on garde le pré-appel getNextNumber (legacy, pas encore migré)
       if (isNew) {
-        try {
-          const finalNumber = await getNextNumber.mutateAsync({
-            module: numberingModule,
-            tenantId: formState.resellerId || undefined,
-          });
-          dataToValidate.number = finalNumber;
-        } catch (err) {
-          showToast(TOAST.CRUD.ERROR_CREATE('numéro'), 'error');
-          return;
+        if (mode === 'QUOTES') {
+          const userOverrode = !!dataToValidate.number && dataToValidate.number !== previewNumber;
+          dataToValidate.number = userOverrode ? dataToValidate.number : undefined;
+        } else {
+          try {
+            const finalNumber = await getNextNumber.mutateAsync({
+              module: numberingModule,
+              tenantId: formState.resellerId || undefined,
+            });
+            dataToValidate.number = finalNumber;
+          } catch (err) {
+            showToast(TOAST.CRUD.ERROR_CREATE('numéro'), 'error');
+            return;
+          }
         }
       }
 
@@ -484,11 +490,17 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({
               aria-label="Client"
             >
               <option value="">-- Sélectionner un client --</option>
-              {filteredClients.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
+              {filteredClients.length === 0 && formState.resellerId ? (
+                <option value="" disabled>
+                  Aucun client enregistré
                 </option>
-              ))}
+              ) : (
+                filteredClients.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))
+              )}
             </Select>
           </FormField>
 

@@ -21,8 +21,6 @@ export const MaintenanceForm = React.forwardRef<
   BaseFormProps & {
     resellers?: Tier[];
     clients?: Tier[];
-    branches?: unknown[];
-    groups?: unknown[];
     vehicles?: Vehicle[];
     users?: User[];
   }
@@ -64,17 +62,14 @@ export const MaintenanceForm = React.forwardRef<
   const [isVehicleDropdownOpen, setIsVehicleDropdownOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
-  // Filter vehicles based on selected client
+  // Filter vehicles based on selected client (empty if no client selected — prevents cross-tenant leak)
   const filteredVehicles = React.useMemo(() => {
-    if (!selectedClient) return vehicles;
+    if (!selectedClient) return [];
     return vehicles.filter((v: Vehicle) => v.client === selectedClient);
   }, [vehicles, selectedClient]);
 
-  // Filter users based on selected client (assuming users have a client field or similar)
-  // If user structure doesn't have client, we might need to adjust.
-  // Based on mock data: user has 'client' field (string name) or 'clientId'.
   const filteredUsers = React.useMemo(() => {
-    if (!selectedClient) return users;
+    if (!selectedClient) return [];
     return users.filter(
       (u: User) =>
         (u as unknown as Record<string, unknown>)['client'] === selectedClient || u.clientId === selectedClient

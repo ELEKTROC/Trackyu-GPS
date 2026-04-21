@@ -15,15 +15,14 @@ import { useTranslation } from '../i18n';
 // ============================================================
 
 interface NotificationContextValue {
-  // État
   permission: NotificationPermission;
   preferences: ReturnType<typeof useNotifications>['preferences'];
   unreadCount: number;
   isSupported: boolean;
   isPushSupported: boolean;
+  syncError: string | null;
   toasts: ToastNotification[];
 
-  // Actions
   requestPermission: () => Promise<boolean>;
   notify: (payload: NotificationPayload) => void;
   notifyAlert: (alert: Alert) => void;
@@ -32,6 +31,7 @@ interface NotificationContextValue {
   updatePreferences: (updates: Partial<ReturnType<typeof useNotifications>['preferences']>) => void;
   toggleAlertType: (type: keyof ReturnType<typeof useNotifications>['preferences']['alertTypes']) => void;
   clearUnreadCount: () => void;
+  clearSyncError: () => void;
   markAsRead: (count?: number) => void;
   setUnreadCount: (count: number) => void;
 }
@@ -133,11 +133,28 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     // Également écouter l'ancien nom d'événement si utilisé
     socket.on('new_alert', handleNewAlert);
 
+    const handleTicketMessage = (payload: any) => {
+      logger.debug('[NotificationContext] New ticket message:', payload);
+      if (!notifications.preferences.ticketMessagesEnabled) return;
+
+      notify({
+        id: `ticket-${payload.ticketId}-${payload.messageId || Date.now()}`,
+        title: t('notifications.ticketMessage.title') || 'Nouveau message support',
+        body: payload.subject ? `${payload.subject} — ${payload.preview || ''}` : payload.preview || 'Nouvelle réponse',
+        type: 'TICKET_MESSAGE',
+        severity: 'MEDIUM',
+        link: `/support?ticketId=${payload.ticketId}`,
+      });
+    };
+
+    socket.on('ticket:message:new', handleTicketMessage);
+
     return () => {
       socket.off('alert:new', handleNewAlert);
       socket.off('new_alert', handleNewAlert);
+      socket.off('ticket:message:new', handleTicketMessage);
     };
-  }, [notifyAlert]);
+  }, [notifyAlert, notify, notifications.preferences.ticketMessagesEnabled, t]);
 
   // Gérer le clic sur un toast
   const handleToastClick = useCallback(
@@ -153,15 +170,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   );
 
   const contextValue: NotificationContextValue = {
-    // État
     permission: notifications.permission,
     preferences: notifications.preferences,
     unreadCount: notifications.unreadCount,
     isSupported: notifications.isSupported,
     isPushSupported: notifications.isPushSupported,
+    syncError: notifications.syncError,
     toasts,
 
-    // Actions
     requestPermission: notifications.requestPermission,
     notify,
     notifyAlert,
@@ -170,6 +186,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     updatePreferences: notifications.updatePreferences,
     toggleAlertType: notifications.toggleAlertType,
     clearUnreadCount: notifications.clearUnreadCount,
+    clearSyncError: notifications.clearSyncError,
     markAsRead: notifications.markAsRead,
     setUnreadCount: notifications.setUnreadCount,
   };

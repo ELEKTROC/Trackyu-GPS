@@ -48,6 +48,7 @@ export interface Alert {
   vehiclePlate?: string | null;
   createdAt: string;
   timestamp?: string; // Alias pour compatibilité
+  ruleId?: string | null;
 }
 
 // Configuration des types d'alertes pour l'UI

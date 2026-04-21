@@ -11,16 +11,32 @@ export type CommandFormData = z.infer<typeof CommandSchema>;
 interface VehicleOption {
   id: string;
   name: string;
+  clientId?: string;
+  client?: string;
+}
+
+interface ClientOption {
+  id: string;
+  name: string;
+  resellerId?: string;
+}
+
+interface ResellerOption {
+  id: string;
+  name?: string;
+  nom?: string;
 }
 
 interface BaseFormProps {
   initialData?: Partial<CommandFormData>;
   onFormSubmit: (data: CommandFormData) => void | Promise<void>;
   vehicles?: VehicleOption[];
+  clients?: ClientOption[];
+  resellers?: ResellerOption[];
 }
 
 export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
-  ({ initialData, onFormSubmit, vehicles = [] }, ref) => {
+  ({ initialData, onFormSubmit, vehicles = [], clients = [], resellers = [] }, ref) => {
     const {
       register,
       handleSubmit,
@@ -39,6 +55,18 @@ export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
 
     const commandType = watch('commandType');
     const isSensitive = ['ENGINE_STOP', 'FACTORY_RESET'].includes(commandType);
+
+    const selectedVehicleId = watch('vehicleId');
+    const selectedVehicle = vehicles.find((v) => v.id === selectedVehicleId);
+    const derivedClientId = selectedVehicle?.clientId;
+    const derivedClient = derivedClientId
+      ? clients.find((c) => c.id === derivedClientId)
+      : clients.find((c) => c.name === selectedVehicle?.client);
+    const derivedClientLabel = derivedClient?.name || selectedVehicle?.client || '—';
+    const derivedReseller = derivedClient?.resellerId
+      ? resellers.find((r) => r.id === derivedClient.resellerId)
+      : undefined;
+    const derivedResellerLabel = derivedReseller?.name || derivedReseller?.nom || derivedClient?.resellerId || '—';
 
     const [isSaving, setIsSaving] = React.useState(false);
     const onSubmit = async (data: CommandFormData) => {
@@ -82,6 +110,25 @@ export const CommandForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
               ))}
             </Select>
           </FormField>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <FormField label="Client" hint="Hérité du véhicule">
+              <Input
+                value={derivedClientLabel}
+                disabled
+                readOnly
+                className="bg-[var(--bg-elevated)] cursor-not-allowed"
+              />
+            </FormField>
+            <FormField label="Revendeur" hint="Hérité du client">
+              <Input
+                value={derivedResellerLabel}
+                disabled
+                readOnly
+                className="bg-[var(--bg-elevated)] cursor-not-allowed"
+              />
+            </FormField>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <FormField label="Type de Commande">

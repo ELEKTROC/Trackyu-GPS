@@ -63,8 +63,8 @@ $SERVER = "root@$VPS_IP"
 $REMOTE_PATH = "/var/www/trackyu-gps"
 $REMOTE_PATH_STAGING = "/var/www/trackyu-gps-staging"
 $LOCAL_DIST = "c:\Users\ADMIN\Desktop\TRACKING\dist"
-$LOCAL_BACKEND = "c:\Users\ADMIN\Desktop\TRACKING\backend\dist"
-$LOCAL_BACKEND_ROOT = "c:\Users\ADMIN\Desktop\TRACKING\backend"
+$LOCAL_BACKEND = "c:\Users\ADMIN\Desktop\trackyu-backend\dist"
+$LOCAL_BACKEND_ROOT = "c:\Users\ADMIN\Desktop\trackyu-backend"
 $LOCAL_MIGRATIONS = "$LOCAL_BACKEND_ROOT\migrations"
 $SCRIPT_START = Get-Date
 $MAX_RETRIES = 3
@@ -487,7 +487,7 @@ if ($backend -or $all) {
     # Build
     if (-not $nobuild) {
         Write-Info "Build backend..."
-        Push-Location "c:\Users\ADMIN\Desktop\TRACKING\backend"
+        Push-Location "c:\Users\ADMIN\Desktop\trackyu-backend"
         npm run build
         if ($LASTEXITCODE -ne 0) {
             Write-Err "Build backend échoué"

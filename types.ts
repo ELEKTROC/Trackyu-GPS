@@ -260,6 +260,7 @@ export interface SystemUser {
   updatedAt?: string | null;
   lastLogin?: string | null;
   require2FA?: boolean;
+  hasPassword?: boolean; // True si le backend a un mot de passe récupérable (chiffré) — voir /users/:id/reveal-password
   allowedTenants?: string[]; // IDs des organisations auxquelles l'utilisateur a accès (multi-tenant)
   mobileTabs?: string[]; // Onglets mobile configurés par SuperAdmin (override du profil par rôle)
   vehicleIds?: string[]; // Véhicules accessibles (restriction CLIENT)
@@ -1069,6 +1070,7 @@ export interface Alert {
   latitude?: number; // Position de l'alerte
   longitude?: number;
   value?: number | string; // Valeur associée (vitesse, niveau, etc.)
+  ruleId?: string | null;
 }
 
 // AlertType, AlertSeverity, ALERT_TYPE_CONFIG : voir types/alerts.ts (re-export via export *)

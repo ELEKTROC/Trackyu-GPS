@@ -1,16 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDataContext } from '../../../contexts/DataContext';
 import {
   Bell,
   MessageSquare,
   Check,
-  Trash2,
   Clock,
   AlertTriangle,
   Info,
-  CheckCircle,
   Bot,
-  User,
   Search,
   MessageCircle,
   Send,
@@ -20,27 +17,47 @@ import {
   VolumeX,
   Smartphone,
   Vibrate,
-  BellRing,
   BellOff,
   Zap,
   MapPin,
   Fuel,
   Wrench,
+  Battery,
+  WifiOff,
+  Truck,
+  PowerOff,
+  ShieldAlert,
+  Activity,
 } from 'lucide-react';
 import { Alert } from '../../../types';
 import { useNotificationContext } from '../../../contexts/NotificationContext';
 import { TicketChatPanel } from '../../support/components/TicketChatPanel';
+import { useConfirmDialog } from '../../../components/ConfirmDialog';
+import { useToast } from '../../../contexts/ToastContext';
+
+const isMobileDevice = () =>
+  typeof navigator !== 'undefined' &&
+  (/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent) || 'ontouchstart' in window);
 
 type Tab = 'notifications' | 'messages' | 'settings';
 
 export const MyNotificationsView: React.FC = () => {
-  const { alerts, tickets, markAlertAsRead, addAlertComment } = useDataContext();
+  const { alerts, tickets, markAlertAsRead, markAllAlertsAsRead, addAlertComment } = useDataContext();
   const notifContext = useNotificationContext();
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog();
+  const { showToast } = useToast();
+  const supportsVibration = isMobileDevice() && 'vibrate' in navigator;
+
+  useEffect(() => {
+    if (notifContext.syncError) {
+      showToast(notifContext.syncError, 'error');
+      notifContext.clearSyncError();
+    }
+  }, [notifContext.syncError]);
   const [activeTab, setActiveTab] = useState<Tab>('notifications');
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [commentingAlertId, setCommentingAlertId] = useState<string | null>(null);
   const [commentText, setCommentText] = useState('');
-  const [isNewMessageModalOpen, setIsNewMessageModalOpen] = useState(false);
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 
   // --- NOTIFICATIONS LOGIC ---
@@ -49,6 +66,7 @@ export const MyNotificationsView: React.FC = () => {
   const filteredAlerts = filter === 'all' ? sortedAlerts : sortedAlerts.filter((a) => !a.isRead);
 
   const unreadCount = alerts.filter((a) => !a.isRead).length;
+  const unreadMessagesCount = tickets.filter((t) => t.status === 'WAITING_CLIENT').length;
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -116,7 +134,11 @@ export const MyNotificationsView: React.FC = () => {
           >
             <MessageSquare className="w-4 h-4" />
             Messages
-            <span className="bg-[var(--primary-dim)]0 text-white text-xs px-1.5 py-0.5 rounded-full">1</span>
+            {unreadMessagesCount > 0 && (
+              <span className="bg-[var(--primary)] text-white text-xs px-1.5 py-0.5 rounded-full">
+                {unreadMessagesCount}
+              </span>
+            )}
           </button>
           <button
             onClick={() => setActiveTab('settings')}
@@ -149,10 +171,20 @@ export const MyNotificationsView: React.FC = () => {
                 </button>
               </div>
               <div className="flex gap-3">
-                <button className="text-xs text-[var(--text-secondary)] hover:text-red-600 transition-colors flex items-center gap-1">
-                  <Trash2 className="w-3 h-3" /> Tout effacer
-                </button>
-                <button className="text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1">
+                <button
+                  onClick={async () => {
+                    if (unreadCount === 0) return;
+                    const ok = await confirm({
+                      title: 'Marquer comme lu',
+                      message: `Marquer les ${unreadCount} notification${unreadCount > 1 ? 's' : ''} non lue${unreadCount > 1 ? 's' : ''} comme lue${unreadCount > 1 ? 's' : ''} ?`,
+                      confirmLabel: 'Marquer comme lu',
+                      variant: 'info',
+                    });
+                    if (ok) markAllAlertsAsRead();
+                  }}
+                  disabled={unreadCount === 0}
+                  className="text-xs text-[var(--primary)] dark:text-[var(--primary)] hover:underline flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed disabled:no-underline"
+                >
                   <Check className="w-3 h-3" /> Tout marquer comme lu
                 </button>
               </div>
@@ -274,12 +306,6 @@ export const MyNotificationsView: React.FC = () => {
               <div className="p-4 border-b border-[var(--border)] border-[var(--border)] space-y-3">
                 <div className="flex justify-between items-center">
                   <h3 className="font-bold text-[var(--text-primary)]">Messages</h3>
-                  <button
-                    className="p-2 text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded-lg transition-colors"
-                    title="Nouveau message"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                  </button>
                 </div>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
@@ -366,7 +392,6 @@ export const MyNotificationsView: React.FC = () => {
         {activeTab === 'settings' && (
           <div className="h-full overflow-y-auto p-6">
             <div className="w-full space-y-6">
-              {/* Permission Banner */}
               {notifContext.permission !== 'granted' && (
                 <div className="bg-[var(--clr-caution-dim)] border border-[var(--clr-caution-border)] rounded-xl p-4 flex items-center gap-4">
                   <div className="p-3 bg-amber-100 dark:bg-amber-800 rounded-full">
@@ -375,7 +400,8 @@ export const MyNotificationsView: React.FC = () => {
                   <div className="flex-1">
                     <h4 className="font-bold text-amber-800 dark:text-amber-200">Notifications désactivées</h4>
                     <p className="text-sm text-[var(--clr-caution)]">
-                      Activez les notifications pour recevoir les alertes en temps réel
+                      Le toggle Push ne fonctionnera pas tant que vous n'aurez pas autorisé les notifications sur ce
+                      navigateur.
                     </p>
                   </div>
                   <button
@@ -387,46 +413,40 @@ export const MyNotificationsView: React.FC = () => {
                 </div>
               )}
 
-              {notifContext.permission === 'granted' && (
-                <div className="bg-[var(--clr-success-dim)] border border-[var(--clr-success-border)] rounded-xl p-4 flex items-center gap-4">
-                  <div className="p-3 bg-green-100 dark:bg-green-800 rounded-full">
-                    <BellRing className="w-6 h-6 text-[var(--clr-success)]" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-green-800 dark:text-green-200">Notifications activées</h4>
-                    <p className="text-sm text-[var(--clr-success)]">Vous recevrez les alertes push en temps réel</p>
-                  </div>
-                  <CheckCircle className="w-6 h-6 text-green-600" />
-                </div>
-              )}
-
               {/* General Settings */}
               <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden">
-                <div className="p-4 border-b border-[var(--border)] border-[var(--border)]">
+                <div className="p-4 border-b border-[var(--border)]">
                   <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <Settings className="w-5 h-5" /> Paramètres généraux
                   </h3>
                 </div>
                 <div className="divide-y divide-[var(--border)]">
                   {/* Push Toggle */}
-                  <div className="p-4 flex items-center justify-between">
+                  <div
+                    className={`p-4 flex items-center justify-between ${notifContext.permission !== 'granted' ? 'opacity-60' : ''}`}
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
-                        <Smartphone className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)]" />
+                      <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
+                        <Smartphone className="w-5 h-5 text-[var(--primary)]" />
                       </div>
                       <div>
                         <h4 className="font-medium text-[var(--text-primary)]">Notifications Push</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Recevoir les alertes sur votre appareil</p>
+                        <p className="text-xs text-[var(--text-secondary)]">
+                          {notifContext.permission === 'granted'
+                            ? 'Recevoir les alertes sur votre appareil'
+                            : 'Autorisez d\u2019abord les notifications dans le navigateur'}
+                        </p>
                       </div>
                     </div>
                     <button
+                      disabled={notifContext.permission !== 'granted'}
                       onClick={() =>
                         notifContext.updatePreferences({ pushEnabled: !notifContext.preferences.pushEnabled })
                       }
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.pushEnabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors disabled:cursor-not-allowed ${notifContext.preferences.pushEnabled && notifContext.permission === 'granted' ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`}
                     >
                       <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.pushEnabled ? 'translate-x-7' : 'translate-x-1'}`}
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.pushEnabled && notifContext.permission === 'granted' ? 'translate-x-7' : 'translate-x-1'}`}
                       />
                     </button>
                   </div>
@@ -434,11 +454,11 @@ export const MyNotificationsView: React.FC = () => {
                   {/* Sound Toggle */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--clr-info-muted)] rounded-lg">
+                      <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
                         {notifContext.preferences.soundEnabled ? (
-                          <Volume2 className="w-5 h-5 text-[var(--clr-info)]" />
+                          <Volume2 className="w-5 h-5 text-[var(--primary)]" />
                         ) : (
-                          <VolumeX className="w-5 h-5 text-[var(--clr-info)]" />
+                          <VolumeX className="w-5 h-5 text-[var(--primary)]" />
                         )}
                       </div>
                       <div>
@@ -450,7 +470,7 @@ export const MyNotificationsView: React.FC = () => {
                       onClick={() =>
                         notifContext.updatePreferences({ soundEnabled: !notifContext.preferences.soundEnabled })
                       }
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.soundEnabled ? 'bg-purple-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.soundEnabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`}
                     >
                       <div
                         className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.soundEnabled ? 'translate-x-7' : 'translate-x-1'}`}
@@ -473,204 +493,206 @@ export const MyNotificationsView: React.FC = () => {
                         max="100"
                         value={notifContext.preferences.soundVolume}
                         onChange={(e) => notifContext.updatePreferences({ soundVolume: parseInt(e.target.value) })}
-                        className="w-full h-2 bg-[var(--bg-elevated)] bg-[var(--bg-elevated)] rounded-lg appearance-none cursor-pointer accent-purple-600"
+                        className="w-full h-2 bg-[var(--bg-elevated)] rounded-lg appearance-none cursor-pointer accent-[var(--primary)]"
                       />
                     </div>
                   )}
 
-                  {/* Vibration Toggle */}
+                  {/* Ticket Messages Toggle */}
                   <div className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--clr-warning-muted)] rounded-lg">
-                        <Vibrate className="w-5 h-5 text-[var(--clr-warning)]" />
+                      <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
+                        <MessageSquare className="w-5 h-5 text-[var(--primary)]" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">Vibration</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Vibrer lors des alertes (mobile)</p>
+                        <h4 className="font-medium text-[var(--text-primary)]">Messages support</h4>
+                        <p className="text-xs text-[var(--text-secondary)]">
+                          Être notifié lors d'une nouvelle réponse sur un ticket ouvert
+                        </p>
                       </div>
                     </div>
                     <button
                       onClick={() =>
-                        notifContext.updatePreferences({ vibrationEnabled: !notifContext.preferences.vibrationEnabled })
+                        notifContext.updatePreferences({
+                          ticketMessagesEnabled: !notifContext.preferences.ticketMessagesEnabled,
+                        })
                       }
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.vibrationEnabled ? 'bg-orange-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.ticketMessagesEnabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`}
                     >
                       <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.vibrationEnabled ? 'translate-x-7' : 'translate-x-1'}`}
+                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.ticketMessagesEnabled ? 'translate-x-7' : 'translate-x-1'}`}
                       />
                     </button>
                   </div>
+
+                  {/* Vibration Toggle — mobile only */}
+                  {supportsVibration && (
+                    <div className="p-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
+                          <Vibrate className="w-5 h-5 text-[var(--primary)]" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-[var(--text-primary)]">Vibration</h4>
+                          <p className="text-xs text-[var(--text-secondary)]">Vibrer lors des alertes</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() =>
+                          notifContext.updatePreferences({
+                            vibrationEnabled: !notifContext.preferences.vibrationEnabled,
+                          })
+                        }
+                        className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.vibrationEnabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`}
+                      >
+                        <div
+                          className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.vibrationEnabled ? 'translate-x-7' : 'translate-x-1'}`}
+                        />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Alert Types */}
               <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] overflow-hidden">
-                <div className="p-4 border-b border-[var(--border)] border-[var(--border)]">
+                <div className="p-4 border-b border-[var(--border)]">
                   <h3 className="font-bold text-[var(--text-primary)] flex items-center gap-2">
                     <AlertTriangle className="w-5 h-5" /> Types d'alertes
                   </h3>
                   <p className="text-xs text-[var(--text-secondary)] mt-1">
-                    Choisissez les alertes que vous souhaitez recevoir
+                    Choisissez les familles d'alertes que vous souhaitez recevoir. Chaque famille regroupe plusieurs
+                    événements (ex. Conduite brusque = freinage + accélération + virage).
                   </p>
                 </div>
                 <div className="divide-y divide-[var(--border)]">
-                  {/* Speeding */}
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg">
-                        <Zap className="w-5 h-5 text-[var(--clr-danger)]" />
+                  {(
+                    [
+                      {
+                        key: 'SPEEDING',
+                        label: 'Excès de vitesse',
+                        desc: 'Dépassement des limites configurées',
+                        Icon: Zap,
+                      },
+                      {
+                        key: 'GEOFENCE',
+                        label: 'Zones géographiques',
+                        desc: 'Entrée/sortie de géofences',
+                        Icon: MapPin,
+                      },
+                      { key: 'FUEL_LEVEL', label: 'Niveau carburant', desc: 'Seuil bas', Icon: Fuel },
+                      {
+                        key: 'FUEL_THEFT',
+                        label: 'Vol de carburant',
+                        desc: 'Chute brutale / perte suspecte',
+                        Icon: Fuel,
+                      },
+                      {
+                        key: 'HARSH_DRIVING',
+                        label: 'Conduite brusque',
+                        desc: 'Freinage, accélération, virage brusques',
+                        Icon: Activity,
+                      },
+                      { key: 'IDLING', label: 'Ralenti moteur', desc: 'Ralenti excessif ou prolongé', Icon: Clock },
+                      { key: 'BATTERY', label: 'Batterie', desc: 'Batterie véhicule ou boîtier faible', Icon: Battery },
+                      {
+                        key: 'POWER',
+                        label: 'Alimentation / Moteur',
+                        desc: 'Coupure alimentation, allumage/extinction',
+                        Icon: PowerOff,
+                      },
+                      { key: 'TOWING', label: 'Remorquage', desc: 'Véhicule déplacé moteur éteint', Icon: Truck },
+                      {
+                        key: 'OFFLINE',
+                        label: 'Connectivité',
+                        desc: 'Boîtier hors ligne / communication perdue',
+                        Icon: WifiOff,
+                      },
+                      {
+                        key: 'JAMMING',
+                        label: 'Intégrité GPS',
+                        desc: 'Brouillage ou saut de position',
+                        Icon: ShieldAlert,
+                      },
+                      {
+                        key: 'MAINTENANCE',
+                        label: 'Maintenance',
+                        desc: 'Rappels préventifs & violations de règles',
+                        Icon: Wrench,
+                      },
+                      {
+                        key: 'SOS',
+                        label: 'SOS / Urgence',
+                        desc: 'Panique, accident, sabotage, immobilisation',
+                        Icon: AlertTriangle,
+                      },
+                    ] as const
+                  ).map(({ key, label, desc, Icon }) => {
+                    const enabled = notifContext.preferences.alertTypes[key];
+                    return (
+                      <div key={key} className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-[var(--primary-dim)] rounded-lg">
+                            <Icon className="w-5 h-5 text-[var(--primary)]" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-[var(--text-primary)]">{label}</h4>
+                            <p className="text-xs text-[var(--text-secondary)]">{desc}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => notifContext.toggleAlertType(key)}
+                          className={`relative w-12 h-6 rounded-full transition-colors ${enabled ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'}`}
+                        >
+                          <div
+                            className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${enabled ? 'translate-x-7' : 'translate-x-1'}`}
+                          />
+                        </button>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">Excès de vitesse</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Dépassement des limites configurées</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => notifContext.toggleAlertType('SPEEDING')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.SPEEDING ? 'bg-red-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
-                    >
-                      <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.SPEEDING ? 'translate-x-7' : 'translate-x-1'}`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Geofence */}
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--primary-dim)] dark:bg-[var(--primary-dim)] rounded-lg">
-                        <MapPin className="w-5 h-5 text-[var(--primary)] dark:text-[var(--primary)]" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">Zones géographiques</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Entrée/sortie de géofences</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => notifContext.toggleAlertType('GEOFENCE')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.GEOFENCE ? 'bg-[var(--primary)]' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
-                    >
-                      <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.GEOFENCE ? 'translate-x-7' : 'translate-x-1'}`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Fuel Level */}
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--clr-caution-muted)] rounded-lg">
-                        <Fuel className="w-5 h-5 text-[var(--clr-caution)]" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">Niveau carburant</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Carburant bas ou vol détecté</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => notifContext.toggleAlertType('FUEL_LEVEL')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.FUEL_LEVEL ? 'bg-amber-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
-                    >
-                      <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.FUEL_LEVEL ? 'translate-x-7' : 'translate-x-1'}`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Fuel Theft */}
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg">
-                        <Fuel className="w-5 h-5 text-[var(--clr-danger)]" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">Vol de carburant</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Chute brutale du niveau</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => notifContext.toggleAlertType('FUEL_THEFT')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.FUEL_THEFT ? 'bg-red-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
-                    >
-                      <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.FUEL_THEFT ? 'translate-x-7' : 'translate-x-1'}`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* Maintenance */}
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--clr-success-muted)] rounded-lg">
-                        <Wrench className="w-5 h-5 text-[var(--clr-success)]" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">Maintenance</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Rappels de maintenance préventive</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => notifContext.toggleAlertType('MAINTENANCE')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.MAINTENANCE ? 'bg-green-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
-                    >
-                      <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.MAINTENANCE ? 'translate-x-7' : 'translate-x-1'}`}
-                      />
-                    </button>
-                  </div>
-
-                  {/* SOS */}
-                  <div className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-[var(--clr-danger-muted)] rounded-lg animate-pulse">
-                        <AlertTriangle className="w-5 h-5 text-[var(--clr-danger)]" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-[var(--text-primary)]">SOS / Urgence</h4>
-                        <p className="text-xs text-[var(--text-secondary)]">Bouton panique ou accident détecté</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => notifContext.toggleAlertType('SOS')}
-                      className={`relative w-12 h-6 rounded-full transition-colors ${notifContext.preferences.alertTypes.SOS ? 'bg-red-600' : 'bg-[var(--border)] bg-[var(--bg-elevated)]'}`}
-                    >
-                      <div
-                        className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${notifContext.preferences.alertTypes.SOS ? 'translate-x-7' : 'translate-x-1'}`}
-                      />
-                    </button>
-                  </div>
+                    );
+                  })}
+                </div>
+                <div className="p-3 border-t border-[var(--border)] bg-[var(--bg-elevated)]/50 flex items-start gap-2">
+                  <Info className="w-4 h-4 text-[var(--text-muted)] mt-0.5 shrink-0" />
+                  <p className="text-xs text-[var(--text-secondary)]">
+                    Ces préférences filtrent les alertes que <em>vous</em> recevez. La création des règles (seuils,
+                    destinataires, canaux) se gère dans <strong>Paramètres &gt; Mes alertes</strong>.
+                  </p>
                 </div>
               </div>
 
               {/* Test Notification */}
               <div className="bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)] p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-bold text-[var(--text-primary)]">Tester les notifications</h4>
-                    <p className="text-xs text-[var(--text-secondary)] mt-1">
-                      Envoyer une notification de test pour vérifier vos paramètres
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => {
-                      notifContext.notify({
-                        title: '🔔 Test de notification',
-                        body: 'Les notifications fonctionnent correctement !',
-                        type: 'INFO',
-                        severity: 'MEDIUM',
-                      });
-                    }}
-                    className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors font-medium text-sm flex items-center gap-2"
-                  >
-                    <Bell className="w-4 h-4" />
-                    Tester
-                  </button>
+                <h4 className="font-bold text-[var(--text-primary)]">Tester les notifications</h4>
+                <p className="text-xs text-[var(--text-secondary)] mt-1 mb-3">
+                  Envoyer une notification de test à chaque niveau de sévérité (son, vibration, pattern).
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const).map((sev) => (
+                    <button
+                      key={sev}
+                      onClick={() =>
+                        notifContext.notify({
+                          title: `Test ${sev}`,
+                          body: `Notification de test — sévérité ${sev}`,
+                          type: 'INFO',
+                          severity: sev,
+                        })
+                      }
+                      className="px-3 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--primary-light)] transition-colors font-medium text-xs flex items-center gap-2"
+                    >
+                      <Bell className="w-3.5 h-3.5" />
+                      {sev}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      <ConfirmDialogComponent />
     </div>
   );
 };

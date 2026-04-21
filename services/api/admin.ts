@@ -115,7 +115,7 @@ export function createAdminApi(lazyApi: () => any) {
             updatedAt: u.updated_at,
             lastLogin: u.last_login || undefined,
             require2FA: !!u.require_2fa,
-            plainPassword: u.plain_password || undefined,
+            hasPassword: !!u.hasPassword,
             allowedTenants: u.allowed_tenants || [],
             matricule: u.matricule,
             cin: u.cin,
@@ -353,6 +353,18 @@ export function createAdminApi(lazyApi: () => any) {
           body: JSON.stringify(newPassword ? { newPassword } : {}),
         });
         if (!response.ok) throw new Error('Failed to reset password');
+        return response.json();
+      },
+      revealPassword: async (userId: string, adminPassword: string): Promise<{ password: string }> => {
+        const response = await fetch(`${API_URL}/users/${userId}/reveal-password`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({ password: adminPassword }),
+        });
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.message || `Failed to reveal password (HTTP ${response.status})`);
+        }
         return response.json();
       },
       sendInvite: async (data: { email: string; name?: string; role?: string }): Promise<any> => {
@@ -795,12 +807,13 @@ export function createAdminApi(lazyApi: () => any) {
         },
       },
       helpArticles: {
-        list: async () => {
+        list: async (opts?: { audience?: 'ALL' | 'CLIENT' | 'STAFF' }) => {
           if (USE_MOCK) {
             await sleep(NETWORK_DELAY);
             return db.get(DB_KEYS.HELP_ARTICLES, []);
           }
-          const response = await fetch(`${API_URL}/admin-features/help-articles`, { headers: getHeaders() });
+          const qs = opts?.audience ? `?audience=${encodeURIComponent(opts.audience)}` : '';
+          const response = await fetch(`${API_URL}/admin-features/help-articles${qs}`, { headers: getHeaders() });
           if (!response.ok) throw new Error('Failed to fetch help articles');
           return response.json();
         },

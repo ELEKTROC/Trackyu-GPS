@@ -10,7 +10,7 @@
  * - Éditeur Markdown pour les articles
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   BookOpen,
   Plus,
@@ -30,12 +30,18 @@ import {
   TrendingUp,
   Folder,
   BarChart2,
+  Users,
+  Shield,
+  Globe as GlobeIcon,
+  Loader2,
 } from 'lucide-react';
 import { Card } from '../../../components/Card';
 import { Modal } from '../../../components/Modal';
 import { useToast } from '../../../contexts/ToastContext';
 import { useConfirmDialog } from '../../../components/ConfirmDialog';
 import { TOAST } from '../../../constants/toastMessages';
+import { api } from '../../../services/apiLazy';
+import { logger } from '../../../utils/logger';
 
 // Types
 interface HelpArticle {
