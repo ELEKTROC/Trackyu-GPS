@@ -270,6 +270,35 @@ function normalizeSub(raw: Record<string, unknown>): Subscription {
 // ── APIs ───────────────────────────────────────────────────────────────────────
 
 export const invoicesApi = {
+  getPage: async (
+    page: number,
+    limit: number,
+    search?: string,
+    resellerId?: string | null,
+    year?: number | null,
+    clientId?: string
+  ): Promise<{ data: Invoice[]; total: number }> => {
+    try {
+      const res = await apiClient.get('/finance/invoices', {
+        params: {
+          page,
+          limit,
+          ...(search ? { search } : {}),
+          ...(resellerId ? { reseller_id: resellerId } : {}),
+          ...(year ? { year } : {}),
+          ...(clientId ? { client_id: clientId } : {}),
+        },
+      });
+      const raw = res.data;
+      const data: Invoice[] = (Array.isArray(raw?.data) ? raw.data : Array.isArray(raw) ? raw : []).map(
+        (r: Record<string, unknown>) => normalizeInvoice(r)
+      );
+      return { data, total: raw?.total ?? data.length };
+    } catch (error) {
+      throw normalizeError(error);
+    }
+  },
+
   getAll: async (): Promise<Invoice[]> => {
     try {
       const res = await apiClient.get('/finance/invoices', { params: { limit: 200 } });
