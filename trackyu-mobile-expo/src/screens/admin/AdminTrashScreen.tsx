@@ -58,10 +58,19 @@ export default function AdminTrashScreen() {
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [pickerField, setPickerField] = useState<PickerField>(null);
 
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  React.useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const shouldLoadData = !!(debouncedSearch.trim().length >= 2 || dateFrom || dateTo || tab !== 'all');
+
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['admin-trash'],
     queryFn: adminApi.trash.list,
     staleTime: 30_000,
+    enabled: shouldLoadData,
   });
 
   const restoreMutation = useMutation({
@@ -279,14 +288,20 @@ export default function AdminTrashScreen() {
           })}
         </View>
 
-        {isLoading ? (
+        {!shouldLoadData ? (
+          <View style={s(theme).center}>
+            <Trash2 size={48} color={theme.text.muted} />
+            <Text style={s(theme).empty}>Filtrez par onglet, recherche ou date</Text>
+            <Text style={[s(theme).empty, { fontSize: 12 }]}>pour afficher la corbeille</Text>
+          </View>
+        ) : isLoading ? (
           <View style={s(theme).center}>
             <ActivityIndicator size="large" color={theme.primary} />
           </View>
         ) : filtered.length === 0 ? (
           <View style={s(theme).center}>
             <Trash2 size={48} color={theme.text.muted} />
-            <Text style={s(theme).empty}>Corbeille vide</Text>
+            <Text style={s(theme).empty}>Aucun résultat</Text>
           </View>
         ) : (
           <FlatList

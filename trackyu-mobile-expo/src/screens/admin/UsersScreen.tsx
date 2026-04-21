@@ -142,6 +142,14 @@ export default function UsersScreen() {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [departementFilter, setDepartementFilter] = useState<string | null>(null);
 
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  React.useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const shouldLoadData = !!(roleFilter || statusFilter || departementFilter || debouncedSearch.trim().length >= 2);
+
   const {
     data = [],
     isLoading,
@@ -151,6 +159,7 @@ export default function UsersScreen() {
     queryKey: ['admin-users'],
     queryFn: usersApi.getAll,
     staleTime: 60_000,
+    enabled: shouldLoadData,
   });
 
   const uniqueDepartements = useMemo(() => {
@@ -218,7 +227,7 @@ export default function UsersScreen() {
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
             <Text style={s.title}>Utilisateurs</Text>
-            {!isLoading && (
+            {shouldLoadData && !isLoading && (
               <Text style={s.subtitle}>
                 {data.length} total · {activeCount} actifs
               </Text>
@@ -271,14 +280,20 @@ export default function UsersScreen() {
         />
 
         {/* List */}
-        {isLoading ? (
+        {!shouldLoadData ? (
+          <View style={s.center}>
+            <SlidersHorizontal size={48} color={theme.text.muted} />
+            <Text style={s.empty}>Appliquez un filtre ou lancez une recherche</Text>
+            <Text style={[s.empty, { fontSize: 12 }]}>pour afficher les utilisateurs</Text>
+          </View>
+        ) : isLoading ? (
           <View style={s.center}>
             <ActivityIndicator size="large" color={theme.primary} />
           </View>
         ) : filtered.length === 0 ? (
           <View style={s.center}>
             <User size={48} color={theme.text.muted} />
-            <Text style={s.empty}>{search || hasActiveFilters ? 'Aucun résultat' : 'Aucun utilisateur'}</Text>
+            <Text style={s.empty}>Aucun résultat</Text>
           </View>
         ) : (
           <FlatList

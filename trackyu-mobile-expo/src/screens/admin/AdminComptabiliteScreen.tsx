@@ -91,9 +91,9 @@ function applyPaymentFilters(list: Payment[], f: AdminFilters): Payment[] {
 
 // ── Onglet Vue d'ensemble ─────────────────────────────────────────────────────
 
-function OverviewTab({ theme, filters }: { theme: ThemeType; filters: AdminFilters }) {
-  const invQ = useQuery({ queryKey: ['compta-invoices'], queryFn: invoicesApi.getAll, staleTime: 60_000 });
-  const payQ = useQuery({ queryKey: ['compta-payments'], queryFn: paymentsApi.getAll, staleTime: 60_000 });
+function OverviewTab({ theme, filters, enabled }: { theme: ThemeType; filters: AdminFilters; enabled: boolean }) {
+  const invQ = useQuery({ queryKey: ['compta-invoices'], queryFn: invoicesApi.getAll, staleTime: 60_000, enabled });
+  const payQ = useQuery({ queryKey: ['compta-payments'], queryFn: paymentsApi.getAll, staleTime: 60_000, enabled });
 
   const isLoading = invQ.isLoading || payQ.isLoading;
 
@@ -214,11 +214,12 @@ const METHOD_LABELS: Record<string, string> = {
   ORANGE_MONEY: 'Orange Money',
 };
 
-function PaymentsTab({ theme, filters }: { theme: ThemeType; filters: AdminFilters }) {
+function PaymentsTab({ theme, filters, enabled }: { theme: ThemeType; filters: AdminFilters; enabled: boolean }) {
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['compta-payments'],
     queryFn: paymentsApi.getAll,
     staleTime: 60_000,
+    enabled,
   });
 
   const payments: Payment[] = useMemo(
@@ -297,11 +298,12 @@ const RECOVERY_COLORS: Record<string, string> = {
   LITIGATION: '#7C3AED',
 };
 
-function RecoveryTab({ theme, filters }: { theme: ThemeType; filters: AdminFilters }) {
+function RecoveryTab({ theme, filters, enabled }: { theme: ThemeType; filters: AdminFilters; enabled: boolean }) {
   const { data, isLoading, isRefetching, refetch } = useQuery({
     queryKey: ['compta-invoices'],
     queryFn: invoicesApi.getAll,
     staleTime: 60_000,
+    enabled,
   });
 
   const overdueInvoices: Invoice[] = useMemo(
@@ -427,46 +429,47 @@ export default function AdminComptabiliteScreen() {
     [clientFilter, yearFilter]
   );
 
+  const hasActiveFilters = !!(clientFilter || yearFilter);
+  // SUPERADMIN = cross-tenant : on ne charge rien tant qu'aucun filtre n'est posé.
+  // ADMIN/MANAGER (tenant-scopé) : chargement direct, volumes modestes.
+  const shouldLoadData = !isSuperAdmin || hasActiveFilters;
+
   // Facettes calculées depuis les caches React Query (mêmes keys que les onglets → pas de fetch dupliqué)
   const invQ = useQuery({
     queryKey: ['compta-invoices'],
     queryFn: invoicesApi.getAll,
     staleTime: 60_000,
-    enabled: isSuperAdmin,
+    enabled: shouldLoadData,
   });
   const payQ = useQuery({
     queryKey: ['compta-payments'],
     queryFn: paymentsApi.getAll,
     staleTime: 60_000,
-    enabled: isSuperAdmin,
+    enabled: shouldLoadData,
   });
 
+  // Années : liste figée (dernières 5 années) — dispo dès l'ouverture pour amorcer le filtre
+  const hardcodedYears = useMemo(() => {
+    const cy = new Date().getFullYear();
+    return [0, 1, 2, 3, 4].map((o) => ({ id: String(cy - o), label: String(cy - o) }));
+  }, []);
+
+  // Clients : facette calculée à partir des data fetchées (après premier filtre)
   const facets = useMemo(() => {
     const clients = new Set<string>();
-    const years = new Set<number>();
     for (const i of invQ.data ?? []) {
       if (i.clientName) clients.add(i.clientName);
-      if (i.date) {
-        const y = new Date(i.date).getFullYear();
-        if (!isNaN(y)) years.add(y);
-      }
     }
     for (const p of payQ.data ?? []) {
       if (p.clientName) clients.add(p.clientName);
-      if (p.date) {
-        const y = new Date(p.date).getFullYear();
-        if (!isNaN(y)) years.add(y);
-      }
     }
     return {
       clients: Array.from(clients)
         .sort()
         .map((c) => ({ id: c, label: c })),
-      years: Array.from(years)
-        .sort((a, b) => b - a)
-        .map((y) => ({ id: String(y), label: String(y) })),
+      years: hardcodedYears,
     };
-  }, [invQ.data, payQ.data]);
+  }, [invQ.data, payQ.data, hardcodedYears]);
 
   const filterBlocks: FilterBlockDef[] = useMemo(
     () => [
@@ -476,7 +479,6 @@ export default function AdminComptabiliteScreen() {
     [facets, clientFilter, yearFilter]
   );
 
-  const hasActiveFilters = !!(clientFilter || yearFilter);
   const resetFilters = () => {
     setClientFilter(null);
     setYearFilter(null);
@@ -570,9 +572,23 @@ export default function AdminComptabiliteScreen() {
         </View>
 
         {/* Contenu */}
-        {activeTab === 'overview' && <OverviewTab theme={theme} filters={filters} />}
-        {activeTab === 'payments' && <PaymentsTab theme={theme} filters={filters} />}
-        {activeTab === 'recovery' && <RecoveryTab theme={theme} filters={filters} />}
+        {isSuperAdmin && !hasActiveFilters ? (
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32, gap: 8 }}>
+            <SlidersHorizontal size={48} color={theme.text.muted} />
+            <Text style={{ fontSize: 14, fontWeight: '600', color: theme.text.primary, textAlign: 'center' }}>
+              Sélectionnez une année ou un client
+            </Text>
+            <Text style={{ fontSize: 12, color: theme.text.muted, textAlign: 'center' }}>
+              pour afficher les données comptables cross-tenant
+            </Text>
+          </View>
+        ) : (
+          <>
+            {activeTab === 'overview' && <OverviewTab theme={theme} filters={filters} enabled={shouldLoadData} />}
+            {activeTab === 'payments' && <PaymentsTab theme={theme} filters={filters} enabled={shouldLoadData} />}
+            {activeTab === 'recovery' && <RecoveryTab theme={theme} filters={filters} enabled={shouldLoadData} />}
+          </>
+        )}
       </SafeAreaView>
     </ProtectedScreen>
   );
