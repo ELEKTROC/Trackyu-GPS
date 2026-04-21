@@ -64,28 +64,48 @@ export const usersApi = {
 
   /** POST /users — créer un sous-utilisateur */
   createUser: async (data: CreateUserRequest): Promise<TenantUser> => {
-    const res = await apiClient.post<TenantUser>('/users', data);
-    return res.data;
+    try {
+      const res = await apiClient.post<TenantUser>('/users', data);
+      return res.data;
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 
   /** PUT /users/:id — modifier un utilisateur */
   updateUser: async (userId: string, data: UpdateUserRequest): Promise<TenantUser> => {
-    const res = await apiClient.put<TenantUser>(`/users/${userId}`, data);
-    return res.data;
+    try {
+      const res = await apiClient.put<TenantUser>(`/users/${userId}`, data);
+      return res.data;
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 
   /** PUT /users/:id — activer / désactiver (status dans le payload) */
   toggleStatus: async (userId: string, status: 'Actif' | 'Inactif'): Promise<void> => {
-    await apiClient.put(`/users/${userId}`, { status });
+    try {
+      await apiClient.put(`/users/${userId}`, { status });
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 
   updateProfile: async (userId: string, data: UpdateProfileRequest): Promise<User> => {
-    const res = await apiClient.put<User>(`/users/${userId}`, data);
-    return res.data;
+    try {
+      const res = await apiClient.put<User>(`/users/${userId}`, data);
+      return res.data;
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 
   changePassword: async (_userId: string, data: ChangePasswordRequest): Promise<void> => {
-    await apiClient.post('/auth/change-password', data);
+    try {
+      await apiClient.post('/auth/change-password', data);
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 };
 

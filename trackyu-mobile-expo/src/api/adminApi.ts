@@ -146,12 +146,21 @@ const adminApi = {
   // GPS Pipeline
   gps: {
     getStats: async (): Promise<GpsPipelineStats> => {
-      const res = await apiClient.get<GpsPipelineStats>('/admin/gps-stats');
-      return res.data;
+      try {
+        const res = await apiClient.get<GpsPipelineStats>('/admin/gps-stats');
+        return res.data;
+      } catch (error) {
+        throw normalizeError(error);
+      }
     },
     getDiagnostic: async (imei: string): Promise<DeviceDiagnostic> => {
-      const res = await apiClient.get<DeviceDiagnostic>(`/devices/${imei}/diagnostics`);
-      return res.data;
+      if (!imei?.trim()) throw new Error('imei requis');
+      try {
+        const res = await apiClient.get<DeviceDiagnostic>(`/devices/${imei}/diagnostics`);
+        return res.data;
+      } catch (error) {
+        throw normalizeError(error);
+      }
     },
   },
 };

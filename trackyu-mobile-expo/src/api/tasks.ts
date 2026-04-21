@@ -49,8 +49,9 @@ export const TASK_PRIORITY_COLORS: Record<TaskPriority, string> = {
 const tasksApi = {
   getAll: async (params?: { assignedTo?: string }): Promise<Task[]> => {
     try {
-      const q = params?.assignedTo ? `?assignedTo=${params.assignedTo}` : '';
-      const res = await apiClient.get(`/crm/tasks${q}`);
+      const res = await apiClient.get('/crm/tasks', {
+        params: params?.assignedTo ? { assignedTo: params.assignedTo } : undefined,
+      });
       return Array.isArray(res.data) ? res.data : [];
     } catch (error) {
       throw normalizeError(error);

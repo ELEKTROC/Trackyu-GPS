@@ -3,6 +3,7 @@
  * CRUD sur /drivers
  */
 import apiClient from './client';
+import { normalizeError } from '../utils/errorTypes';
 
 export type DriverStatus = 'ACTIVE' | 'INACTIVE' | 'ON_LEAVE';
 
@@ -41,25 +42,41 @@ export interface CreateDriverRequest {
 
 const driversApi = {
   async getAll(): Promise<Driver[]> {
-    const res = await apiClient.get<Driver[] | { data: Driver[] }>('/drivers');
-    const raw = res.data;
-    return Array.isArray(raw) ? raw : ((raw as any).data ?? []);
+    try {
+      const res = await apiClient.get<Driver[] | { data: Driver[] }>('/drivers');
+      const raw = res.data;
+      return Array.isArray(raw) ? raw : ((raw as { data: Driver[] }).data ?? []);
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 
   async create(data: CreateDriverRequest): Promise<Driver> {
-    const res = await apiClient.post<Driver | { data: Driver }>('/drivers', data);
-    const raw = res.data;
-    return (raw as any).data ?? raw;
+    try {
+      const res = await apiClient.post<Driver | { data: Driver }>('/drivers', data);
+      const raw = res.data;
+      return (raw as { data: Driver }).data ?? (raw as Driver);
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 
   async update(id: string, data: Partial<CreateDriverRequest>): Promise<Driver> {
-    const res = await apiClient.put<Driver | { data: Driver }>(`/drivers/${id}`, data);
-    const raw = res.data;
-    return (raw as any).data ?? raw;
+    try {
+      const res = await apiClient.put<Driver | { data: Driver }>(`/drivers/${id}`, data);
+      const raw = res.data;
+      return (raw as { data: Driver }).data ?? (raw as Driver);
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 
   async delete(id: string): Promise<void> {
-    await apiClient.delete(`/drivers/${id}`);
+    try {
+      await apiClient.delete(`/drivers/${id}`);
+    } catch (e) {
+      throw normalizeError(e);
+    }
   },
 };
 

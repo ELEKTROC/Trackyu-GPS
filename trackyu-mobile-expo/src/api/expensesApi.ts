@@ -41,7 +41,7 @@ export const expensesApi = {
 
   getByVehicle: async (vehicleId: string): Promise<VehicleExpense[]> => {
     try {
-      const res = await apiClient.get(`/vehicle-expenses?vehicleId=${vehicleId}`);
+      const res = await apiClient.get('/vehicle-expenses', { params: { vehicleId } });
       return Array.isArray(res.data) ? res.data : [];
     } catch (e) {
       throw normalizeError(e);

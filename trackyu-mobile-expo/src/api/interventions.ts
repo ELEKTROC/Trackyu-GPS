@@ -311,8 +311,9 @@ const interventionsApi = {
 
   getAll: async (params?: { technicianId?: string }): Promise<Intervention[]> => {
     try {
-      const q = params?.technicianId ? `?technicianId=${params.technicianId}` : '';
-      const res = await apiClient.get(`/tech/interventions${q}`);
+      const res = await apiClient.get('/tech/interventions', {
+        params: params?.technicianId ? { technicianId: params.technicianId } : undefined,
+      });
       const list = Array.isArray(res.data) ? res.data : [];
       return list.map(normalizeIntervention);
     } catch (error) {
@@ -354,6 +355,7 @@ const interventionsApi = {
     notes?: string | null;
     status?: InterventionStatus;
   }): Promise<Intervention> => {
+    if (!data.clientId?.trim()) throw new Error('clientId requis');
     try {
       const res = await apiClient.post('/tech/interventions', {
         status: 'PENDING',
@@ -368,7 +370,7 @@ const interventionsApi = {
   update: async (id: string, data: Partial<Intervention>): Promise<Intervention> => {
     try {
       const res = await apiClient.put(`/tech/interventions/${id}`, data);
-      return res.data;
+      return normalizeIntervention(res.data as Record<string, unknown>);
     } catch (error) {
       throw normalizeError(error);
     }

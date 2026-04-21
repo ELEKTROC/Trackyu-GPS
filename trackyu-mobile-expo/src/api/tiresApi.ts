@@ -55,7 +55,7 @@ export const tiresApi = {
 
   getByVehicle: async (vehicleId: string): Promise<Tire[]> => {
     try {
-      const res = await apiClient.get(`/fleet-tires?vehicleId=${vehicleId}`);
+      const res = await apiClient.get('/fleet-tires', { params: { vehicleId } });
       return Array.isArray(res.data) ? res.data : [];
     } catch (e) {
       throw normalizeError(e);
