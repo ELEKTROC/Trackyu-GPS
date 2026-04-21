@@ -1,10 +1,10 @@
 /**
  * TrackYu Mobile — Client Portal Dashboard (Mon Espace)
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, type CompositeNavigationProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -19,15 +19,26 @@ import {
   Wrench,
   Car,
   AlertTriangle,
+  Briefcase,
+  FileBarChart,
+  Bell,
+  HelpCircle,
+  Sparkles,
+  FileSignature,
+  ArrowLeft,
 } from 'lucide-react-native';
 import { useTheme } from '../../theme';
 import { SkeletonDashboard } from '../../components/SkeletonBox';
 import { portalApi, type PortalDashboard } from '../../api/portal';
-import type { PortalStackParamList } from '../../navigation/types';
+import type { RootStackParamList, PortalStackParamList } from '../../navigation/types';
 import { useAuthStore } from '../../store/authStore';
 import { INVOICE_STATUS_COLORS, INVOICE_STATUS_LABELS } from '../../utils/portalColors';
+import { AIChatModal } from '../../components/AIChatModal';
 
-type Nav = NativeStackNavigationProp<PortalStackParamList>;
+type Nav = CompositeNavigationProp<
+  NativeStackNavigationProp<PortalStackParamList>,
+  NativeStackNavigationProp<RootStackParamList>
+>;
 
 function StatusBadge({ status }: { status: string }) {
   const color = INVOICE_STATUS_COLORS[status] ?? '#6B7280';
@@ -87,6 +98,20 @@ export default function ClientPortalScreen() {
     queryFn: () => portalApi.getDashboard(),
   });
 
+  const { data: interventionsCount = 0 } = useQuery({
+    queryKey: ['portal-interventions-count'],
+    queryFn: async () => (await portalApi.getMyInterventions()).length,
+    staleTime: 60_000,
+  });
+
+  const { data: paymentsCount = 0 } = useQuery({
+    queryKey: ['portal-payments-count'],
+    queryFn: async () => (await portalApi.getPayments()).length,
+    staleTime: 60_000,
+  });
+
+  const [showAI, setShowAI] = useState(false);
+
   if (isLoading) {
     return (
       <View style={[s.container]}>
@@ -131,6 +156,17 @@ export default function ClientPortalScreen() {
 
   return (
     <SafeAreaView style={s.container} edges={['top']}>
+      <View style={s.topBar}>
+        <TouchableOpacity
+          onPress={() => nav.goBack()}
+          style={s.backBtn}
+          accessibilityLabel="Retour"
+          accessibilityRole="button"
+        >
+          <ArrowLeft size={22} color={theme.text.primary} />
+        </TouchableOpacity>
+        <Text style={s.topTitle}>Mon espace</Text>
+      </View>
       <ScrollView
         contentContainerStyle={s.content}
         refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} tintColor={theme.primary} />}
@@ -160,36 +196,56 @@ export default function ClientPortalScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Stats grid — 2×2, chiffres réels uniquement */}
+        {/* Bloc Finance — 3 colonnes */}
+        <Text style={s.sectionTitle}>Finance</Text>
         <View style={s.grid}>
           <StatCard
-            label="Abonnements actifs"
-            value={data.subscriptions?.active ?? data.contracts.active}
-            icon={<Package size={20} color="#22C55E" />}
-            color="#22C55E"
-            onPress={() => nav.navigate('PortalSubscriptions')}
-          />
-          <StatCard
-            label="Factures impayées"
+            label="Mes factures"
             value={data.invoices.unpaid}
             sub={data.invoices.totalDue > 0 ? fmt(data.invoices.totalDue) : undefined}
-            icon={<FileText size={20} color="#EF4444" />}
+            icon={<FileText size={18} color="#EF4444" />}
             color="#EF4444"
             onPress={() => nav.navigate('PortalInvoices')}
           />
           <StatCard
-            label="Tickets ouverts"
+            label="Mes abonnements"
+            value={data.subscriptions?.active ?? data.contracts.active}
+            icon={<Package size={18} color="#22C55E" />}
+            color="#22C55E"
+            onPress={() => nav.navigate('PortalSubscriptions')}
+          />
+          <StatCard
+            label="Mes paiements"
+            value={paymentsCount}
+            icon={<Banknote size={18} color="#10B981" />}
+            color="#10B981"
+            onPress={() => nav.navigate('PortalPayments')}
+          />
+        </View>
+
+        {/* Bloc Support — 3 colonnes */}
+        <Text style={s.sectionTitle}>Support</Text>
+        <View style={s.grid}>
+          <StatCard
+            label="Mes tickets"
             value={data.tickets.open}
-            icon={<TicketCheck size={20} color="#F59E0B" />}
+            icon={<TicketCheck size={18} color="#F59E0B" />}
             color="#F59E0B"
             onPress={() => nav.navigate('PortalTickets')}
           />
           <StatCard
-            label="Contrats actifs"
-            value={data.contracts.active}
-            icon={<Banknote size={20} color="#10B981" />}
-            color="#10B981"
-            onPress={() => nav.navigate('PortalSubscriptions')}
+            label="Mes interventions"
+            value={interventionsCount}
+            icon={<Wrench size={18} color="#8B5CF6" />}
+            color="#8B5CF6"
+            onPress={() => nav.navigate('PortalInterventions')}
+          />
+          <StatCard
+            label="Mes demandes"
+            value="→"
+            icon={<Briefcase size={18} color="#F97316" />}
+            color="#F97316"
+            onPress={() => nav.navigate('MesDemandesServices')}
           />
         </View>
 
@@ -237,42 +293,6 @@ export default function ClientPortalScreen() {
           <View style={s.actionsRow}>
             <TouchableOpacity
               style={s.actionBtn}
-              onPress={() => nav.navigate('PortalInvoices')}
-              accessibilityLabel="Mes factures"
-              accessibilityRole="button"
-            >
-              <FileText size={18} color={theme.primary} />
-              <Text style={s.actionLabel}>Factures</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={s.actionBtn}
-              onPress={() => nav.navigate('PortalSubscriptions')}
-              accessibilityLabel="Mes abonnements"
-              accessibilityRole="button"
-            >
-              <Package size={18} color={theme.primary} />
-              <Text style={s.actionLabel}>Abonnements</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={s.actionBtn}
-              onPress={() => nav.navigate('PortalPayments')}
-              accessibilityLabel="Mes paiements"
-              accessibilityRole="button"
-            >
-              <Banknote size={18} color={theme.primary} />
-              <Text style={s.actionLabel}>Paiements</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={s.actionBtn}
-              onPress={() => nav.navigate('PortalTickets')}
-              accessibilityLabel="Mes tickets de support"
-              accessibilityRole="button"
-            >
-              <TicketCheck size={18} color={theme.primary} />
-              <Text style={s.actionLabel}>Support</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={s.actionBtn}
               onPress={() => nav.navigate('PortalNewTicket')}
               accessibilityLabel="Créer un nouveau ticket"
               accessibilityRole="button"
@@ -282,25 +302,62 @@ export default function ClientPortalScreen() {
             </TouchableOpacity>
             <TouchableOpacity
               style={s.actionBtn}
-              onPress={() => nav.navigate('PortalInterventions')}
-              accessibilityLabel="Mes interventions"
-              accessibilityRole="button"
-            >
-              <Wrench size={18} color={theme.primary} />
-              <Text style={s.actionLabel}>Interventions</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={s.actionBtn}
-              onPress={() => (nav as any).navigate('Main', { screen: 'Map' })}
-              accessibilityLabel="Voir mes véhicules sur la carte"
+              onPress={() => nav.navigate('Fleet')}
+              accessibilityLabel="Ma flotte"
               accessibilityRole="button"
             >
               <Car size={18} color={theme.primary} />
-              <Text style={s.actionLabel}>Mes véhicules</Text>
+              <Text style={s.actionLabel}>Ma flotte</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.actionBtn}
+              onPress={() => nav.navigate('Reports')}
+              accessibilityLabel="Mes rapports"
+              accessibilityRole="button"
+            >
+              <FileBarChart size={18} color={theme.primary} />
+              <Text style={s.actionLabel}>Mes rapports</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.actionBtn}
+              onPress={() => nav.navigate('Alerts')}
+              accessibilityLabel="Mes alertes"
+              accessibilityRole="button"
+            >
+              <Bell size={18} color={theme.primary} />
+              <Text style={s.actionLabel}>Mes alertes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.actionBtn}
+              onPress={() => nav.navigate('Help')}
+              accessibilityLabel="Centre d'aide"
+              accessibilityRole="button"
+            >
+              <HelpCircle size={18} color={theme.primary} />
+              <Text style={s.actionLabel}>Aide</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.actionBtn}
+              onPress={() => setShowAI(true)}
+              accessibilityLabel="Assistant IA TrackYu"
+              accessibilityRole="button"
+            >
+              <Sparkles size={18} color={theme.primary} />
+              <Text style={s.actionLabel}>Assistant IA</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.actionBtn}
+              onPress={() => nav.navigate('PortalContractDocument')}
+              accessibilityLabel="Mon contrat — télécharger le contrat"
+              accessibilityRole="button"
+            >
+              <FileSignature size={18} color={theme.primary} />
+              <Text style={s.actionLabel}>Mon contrat</Text>
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
+      <AIChatModal visible={showAI} onClose={() => setShowAI(false)} userName={user?.name ?? 'vous'} />
     </SafeAreaView>
   );
 }
@@ -310,6 +367,18 @@ export default function ClientPortalScreen() {
 const styles = (theme: ReturnType<typeof useTheme>['theme']) =>
   StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.bg.primary },
+    topBar: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: 8,
+      paddingBottom: 8,
+      paddingHorizontal: 12,
+      gap: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
+    backBtn: { padding: 6 },
+    topTitle: { fontSize: 16, fontWeight: '700', color: theme.text.primary },
     content: { padding: 16, paddingTop: 16 },
     center: { flex: 1, backgroundColor: theme.bg.primary, justifyContent: 'center', alignItems: 'center', padding: 24 },
     header: { marginBottom: 24 },
@@ -324,22 +393,21 @@ const styles = (theme: ReturnType<typeof useTheme>['theme']) =>
       letterSpacing: 1,
     },
 
-    grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 24 },
+    grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 18 },
     statCard: {
-      flex: 1,
-      minWidth: '45%',
+      width: '31%',
       backgroundColor: theme.bg.surface,
-      borderRadius: 14,
-      padding: 14,
+      borderRadius: 12,
+      padding: 10,
       alignItems: 'flex-start',
-      gap: 6,
+      gap: 4,
       borderWidth: 1,
       borderColor: theme.border,
     },
-    statIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-    statValue: { fontSize: 22, fontWeight: '700', color: theme.text.primary },
-    statLabel: { fontSize: 12, color: theme.text.muted, fontWeight: '500' },
-    statSub: { fontSize: 11, color: theme.functional.error, fontWeight: '600' },
+    statIcon: { width: 30, height: 30, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+    statValue: { fontSize: 18, fontWeight: '700', color: theme.text.primary },
+    statLabel: { fontSize: 11, color: theme.text.muted, fontWeight: '500' },
+    statSub: { fontSize: 10, color: theme.functional.error, fontWeight: '600' },
 
     section: { marginBottom: 24 },
     sectionTitle: {
@@ -372,9 +440,9 @@ const styles = (theme: ReturnType<typeof useTheme>['theme']) =>
     },
     invoiceFooterText: { fontSize: 12, color: theme.text.muted },
 
-    actionsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+    actionsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
     actionBtn: {
-      width: '22%',
+      width: '31%',
       backgroundColor: theme.bg.surface,
       borderRadius: 12,
       paddingVertical: 12,
@@ -384,7 +452,7 @@ const styles = (theme: ReturnType<typeof useTheme>['theme']) =>
       borderWidth: 1,
       borderColor: theme.border,
     },
-    actionLabel: { fontSize: 10, color: theme.text.secondary, fontWeight: '600', textAlign: 'center', width: '100%' },
+    actionLabel: { fontSize: 11, color: theme.text.secondary, fontWeight: '600', textAlign: 'center', width: '100%' },
 
     empty: { fontSize: 14, color: theme.text.muted, textAlign: 'center' },
     retryBtn: {

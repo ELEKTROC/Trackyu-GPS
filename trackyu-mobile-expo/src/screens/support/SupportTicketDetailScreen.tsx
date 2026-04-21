@@ -4,7 +4,7 @@
  * GET /tickets/:id → { ...ticket, messages: [] }
  * POST /tickets/:id/messages → { sender, text, is_internal }
  */
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -103,7 +103,14 @@ export default function SupportTicketDetailScreen() {
   const user = useAuthStore((st) => st.user);
   const qc = useQueryClient();
   const scrollRef = useRef<ScrollView>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
   const [typePickerOpen, setTypePickerOpen] = useState(false);
   const userRole = user?.role ? normalizeRole(user.role) : '';
   const canCreateIntervention = CREATE_INTERVENTION_ROLES.includes(userRole as never);
@@ -149,7 +156,7 @@ export default function SupportTicketDetailScreen() {
       setMessage('');
       qc.invalidateQueries({ queryKey: ['support-ticket', ticketId] });
       qc.invalidateQueries({ queryKey: ['support-tickets'] });
-      setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 300);
+      scrollTimerRef.current = setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 300);
     },
   });
 

@@ -1,7 +1,7 @@
 /**
  * TrackYu Mobile — Portal Invoice Detail + PDF download
  */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -44,6 +44,13 @@ function PaymentModal({
 }) {
   const { theme } = useTheme();
   const [copied, setCopied] = useState(false);
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    };
+  }, []);
 
   const { data: paySettings } = useQuery({
     queryKey: ['portal-payment-settings'],
@@ -72,8 +79,9 @@ function PaymentModal({
 
   const handleCopy = (text: string) => {
     Share.share({ message: text });
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copiedTimerRef.current = setTimeout(() => setCopied(false), 2000);
   };
 
   const pm = {

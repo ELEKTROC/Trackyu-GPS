@@ -35,7 +35,7 @@ function battColor(v?: number): string {
 /* ── Sensor Card ──────────────────────────────────────────────────── */
 function SensorCard({ vehicle, theme }: { vehicle: Vehicle; theme: ThemeType }) {
   const statusColor = VEHICLE_STATUS_COLORS[vehicle.status] ?? VEHICLE_STATUS_COLORS.offline;
-  const temp = (vehicle as any).temperature as number | undefined;
+  const temp = vehicle.temperature;
   const batt = vehicle.battery;
   const ign = vehicle.ignition;
 
@@ -204,24 +204,24 @@ export default function TemperatureScreen() {
     if (resellerFilter) list = list.filter((v) => v.resellerName === resellerFilter);
     if (clientFilter) list = list.filter((v) => v.clientName === clientFilter);
     if (statusFilter) list = list.filter((v) => v.status === statusFilter);
-    if (alertFilter === 'overheat') list = list.filter((v) => ((v as any).temperature ?? 0) > 100);
+    if (alertFilter === 'overheat') list = list.filter((v) => (v.temperature ?? 0) > 100);
     else if (alertFilter === 'lowBatt') list = list.filter((v) => v.battery != null && v.battery < 11.5);
-    else if (alertFilter === 'noData') list = list.filter((v) => (v as any).temperature == null && v.battery == null);
+    else if (alertFilter === 'noData') list = list.filter((v) => v.temperature == null && v.battery == null);
 
     return [...list].sort((a, b) => {
-      const hasA = (a as any).temperature != null || a.battery != null;
-      const hasB = (b as any).temperature != null || b.battery != null;
+      const hasA = a.temperature != null || a.battery != null;
+      const hasB = b.temperature != null || b.battery != null;
       if (hasA && !hasB) return -1;
       if (!hasA && hasB) return 1;
       // Alertes en premier
-      const alertA = ((a as any).temperature ?? 0) > 100 || (a.battery ?? 99) < 11.5 ? 1 : 0;
-      const alertB = ((b as any).temperature ?? 0) > 100 || (b.battery ?? 99) < 11.5 ? 1 : 0;
+      const alertA = (a.temperature ?? 0) > 100 || (a.battery ?? 99) < 11.5 ? 1 : 0;
+      const alertB = (b.temperature ?? 0) > 100 || (b.battery ?? 99) < 11.5 ? 1 : 0;
       return alertB - alertA;
     });
   }, [vehicles, search, resellerFilter, clientFilter, statusFilter, alertFilter]);
 
-  const withTemp = vehicles.filter((v) => (v as any).temperature != null).length;
-  const overTemp = vehicles.filter((v) => ((v as any).temperature ?? 0) > 100).length;
+  const withTemp = vehicles.filter((v) => v.temperature != null).length;
+  const overTemp = vehicles.filter((v) => (v.temperature ?? 0) > 100).length;
   const lowBatt = vehicles.filter((v) => v.battery != null && v.battery < 11.5).length;
 
   return (

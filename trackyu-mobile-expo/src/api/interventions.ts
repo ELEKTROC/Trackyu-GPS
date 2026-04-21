@@ -35,6 +35,7 @@ export interface Intervention {
   resellerName?: string;
   technicianId: string;
   ticketId?: string;
+  ticketTitle?: string;
   contractId?: string;
   type: InterventionType;
   nature: InterventionNature;

@@ -15,8 +15,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../navigation/types';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeft, ClipboardList, RefreshCw, Download, FileText } from 'lucide-react-native';
+import { ArrowLeft, ClipboardList, RefreshCw, Download, FileText, Eye } from 'lucide-react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useTheme } from '../../theme';
@@ -220,6 +222,7 @@ interface ContractCardProps {
 function ContractCard({ contract, user }: ContractCardProps) {
   const { theme } = useTheme();
   const s = cardStyles(theme);
+  const nav = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const color = CONTRACT_STATUS_COLORS[contract.status] ?? '#6B7280';
   const [generating, setGenerating] = useState(false);
 
@@ -306,22 +309,36 @@ function ContractCard({ contract, user }: ContractCardProps) {
             </Text>
           </View>
 
-          {/* Bouton télécharger — toujours visible */}
-          <TouchableOpacity
-            style={[s.pdfBtn, { backgroundColor: theme.primaryDim }]}
-            onPress={handleDownload}
-            disabled={generating}
-            activeOpacity={0.7}
-          >
-            {generating ? (
-              <ActivityIndicator size="small" color={theme.primary} style={{ width: 14, height: 14 }} />
-            ) : (
-              <Download size={13} color={theme.primary} />
-            )}
-            <Text style={[s.pdfBtnText, { color: theme.primary }]}>
-              {generating ? 'Génération…' : 'Télécharger PDF'}
-            </Text>
-          </TouchableOpacity>
+          <View style={s.actions}>
+            {/* Voir document — aligne avec onglet "Document Contrat" du web */}
+            <TouchableOpacity
+              style={[s.pdfBtn, { backgroundColor: theme.bg.elevated, borderWidth: 1, borderColor: theme.border }]}
+              onPress={() => nav.navigate('PortalContractDocument')}
+              activeOpacity={0.7}
+              accessibilityLabel="Voir le document contrat"
+              accessibilityRole="button"
+            >
+              <Eye size={13} color={theme.text.primary} />
+              <Text style={[s.pdfBtnText, { color: theme.text.primary }]}>Voir document</Text>
+            </TouchableOpacity>
+
+            {/* Télécharger PDF */}
+            <TouchableOpacity
+              style={[s.pdfBtn, { backgroundColor: theme.primaryDim }]}
+              onPress={handleDownload}
+              disabled={generating}
+              activeOpacity={0.7}
+              accessibilityLabel="Télécharger le contrat en PDF"
+              accessibilityRole="button"
+            >
+              {generating ? (
+                <ActivityIndicator size="small" color={theme.primary} style={{ width: 14, height: 14 }} />
+              ) : (
+                <Download size={13} color={theme.primary} />
+              )}
+              <Text style={[s.pdfBtnText, { color: theme.primary }]}>{generating ? 'Génération…' : 'Télécharger'}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -356,6 +373,7 @@ const cardStyles = (theme: ReturnType<typeof useTheme>['theme']) =>
     },
     footerItem: { flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 },
     footerText: { fontSize: 11, color: theme.text.muted },
+    actions: { flexDirection: 'row', gap: 6 },
     pdfBtn: {
       flexDirection: 'row',
       alignItems: 'center',

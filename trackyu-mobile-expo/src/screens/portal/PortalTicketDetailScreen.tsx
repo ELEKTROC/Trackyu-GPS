@@ -1,7 +1,7 @@
 /**
  * TrackYu Mobile — Portal Ticket Detail + Reply
  */
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -34,7 +34,14 @@ export default function PortalTicketDetailScreen() {
   const { ticketId, subject } = route.params;
   const [reply, setReply] = useState('');
   const flatRef = useRef<FlatList>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const qc = useQueryClient();
+
+  useEffect(() => {
+    return () => {
+      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    };
+  }, []);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['portal-ticket', ticketId],
@@ -46,7 +53,7 @@ export default function PortalTicketDetailScreen() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['portal-ticket', ticketId] });
       setReply('');
-      setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 200);
+      scrollTimerRef.current = setTimeout(() => flatRef.current?.scrollToEnd({ animated: true }), 200);
     },
     onError: () => Alert.alert('Erreur', "Impossible d'envoyer le message."),
   });

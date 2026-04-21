@@ -849,9 +849,9 @@ function ContentDemande({ iv, t }: { iv: Intervention; t: TH }) {
           <Ticket size={14} color={t.primary} />
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 12, fontWeight: '700', color: t.primary }}>{iv.ticketId}</Text>
-            {(iv as any).ticketTitle && (
+            {iv.ticketTitle && (
               <Text style={{ fontSize: 12, color: t.text.secondary }} numberOfLines={1}>
-                {(iv as any).ticketTitle}
+                {iv.ticketTitle}
               </Text>
             )}
           </View>
