@@ -39,7 +39,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../theme';
 import { useAuthStore } from '../../store/authStore';
-import { SUBUSERS_HIDDEN_ROLES, ROLE } from '../../constants/roles';
+import { SUBUSERS_HIDDEN_ROLES, ROLE, ADMIN_SCREEN_ROLES } from '../../constants/roles';
 import alertsApi from '../../api/alerts';
 
 const APP_VERSION = '1.0.0';
@@ -72,8 +72,6 @@ interface Section {
 
 // ── Données ────────────────────────────────────────────────────────────────────
 
-// Rôles qui ne voient PAS la tile Utilisateurs (CLIENT + TECH)
-const USERS_TILE_HIDDEN_ROLES = [ROLE.CLIENT, ROLE.TECH];
 // Rôles qui voient la section Système
 const SYSTEM_ROLES = [ROLE.ADMIN, ROLE.SUPERADMIN, ROLE.TECH];
 
@@ -89,7 +87,7 @@ function buildSections(onSync: () => void, onAbout: () => void): Section[] {
           label: 'Utilisateurs',
           subtitle: 'Gérer les utilisateurs du tenant',
           Icon: Users,
-          hiddenForRoles: USERS_TILE_HIDDEN_ROLES,
+          visibleForRoles: [...ADMIN_SCREEN_ROLES],
         },
         {
           id: 'SubUsers',

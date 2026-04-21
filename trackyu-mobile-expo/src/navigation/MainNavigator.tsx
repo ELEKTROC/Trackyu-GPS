@@ -19,8 +19,9 @@ export function MainNavigator() {
 
   if (role === ROLE.CLIENT) return <ClientNavigator />;
   if (role === ROLE.TECH) return <TechNavigator />;
-  if (NAV_SUPPORT_ROLES.includes(role)) return <SupportNavigator />;
-  if (NAV_STAFF_ROLES.includes(role)) return <StaffNavigator />;
+  if (role === ROLE.OPERATOR) return <ClientNavigator />;
+  if ((NAV_SUPPORT_ROLES as string[]).includes(role)) return <SupportNavigator />;
+  if ((NAV_STAFF_ROLES as string[]).includes(role)) return <StaffNavigator />;
   // Rôle inconnu → accès minimal (évite escalade de privilèges)
   return <ClientNavigator />;
 }
