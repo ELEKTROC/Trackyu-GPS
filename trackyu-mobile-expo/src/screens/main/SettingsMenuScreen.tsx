@@ -26,7 +26,6 @@ import {
   ChevronRight,
   Wrench,
   RefreshCw,
-  HelpCircle,
   Info,
   BellRing,
   GitBranch,
@@ -218,13 +217,6 @@ function buildSections(onSync: () => void, onAbout: () => void): Section[] {
           Icon: BellRing,
           action: () => Linking.openSettings(),
         },
-      ],
-    },
-    {
-      key: 'aide',
-      title: 'Aide',
-      tiles: [
-        { id: 'Help', label: "Centre d'aide", subtitle: 'FAQ, contact et assistant IA', Icon: HelpCircle },
         {
           label: 'À propos',
           subtitle: `TrackYu GPS — version ${APP_VERSION}`,

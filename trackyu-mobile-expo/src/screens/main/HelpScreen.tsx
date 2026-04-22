@@ -25,8 +25,8 @@ import {
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeft,
@@ -49,6 +49,7 @@ import type { RootStackParamList } from '../../navigation/types';
 import { useAuthStore } from '../../store/authStore';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
+type RouteProps = NativeStackScreenProps<RootStackParamList, 'Help'>['route'];
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 
@@ -390,6 +391,8 @@ export default function HelpScreen() {
   const { theme } = useTheme();
   const s = styles(theme);
   const nav = useNavigation<Nav>();
+  const route = useRoute<RouteProps>();
+  const mode = route.params?.mode;
   const user = useAuthStore((st) => st.user);
   const [search, setSearch] = useState('');
   const [chatOpen, setChatOpen] = useState(false);
@@ -438,6 +441,18 @@ export default function HelpScreen() {
     });
   };
 
+  const headerTitle = mode === 'contact' ? 'Contacter le support' : mode === 'faq' ? 'FAQ' : "Centre d'aide";
+  const headerSub =
+    mode === 'contact'
+      ? 'WhatsApp, appel, email ou ticket'
+      : mode === 'faq'
+        ? 'Questions fréquentes'
+        : 'Comment pouvons-nous vous aider ?';
+
+  const showContact = !mode || mode === 'contact';
+  const showFaq = !mode || mode === 'faq';
+  const showChat = !mode;
+
   return (
     <SafeAreaView style={s.container} edges={['top']}>
       {/* Header */}
@@ -451,24 +466,26 @@ export default function HelpScreen() {
           <ArrowLeft size={22} color={theme.text.primary} />
         </TouchableOpacity>
         <View>
-          <Text style={s.title}>Centre d'aide</Text>
-          <Text style={s.subtitle}>Comment pouvons-nous vous aider ?</Text>
+          <Text style={s.title}>{headerTitle}</Text>
+          <Text style={s.subtitle}>{headerSub}</Text>
         </View>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={s.content}>
-        {/* Recherche */}
-        <SearchBar
-          value={search}
-          onChangeText={setSearch}
-          placeholder="Rechercher dans la FAQ…"
-          style={{ marginBottom: 8 }}
-        />
+        {/* Recherche — uniquement en mode FAQ ou full */}
+        {showFaq && (
+          <SearchBar
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Rechercher dans la FAQ…"
+            style={{ marginBottom: 8 }}
+          />
+        )}
 
         {/* Contact rapide */}
-        {!search && (
+        {showContact && !search && (
           <View style={s.section}>
-            <Text style={s.sectionTitle}>Nous contacter</Text>
+            {!mode && <Text style={s.sectionTitle}>Nous contacter</Text>}
             <View style={s.contactGrid}>
               <ContactBtn
                 icon={<MessageCircle size={18} color="#25D366" />}
@@ -502,8 +519,8 @@ export default function HelpScreen() {
           </View>
         )}
 
-        {/* Chat IA */}
-        {!search && (
+        {/* Chat IA — mode full uniquement */}
+        {showChat && !search && (
           <View style={s.section}>
             <TouchableOpacity
               style={[s.chatBanner, { backgroundColor: theme.primaryDim, borderColor: theme.primary + '33' }]}
@@ -525,37 +542,47 @@ export default function HelpScreen() {
         )}
 
         {/* FAQ */}
-        <View style={s.section}>
-          <Text style={s.sectionTitle}>
-            {search ? `${filteredFaqs.length} résultat${filteredFaqs.length !== 1 ? 's' : ''}` : 'Questions fréquentes'}
-          </Text>
-          {filteredFaqs.length === 0 ? (
-            <View style={s.noResult}>
-              <HelpCircle size={36} color={theme.text.muted} />
-              <Text style={s.noResultText}>Aucune question ne correspond à votre recherche.</Text>
-              <TouchableOpacity onPress={() => setChatOpen(true)}>
-                <Text style={[s.noResultLink, { color: theme.primary }]}>Poser la question à l'assistant IA →</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={s.faqList}>
-              {filteredFaqs.map((f, i) => (
-                <FaqItem key={i} faq={f} theme={theme} />
-              ))}
-            </View>
-          )}
-        </View>
+        {showFaq && (
+          <View style={s.section}>
+            {!mode && (
+              <Text style={s.sectionTitle}>
+                {search
+                  ? `${filteredFaqs.length} résultat${filteredFaqs.length !== 1 ? 's' : ''}`
+                  : 'Questions fréquentes'}
+              </Text>
+            )}
+            {search && (
+              <Text style={s.sectionTitle}>
+                {`${filteredFaqs.length} résultat${filteredFaqs.length !== 1 ? 's' : ''}`}
+              </Text>
+            )}
+            {filteredFaqs.length === 0 ? (
+              <View style={s.noResult}>
+                <HelpCircle size={36} color={theme.text.muted} />
+                <Text style={s.noResultText}>Aucune question ne correspond à votre recherche.</Text>
+              </View>
+            ) : (
+              <View style={s.faqList}>
+                {filteredFaqs.map((f, i) => (
+                  <FaqItem key={i} faq={f} theme={theme} />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
 
       {/* Chat IA Modal */}
-      <AIChatModal
-        visible={chatOpen}
-        onClose={() => setChatOpen(false)}
-        userName={user?.name || 'Client'}
-        theme={theme}
-      />
+      {showChat && (
+        <AIChatModal
+          visible={chatOpen}
+          onClose={() => setChatOpen(false)}
+          userName={user?.name || 'Client'}
+          theme={theme}
+        />
+      )}
     </SafeAreaView>
   );
 }

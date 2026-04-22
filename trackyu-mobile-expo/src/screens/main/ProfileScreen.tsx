@@ -28,6 +28,7 @@ import {
   HelpCircle,
   Mail,
   FileText,
+  FileSignature,
   Shield,
   LogOut,
   ChevronRight,
@@ -1132,8 +1133,18 @@ export function ProfileScreen() {
             icon={<Lock {...iconProps} />}
             title="Changer le mot de passe"
             onPress={() => setShowChangePassword(true)}
-            last
+            last={!isClient}
           />
+          {isClient && (
+            <MenuItem
+              theme={theme}
+              icon={<FileSignature {...iconProps} />}
+              title="Mon contrat"
+              subtitle="Voir et télécharger le document"
+              onPress={() => nav.navigate('PortalContractDocument')}
+              last
+            />
+          )}
         </SectionBlock>
 
         {/* ── Mon Espace (CLIENT uniquement) ── */}
@@ -1148,6 +1159,37 @@ export function ProfileScreen() {
             />
           </SectionBlock>
         )}
+
+        {/* ── Support — après Mon Espace Client ── */}
+        <SectionBlock title="Support" theme={theme}>
+          <MenuItem
+            theme={theme}
+            icon={<HelpCircle {...iconProps} />}
+            title="Aide & FAQ"
+            subtitle="Questions fréquentes"
+            onPress={() => nav.navigate('Help', { mode: 'faq' })}
+          />
+          <MenuItem
+            theme={theme}
+            icon={<Mail {...iconProps} />}
+            title="Contacter le support"
+            subtitle="WhatsApp, appel, email, ticket"
+            onPress={() => nav.navigate('Help', { mode: 'contact' })}
+          />
+          <MenuItem
+            theme={theme}
+            icon={<FileText {...iconProps} />}
+            title="Conditions d'utilisation"
+            onPress={() => setShowCGU(true)}
+          />
+          <MenuItem
+            theme={theme}
+            icon={<Shield {...iconProps} />}
+            title="Politique de confidentialité"
+            onPress={() => setShowPrivacy(true)}
+            last
+          />
+        </SectionBlock>
 
         {/* ── Préférences ── */}
         <SectionBlock title="Préférences" theme={theme}>
@@ -1204,37 +1246,6 @@ export function ProfileScreen() {
             title="Assistant IA TrackYu"
             subtitle="Posez vos questions, réponse immédiate"
             onPress={() => setShowAIChat(true)}
-            last
-          />
-        </SectionBlock>
-
-        {/* ── Support ── */}
-        <SectionBlock title="Support" theme={theme}>
-          <MenuItem
-            theme={theme}
-            icon={<HelpCircle {...iconProps} />}
-            title="Aide & FAQ"
-            subtitle="Centre d'aide, chat IA"
-            onPress={() => nav.navigate('Help')}
-          />
-          <MenuItem
-            theme={theme}
-            icon={<Mail {...iconProps} />}
-            title="Contacter le support"
-            subtitle="WhatsApp, appel, email, ticket"
-            onPress={() => nav.navigate('Help')}
-          />
-          <MenuItem
-            theme={theme}
-            icon={<FileText {...iconProps} />}
-            title="Conditions d'utilisation"
-            onPress={() => setShowCGU(true)}
-          />
-          <MenuItem
-            theme={theme}
-            icon={<Shield {...iconProps} />}
-            title="Politique de confidentialité"
-            onPress={() => setShowPrivacy(true)}
             last
           />
         </SectionBlock>

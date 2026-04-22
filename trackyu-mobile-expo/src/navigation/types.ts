@@ -45,8 +45,8 @@ export type SupportTabParamList = {
   Settings: undefined;
 };
 
-/** Alias utilisé dans les navigateurs génériques */
-export type MainTabParamList = StaffTabParamList;
+/** Alias utilisé dans les navigateurs génériques (union de tous les navigators par rôle) */
+export type MainTabParamList = StaffTabParamList & ClientTabParamList & SupportTabParamList & TechTabParamList;
 
 // ── Portal stack (CLIENT) ──────────────────────────────────────────────────────
 
@@ -68,13 +68,14 @@ export type PortalStackParamList = {
 
 export type RootStackParamList = {
   Auth: undefined;
-  Main: NavigatorScreenParams<StaffTabParamList> | undefined;
+  Main: NavigatorScreenParams<MainTabParamList> | undefined;
   VehicleDetail: { vehicleId: string };
   VehicleHistory: { vehicleId: string; plate: string; vehicleType?: string };
   InterventionDetail: { interventionId: string };
   Alerts: undefined;
   Reports: undefined;
-  Portal: undefined;
+  Fleet: undefined;
+  Portal: NavigatorScreenParams<PortalStackParamList> | undefined;
   SupportTicketDetail: { ticketId: string; subject: string };
   Admin: undefined;
   AdminUsers: undefined;
@@ -91,7 +92,7 @@ export type RootStackParamList = {
   FleetAnalytics: undefined;
   Geofences: undefined;
   CreateTicket: { vehicleId: string; vehicleName: string; vehiclePlate: string };
-  Help: undefined;
+  Help: { mode?: 'contact' | 'faq' } | undefined;
   PortalContractDocument: undefined;
   // ── Paramètres ────────────────────────────────────────────────────────────
   SettingsMenu: undefined;
@@ -108,6 +109,13 @@ export type RootStackParamList = {
   Depenses: undefined;
   Pneus: undefined;
   Temperature: undefined;
+  // ── Services auto ─────────────────────────────────────────────────────────
+  Services: undefined;
+  ServiceAssurance: undefined;
+  ServicePieces: undefined;
+  ServiceDepannage: undefined;
+  ServiceVisiteTechnique: undefined;
+  MesDemandesServices: undefined;
 };
 
 export type AuthStackParamList = {
