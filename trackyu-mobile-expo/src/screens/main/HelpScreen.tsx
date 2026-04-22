@@ -40,8 +40,6 @@ import {
   Send,
   Bot,
   User,
-  FileText,
-  Shield,
   HelpCircle,
 } from 'lucide-react-native';
 import { SearchBar } from '../../components/SearchBar';
@@ -547,29 +545,6 @@ export default function HelpScreen() {
             </View>
           )}
         </View>
-
-        {/* Documents légaux */}
-        {!search && (
-          <View style={s.section}>
-            <Text style={s.sectionTitle}>Documents</Text>
-            <View style={[s.docCard, { backgroundColor: theme.bg.surface, borderColor: theme.border }]}>
-              <TouchableOpacity style={s.docItem} onPress={() => Linking.openURL('https://trackyugps.com/cgu')}>
-                <FileText size={16} color={theme.text.muted} />
-                <Text style={[s.docLabel, { color: theme.text.primary }]}>Conditions d'utilisation</Text>
-                <ChevronRight size={14} color={theme.text.muted} />
-              </TouchableOpacity>
-              <View style={[s.docDivider, { backgroundColor: theme.border }]} />
-              <TouchableOpacity
-                style={s.docItem}
-                onPress={() => Linking.openURL('https://trackyugps.com/confidentialite')}
-              >
-                <Shield size={16} color={theme.text.muted} />
-                <Text style={[s.docLabel, { color: theme.text.primary }]}>Politique de confidentialité</Text>
-                <ChevronRight size={14} color={theme.text.muted} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
 
         <View style={{ height: 40 }} />
       </ScrollView>
