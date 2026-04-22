@@ -39,6 +39,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import alertConfigsApi, { type AlertConfig, type AlertType, type AlertPriority } from '../../api/alertConfigsApi';
+import { useAuthStore } from '../../store/authStore';
+import { ROLE } from '../../constants/roles';
 import { useTheme } from '../../theme';
 import { SearchBar } from '../../components/SearchBar';
 
@@ -99,7 +101,7 @@ function AlertRuleRow({
   config: AlertConfig;
   theme: ThemeType;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   onToggle: (v: boolean) => void;
   toggling: boolean;
 }) {
@@ -128,9 +130,11 @@ function AlertRuleRow({
       <TouchableOpacity onPress={onEdit} hitSlop={8} style={{ marginLeft: 8 }}>
         <Edit2 size={17} color={theme.text.muted} />
       </TouchableOpacity>
-      <TouchableOpacity onPress={onDelete} hitSlop={8} style={{ marginLeft: 10 }}>
-        <Trash2 size={17} color="#EF4444" />
-      </TouchableOpacity>
+      {onDelete && (
+        <TouchableOpacity onPress={onDelete} hitSlop={8} style={{ marginLeft: 10 }}>
+          <Trash2 size={17} color="#EF4444" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -439,6 +443,8 @@ const fm = (t: ThemeType) =>
 
 export default function AlertRulesScreen() {
   const { theme } = useTheme();
+  const { user } = useAuthStore();
+  const isClient = (user?.role ?? '').toUpperCase() === ROLE.CLIENT;
   const nav = useNavigation();
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
@@ -569,7 +575,7 @@ export default function AlertRulesScreen() {
                 setEditing(item);
                 setModalVisible(true);
               }}
-              onDelete={() => confirmDelete(item)}
+              onDelete={isClient ? undefined : () => confirmDelete(item)}
               onToggle={(v) => handleToggle(item, v)}
               toggling={togglingId === item.id}
             />

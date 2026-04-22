@@ -30,6 +30,8 @@ import maintenanceApi, {
 } from '../../api/maintenanceApi';
 import vehiclesApi from '../../api/vehicles';
 import { useTheme } from '../../theme';
+import { useAuthStore } from '../../store/authStore';
+import { ROLE } from '../../constants/roles';
 import { SearchBar } from '../../components/SearchBar';
 import { VehicleFilterPanel, type FilterBlockDef } from '../../components/VehicleFilterPanel';
 
@@ -574,7 +576,7 @@ function RuleCard({
   rule: MaintenanceRule;
   theme: ThemeType;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }) {
   const color = CAT_COLOR[rule.category] ?? '#6B7280';
   const isActive = rule.statut === 'Actif';
@@ -611,9 +613,11 @@ function RuleCard({
         <TouchableOpacity onPress={onEdit} style={{ padding: 6 }}>
           <Edit2 size={16} color={theme.primary} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={onDelete} style={{ padding: 6 }}>
-          <Trash2 size={16} color="#EF4444" />
-        </TouchableOpacity>
+        {onDelete && (
+          <TouchableOpacity onPress={onDelete} style={{ padding: 6 }}>
+            <Trash2 size={16} color="#EF4444" />
+          </TouchableOpacity>
+        )}
       </View>
       <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
         <Text style={{ fontSize: 12, color: theme.text.secondary }}>
@@ -635,6 +639,8 @@ function RuleCard({
 
 export default function MaintenanceScreen() {
   const { theme } = useTheme();
+  const { user } = useAuthStore();
+  const isClient = (user?.role ?? '').toUpperCase() === ROLE.CLIENT;
   const nav = useNavigation();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
@@ -842,7 +848,7 @@ export default function MaintenanceScreen() {
                 setEditRule(item);
                 setShowForm(true);
               }}
-              onDelete={() => handleDelete(item)}
+              onDelete={isClient ? undefined : () => handleDelete(item)}
             />
           )}
         />

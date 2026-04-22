@@ -23,6 +23,8 @@ import { ArrowLeft, Plus, Leaf, Trash2, Edit2, X } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import ecoDrivingApi, { type EcoDrivingProfile, type Sensitivity } from '../../api/ecoDrivingApi';
+import { useAuthStore } from '../../store/authStore';
+import { ROLE } from '../../constants/roles';
 import { useTheme } from '../../theme';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
@@ -219,7 +221,7 @@ function ProfileCard({
 }: {
   profile: EcoDrivingProfile;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   theme: ThemeType;
 }) {
   const active = profile.status === 'ACTIVE';
@@ -322,22 +324,24 @@ function ProfileCard({
           <Edit2 size={14} color={theme.primary} />
           <Text style={{ fontSize: 13, fontWeight: '600', color: theme.primary }}>Modifier</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={onDelete}
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 6,
-            backgroundColor: '#EF444418',
-            borderRadius: 8,
-            paddingVertical: 8,
-          }}
-        >
-          <Trash2 size={14} color="#EF4444" />
-          <Text style={{ fontSize: 13, fontWeight: '600', color: '#EF4444' }}>Supprimer</Text>
-        </TouchableOpacity>
+        {onDelete && (
+          <TouchableOpacity
+            onPress={onDelete}
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 6,
+              backgroundColor: '#EF444418',
+              borderRadius: 8,
+              paddingVertical: 8,
+            }}
+          >
+            <Trash2 size={14} color="#EF4444" />
+            <Text style={{ fontSize: 13, fontWeight: '600', color: '#EF4444' }}>Supprimer</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -596,6 +600,8 @@ function ProfileFormModal({
 /* ── Main Screen ──────────────────────────────────────────────────── */
 export default function EcoConduiteScreen() {
   const { theme } = useTheme();
+  const { user } = useAuthStore();
+  const isClient = (user?.role ?? '').toUpperCase() === ROLE.CLIENT;
   const nav = useNavigation();
   const qc = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
@@ -741,7 +747,7 @@ export default function EcoConduiteScreen() {
             <ProfileCard
               profile={item}
               onEdit={() => openEdit(item)}
-              onDelete={() => handleDelete(item)}
+              onDelete={isClient ? undefined : () => handleDelete(item)}
               theme={theme}
             />
           )}
