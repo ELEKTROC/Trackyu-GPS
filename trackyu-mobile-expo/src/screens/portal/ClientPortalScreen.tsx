@@ -22,6 +22,7 @@ import {
   Briefcase,
   FileBarChart,
   Bell,
+  HelpCircle,
   Sparkles,
   FileSignature,
   ArrowLeft,
@@ -325,6 +326,15 @@ export default function ClientPortalScreen() {
             >
               <Bell size={18} color={theme.primary} />
               <Text style={s.actionLabel}>Mes alertes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.actionBtn}
+              onPress={() => nav.navigate('Help')}
+              accessibilityLabel="Centre d'aide"
+              accessibilityRole="button"
+            >
+              <HelpCircle size={18} color={theme.primary} />
+              <Text style={s.actionLabel}>Aide</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={s.actionBtn}
