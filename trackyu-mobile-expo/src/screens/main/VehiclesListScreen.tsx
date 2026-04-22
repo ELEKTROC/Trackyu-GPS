@@ -29,6 +29,8 @@ import driversApi, { type Driver } from '../../api/driversApi';
 import groupesApi, { type Groupe } from '../../api/groupesApi';
 import { useTheme } from '../../theme';
 import { EmptyState } from '../../components/EmptyState';
+import { useAuthStore } from '../../store/authStore';
+import { ROLE } from '../../constants/roles';
 
 type ThemeType = ReturnType<typeof import('../../theme').useTheme>['theme'];
 
@@ -48,6 +50,17 @@ interface EditForm {
   groupId: string;
 }
 
+function ReadonlyRow({ label, value, theme }: { label: string; value?: string | null; theme: ThemeType }) {
+  return (
+    <View>
+      <Text style={em(theme).label}>{label}</Text>
+      <View style={[em(theme).input, { backgroundColor: theme.bg.elevated }]}>
+        <Text style={{ fontSize: 15, color: theme.text.muted }}>{value || '—'}</Text>
+      </View>
+    </View>
+  );
+}
+
 function EditVehicleModal({
   vehicle,
   drivers,
@@ -56,6 +69,7 @@ function EditVehicleModal({
   onClose,
   onSave,
   saving,
+  isClient,
   theme,
 }: {
   vehicle: Vehicle | null;
@@ -65,6 +79,7 @@ function EditVehicleModal({
   onClose: () => void;
   onSave: (form: EditForm) => void;
   saving: boolean;
+  isClient: boolean;
   theme: ThemeType;
 }) {
   const [form, setForm] = useState<EditForm>({ name: '', plate: '', driverId: '', groupId: '' });
@@ -87,7 +102,7 @@ function EditVehicleModal({
   }, [vehicle]);
 
   const set = (k: keyof EditForm, v: string) => setForm((p) => ({ ...p, [k]: v }));
-  const valid = form.name.trim().length > 0 && form.plate.trim().length > 0;
+  const valid = isClient ? form.name.trim().length > 0 : form.name.trim().length > 0 && form.plate.trim().length > 0;
 
   const selectedDriver = drivers.find((d) => d.id === form.driverId);
   const selectedGroup = groupes.find((g) => g.id === form.groupId);
@@ -132,6 +147,7 @@ function EditVehicleModal({
           </View>
 
           <ScrollView contentContainerStyle={em(theme).body} keyboardShouldPersistTaps="handled">
+            {/* Nom — toujours éditable, en premier */}
             <Text style={em(theme).label}>Nom du véhicule *</Text>
             <TextInput
               style={em(theme).input}
@@ -141,17 +157,24 @@ function EditVehicleModal({
               placeholderTextColor={theme.text.muted}
             />
 
-            <Text style={em(theme).label}>Plaque d'immatriculation *</Text>
-            <TextInput
-              style={em(theme).input}
-              value={form.plate}
-              onChangeText={(v) => set('plate', v)}
-              placeholder="00-A-0000"
-              placeholderTextColor={theme.text.muted}
-              autoCapitalize="characters"
-            />
+            {/* Plaque */}
+            {isClient ? (
+              <ReadonlyRow label="Plaque d'immatriculation" value={vehicle.plate} theme={theme} />
+            ) : (
+              <>
+                <Text style={em(theme).label}>Plaque d'immatriculation *</Text>
+                <TextInput
+                  style={em(theme).input}
+                  value={form.plate}
+                  onChangeText={(v) => set('plate', v)}
+                  placeholder="00-A-0000"
+                  placeholderTextColor={theme.text.muted}
+                  autoCapitalize="characters"
+                />
+              </>
+            )}
 
-            {/* Conducteur */}
+            {/* Conducteur — éditable pour tous */}
             <Text style={em(theme).label}>Conducteur assigné</Text>
             {showDriverPicker ? (
               <View style={em(theme).picker}>
@@ -196,48 +219,57 @@ function EditVehicleModal({
             )}
 
             {/* Groupe */}
-            <Text style={em(theme).label}>Groupe de véhicules</Text>
-            {showGroupPicker ? (
-              <View style={em(theme).picker}>
-                <TextInput
-                  style={[em(theme).input, { marginBottom: 8 }]}
-                  value={groupSearch}
-                  onChangeText={setGroupSearch}
-                  placeholder="Rechercher…"
-                  placeholderTextColor={theme.text.muted}
-                  autoFocus
-                />
-                <TouchableOpacity
-                  onPress={() => {
-                    set('groupId', '');
-                    setShowGroupPicker(false);
-                  }}
-                  style={[em(theme).pickerRow, { borderBottomWidth: 1, borderBottomColor: theme.border }]}
-                >
-                  <Text style={{ color: theme.text.muted, fontSize: 14 }}>— Aucun groupe —</Text>
-                  {form.groupId === '' && <Check size={16} color={theme.primary} />}
-                </TouchableOpacity>
-                {filteredGroupes.slice(0, 20).map((g) => (
-                  <TouchableOpacity
-                    key={g.id}
-                    onPress={() => {
-                      set('groupId', g.id);
-                      setShowGroupPicker(false);
-                    }}
-                    style={em(theme).pickerRow}
-                  >
-                    <Text style={{ fontSize: 14, color: theme.text.primary }}>{g.nom}</Text>
-                    {form.groupId === g.id && <Check size={16} color={theme.primary} />}
-                  </TouchableOpacity>
-                ))}
-              </View>
+            {isClient ? (
+              <ReadonlyRow label="Groupe de véhicules" value={vehicle.groupName} theme={theme} />
             ) : (
-              <TouchableOpacity style={em(theme).selector} onPress={() => setShowGroupPicker(true)}>
-                <Text style={{ color: selectedGroup ? theme.text.primary : theme.text.muted, fontSize: 15 }}>
-                  {selectedGroup ? selectedGroup.nom : (vehicle.groupName ?? 'Sélectionner un groupe')}
-                </Text>
-              </TouchableOpacity>
+              <>
+                <Text style={em(theme).label}>Groupe de véhicules</Text>
+                {showGroupPicker ? (
+                  <View style={em(theme).picker}>
+                    <TextInput
+                      style={[em(theme).input, { marginBottom: 8 }]}
+                      value={groupSearch}
+                      onChangeText={setGroupSearch}
+                      placeholder="Rechercher…"
+                      placeholderTextColor={theme.text.muted}
+                      autoFocus
+                    />
+                    <TouchableOpacity
+                      onPress={() => {
+                        set('groupId', '');
+                        setShowGroupPicker(false);
+                      }}
+                      style={[em(theme).pickerRow, { borderBottomWidth: 1, borderBottomColor: theme.border }]}
+                    >
+                      <Text style={{ color: theme.text.muted, fontSize: 14 }}>— Aucun groupe —</Text>
+                      {form.groupId === '' && <Check size={16} color={theme.primary} />}
+                    </TouchableOpacity>
+                    {filteredGroupes.slice(0, 20).map((g) => (
+                      <TouchableOpacity
+                        key={g.id}
+                        onPress={() => {
+                          set('groupId', g.id);
+                          setShowGroupPicker(false);
+                        }}
+                        style={em(theme).pickerRow}
+                      >
+                        <Text style={{ fontSize: 14, color: theme.text.primary }}>{g.nom}</Text>
+                        {form.groupId === g.id && <Check size={16} color={theme.primary} />}
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                ) : (
+                  <TouchableOpacity style={em(theme).selector} onPress={() => setShowGroupPicker(true)}>
+                    <Text style={{ color: selectedGroup ? theme.text.primary : theme.text.muted, fontSize: 15 }}>
+                      {selectedGroup ? selectedGroup.nom : (vehicle.groupName ?? 'Sélectionner un groupe')}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
+
+            {/* Date d'installation — lecture seule pour CLIENT uniquement */}
+            {isClient && <ReadonlyRow label="Date d'installation" value={fmtDate(vehicle.installDate)} theme={theme} />}
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
@@ -297,6 +329,8 @@ const em = (t: ThemeType) =>
 
 export default function VehiclesListScreen() {
   const { theme } = useTheme();
+  const { user } = useAuthStore();
+  const isClient = (user?.role ?? '').toUpperCase() === ROLE.CLIENT;
   const nav = useNavigation();
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
@@ -609,6 +643,7 @@ export default function VehiclesListScreen() {
         onClose={() => setEditingVehicle(null)}
         onSave={(form) => editingVehicle && updateMutation.mutate({ id: editingVehicle.id, form })}
         saving={updateMutation.isPending}
+        isClient={isClient}
         theme={theme}
       />
     </SafeAreaView>
