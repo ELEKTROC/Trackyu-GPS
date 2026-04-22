@@ -498,7 +498,17 @@ const MapUpdater: React.FC<{
   isReplayActive: boolean;
   focusPosition?: Coordinate | null;
   onFocusHandled?: () => void;
-}> = ({ focusedVehicle, selectedVehicle, isReplayActive, focusPosition, onFocusHandled }) => {
+  clientBoundsToFit?: [number, number][] | null;
+  onBoundsHandled?: () => void;
+}> = ({
+  focusedVehicle,
+  selectedVehicle,
+  isReplayActive,
+  focusPosition,
+  onFocusHandled,
+  clientBoundsToFit,
+  onBoundsHandled,
+}) => {
   const map = useMap();
 
   // CRITICAL: Force map to recalculate size on mount and window resize
@@ -547,6 +557,17 @@ const MapUpdater: React.FC<{
       if (onFocusHandled) onFocusHandled();
     }
   }, [focusPosition, isReplayActive, map, onFocusHandled]);
+
+  // Fit map to all vehicles of a client group when expanded
+  useEffect(() => {
+    if (!clientBoundsToFit || clientBoundsToFit.length === 0) return;
+    if (clientBoundsToFit.length === 1) {
+      map.flyTo(clientBoundsToFit[0], 14);
+    } else {
+      map.fitBounds(clientBoundsToFit, { padding: [50, 50], maxZoom: 14 });
+    }
+    onBoundsHandled?.();
+  }, [clientBoundsToFit, map, onBoundsHandled]);
 
   return null;
 };
@@ -704,6 +725,7 @@ export const MapView: React.FC<MapViewProps> = ({
   const [searchText, setSearchText] = useState('');
   const [expandedClients, setExpandedClients] = useState<Record<string, boolean>>({});
   const [expandedBranches, setExpandedBranches] = useState<Record<string, boolean>>({});
+  const [clientBoundsToFit, setClientBoundsToFit] = useState<[number, number][] | null>(null);
   const [showAllVehicles, setShowAllVehicles] = useState(false);
   const [showZones, setShowZones] = useState(false);
   const [showHeatmap, setShowHeatmap] = useState(false);
@@ -1376,7 +1398,25 @@ export const MapView: React.FC<MapViewProps> = ({
   }, [isResizing]);
 
   const toggleClient = (clientName: string) => {
+    const isCurrentlyExpanded = expandedClients[clientName];
     setExpandedClients((prev) => ({ ...prev, [clientName]: !prev[clientName] }));
+
+    // Quand on déplie un client, centrer la carte sur tous ses véhicules
+    if (!isCurrentlyExpanded) {
+      const group = groupedData[clientName];
+      if (group?.isClientGroup) {
+        const allGroupVehicles: Vehicle[] = [
+          ...group.directVehicles,
+          ...Object.values(group.branches).flatMap((b: any) => b.vehicles as Vehicle[]),
+        ];
+        const validPositions = allGroupVehicles
+          .filter((v) => v.location?.lat && v.location?.lng)
+          .map((v) => [v.location.lat, v.location.lng] as [number, number]);
+        if (validPositions.length > 0) {
+          setClientBoundsToFit(validPositions);
+        }
+      }
+    }
   };
 
   // --- GESTION SELECTION ---
@@ -2642,6 +2682,8 @@ export const MapView: React.FC<MapViewProps> = ({
                 isReplayActive={isReplayActive}
                 focusPosition={mapFocusPosition}
                 onFocusHandled={() => setMapFocusPosition(null)}
+                clientBoundsToFit={clientBoundsToFit}
+                onBoundsHandled={() => setClientBoundsToFit(null)}
               />
 
               {/* Zones Layer */}
