@@ -27,10 +27,12 @@ export interface AppearanceSettings {
   logoUrl?: string;
 }
 
+// Empty color strings = no override, laisse le thème CSS (dark/ocean/light) gérer --brand-primary.
+// Fallback orange Trackyu = #FF5C00 (défini dans src/index.css sur [data-theme='dark'/'light']).
 const DEFAULT_APPEARANCE: AppearanceSettings = {
-  primaryColor: '#2563eb',
-  secondaryColor: '#1e40af',
-  accentColor: '#10b981',
+  primaryColor: '',
+  secondaryColor: '',
+  accentColor: '',
   fontFamily: 'Inter',
   fontSize: 'default',
   borderRadius: 'default',
@@ -103,11 +105,29 @@ const DENSITY_MAP: Record<string, string> = {
 
 const applyToDOM = (s: AppearanceSettings) => {
   const root = document.documentElement;
-  // Écrire sur --primary ET --brand-primary pour compat totale
-  root.style.setProperty('--primary', s.primaryColor);
-  root.style.setProperty('--brand-primary', s.primaryColor);
-  root.style.setProperty('--brand-secondary', s.secondaryColor);
-  root.style.setProperty('--brand-accent', s.accentColor);
+
+  // Couleurs de marque : on override UNIQUEMENT si le tenant a une couleur custom explicite.
+  // Sinon on laisse le thème CSS (`[data-theme='dark'/'ocean'/'light']`) fixer --brand-primary.
+  if (s.primaryColor) {
+    root.style.setProperty('--primary', s.primaryColor);
+    root.style.setProperty('--brand-primary', s.primaryColor);
+  } else {
+    root.style.removeProperty('--primary');
+    root.style.removeProperty('--brand-primary');
+  }
+
+  if (s.secondaryColor) {
+    root.style.setProperty('--brand-secondary', s.secondaryColor);
+  } else {
+    root.style.removeProperty('--brand-secondary');
+  }
+
+  if (s.accentColor) {
+    root.style.setProperty('--brand-accent', s.accentColor);
+  } else {
+    root.style.removeProperty('--brand-accent');
+  }
+
   root.style.setProperty('--brand-font', FONT_MAP[s.fontFamily] || FONT_MAP['Inter']);
   root.style.setProperty('--brand-font-size', FONT_SIZE_SCALE[s.fontSize] || '16px');
   root.style.setProperty('--brand-radius', RADIUS_MAP[s.borderRadius] || '0.75rem');

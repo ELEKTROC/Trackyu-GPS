@@ -40,10 +40,10 @@ export const AlertsBlock: React.FC<AlertsBlockProps> = ({
           <div
             className={`p-3 rounded border-l-4 ${
               alert.severity === 'HIGH' || alert.severity === 'CRITICAL'
-                ? 'border-red-500 bg-red-50'
+                ? 'border-[var(--clr-danger)] bg-[var(--clr-danger-dim)]'
                 : alert.severity === 'MEDIUM'
-                  ? 'border-orange-400 bg-orange-50'
-                  : 'border-yellow-400 bg-yellow-50'
+                  ? 'border-[var(--clr-warning)] bg-[var(--clr-warning-dim)]'
+                  : 'border-[var(--clr-caution)] bg-[var(--clr-caution-dim)]'
             }`}
           >
             <div className="flex justify-between items-start">

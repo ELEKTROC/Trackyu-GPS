@@ -108,6 +108,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   const [isImmobilizing, setIsImmobilizing] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [activeFuelTab, setActiveFuelTab] = useState("Aujourd'hui");
 
   // --- QUERIES ---
   const { data: fuelRecords = [], isLoading: isLoadingFuel } = useQuery({
@@ -128,7 +129,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   const { data: longFuelHistory = [] } = useQuery({
     queryKey: ['fuelHistory', vehicle.id, '30d'],
     queryFn: () => getFuelHistory(vehicle.id, '30d'),
-    enabled: activeModal === 'fuel',
+    enabled: activeModal === 'fuel' || activeFuelTab === 'Cette semaine',
   });
 
   const { data: maintenanceRecords = [], isLoading: isLoadingMaintenance } = useQuery({
@@ -178,7 +179,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   const formattedLongFuelHistory = useMemo(() => {
     if (longFuelHistory.length > 0) {
       return longFuelHistory.map((h) => ({
-        date: new Date(h.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
+        date: new Date(h.date).toLocaleDateString('fr-FR', { weekday: 'short', day: '2-digit', month: 'short' }),
+        rawDate: h.date,
         level: h.level,
         conso: h.consumption,
         volume: h.volume,
@@ -208,7 +210,6 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
 
   // --- ÉTATS ---
   const [isConfigMode, setIsConfigMode] = useState(false);
-  const [activeFuelTab, setActiveFuelTab] = useState("Aujourd'hui");
 
   // Clé localStorage pour la config
   const CONFIG_KEY = 'vehicleDetailPanelConfig';
@@ -336,10 +337,10 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   };
 
   const statusColors = {
-    [VehicleStatus.MOVING]: 'text-green-400 border-green-500/30 bg-green-500/10',
-    [VehicleStatus.IDLE]: 'text-orange-400 border-orange-500/30 bg-orange-500/10',
-    [VehicleStatus.STOPPED]: 'text-red-400 border-red-500/30 bg-red-500/10',
-    [VehicleStatus.OFFLINE]: 'text-[var(--text-muted)] border-slate-500/30 bg-slate-500/10',
+    [VehicleStatus.MOVING]: 'text-[var(--clr-success-strong)] border-[var(--clr-success)] bg-[var(--clr-success-dim)]',
+    [VehicleStatus.IDLE]: 'text-[var(--clr-warning-strong)] border-[var(--clr-warning)] bg-[var(--clr-warning-dim)]',
+    [VehicleStatus.STOPPED]: 'text-[var(--clr-danger-strong)] border-[var(--clr-danger)] bg-[var(--clr-danger-dim)]',
+    [VehicleStatus.OFFLINE]: 'text-[var(--text-secondary)] border-[var(--border-strong)] bg-[var(--bg-elevated)]',
   };
 
   const mockData = {
@@ -378,6 +379,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     expenses: expenses,
     // Fuel Data
     fuelHistory: formattedFuelHistory,
+    longFuelHistory: formattedLongFuelHistory,
+    fuelRecords: fuelRecords,
     fuelStats: fuelStats || { avgConsumption: 0, totalCost: 0, idlingWaste: 0 },
     refillsList:
       fuelRecords.length > 0
@@ -426,9 +429,13 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     if (activeModal === 'fuel') {
       return (
         <FuelModalContent
-          history={formattedLongFuelHistory.length > 0 ? formattedLongFuelHistory : formattedFuelHistory}
+          todayHistory={formattedFuelHistory}
+          weekHistory={formattedLongFuelHistory}
           stats={fuelStats}
           refills={fuelRecords}
+          positionHistory={history}
+          idleMs={stats.idleMs ?? 0}
+          totalDistance={stats.totalDistance ?? 0}
         />
       );
     }
@@ -540,7 +547,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
               </div>
             </div>
           );
-        if (fuelRecords.length === 0)
+        if (fuelRecords.length === 0 && fuelHistory.length === 0)
           return (
             <div className="p-6 text-center text-sm text-[var(--text-muted)]">
               {t('fleet.detailPanel.emptyStates.noFuel')}

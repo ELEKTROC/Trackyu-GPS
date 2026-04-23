@@ -173,33 +173,43 @@ textarea:focus {
 /* ── Thème 1 : TrackYu Dark (défaut) ────────────────────────────────────── */
 :root,
 [data-theme='dark'] {
-  --bg-primary: #0d0d0f;
-  --bg-surface: #1a1a1e;
-  --bg-elevated: #252529;
+  /* ── Canonical tokens (use these in new code) ──────────────────────── */
+  --bg-app: #0d0d0f;
+  --bg-card: #16161a;
+  --bg-elevated: #1c1c21;
   --bg-overlay: rgba(0, 0, 0, 0.65);
 
-  --primary: #e8771a;
-  --primary-light: #f5943a;
-  --primary-dim: rgba(232, 119, 26, 0.15);
-  --brand-gradient: linear-gradient(135deg, #e8771a 0%, #c85f0e 50%, #8b3a00 100%);
+  --brand-primary: #f58220;
+  --brand-primary-light: #f5943a;
+  --brand-primary-dim: rgba(245, 130, 32, 0.1);
+  --brand-gradient: linear-gradient(135deg, #f58220 0%, #c85f0e 50%, #8b3a00 100%);
 
-  --text-primary: #f9fafb;
+  --text-main: #f9fafb;
   --text-secondary: #9ca3af;
-  --text-muted: #4b5563;
+  --text-muted: #8e8e93;
   --text-inverse: #0d0d0f;
   --text-on-primary: #ffffff;
 
-  --border: #2a2a2e;
+  --border-ui: rgba(255, 255, 255, 0.12);
   --border-strong: #3a3a3e;
 
-  --nav-bg: #131316;
-  --nav-active: #e8771a;
-  --nav-inactive: #6b7280;
-  --nav-border: #2a2a2e;
+  --brand-sidebar-bg: #111114;
+  --brand-sidebar-text: #ffffff;
 
-  /* Backward compat AppearanceContext */
-  --brand-primary: #e8771a;
-  --brand-secondary: #f5943a;
+  --nav-bg: var(--brand-sidebar-bg);
+  --nav-active: var(--brand-primary);
+  --nav-inactive: #6b7280;
+  --nav-border: var(--border-ui);
+
+  /* ── Backward-compat aliases (do not use in new code) ──────────────── */
+  --bg-primary: var(--bg-app);
+  --bg-surface: var(--bg-card);
+  --primary: var(--brand-primary);
+  --primary-light: var(--brand-primary-light);
+  --primary-dim: var(--brand-primary-dim);
+  --text-primary: var(--text-main);
+  --border: var(--border-ui);
+  --brand-secondary: var(--brand-primary-light);
 
   /* ── Couleurs sémantiques — dark theme ──────────────────────────────── */
   /* success (green) */
@@ -258,32 +268,43 @@ textarea:focus {
 
 /* ── Thème 2 : Ocean Dark ────────────────────────────────────────────────── */
 [data-theme='ocean'] {
-  --bg-primary: #080e1a;
-  --bg-surface: #0f1b2d;
-  --bg-elevated: #162338;
+  /* ── Canonical tokens ──────────────────────────────────────────────── */
+  --bg-app: #080e1a;
+  --bg-card: #0f172a;
+  --bg-elevated: #1e293b;
   --bg-overlay: rgba(0, 8, 26, 0.7);
 
-  --primary: #3b82f6;
-  --primary-light: #60a5fa;
-  --primary-dim: rgba(59, 130, 246, 0.15);
-  --brand-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e3a8a 100%);
+  --brand-primary: #38bdf8;
+  --brand-primary-light: #7dd3fc;
+  --brand-primary-dim: rgba(56, 189, 248, 0.1);
+  --brand-gradient: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0369a1 100%);
 
-  --text-primary: #f0f6ff;
+  --text-main: #f1f5f9;
   --text-secondary: #8baac4;
-  --text-muted: #3d5a73;
+  --text-muted: #94a3b8;
   --text-inverse: #080e1a;
   --text-on-primary: #ffffff;
 
-  --border: #1e2e42;
+  --border-ui: rgba(148, 163, 184, 0.15);
   --border-strong: #2a3f58;
 
-  --nav-bg: #060c16;
-  --nav-active: #3b82f6;
-  --nav-inactive: #4a6580;
-  --nav-border: #1e2e42;
+  --brand-sidebar-bg: #0f172a;
+  --brand-sidebar-text: #f1f5f9;
 
-  --brand-primary: #3b82f6;
-  --brand-secondary: #60a5fa;
+  --nav-bg: var(--brand-sidebar-bg);
+  --nav-active: var(--brand-primary);
+  --nav-inactive: #4a6580;
+  --nav-border: var(--border-ui);
+
+  /* ── Backward-compat aliases ───────────────────────────────────────── */
+  --bg-primary: var(--bg-app);
+  --bg-surface: var(--bg-card);
+  --primary: var(--brand-primary);
+  --primary-light: var(--brand-primary-light);
+  --primary-dim: var(--brand-primary-dim);
+  --text-primary: var(--text-main);
+  --border: var(--border-ui);
+  --brand-secondary: var(--brand-primary-light);
 
   /* ── Remap Tailwind slate/gray → theme tokens */
   --color-slate-950: var(--bg-primary);
@@ -342,32 +363,43 @@ textarea:focus {
 
 /* ── Thème 3 : Light Pro ─────────────────────────────────────────────────── */
 [data-theme='light'] {
-  --bg-primary: #f8fafc;
-  --bg-surface: #ffffff;
+  /* ── Canonical tokens ──────────────────────────────────────────────── */
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
   --bg-elevated: #f1f5f9;
   --bg-overlay: rgba(15, 23, 42, 0.45);
 
-  --primary: #e8771a;
-  --primary-light: #f5943a;
-  --primary-dim: rgba(232, 119, 26, 0.1);
-  --brand-gradient: linear-gradient(135deg, #e8771a 0%, #c85f0e 50%, #8b3a00 100%);
+  --brand-primary: #f58220;
+  --brand-primary-light: #f5943a;
+  --brand-primary-dim: rgba(245, 130, 32, 0.05);
+  --brand-gradient: linear-gradient(135deg, #f58220 0%, #c85f0e 50%, #8b3a00 100%);
 
-  --text-primary: #0f172a;
+  --text-main: #0f172a;
   --text-secondary: #64748b;
   --text-muted: #94a3b8;
   --text-inverse: #ffffff;
   --text-on-primary: #ffffff;
 
-  --border: #e2e8f0;
+  --border-ui: rgba(0, 0, 0, 0.08);
   --border-strong: #cbd5e1;
 
-  --nav-bg: #ffffff;
-  --nav-active: #e8771a;
-  --nav-inactive: #94a3b8;
-  --nav-border: #e2e8f0;
+  --brand-sidebar-bg: #ffffff;
+  --brand-sidebar-text: #0f172a;
 
-  --brand-primary: #e8771a;
-  --brand-secondary: #f5943a;
+  --nav-bg: var(--brand-sidebar-bg);
+  --nav-active: var(--brand-primary);
+  --nav-inactive: #94a3b8;
+  --nav-border: var(--border-ui);
+
+  /* ── Backward-compat aliases ───────────────────────────────────────── */
+  --bg-primary: var(--bg-app);
+  --bg-surface: var(--bg-card);
+  --primary: var(--brand-primary);
+  --primary-light: var(--brand-primary-light);
+  --primary-dim: var(--brand-primary-dim);
+  --text-primary: var(--text-main);
+  --border: var(--border-ui);
+  --brand-secondary: var(--brand-primary-light);
 
   /* ── Couleurs sémantiques — light theme ──────────────────────────────── */
   --clr-success: #16a34a; /* green-600 */

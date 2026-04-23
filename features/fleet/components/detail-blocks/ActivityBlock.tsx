@@ -129,7 +129,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           onToggle={() => toggleFieldVisibility('drivingTime')}
           className="flex justify-between"
         >
-          <span className="text-[var(--text-secondary)]">Conduite</span>
+          <span className="text-[var(--status-moving)] font-medium">Conduite</span>
           <span className="font-mono font-medium">{mockData.drivingTime}</span>
         </ConfigurableRow>
         <ConfigurableRow
@@ -139,7 +139,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           onToggle={() => toggleFieldVisibility('idleTime')}
           className="flex justify-between"
         >
-          <span className="text-[var(--text-secondary)]">Ralenti</span>
+          <span className="text-[var(--status-idle)] font-medium">Ralenti</span>
           <span className="font-mono font-medium">{mockData.idleTime}</span>
         </ConfigurableRow>
         <ConfigurableRow
@@ -149,7 +149,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           onToggle={() => toggleFieldVisibility('stoppedTime')}
           className="flex justify-between"
         >
-          <span className="text-[var(--text-secondary)]">Arrêt</span>
+          <span className="text-[var(--status-stopped)] font-medium">Arrêt</span>
           <span className="font-mono font-medium">{mockData.stoppedTime}</span>
         </ConfigurableRow>
         <ConfigurableRow
@@ -159,7 +159,7 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           onToggle={() => toggleFieldVisibility('offlineTime')}
           className="flex justify-between"
         >
-          <span className="text-[var(--text-secondary)]">Hors ligne</span>
+          <span className="text-[var(--status-offline)] font-medium">Hors ligne</span>
           <span className="font-mono font-medium">{mockData.offlineTime}</span>
         </ConfigurableRow>
       </div>
