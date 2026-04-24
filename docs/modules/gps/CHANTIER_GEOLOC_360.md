@@ -385,7 +385,17 @@ CREATE TABLE position_anomalies (...);
 - ✅ Filtre rôle assuré côté backend : room `superadmin` joinable seul par SUPERADMIN (socket.ts:79-88) → pas de fuite vers ADMIN tenant ou CLIENT
 - ✅ Déployé staging puis prod — commit `7171457`
 - 🟡 Reste Phase 4 sub-items : Kalman stats graph (MonitoringView), Config GPS runtime (settings rateLimitPerSec/hdopThreshold sans restart worker)
-- **Prochaine étape** : finir Phase 4 (Kalman graph + config runtime) ou attaquer Phase 3 (TimescaleDB compression — bloquée par décision rétention raw user) ou Phase 5 (computeVehicleStats dé-dup, partiellement fait : endpoint backend déjà créé via commit a17a1ea, reste à déprécier le calcul frontend)
+
+**2026-04-24 nuit (suite)** — Phase 4 sub-item 3/3 livrée prod : config GPS hot-reload worker
+
+- ✅ Découverte audit : `rateLimitPerSec` était déjà hot-reload côté `server.ts:loadGpsConfig` (polling 5 min). MAIS le `positionWorker` lisait `HDOP_THRESHOLD` et `SAT_THRESHOLD` depuis env au boot (const) → un changement de précision via UI/API n'avait aucun effet réel sur le filtrage des positions
+- ✅ `src/workers/positionWorker.ts` : HDOP/SAT passés en `let` mutables + `loadWorkerConfig()` async (boot + setInterval 5 min). Lecture `gps_config_accuracy` → mappe HDOP, et `gps_config_sat_threshold` (clé optionnelle). Log `[Worker-Config]` uniquement si changement
+- ✅ Test live prod : SQL `gps_config_accuracy=high` + restart → log `[Worker-Config] Reloaded HDOP_THRESHOLD 5→2 (accuracy=high)` confirmé
+- ✅ Endpoints + UI déjà existants (`PUT /api/v1/monitoring/gps-config` + `DeviceConfigPanelV2 GlobalConfigTab`) — rien à toucher
+- 🟢 Hors scope v1 : Kalman_Q/R + anti-drift seuils (2 km/h, 50m, 30s) restent hardcodés/env — moins fréquemment ajustés + risque plus élevé en cas de mauvais réglage
+- Commit backend : 76fe650
+- 🟡 Reste Phase 4 sub-item 2/3 : Kalman stats graph (courbe convergence dans MonitoringView)
+- **Prochaine étape** : Phase 4 sub-item 2/3 (Kalman graph) OU Phase 5 (computeVehicleStats dé-dup, endpoint backend déjà créé) OU Phase 3 (TimescaleDB — bloquée par décision rétention raw user)
 
 ---
 
