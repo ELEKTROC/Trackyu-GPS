@@ -637,35 +637,6 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       });
   }, [filteredHistory, fuelByTime, selectedVehicle]);
 
-  // Dataset dédié à l'onglet FUEL — source = fuelHistoryRaw directement, donc
-  // chaque point porte un vrai niveau (au lieu d'un lookup HH:MM qui ratait
-  // 99% des matchs vu que les timestamps positions GPS ≠ timestamps fuel).
-  // Speed/ignition sont enrichis depuis chartData en lookup HH:MM (best-effort,
-  // pour les checkboxes annexes).
-  const fuelChartData = useMemo(() => {
-    const speedByTime = new Map<string, number>();
-    const ignByTime = new Map<string, number>();
-    for (const c of chartData) {
-      speedByTime.set(c.time, c.speed);
-      ignByTime.set(c.time, c.ignition);
-    }
-    return (fuelHistoryRaw as Array<{ date: string; level: number | null }>)
-      .filter((p) => p.date != null)
-      .map((p) => {
-        const time = new Date(p.date).toLocaleTimeString('fr-FR', {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-        return {
-          time,
-          fuel: p.level ?? 0,
-          speed: speedByTime.get(time) ?? 0,
-          ignition: ignByTime.get(time) ?? 0,
-          maxSpeed: selectedVehicle?.maxSpeed || 120,
-        };
-      });
-  }, [fuelHistoryRaw, chartData, selectedVehicle]);
-
   // Detect fuel events (refills and suspicious losses)
   interface FuelEvent {
     id: string;
@@ -740,6 +711,80 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     }
     return events;
   }, [fuelHistoryRaw]);
+
+  // Dataset dédié à l'onglet FUEL — source = fuelHistoryRaw directement, donc
+  // chaque point porte un vrai niveau (au lieu d'un lookup HH:MM qui ratait
+  // 99% des matchs vu que les timestamps positions GPS ≠ timestamps fuel).
+  // Speed/ignition sont enrichis depuis chartData en lookup HH:MM (best-effort,
+  // pour les checkboxes annexes). Les flags isRefill/isTheft sont matchés
+  // depuis fuelEvents par timestamp le plus proche (même pattern que la modal
+  // FuelModalContent du VehicleDetailPanel) → markers ⛽/⚠ sur la courbe.
+  const fuelChartData = useMemo(() => {
+    const speedByTime = new Map<string, number>();
+    const ignByTime = new Map<string, number>();
+    for (const c of chartData) {
+      speedByTime.set(c.time, c.speed);
+      ignByTime.set(c.time, c.ignition);
+    }
+    type FuelChartPoint = {
+      time: string;
+      rawDate: number;
+      fuel: number;
+      speed: number;
+      ignition: number;
+      maxSpeed: number;
+      isRefill?: boolean;
+      isTheft?: boolean;
+      refillVol?: number;
+      theftVol?: number;
+    };
+    const base: FuelChartPoint[] = (fuelHistoryRaw as Array<{ date: string; level: number | null }>)
+      .filter((p) => p.date != null)
+      .map((p) => {
+        const d = new Date(p.date);
+        const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        return {
+          time,
+          rawDate: d.getTime(),
+          fuel: p.level ?? 0,
+          speed: speedByTime.get(time) ?? 0,
+          ignition: ignByTime.get(time) ?? 0,
+          maxSpeed: selectedVehicle?.maxSpeed || 120,
+        };
+      });
+    if (base.length === 0 || fuelEvents.length === 0) return base;
+
+    // Match chaque event au point base le plus proche par timestamp.
+    const eventsByIdx = new Map<
+      number,
+      { isRefill: boolean; isTheft: boolean; refillVol?: number; theftVol?: number }
+    >();
+    for (const evt of fuelEvents) {
+      const ts = evt.timestamp.getTime();
+      let nearestIdx = 0;
+      let nearestDist = Infinity;
+      for (let i = 0; i < base.length; i++) {
+        const d = Math.abs(base[i].rawDate - ts);
+        if (d < nearestDist) {
+          nearestDist = d;
+          nearestIdx = i;
+        }
+      }
+      const existing = eventsByIdx.get(nearestIdx) ?? { isRefill: false, isTheft: false };
+      if (evt.type === 'REFILL') {
+        existing.isRefill = true;
+        existing.refillVol = evt.delta;
+      } else if (evt.type === 'LOSS') {
+        existing.isTheft = true;
+        existing.theftVol = Math.abs(evt.delta);
+      }
+      eventsByIdx.set(nearestIdx, existing);
+    }
+    return base.map((p, idx) => {
+      const e = eventsByIdx.get(idx);
+      return e ? { ...p, ...e } : p;
+    });
+  }, [fuelHistoryRaw, chartData, selectedVehicle, fuelEvents]);
 
   // Carburant consommé = (premier niveau - dernier niveau) + somme des recharges
   // Source : fuelHistoryRaw (endpoint /fuel/history) au lieu de filteredHistory
@@ -1780,7 +1825,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           />
                         )}
 
-                        {/* Fuel line (main) */}
+                        {/* Fuel line (main) — markers ⛽/⚠ sur les events
+                            REFILL/THEFT (même rendu que FuelModalContent). */}
                         <Area
                           yAxisId="fuel"
                           type="monotone"
@@ -1788,6 +1834,31 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           stroke="#22c55e"
                           fill="url(#fuelGradient)"
                           strokeWidth={2}
+                          dot={(props: any) => {
+                            const { cx, cy, payload, index } = props;
+                            if (payload?.isRefill) {
+                              return (
+                                <g key={`r-${index}`}>
+                                  <circle cx={cx} cy={cy} r={9} fill="#22c55e" stroke="white" strokeWidth={2} />
+                                  <text x={cx} y={cy + 4} textAnchor="middle" fontSize="11" fill="white">
+                                    ⛽
+                                  </text>
+                                </g>
+                              );
+                            }
+                            if (payload?.isTheft) {
+                              return (
+                                <g key={`t-${index}`}>
+                                  <circle cx={cx} cy={cy} r={9} fill="#ef4444" stroke="white" strokeWidth={2} />
+                                  <text x={cx} y={cy + 4} textAnchor="middle" fontSize="11" fill="white">
+                                    ⚠
+                                  </text>
+                                </g>
+                              );
+                            }
+                            return <g key={`n-${index}`} />;
+                          }}
+                          activeDot={{ r: 4, fill: '#22c55e' }}
                         />
 
                         {/* Speed line (optional) */}
