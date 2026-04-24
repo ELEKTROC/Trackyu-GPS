@@ -506,6 +506,7 @@ interface GenericTableProps {
   onEdit: (item: GenericItem) => void;
   onDelete?: (item: GenericItem) => void;
   onStatusChange?: (id: string, newStatus: string) => void;
+  onResetPassword?: (item: GenericItem) => void;
 }
 
 // --- COMPOSANTS FORMULAIRES (Refactorisés avec forwardRef) ---
@@ -549,6 +550,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
   onEdit,
   onDelete,
   onStatusChange,
+  onResetPassword,
   readOnly,
 }) => {
   // --- 1. Gestion des données sources ---
@@ -821,8 +823,18 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
     }
     if (colLower.includes('créé le'))
       return <span className="text-xs text-[var(--text-secondary)]">{item.createdAt}</span>;
-    if (colLower.includes('dernière connexion'))
-      return <span className="text-xs text-[var(--text-secondary)]">{item.lastLogin}</span>;
+    if (colLower.includes('dernière connexion')) {
+      if (!item.lastLogin) {
+        return <span className="text-xs text-[var(--text-muted)] italic">Jamais connecté</span>;
+      }
+      const d = new Date(item.lastLogin);
+      if (isNaN(d.getTime())) {
+        return <span className="text-xs text-[var(--text-secondary)]">{item.lastLogin}</span>;
+      }
+      const pad = (n: number) => String(n).padStart(2, '0');
+      const formatted = `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+      return <span className="text-xs text-[var(--text-secondary)]">{formatted}</span>;
+    }
     if (colLower.includes('revendeur'))
       return <span className="text-[var(--text-secondary)] text-sm">{item.reseller || '--'}</span>;
     if (colLower.includes('client'))
@@ -1188,9 +1200,19 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
                           )}
                         </div>
                       )}
+                      {(type === 'users' || type === 'subaccount') && onResetPassword && (
+                        <button
+                          onClick={() => onResetPassword(item)}
+                          className="p-1.5 text-[var(--text-muted)] hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded transition-colors"
+                          title="Réinitialiser le mot de passe"
+                        >
+                          <Lock className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
                         onClick={() => onEdit(item)}
                         className="p-1.5 text-[var(--text-muted)] hover:text-[var(--primary)] hover:bg-[var(--primary-dim)] dark:hover:bg-[var(--primary-dim)] rounded transition-colors"
+                        title="Éditer"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -2034,6 +2056,25 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     updateUser({ ...target, status: newStatus } as any);
   };
 
+  const handleResetPassword = async (item: GenericItem) => {
+    const confirmed = await confirm({
+      title: 'Réinitialiser le mot de passe',
+      message: `Générer un nouveau mot de passe pour « ${(item as any).name || (item as any).nom} » ?\nLe mot de passe actuel sera invalidé immédiatement.`,
+      confirmLabel: 'Réinitialiser',
+    });
+    if (!confirmed) return;
+    try {
+      const result = await api.users.resetPassword(item.id);
+      if (result.generatedPassword) {
+        showToast(`Nouveau mot de passe : ${result.generatedPassword} (à communiquer à l'utilisateur)`, 'success');
+      } else {
+        showToast(result.message || 'Mot de passe réinitialisé', 'success');
+      }
+    } catch (e: any) {
+      showToast(`Erreur : ${e.message || 'Impossible de réinitialiser'}`, 'error');
+    }
+  };
+
   const renderContent = () => {
     const commonProps = { onAddClick: handleCreate, onEdit: handleEdit, onDelete: handleDelete };
 
@@ -2082,29 +2123,22 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           />
         );
       case 'users': {
-        const clientUsers = users.filter((u: any) => {
-          const r = (u.role || '').toUpperCase();
-          return r === 'CLIENT';
-        });
+        const clientUsers = users
+          .filter((u: any) => (u.role || '').toUpperCase() === 'CLIENT')
+          .map((u: any) => ({
+            ...u,
+            vehicleCount: vehicles.filter((v: any) => v.clientId === u.clientId || v.client === u.clientId).length,
+          }));
         return (
           <GenericTableContent
             title="Utilisateur Client"
             type="users"
             icon={Users}
-            columns={[
-              'ID',
-              'Nom',
-              'Email',
-              'Rôle',
-              'Mot de passe',
-              'Dernière Connexion',
-              'Erreurs MDP',
-              'Actions',
-              'Statut',
-            ]}
+            columns={['Nom', 'Email', 'Véhicules', 'Dernière Connexion', 'Statut']}
             useRealUsers
             users={clientUsers}
             onStatusChange={handleUserStatusChange}
+            onResetPassword={handleResetPassword}
             {...commonProps}
           />
         );
