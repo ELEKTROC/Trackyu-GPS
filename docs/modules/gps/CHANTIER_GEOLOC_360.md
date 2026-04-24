@@ -395,7 +395,15 @@ CREATE TABLE position_anomalies (...);
 - 🟢 Hors scope v1 : Kalman_Q/R + anti-drift seuils (2 km/h, 50m, 30s) restent hardcodés/env — moins fréquemment ajustés + risque plus élevé en cas de mauvais réglage
 - Commit backend : 76fe650
 - 🟡 Reste Phase 4 sub-item 2/3 : Kalman stats graph (courbe convergence dans MonitoringView)
-- **Prochaine étape** : Phase 4 sub-item 2/3 (Kalman graph) OU Phase 5 (computeVehicleStats dé-dup, endpoint backend déjà créé) OU Phase 3 (TimescaleDB — bloquée par décision rétention raw user)
+
+**2026-04-24 nuit (fin)** — Phase 4 sub-item 2/3 livrée prod : stats Kalman convergence
+
+- ✅ Backend `positionWorker.ts` : `KalmanFilter2D.getStats()` enrichi avec `convergedCount` (P<0.1, seuil empirique), `meanP`, `medianP`, `p95P` (valeurs arrondies 4 décimales). Commit `66e3b7b`
+- ✅ Frontend `MonitoringView.tsx` : bloc Filtre Kalman 2D étendu — compteur "Convergés (P<0.1) : N / total (X%)", barre de progression, ligne P médian / p95 en mono, caption explicative. Commit `4b8484c`
+- ✅ Validation visuelle staging : 11/13 (85%) convergés, P médian 0.0007 / p95 1.0 (cohérent post-restart)
+- 🟢 Pas de timeline historique pour v1 (snapshot suffit). Si besoin de courbe : Prometheus scrape 30s + Grafana (infra existante, pas de storage DB supplémentaire)
+- **Phase 4 complète** : 3/3 sub-items livrés prod (IMEI toast + config hot-reload + Kalman convergence)
+- **Prochaine étape** : Phase 5 (computeVehicleStats dé-dup — endpoint backend déjà créé `a17a1ea`, reste à déprécier le calcul frontend) OU Phase 3 (TimescaleDB, bloquée décision rétention raw user) OU Phase 6 (Replay enrichi — UX manager)
 
 ---
 
