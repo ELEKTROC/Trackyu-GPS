@@ -301,15 +301,14 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     queryFn: () => getFuelHistory(selectedVehicle!.id, fuelDuration),
     enabled: !!selectedVehicle?.id,
   });
-  // Lookup fuel par clé HH:MM pour aligner sur chartData (qui est aussi formaté
-  // en HH:MM). Les collisions sont rares (gap minimum ~30s dans la plupart des
-  // cas). Si null/0, on garde undefined pour signaler "pas de mesure".
+  // Lookup fuel par clé HH:MM. Backend retourne `level` (%) et `volume` (L).
+  // On stocke le volume en litres (cohérent avec le tableau et les KPIs).
   const fuelByTime = useMemo(() => {
     const map = new Map<string, number>();
-    for (const p of fuelHistoryRaw as Array<{ date: string; level: number | null }>) {
-      if (p.date == null || p.level == null) continue;
+    for (const p of fuelHistoryRaw as Array<{ date: string; volume: number | null }>) {
+      if (p.date == null || p.volume == null) continue;
       const t = new Date(p.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-      map.set(t, p.level);
+      map.set(t, p.volume);
     }
     return map;
   }, [fuelHistoryRaw]);
@@ -637,80 +636,52 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       });
   }, [filteredHistory, fuelByTime, selectedVehicle]);
 
-  // Detect fuel events (refills and suspicious losses)
+  // Fuel events depuis le backend Phase 4 (détecteur serveur source unique).
+  // Plus précis que la détection locale (scoring multi-critères, threshold
+  // adaptatif, deduplication). Filtré sur dateRange + status != DISMISSED.
+  // Mappé sur l'interface frontend FuelEvent pour ne pas changer le rendu.
   interface FuelEvent {
     id: string;
     type: 'REFILL' | 'LOSS' | 'ALERT';
     timestamp: Date;
     location: Coordinate;
-    fuelBefore: number;
-    fuelAfter: number;
-    delta: number;
-    duration?: number; // minutes for losses
+    fuelBeforeL: number; // litres
+    fuelAfterL: number; // litres
+    deltaL: number; // litres signés
+    duration?: number; // minutes (LOSS only)
   }
 
-  // Détection REFILL/LOSS depuis fuelHistoryRaw (endpoint dédié /fuel/history)
-  // au lieu de filteredHistory.fuelLevel qui n'est jamais alimenté par
-  // /history/snapped — ce qui rendait fuelEvents toujours vide en prod.
+  const { getFuelEvents } = useDataContext();
+  const { data: fuelEventsRaw = [] } = useQuery({
+    queryKey: ['fuelEvents', selectedVehicle?.id],
+    queryFn: () => getFuelEvents(selectedVehicle!.id, { limit: 500 }),
+    enabled: !!selectedVehicle?.id,
+  });
+
   const fuelEvents = useMemo<FuelEvent[]>(() => {
-    type FuelPoint = {
-      date: string;
-      level: number | null;
-      lat?: number | null;
-      lng?: number | null;
-    };
-    const points = (fuelHistoryRaw as FuelPoint[])
-      .filter((p) => p.date != null && p.level != null)
-      .map((p) => ({
-        date: new Date(p.date),
-        level: p.level as number,
-        lat: p.lat ?? null,
-        lng: p.lng ?? null,
-      }))
-      .sort((a, b) => a.date.getTime() - b.date.getTime());
-    if (points.length < 2) return [];
-
-    const events: FuelEvent[] = [];
-    const REFILL_THRESHOLD = 5;
-    const LOSS_THRESHOLD = -3;
-
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1];
-      const curr = points[i];
-      const delta = curr.level - prev.level;
-      const duration = (curr.date.getTime() - prev.date.getTime()) / 60000;
-
-      const location: Coordinate = {
-        lat: curr.lat ?? 0,
-        lng: curr.lng ?? 0,
-      };
-
-      if (delta > REFILL_THRESHOLD) {
-        events.push({
-          id: `refill_${events.length}`,
-          type: 'REFILL',
-          timestamp: curr.date,
-          location,
-          fuelBefore: prev.level,
-          fuelAfter: curr.level,
-          delta,
-        });
-      }
-      if (delta < LOSS_THRESHOLD && duration < 30) {
-        events.push({
-          id: `loss_${events.length}`,
-          type: 'LOSS',
-          timestamp: curr.date,
-          location,
-          fuelBefore: prev.level,
-          fuelAfter: curr.level,
-          delta,
-          duration,
-        });
-      }
-    }
-    return events;
-  }, [fuelHistoryRaw]);
+    const startMs = dateRange.start.getTime();
+    const endMs = dateRange.end.getTime();
+    return (fuelEventsRaw as Array<any>)
+      .filter((e) => e.status !== 'DISMISSED' && (e.type === 'REFILL' || e.type === 'THEFT'))
+      .filter((e) => {
+        const t = new Date(e.end_time ?? e.start_time).getTime();
+        return t >= startMs && t <= endMs;
+      })
+      .map((e) => {
+        const ts = new Date(e.end_time ?? e.start_time);
+        const delta = Number(e.delta_liters ?? 0);
+        return {
+          id: String(e.id),
+          type: (e.type === 'THEFT' ? 'LOSS' : 'REFILL') as 'REFILL' | 'LOSS',
+          timestamp: ts,
+          location: { lat: e.end_lat ?? e.start_lat ?? 0, lng: e.end_lng ?? e.start_lng ?? 0 },
+          fuelBeforeL: Number(e.before_liters ?? 0),
+          fuelAfterL: Number(e.after_liters ?? 0),
+          deltaL: delta,
+          duration: e.duration_seconds != null ? Math.round(Number(e.duration_seconds) / 60) : undefined,
+        };
+      });
+  }, [fuelEventsRaw, dateRange]);
 
   // Dataset dédié à l'onglet FUEL — source = fuelHistoryRaw directement, donc
   // chaque point porte un vrai niveau (au lieu d'un lookup HH:MM qui ratait
@@ -738,7 +709,9 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       refillVol?: number;
       theftVol?: number;
     };
-    const base: FuelChartPoint[] = (fuelHistoryRaw as Array<{ date: string; level: number | null }>)
+    const base: FuelChartPoint[] = (
+      fuelHistoryRaw as Array<{ date: string; level: number | null; volume: number | null }>
+    )
       .filter((p) => p.date != null)
       .map((p) => {
         const d = new Date(p.date);
@@ -746,7 +719,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
         return {
           time,
           rawDate: d.getTime(),
-          fuel: p.level ?? 0,
+          fuel: p.volume ?? 0, // litres (axe Y du chart)
           speed: speedByTime.get(time) ?? 0,
           ignition: ignByTime.get(time) ?? 0,
           maxSpeed: selectedVehicle?.maxSpeed || 120,
@@ -773,10 +746,10 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       const existing = eventsByIdx.get(nearestIdx) ?? { isRefill: false, isTheft: false };
       if (evt.type === 'REFILL') {
         existing.isRefill = true;
-        existing.refillVol = evt.delta;
+        existing.refillVol = evt.deltaL;
       } else if (evt.type === 'LOSS') {
         existing.isTheft = true;
-        existing.theftVol = Math.abs(evt.delta);
+        existing.theftVol = Math.abs(evt.deltaL);
       }
       eventsByIdx.set(nearestIdx, existing);
     }
@@ -786,26 +759,29 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     });
   }, [fuelHistoryRaw, chartData, selectedVehicle, fuelEvents]);
 
-  // Carburant consommé = (premier niveau - dernier niveau) + somme des recharges
-  // Source : fuelHistoryRaw (endpoint /fuel/history) au lieu de filteredHistory
-  // dont fuelLevel n'est jamais peuplé.
-  const fuelConsumed = useMemo<number | null>(() => {
-    const withFuel = (fuelHistoryRaw as Array<{ level: number | null }>).filter(
-      (h) => h.level != null && (h.level as number) > 0
+  // Consommation en LITRES = (premier volume - dernier volume) + somme des recharges
+  const fuelConsumedL = useMemo<number | null>(() => {
+    const withVol = (fuelHistoryRaw as Array<{ volume: number | null }>).filter(
+      (h) => h.volume != null && (h.volume as number) > 0
     );
-    if (withFuel.length < 2) return null;
-    const first = withFuel[0].level as number;
-    const last = withFuel[withFuel.length - 1].level as number;
-    const totalRefill = fuelEvents.filter((e) => e.type === 'REFILL').reduce((s, e) => s + e.delta, 0);
+    if (withVol.length < 2) return null;
+    const first = withVol[0].volume as number;
+    const last = withVol[withVol.length - 1].volume as number;
+    const totalRefill = fuelEvents.filter((e) => e.type === 'REFILL').reduce((s, e) => s + e.deltaL, 0);
     return Math.max(0, first - last + totalRefill);
   }, [fuelHistoryRaw, fuelEvents]);
 
-  // Niveau de carburant actuel (dernier point avec donnée)
-  const currentFuelLevel = useMemo<number | null>(() => {
-    const withFuel = (fuelHistoryRaw as Array<{ level: number | null }>).filter(
-      (h) => h.level != null && (h.level as number) > 0
+  // Niveau actuel : litres (volume) + pourcentage (level) pour la jauge
+  const currentFuelLevel = useMemo<{ liters: number; pct: number } | null>(() => {
+    const withVol = (fuelHistoryRaw as Array<{ volume: number | null; level: number | null }>).filter(
+      (h) => h.volume != null && (h.volume as number) > 0
     );
-    return withFuel.length > 0 ? (withFuel[withFuel.length - 1].level as number) : null;
+    if (withVol.length === 0) return null;
+    const last = withVol[withVol.length - 1];
+    return {
+      liters: last.volume as number,
+      pct: (last.level as number) ?? 0,
+    };
   }, [fuelHistoryRaw]);
 
   // Coupures GPS — dérivées du hook useVehicleStats (backend source unique).
@@ -1316,14 +1292,18 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                   <StatRow
                     icon={Fuel}
                     label={t('map.replay.consumed')}
-                    value={fuelConsumed != null ? `${fuelConsumed.toFixed(1)}%` : '–'}
+                    value={fuelConsumedL != null ? `${fuelConsumedL.toFixed(1)} L` : '–'}
                     color="purple"
                   />
                   <StatRow
                     icon={Droplets}
                     label={t('map.replay.currentLevel')}
-                    value={currentFuelLevel != null ? `${currentFuelLevel.toFixed(0)}%` : '–'}
-                    color={currentFuelLevel != null && currentFuelLevel < 20 ? 'red' : 'green'}
+                    value={
+                      currentFuelLevel != null
+                        ? `${currentFuelLevel.liters.toFixed(0)} L (${currentFuelLevel.pct.toFixed(0)}%)`
+                        : '–'
+                    }
+                    color={currentFuelLevel != null && currentFuelLevel.pct < 20 ? 'red' : 'green'}
                   />
                   <StatRow
                     icon={TrendingDown}
@@ -1664,27 +1644,27 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       {t('map.replay.fuel')}
                     </h3>
 
-                    {/* Stats — alignées sur fuelChartData (source endpoint /fuel/history) */}
+                    {/* Stats — début/fin/Δ en LITRES (cohérent tableau et chart) */}
                     {fuelChartData.length > 0 && (
                       <div className="flex gap-3 text-xs">
                         <span className="text-[var(--text-secondary)]">
                           {t('map.replay.start')}:{' '}
-                          <strong className="text-[var(--text-primary)]">{fuelChartData[0].fuel.toFixed(0)}%</strong>
+                          <strong className="text-[var(--text-primary)]">{fuelChartData[0].fuel.toFixed(0)} L</strong>
                         </span>
                         <span className="text-[var(--text-secondary)]">
                           {t('map.replay.end')}:{' '}
                           <strong className="text-[var(--text-primary)]">
-                            {fuelChartData[fuelChartData.length - 1]?.fuel?.toFixed(0) || 0}%
+                            {(fuelChartData[fuelChartData.length - 1]?.fuel ?? 0).toFixed(0)} L
                           </strong>
                         </span>
                         <span
-                          className={`font-medium ${fuelChartData[0].fuel - (fuelChartData[fuelChartData.length - 1]?.fuel || 0) > 10 ? 'text-red-600' : 'text-green-600'}`}
+                          className={`font-medium ${fuelChartData[0].fuel - (fuelChartData[fuelChartData.length - 1]?.fuel ?? 0) > 10 ? 'text-red-600' : 'text-green-600'}`}
                         >
                           Δ{' '}
                           {(
-                            (fuelChartData[0].fuel || 0) - (fuelChartData[fuelChartData.length - 1]?.fuel || 0)
-                          ).toFixed(1)}
-                          %
+                            (fuelChartData[0].fuel || 0) - (fuelChartData[fuelChartData.length - 1]?.fuel ?? 0)
+                          ).toFixed(1)}{' '}
+                          L
                         </span>
                       </div>
                     )}
@@ -1768,8 +1748,8 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                           yAxisId="fuel"
                           stroke="#22c55e"
                           fontSize={10}
-                          domain={[0, 100]}
-                          tickFormatter={(v) => `${v}%`}
+                          domain={[0, 'auto']}
+                          tickFormatter={(v) => `${v} L`}
                           orientation="left"
                         />
                         {showSpeedOnFuelChart && (
@@ -1784,14 +1764,17 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                         )}
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: '#fff',
+                            backgroundColor: 'var(--bg-card)',
+                            color: 'var(--text-primary)',
                             borderRadius: '8px',
-                            border: '1px solid #e2e8f0',
+                            border: '1px solid var(--border)',
                             fontSize: '12px',
                           }}
+                          labelStyle={{ color: 'var(--text-primary)', fontWeight: 600 }}
+                          itemStyle={{ color: 'var(--text-primary)' }}
                           formatter={(value: unknown, name: unknown) => {
                             const v = value as number;
-                            if (name === 'fuel') return [`${v.toFixed(1)}%`, t('map.replay.fuel')] as [string, string];
+                            if (name === 'fuel') return [`${v.toFixed(1)} L`, t('map.replay.fuel')] as [string, string];
                             if (name === 'speed')
                               return [`${v.toFixed(0)} km/h`, t('map.replay.speed')] as [string, string];
                             if (name === 'ignition')
@@ -1877,9 +1860,10 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                     </ResponsiveContainer>
                   </div>
 
-                  {/* Fuel events list */}
+                  {/* Fuel events list — hauteur réduite + flex-shrink-0 pour
+                      ne pas grignoter l'espace du chart */}
                   {fuelEvents.length > 0 && (
-                    <div className="mt-2 border-t border-[var(--border)] pt-2 max-h-32 overflow-y-auto">
+                    <div className="mt-2 border-t border-[var(--border)] pt-2 max-h-24 overflow-y-auto flex-shrink-0">
                       <table className="w-full text-xs">
                         <thead className="text-[var(--text-secondary)] uppercase bg-[var(--bg-elevated)]">
                           <tr>
@@ -1913,13 +1897,17 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                               <td className="px-2 py-1 text-[var(--text-secondary)]">
                                 {event.timestamp.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
                               </td>
-                              <td className="px-2 py-1 text-[var(--text-secondary)]">{event.fuelBefore.toFixed(0)}%</td>
-                              <td className="px-2 py-1 text-[var(--text-secondary)]">{event.fuelAfter.toFixed(0)}%</td>
+                              <td className="px-2 py-1 text-[var(--text-secondary)]">
+                                {event.fuelBeforeL.toFixed(1)} L
+                              </td>
+                              <td className="px-2 py-1 text-[var(--text-secondary)]">
+                                {event.fuelAfterL.toFixed(1)} L
+                              </td>
                               <td
-                                className={`px-2 py-1 font-medium ${event.delta > 0 ? 'text-green-600' : 'text-red-600'}`}
+                                className={`px-2 py-1 font-medium ${event.deltaL > 0 ? 'text-green-600' : 'text-red-600'}`}
                               >
-                                {event.delta > 0 ? '+' : ''}
-                                {event.delta.toFixed(1)}%
+                                {event.deltaL > 0 ? '+' : ''}
+                                {event.deltaL.toFixed(1)} L
                               </td>
                             </tr>
                           ))}
