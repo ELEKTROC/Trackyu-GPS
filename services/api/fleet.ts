@@ -861,6 +861,7 @@ export function createFleetApi(lazyApi: () => any) {
         }
         const response = await fetch(`${API_URL}/objects/${vehicle.id}`, {
           method: 'PUT',
+          credentials: 'include',
           headers: getHeaders(),
           body: JSON.stringify({
             ...vehicle,
@@ -868,7 +869,24 @@ export function createFleetApi(lazyApi: () => any) {
             deviceModel: vehicle.deviceModel || vehicle.deviceType,
           }),
         });
-        if (!response.ok) throw new Error('Failed to update vehicle');
+        if (!response.ok) {
+          let detail = '';
+          try {
+            const errBody = await response.json();
+            if (errBody?.errors && typeof errBody.errors === 'object') {
+              detail = Object.entries(errBody.errors)
+                .map(([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+                .join(' · ');
+            } else if (errBody?.message) {
+              detail = errBody.message;
+            }
+          } catch {
+            /* ignore */
+          }
+          throw new Error(
+            detail ? `Validation serveur : ${detail}` : `Failed to update vehicle (HTTP ${response.status})`
+          );
+        }
         const rawData = await response.json();
         return {
           ...vehicle,
@@ -931,6 +949,32 @@ export function createFleetApi(lazyApi: () => any) {
           headers: getHeaders(),
         });
         if (!response.ok) throw new Error('Failed to fetch vehicle history');
+        return response.json();
+      },
+      getStats: async (
+        vehicleId: string,
+        opts?: { period?: 'today' | 'week' | 'month'; start?: string; end?: string }
+      ): Promise<{
+        movingMs: number;
+        idleMs: number;
+        stoppedMs: number;
+        offlineMs: number;
+        totalDistance: number;
+        statusDurationMs: number;
+        offlineGaps: number;
+        maxSpeed: number;
+        avgSpeed: number;
+        periodStart: string;
+        periodEnd: string;
+        computedAt: string;
+      }> => {
+        const qs = new URLSearchParams();
+        if (opts?.period) qs.set('period', opts.period);
+        if (opts?.start) qs.set('start', opts.start);
+        if (opts?.end) qs.set('end', opts.end);
+        const url = `${API_URL}/fleet/vehicles/${vehicleId}/stats${qs.toString() ? `?${qs}` : ''}`;
+        const response = await fetch(url, { headers: getHeaders() });
+        if (!response.ok) throw new Error(`Failed to fetch vehicle stats (HTTP ${response.status})`);
         return response.json();
       },
       logPosition: async (history: VehiclePositionHistory): Promise<void> => {
