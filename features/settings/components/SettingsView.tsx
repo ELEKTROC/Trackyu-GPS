@@ -768,7 +768,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       if (colLower.includes('plaque'))
         return (
           <span className="font-mono bg-[var(--bg-elevated)] px-2 py-0.5 rounded text-xs text-[var(--text-secondary)]">
-            {item.plate || item.licensePlate || item.id}
+            {item.plate || item.licensePlate || item.name || '--'}
           </span>
         );
       if (colLower.includes('imei'))
