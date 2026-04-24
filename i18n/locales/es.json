@@ -1013,8 +1013,45 @@
         "fuelEventsTheftTitle": "Bajadas sospechosas de combustible",
         "maintenanceTitle": "Registro de mantenimiento",
         "violationsTitle": "Infracciones y Seguridad",
+        "positionAnomaliesTitle": "Posiciones sospechosas",
         "close": "Cerrar",
         "back": "Volver"
+      },
+      "positionAnomalies": {
+        "openButton": "Ver posiciones sospechosas",
+        "noAnomalies": "Ninguna anomalía detectada",
+        "totalCount": "{{count}} anomalía(s) detectada(s)",
+        "empty": "Sin anomalías en este rango.",
+        "type": {
+          "TELEPORT": "Teletransporte",
+          "SPEED_IMPOSSIBLE": "Velocidad imposible",
+          "ALTITUDE_FAKE": "Altitud sospechosa",
+          "HDOP_HIGH": "Precisión GPS baja",
+          "SAT_LOW": "Satélites insuficientes",
+          "COORDS_ZERO": "Coordenadas nulas",
+          "STALE_TIMESTAMP": "Marca de tiempo obsoleta",
+          "MULTI_SOURCE_MISMATCH": "Fuentes GPS divergentes"
+        },
+        "severity": {
+          "LOW": "Bajo",
+          "MEDIUM": "Medio",
+          "HIGH": "Alto",
+          "CRITICAL": "Crítico"
+        },
+        "status": {
+          "DETECTED": "Detectado",
+          "CONFIRMED": "Confirmado",
+          "DISMISSED": "Descartado"
+        },
+        "details": {
+          "avgSpeed": "Velocidad media",
+          "distance": "Distancia",
+          "altitudeZero": "Altitud constante en cero (GPS falso probable)",
+          "altitudeRepeated": "Altitud repetida idéntica",
+          "satellites": "Satélites",
+          "staleAge": "Antigüedad del fix",
+          "coordsZero": "Coordenadas (0, 0) — posición inválida"
+        }
       },
       "fuelEvents": {
         "noEvents": "Sin eventos",

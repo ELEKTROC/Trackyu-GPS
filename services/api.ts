@@ -101,6 +101,7 @@ export const api = {
   objects: fleetModule.objects,
   fuel: fleetModule.fuel,
   fuelEvents: fleetModule.fuelEvents,
+  positionAnomalies: fleetModule.positionAnomalies,
   maintenance: fleetModule.maintenance,
   alerts: fleetModule.alerts,
   zones: fleetModule.zones,

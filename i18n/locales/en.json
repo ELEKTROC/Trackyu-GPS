@@ -1013,8 +1013,45 @@
         "fuelEventsTheftTitle": "Suspicious fuel drops",
         "maintenanceTitle": "Maintenance log",
         "violationsTitle": "Violations & Safety",
+        "positionAnomaliesTitle": "Suspicious positions",
         "close": "Close",
         "back": "Back"
+      },
+      "positionAnomalies": {
+        "openButton": "View suspicious positions",
+        "noAnomalies": "No anomaly detected",
+        "totalCount": "{{count}} anomaly/anomalies detected",
+        "empty": "No anomaly in this range.",
+        "type": {
+          "TELEPORT": "Teleport",
+          "SPEED_IMPOSSIBLE": "Impossible speed",
+          "ALTITUDE_FAKE": "Suspicious altitude",
+          "HDOP_HIGH": "Low GPS accuracy",
+          "SAT_LOW": "Low satellite count",
+          "COORDS_ZERO": "Zero coordinates",
+          "STALE_TIMESTAMP": "Stale timestamp",
+          "MULTI_SOURCE_MISMATCH": "GPS sources mismatch"
+        },
+        "severity": {
+          "LOW": "Low",
+          "MEDIUM": "Medium",
+          "HIGH": "High",
+          "CRITICAL": "Critical"
+        },
+        "status": {
+          "DETECTED": "Detected",
+          "CONFIRMED": "Confirmed",
+          "DISMISSED": "Dismissed"
+        },
+        "details": {
+          "avgSpeed": "Average speed",
+          "distance": "Distance",
+          "altitudeZero": "Altitude constant at zero (likely fake GPS)",
+          "altitudeRepeated": "Altitude repeated identically",
+          "satellites": "Satellites",
+          "staleAge": "Fix age",
+          "coordsZero": "Coordinates (0, 0) — invalid position"
+        }
       },
       "fuelEvents": {
         "noEvents": "No events",

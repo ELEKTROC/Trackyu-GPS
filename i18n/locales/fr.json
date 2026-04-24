@@ -1013,8 +1013,45 @@
         "fuelEventsTheftTitle": "Baisses suspectes carburant",
         "maintenanceTitle": "Carnet d'entretien",
         "violationsTitle": "Violations & Sécurité",
+        "positionAnomaliesTitle": "Positions suspectes",
         "close": "Fermer",
         "back": "Retour"
+      },
+      "positionAnomalies": {
+        "openButton": "Voir les positions suspectes",
+        "noAnomalies": "Aucune anomalie détectée",
+        "totalCount": "{{count}} anomalie(s) détectée(s)",
+        "empty": "Aucune anomalie dans cette plage.",
+        "type": {
+          "TELEPORT": "Téléportation",
+          "SPEED_IMPOSSIBLE": "Vitesse impossible",
+          "ALTITUDE_FAKE": "Altitude suspecte",
+          "HDOP_HIGH": "Précision GPS faible",
+          "SAT_LOW": "Satellites insuffisants",
+          "COORDS_ZERO": "Coordonnées nulles",
+          "STALE_TIMESTAMP": "Horodatage obsolète",
+          "MULTI_SOURCE_MISMATCH": "Sources GPS divergentes"
+        },
+        "severity": {
+          "LOW": "Faible",
+          "MEDIUM": "Moyen",
+          "HIGH": "Élevé",
+          "CRITICAL": "Critique"
+        },
+        "status": {
+          "DETECTED": "Détecté",
+          "CONFIRMED": "Confirmé",
+          "DISMISSED": "Rejeté"
+        },
+        "details": {
+          "avgSpeed": "Vitesse moyenne",
+          "distance": "Distance",
+          "altitudeZero": "Altitude constante à zéro (GPS factice probable)",
+          "altitudeRepeated": "Altitude répétée à l'identique",
+          "satellites": "Satellites",
+          "staleAge": "Âge du fix",
+          "coordsZero": "Coordonnées (0, 0) — position invalide"
+        }
       },
       "fuelEvents": {
         "noEvents": "Aucun événement",

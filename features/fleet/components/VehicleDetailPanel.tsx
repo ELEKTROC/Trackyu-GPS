@@ -48,6 +48,7 @@ import {
   MaintenanceModalContent,
   FuelModalContent,
   FuelEventsModal,
+  PositionAnomaliesModal,
   ViolationsModalContent,
 } from './detail-blocks/modals';
 import { useDataContext } from '../../../contexts/DataContext';
@@ -488,6 +489,9 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       const type = activeModal === 'fuelEvents:REFILL' ? 'REFILL' : 'THEFT';
       return <FuelEventsModal vehicleId={vehicle.id} initialType={type} initialRange="today" />;
     }
+    if (activeModal === 'positionAnomalies') {
+      return <PositionAnomaliesModal vehicleId={vehicle.id} initialRange="today" />;
+    }
     return null;
   };
 
@@ -632,6 +636,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             isConfigMode={isConfigMode}
             hiddenFields={hiddenFields}
             toggleFieldVisibility={toggleFieldVisibility}
+            setActiveModal={setActiveModal}
           />
         );
       case 'device-history':
@@ -919,12 +924,17 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
                 ? t('fleet.detailPanel.modals.fuelEventsRefillTitle')
                 : activeModal === 'fuelEvents:THEFT'
                   ? t('fleet.detailPanel.modals.fuelEventsTheftTitle')
-                  : activeModal === 'maintenance'
-                    ? t('fleet.detailPanel.modals.maintenanceTitle')
-                    : t('fleet.detailPanel.modals.violationsTitle');
-          // Date affichée uniquement pour les modales daily-scoped (fuel + fuelEvents)
+                  : activeModal === 'positionAnomalies'
+                    ? t('fleet.detailPanel.modals.positionAnomaliesTitle')
+                    : activeModal === 'maintenance'
+                      ? t('fleet.detailPanel.modals.maintenanceTitle')
+                      : t('fleet.detailPanel.modals.violationsTitle');
+          // Date affichée uniquement pour les modales daily-scoped (fuel + fuelEvents + positionAnomalies)
           const showDate =
-            activeModal === 'fuel' || activeModal === 'fuelEvents:REFILL' || activeModal === 'fuelEvents:THEFT';
+            activeModal === 'fuel' ||
+            activeModal === 'fuelEvents:REFILL' ||
+            activeModal === 'fuelEvents:THEFT' ||
+            activeModal === 'positionAnomalies';
           return (
             <div className="flex flex-col gap-0.5">
               <span className="text-sm font-bold tracking-tight">

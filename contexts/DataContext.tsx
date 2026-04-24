@@ -27,6 +27,8 @@ import type {
   FuelRecord,
   FuelEvent,
   FuelEventStatus,
+  PositionAnomaly,
+  PositionAnomalyStatus,
   MaintenanceRecord,
   Tier,
   Anomaly,
@@ -290,6 +292,17 @@ interface DataContextType {
   reviewFuelEvent: (
     eventId: string,
     status: 'CONFIRMED' | 'DISMISSED' | 'DISPUTED',
+    opts?: { notes?: string; vehicleId?: string; onSuccess?: () => void; onError?: (err: unknown) => void }
+  ) => void;
+
+  // Position anomalies (anti-spoofing — Phase 1 chantier GPS Geoloc)
+  getPositionAnomalies: (
+    vehicleId: string,
+    opts?: { limit?: number; status?: PositionAnomalyStatus | 'ALL' }
+  ) => Promise<PositionAnomaly[]>;
+  reviewPositionAnomaly: (
+    anomalyId: string,
+    status: 'CONFIRMED' | 'DISMISSED',
     opts?: { notes?: string; vehicleId?: string; onSuccess?: () => void; onError?: (err: unknown) => void }
   ) => void;
 
@@ -947,6 +960,22 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
     onError: (error: unknown) => {
       logger.error('[DataContext] reviewFuelEvent failed:', error);
+    },
+  });
+
+  // Mutation de review d'une position anomaly (CONFIRM / DISMISS)
+  const reviewPositionAnomalyMutation = useMutation({
+    mutationFn: (args: { anomalyId: string; status: 'CONFIRMED' | 'DISMISSED'; notes?: string; vehicleId?: string }) =>
+      api.positionAnomalies.review(args.anomalyId, args.status, args.notes),
+    onSuccess: (_data, variables) => {
+      if (variables.vehicleId) {
+        queryClient.invalidateQueries({ queryKey: ['positionAnomalies', variables.vehicleId] });
+      }
+      queryClient.invalidateQueries({ queryKey: ['positionAnomalies', 'list'] });
+      queryClient.invalidateQueries({ queryKey: ['positionAnomalies', 'summary'] });
+    },
+    onError: (error: unknown) => {
+      logger.error('[DataContext] reviewPositionAnomaly failed:', error);
     },
   });
 
@@ -1958,6 +1987,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       reviewFuelEvent: (eventId, status, opts) => {
         const { notes, vehicleId, onSuccess, onError } = opts ?? {};
         reviewFuelEventMutation.mutate({ eventId, status, notes, vehicleId }, { onSuccess, onError });
+      },
+      getPositionAnomalies: (vehicleId, opts) => api.positionAnomalies.listByVehicle(vehicleId, opts),
+      reviewPositionAnomaly: (anomalyId, status, opts) => {
+        const { notes, vehicleId, onSuccess, onError } = opts ?? {};
+        reviewPositionAnomalyMutation.mutate({ anomalyId, status, notes, vehicleId }, { onSuccess, onError });
       },
       getFuelStats: api.fuel.getStats,
       addFuelRecord: api.fuel.add,

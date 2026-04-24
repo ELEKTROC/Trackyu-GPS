@@ -808,6 +808,42 @@ export interface FuelRecord {
   odometer?: number; // Mileage at time of event
 }
 
+// ─── Position anomalies (Phase 1 chantier GPS Geoloc 360°) ───────────────────
+// Table backend `position_anomalies` — détection auto anti-spoofing à l'ingestion
+export type PositionAnomalyType =
+  | 'TELEPORT'
+  | 'ALTITUDE_FAKE'
+  | 'MULTI_SOURCE_MISMATCH'
+  | 'HDOP_HIGH'
+  | 'SAT_LOW'
+  | 'COORDS_ZERO'
+  | 'STALE_TIMESTAMP'
+  | 'SPEED_IMPOSSIBLE';
+export type PositionAnomalySeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type PositionAnomalyStatus = 'DETECTED' | 'CONFIRMED' | 'DISMISSED';
+
+export interface PositionAnomaly {
+  id: string;
+  tenant_id: string;
+  object_id: string;
+  type: PositionAnomalyType;
+  severity: PositionAnomalySeverity;
+  status: PositionAnomalyStatus;
+  time: string;
+  latitude: number | null;
+  longitude: number | null;
+  details: Record<string, unknown> | null;
+  confidence: number | null;
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  vehicle_name?: string | null;
+  vehicle_plate?: string | null;
+  vehicle_imei?: string | null;
+}
+
 // ─── Fuel events (détection auto REFILL/THEFT/CONSUMPTION/ANOMALY) ───────────
 // Phase 4 chantier carburant — table backend `fuel_events`
 export type FuelEventType = 'REFILL' | 'THEFT' | 'CONSUMPTION' | 'ANOMALY';
