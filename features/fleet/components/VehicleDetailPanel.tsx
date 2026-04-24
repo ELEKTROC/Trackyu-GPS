@@ -44,7 +44,12 @@ import { SensorsBlock } from './detail-blocks/SensorsBlock';
 import { GpsBlock } from './detail-blocks/GpsBlock';
 import { DeviceHistoryBlock } from './detail-blocks/DeviceHistoryBlock';
 import { PhotoBlock } from './detail-blocks/PhotoBlock';
-import { MaintenanceModalContent, FuelModalContent, ViolationsModalContent } from './detail-blocks/modals';
+import {
+  MaintenanceModalContent,
+  FuelModalContent,
+  FuelEventsModal,
+  ViolationsModalContent,
+} from './detail-blocks/modals';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -91,6 +96,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   const { user } = useAuth();
   const {
     getFuelRecords,
+    getFuelEvents,
     getMaintenanceRecords,
     toggleImmobilization,
     getVehicleAlerts,
@@ -108,6 +114,9 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   const [isImmobilizing, setIsImmobilizing] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  // Pile simple pour gérer le retour : si fuelEvents ouvert depuis "fuel",
+  // la fermeture revient sur "fuel" au lieu de tout fermer
+  const [modalReturnTo, setModalReturnTo] = useState<string | null>(null);
   const [activeFuelTab, setActiveFuelTab] = useState("Aujourd'hui");
 
   // --- QUERIES ---
@@ -131,6 +140,33 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     queryFn: () => getFuelHistory(vehicle.id, '30d'),
     enabled: activeModal === 'fuel' || activeFuelTab === 'Cette semaine',
   });
+
+  // Fuel events (détection auto) — utilisés dans FuelModalContent pour markers sur la courbe
+  const { data: fuelEventsForChart = [] } = useQuery({
+    queryKey: ['fuelEvents', vehicle.id],
+    queryFn: () => getFuelEvents(vehicle.id, { limit: 200 }),
+    enabled:
+      activeModal === 'fuel' ||
+      activeModal === 'fuelEvents:REFILL' ||
+      activeModal === 'fuelEvents:THEFT' ||
+      activeFuelTab === 'Cette semaine',
+  });
+
+  // Merge fuel_records (manuels) + fuel_events (auto-détectés Phase 4)
+  // DISMISSED filtré (faux positifs rejetés par manager).
+  const mergedFuelRecords = useMemo(() => {
+    const eventsAsRefills = (fuelEventsForChart ?? [])
+      .filter((e: any) => e.status !== 'DISMISSED' && (e.type === 'REFILL' || e.type === 'THEFT'))
+      .map((e: any) => ({
+        id: e.id,
+        type: e.type,
+        date: e.start_time,
+        volume: Math.abs(Number(e.delta_liters)),
+        cost: 0,
+        location: e.start_address || undefined,
+      }));
+    return [...fuelRecords, ...eventsAsRefills];
+  }, [fuelRecords, fuelEventsForChart]);
 
   const { data: maintenanceRecords = [], isLoading: isLoadingMaintenance } = useQuery({
     queryKey: ['maintenance', vehicle.id],
@@ -382,20 +418,20 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           }))
         : [],
     expenses: expenses,
-    // Fuel Data
+    // Fuel Data — mergedFuelRecords inclut fuel_records (manuels) + fuel_events (auto Phase 4)
     fuelHistory: formattedFuelHistory,
     longFuelHistory: formattedLongFuelHistory,
-    fuelRecords: fuelRecords,
+    fuelRecords: mergedFuelRecords,
     fuelStats: fuelStats || { avgConsumption: 0, totalCost: 0, idlingWaste: 0 },
     refillsList:
-      fuelRecords.length > 0
-        ? fuelRecords
-            .filter((r) => r.type === 'REFILL')
-            .map((r) => ({
+      mergedFuelRecords.length > 0
+        ? mergedFuelRecords
+            .filter((r: any) => r.type === 'REFILL')
+            .map((r: any) => ({
               date: new Date(r.date).toLocaleDateString('fr-FR'),
               place: r.location || 'Station Inconnue',
               volume: `+${r.volume} L`,
-              cost: r.cost.toString(),
+              cost: (r.cost ?? 0).toString(),
             }))
         : [],
   };
@@ -437,12 +473,20 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           todayHistory={formattedFuelHistory}
           weekHistory={formattedLongFuelHistory}
           stats={fuelStats}
-          refills={fuelRecords}
+          refills={mergedFuelRecords}
           positionHistory={history}
           idleMs={stats.idleMs ?? 0}
           totalDistance={stats.totalDistance ?? 0}
+          onOpenEvents={(type) => {
+            setModalReturnTo('fuel');
+            setActiveModal(`fuelEvents:${type}`);
+          }}
         />
       );
+    }
+    if (activeModal === 'fuelEvents:REFILL' || activeModal === 'fuelEvents:THEFT') {
+      const type = activeModal === 'fuelEvents:REFILL' ? 'REFILL' : 'THEFT';
+      return <FuelEventsModal vehicleId={vehicle.id} initialType={type} initialRange="today" />;
     }
     return null;
   };
@@ -850,20 +894,62 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
       {/* --- MODALES DÉTAILLÉES --- */}
       <Modal
         isOpen={!!activeModal}
-        onClose={() => setActiveModal(null)}
-        title={
-          activeModal === 'fuel'
-            ? t('fleet.detailPanel.modals.fuelTitle')
-            : activeModal === 'maintenance'
-              ? t('fleet.detailPanel.modals.maintenanceTitle')
-              : t('fleet.detailPanel.modals.violationsTitle')
-        }
+        onClose={() => {
+          // Si on est sur fuelEvents avec un retour mémorisé → revenir à la modal parent
+          if (modalReturnTo) {
+            const returnTarget = modalReturnTo;
+            setModalReturnTo(null);
+            setActiveModal(returnTarget);
+          } else {
+            setActiveModal(null);
+          }
+        }}
+        title={(() => {
+          const plateLabel = vehicle.plate || vehicle.id;
+          const todayLabel = new Date().toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+          });
+          const base =
+            activeModal === 'fuel'
+              ? t('fleet.detailPanel.modals.fuelTitle')
+              : activeModal === 'fuelEvents:REFILL'
+                ? t('fleet.detailPanel.modals.fuelEventsRefillTitle')
+                : activeModal === 'fuelEvents:THEFT'
+                  ? t('fleet.detailPanel.modals.fuelEventsTheftTitle')
+                  : activeModal === 'maintenance'
+                    ? t('fleet.detailPanel.modals.maintenanceTitle')
+                    : t('fleet.detailPanel.modals.violationsTitle');
+          // Date affichée uniquement pour les modales daily-scoped (fuel + fuelEvents)
+          const showDate =
+            activeModal === 'fuel' || activeModal === 'fuelEvents:REFILL' || activeModal === 'fuelEvents:THEFT';
+          return (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-bold tracking-tight">
+                {plateLabel} — {base}
+              </span>
+              {showDate && (
+                <span className="text-[10px] font-medium text-[var(--text-muted)] capitalize">{todayLabel}</span>
+              )}
+            </div>
+          );
+        })()}
         footer={
           <button
-            onClick={() => setActiveModal(null)}
+            onClick={() => {
+              if (modalReturnTo) {
+                const returnTarget = modalReturnTo;
+                setModalReturnTo(null);
+                setActiveModal(returnTarget);
+              } else {
+                setActiveModal(null);
+              }
+            }}
             className="px-4 py-2 bg-[var(--bg-elevated)] hover:bg-[var(--bg-elevated)] rounded text-[var(--text-primary)] font-medium text-sm"
           >
-            {t('fleet.detailPanel.modals.close')}
+            {modalReturnTo ? t('fleet.detailPanel.modals.back') : t('fleet.detailPanel.modals.close')}
           </button>
         }
       >

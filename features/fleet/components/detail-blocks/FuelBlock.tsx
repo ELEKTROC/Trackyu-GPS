@@ -1,104 +1,7 @@
 import React, { useMemo } from 'react';
 import { BarChart3 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
-// ─── Gauge SVG ────────────────────────────────────────────────────────────────
-
-const N_SEG = 20;
-const G_START = 225; // angle math (0°=droite, CCW) côté "vide"
-const G_SWEEP = 270; // degrés total
-
-function polar(cx: number, cy: number, r: number, deg: number) {
-  const rad = (deg * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy - r * Math.sin(rad) };
-}
-
-function segPath(cx: number, cy: number, r: number, i: number): string {
-  const step = G_SWEEP / N_SEG;
-  const a1 = G_START - i * step;
-  const a2 = a1 - (step - 2.5);
-  const s = polar(cx, cy, r, a1);
-  const e = polar(cx, cy, r, a2);
-  return `M ${s.x.toFixed(1)} ${s.y.toFixed(1)} A ${r} ${r} 0 0 1 ${e.x.toFixed(1)} ${e.y.toFixed(1)}`;
-}
-
-function segColor(i: number): string {
-  const t = i / N_SEG;
-  if (t < 0.25) return '#ef4444';
-  if (t < 0.5) return '#f97316';
-  if (t < 0.75) return '#fbbf24';
-  return '#22c55e';
-}
-
-const N_TICKS_MAJOR = 7; // traits toutes les 45°
-
-function FuelGauge({ level, volume, capacity }: { level: number; volume: number; capacity: number }) {
-  const cx = 100,
-    cy = 86,
-    r = 68;
-  // Guard : la valeur affichée ne peut pas dépasser la capacité enregistrée
-  const safeVolume = capacity > 0 ? Math.min(volume, capacity) : volume;
-  const safeLevel = Math.min(100, Math.max(0, level));
-  const filled = Math.round((safeLevel / 100) * N_SEG);
-  const p0 = polar(cx, cy, r, G_START);
-  const p100 = polar(cx, cy, r, G_START - G_SWEEP);
-
-  // Traits de graduation (inside the arc)
-  const ticks = Array.from({ length: N_TICKS_MAJOR }, (_, i) => {
-    const angle = G_START - (i / (N_TICKS_MAJOR - 1)) * G_SWEEP;
-    const isMid = i > 0 && i < N_TICKS_MAJOR - 1;
-    const ro = polar(cx, cy, isMid ? 59 : 57, angle);
-    const ri = polar(cx, cy, isMid ? 51 : 48, angle);
-    return { ro, ri, isMid };
-  });
-
-  return (
-    <svg viewBox="0 0 200 156" className="w-full">
-      {/* Segments arc */}
-      {Array.from({ length: N_SEG }, (_, i) => (
-        <path
-          key={i}
-          d={segPath(cx, cy, r, i)}
-          stroke={i < filled ? segColor(i) : 'var(--border, #e2e8f0)'}
-          strokeWidth={11}
-          fill="none"
-          strokeLinecap="round"
-        />
-      ))}
-      {/* Traits de graduation */}
-      {ticks.map((t, i) => (
-        <line
-          key={`tk-${i}`}
-          x1={t.ro.x.toFixed(1)}
-          y1={t.ro.y.toFixed(1)}
-          x2={t.ri.x.toFixed(1)}
-          y2={t.ri.y.toFixed(1)}
-          stroke="var(--text-muted, #94a3b8)"
-          strokeWidth={t.isMid ? 1 : 1.5}
-          strokeLinecap="round"
-          opacity={t.isMid ? 0.5 : 0.8}
-        />
-      ))}
-      {/* Volume + % */}
-      <text x={cx} y={cy - 4} textAnchor="middle" fontSize="28" fontWeight="800" fill="var(--text-primary, #0f172a)">
-        {Math.round(safeVolume)}
-      </text>
-      <text x={cx} y={cy + 13} textAnchor="middle" fontSize="12" fill="var(--text-muted, #94a3b8)">
-        ltr
-      </text>
-      <text x={cx} y={cy + 27} textAnchor="middle" fontSize="13" fontWeight="700" fill="var(--text-secondary, #64748b)">
-        ({safeLevel}%)
-      </text>
-      {/* Bornes à la racine de la jauge */}
-      <text x={p0.x + 4} y={p0.y + 16} textAnchor="middle" fontSize="11" fill="var(--text-muted, #94a3b8)">
-        0
-      </text>
-      <text x={p100.x - 4} y={p100.y + 16} textAnchor="middle" fontSize="11" fill="var(--text-muted, #94a3b8)">
-        {capacity}
-      </text>
-    </svg>
-  );
-}
+import { FuelGauge } from './FuelGauge';
 
 // ─── Carte de stat ────────────────────────────────────────────────────────────
 
@@ -108,15 +11,22 @@ function StatCard({
   sub,
   color,
   small = false,
+  onClick,
 }: {
   label: string;
   value: string;
   sub?: string;
   color: string;
   small?: boolean;
+  onClick?: () => void;
 }) {
+  const isClickable = Boolean(onClick);
+  const Component: any = isClickable ? 'button' : 'div';
   return (
-    <div className={`flex flex-col gap-0.5 p-2 rounded-lg bg-[var(--bg-elevated)] ${small ? 'opacity-70' : ''}`}>
+    <Component
+      onClick={onClick}
+      className={`flex flex-col gap-0.5 p-2 rounded-lg bg-[var(--bg-elevated)] border border-transparent transition-all text-left ${small ? 'opacity-70' : ''} ${isClickable ? 'hover:border-[var(--primary)] hover:-translate-y-[1px] cursor-pointer' : ''}`}
+    >
       <span
         className={`font-medium ${small ? 'text-[9px]' : 'text-[10px]'} text-[var(--text-secondary)] leading-tight`}
       >
@@ -130,7 +40,7 @@ function StatCard({
           {sub}
         </span>
       )}
-    </div>
+    </Component>
   );
 }
 
@@ -167,6 +77,7 @@ function buildWeekData(longFuelHistory: any[], fuelRecords: any[]) {
       debut: number;
       recharge: number;
       baisse: number;
+      consommation: number;
     }
   > = {};
 
@@ -184,6 +95,7 @@ function buildWeekData(longFuelHistory: any[], fuelRecords: any[]) {
       debut: 0,
       recharge: 0,
       baisse: 0,
+      consommation: 0,
     };
   }
 
@@ -204,6 +116,14 @@ function buildWeekData(longFuelHistory: any[], fuelRecords: any[]) {
     if (r.type === 'THEFT') days[key].baisse += r.volume ?? 0;
   }
 
+  // Consommation = carburant consommé organiquement (moteur) non expliqué par les baisses flaguées.
+  //   consommation = debut + recharge - baisse - fin  (jamais négatif)
+  for (const key of Object.keys(days)) {
+    const d = days[key];
+    const raw = d.debut + d.recharge - d.baisse - d.volume;
+    d.consommation = Math.max(0, Math.round(raw * 10) / 10);
+  }
+
   return Object.values(days);
 }
 
@@ -211,6 +131,7 @@ const WEEK_TOOLTIP_ROWS = [
   { key: 'debut', label: 'Début', color: 'var(--text-secondary)' },
   { key: 'recharge', label: 'Recharge', color: 'var(--clr-success-strong)' },
   { key: 'baisse', label: 'Baisse', color: 'var(--clr-danger-strong)' },
+  { key: 'consommation', label: 'Consommation', color: 'var(--clr-warning-strong)' },
   { key: 'volume', label: 'Fin', color: 'var(--color-info)' },
 ] as const;
 
@@ -342,12 +263,14 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
         value={`${fuelStats.totalRefillVolume ?? 0} L`}
         sub={`${fuelStats.refillCount ?? 0} fois`}
         color="#22c55e"
+        onClick={() => setActiveModal('fuelEvents:REFILL')}
       />
       <StatCard
         label="Baisses suspectes"
         value={`${fuelStats.totalTheftVolume ?? 0} L`}
         sub={`${fuelStats.theftCount ?? 0} fois`}
         color="#ef4444"
+        onClick={() => setActiveModal('fuelEvents:THEFT')}
       />
       <StatCard
         label="Consommation"
@@ -390,7 +313,7 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
       {/* Jauge — Aujourd'hui uniquement */}
       {activeFuelTab === "Aujourd'hui" && (
         <div className="w-full max-w-[210px] mx-auto">
-          <FuelGauge level={current.level ?? 0} volume={current.volume ?? 0} capacity={tankCapacity} />
+          <FuelGauge level={current.volume ?? 0} percentage={current.level ?? 0} maxCapacity={tankCapacity} />
         </div>
       )}
 

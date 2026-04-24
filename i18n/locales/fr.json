@@ -1009,9 +1009,51 @@
       },
       "modals": {
         "fuelTitle": "Détails Carburant",
+        "fuelEventsRefillTitle": "Recharges carburant",
+        "fuelEventsTheftTitle": "Baisses suspectes carburant",
         "maintenanceTitle": "Carnet d'entretien",
         "violationsTitle": "Violations & Sécurité",
-        "close": "Fermer"
+        "close": "Fermer",
+        "back": "Retour"
+      },
+      "fuelEvents": {
+        "noEvents": "Aucun événement",
+        "totalCount": "{{count}} événement(s)",
+        "empty": "Aucun événement dans cette plage.",
+        "tankSize": "(sur {{size}} L)",
+        "maxSpeed": "max {{speed}} km/h",
+        "accOn": "moteur ON",
+        "accOff": "moteur OFF",
+        "type": {
+          "REFILL": "Recharge",
+          "THEFT": "Baisse suspecte",
+          "CONSUMPTION": "Consommation",
+          "ANOMALY": "Anomalie"
+        },
+        "status": {
+          "NEW": "Nouveau",
+          "CONFIRMED": "Confirmé",
+          "DISMISSED": "Rejeté",
+          "DISPUTED": "Contesté"
+        },
+        "severity": {
+          "LOW": "Faible",
+          "MEDIUM": "Moyen",
+          "HIGH": "Élevé",
+          "CRITICAL": "Critique"
+        },
+        "filter": {
+          "all": "Tous les statuts"
+        },
+        "range": {
+          "today": "Aujourd'hui",
+          "week": "Cette semaine"
+        },
+        "actions": {
+          "confirm": "Confirmer",
+          "dismiss": "Rejeter",
+          "dispute": "Contester"
+        }
       }
     },
     "sensors": {

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, AlertTriangle } from 'lucide-react';
@@ -6,7 +5,7 @@ import { X, AlertTriangle } from 'lucide-react';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
   maxWidth?: string;
@@ -14,7 +13,15 @@ interface ModalProps {
   isDirty?: boolean;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, footer, maxWidth = 'max-w-lg', isDirty = false }) => {
+export const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+  footer,
+  maxWidth = 'max-w-lg',
+  isDirty = false,
+}) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
 
@@ -49,7 +56,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, isDirty]);
 
   if (!isOpen) return null;
@@ -64,14 +71,23 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
       <div
         ref={modalRef}
         className={`relative w-full h-full sm:h-auto sm:rounded-xl sm:shadow-2xl ${maxWidth} overflow-hidden flex flex-col sm:max-h-[90vh] animate-in slide-in-from-bottom sm:fade-in sm:zoom-in-95 duration-200 border-0 sm:border rounded-t-2xl sm:rounded-xl`}
-        style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--border)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          borderColor: 'var(--border)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
       >
         {/* Mobile drag handle */}
         <div className="sm:hidden flex justify-center pt-2 pb-1">
           <div className="w-10 h-1 rounded-full" style={{ backgroundColor: 'var(--border-strong)' }} />
         </div>
-        <div className="flex items-center justify-between px-4 sm:px-6 py-2 sm:py-4 border-b shrink-0" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-elevated)' }}>
-          <h3 className="text-base sm:text-lg font-bold truncate pr-2" style={{ color: 'var(--text-primary)' }}>{title}</h3>
+        <div
+          className="flex items-center justify-between px-4 sm:px-6 py-2 sm:py-4 border-b shrink-0"
+          style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-elevated)' }}
+        >
+          <h3 className="text-base sm:text-lg font-bold truncate pr-2" style={{ color: 'var(--text-primary)' }}>
+            {title}
+          </h3>
           <button
             onClick={handleCloseAttempt}
             title="Fermer"
@@ -88,11 +104,18 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
         </div>
 
         {showUnsavedWarning && (
-          <div className="mx-4 sm:mx-6 mb-3 p-3 border rounded-lg flex items-start gap-3 shrink-0 animate-in slide-in-from-bottom-2 duration-200" style={{ backgroundColor: 'rgba(245,158,11,0.1)', borderColor: 'rgba(245,158,11,0.3)' }}>
+          <div
+            className="mx-4 sm:mx-6 mb-3 p-3 border rounded-lg flex items-start gap-3 shrink-0 animate-in slide-in-from-bottom-2 duration-200"
+            style={{ backgroundColor: 'rgba(245,158,11,0.1)', borderColor: 'rgba(245,158,11,0.3)' }}
+          >
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: 'var(--color-warning)' }} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold" style={{ color: 'var(--color-warning)' }}>Modifications non sauvegardées</p>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>Vos modifications seront perdues si vous fermez.</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--color-warning)' }}>
+                Modifications non sauvegardées
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                Vos modifications seront perdues si vous fermez.
+              </p>
             </div>
             <div className="flex gap-2 shrink-0">
               <button
@@ -116,7 +139,10 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
         )}
 
         {footer && (
-          <div className="px-4 sm:px-6 py-3 sm:py-4 border-t flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 shrink-0" style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-elevated)' }}>
+          <div
+            className="px-4 sm:px-6 py-3 sm:py-4 border-t flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 shrink-0"
+            style={{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-elevated)' }}
+          >
             {footer}
           </div>
         )}

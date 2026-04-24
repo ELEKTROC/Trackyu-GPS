@@ -1009,9 +1009,51 @@
       },
       "modals": {
         "fuelTitle": "Fuel Details",
+        "fuelEventsRefillTitle": "Fuel refills",
+        "fuelEventsTheftTitle": "Suspicious fuel drops",
         "maintenanceTitle": "Maintenance log",
         "violationsTitle": "Violations & Safety",
-        "close": "Close"
+        "close": "Close",
+        "back": "Back"
+      },
+      "fuelEvents": {
+        "noEvents": "No events",
+        "totalCount": "{{count}} event(s)",
+        "empty": "No events in this range.",
+        "tankSize": "(of {{size}} L)",
+        "maxSpeed": "max {{speed}} km/h",
+        "accOn": "engine ON",
+        "accOff": "engine OFF",
+        "type": {
+          "REFILL": "Refill",
+          "THEFT": "Suspicious drop",
+          "CONSUMPTION": "Consumption",
+          "ANOMALY": "Anomaly"
+        },
+        "status": {
+          "NEW": "New",
+          "CONFIRMED": "Confirmed",
+          "DISMISSED": "Dismissed",
+          "DISPUTED": "Disputed"
+        },
+        "severity": {
+          "LOW": "Low",
+          "MEDIUM": "Medium",
+          "HIGH": "High",
+          "CRITICAL": "Critical"
+        },
+        "filter": {
+          "all": "All statuses"
+        },
+        "range": {
+          "today": "Today",
+          "week": "This week"
+        },
+        "actions": {
+          "confirm": "Confirm",
+          "dismiss": "Dismiss",
+          "dispute": "Dispute"
+        }
       }
     },
     "sensors": {
