@@ -768,9 +768,78 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       if (colLower.includes('plaque'))
         return (
           <span className="font-mono bg-[var(--bg-elevated)] px-2 py-0.5 rounded text-xs text-[var(--text-secondary)]">
-            {item.id}
+            {item.plate || item.licensePlate || item.id}
           </span>
         );
+      if (colLower.includes('imei'))
+        return <span className="font-mono text-xs text-[var(--text-secondary)]">{item.imei || '--'}</span>;
+      if (colLower.includes('sim'))
+        return (
+          <span className="font-mono text-xs text-[var(--text-secondary)]">{item.sim || item.simNumber || '--'}</span>
+        );
+      if (colLower.includes('modèle'))
+        return (
+          <span className="text-xs text-[var(--text-secondary)]">{item.deviceModel || item.deviceType || '--'}</span>
+        );
+      if (colLower.includes('type engin') || colLower.includes("type d'engin"))
+        return <span className="text-xs text-[var(--text-secondary)]">{item.vehicleType || item.type || '--'}</span>;
+      if (colLower.includes('type sonde') || colLower.includes('sonde'))
+        return (
+          <span className="text-xs text-[var(--text-secondary)]">
+            {item.fuelSensorType || item.sensorConfig?.sensor_type || '--'}
+          </span>
+        );
+      if (colLower.includes('branche')) {
+        const branchId = item.branchId || item.branch_id;
+        const branch = (branches || []).find((b: any) => b.id === branchId);
+        return (
+          <span className="text-xs text-[var(--text-secondary)]">
+            {branch?.nom || branch?.name || branchId || '--'}
+          </span>
+        );
+      }
+      if (colLower.includes('groupe'))
+        return (
+          <span className="text-xs text-[var(--text-secondary)]">
+            {item.group || item.groupName || item.groupId || '--'}
+          </span>
+        );
+      if (colLower.includes('date installation') || colLower.includes('installation')) {
+        const d = item.installDate || item.installationDate;
+        if (!d) return <span className="text-xs text-[var(--text-muted)]">--</span>;
+        const date = new Date(d);
+        if (isNaN(date.getTime())) return <span className="text-xs text-[var(--text-secondary)]">{d}</span>;
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return (
+          <span className="text-xs text-[var(--text-secondary)]">
+            {`${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`}
+          </span>
+        );
+      }
+      if (colLower.includes('date création') || colLower.includes('date creation')) {
+        const d = item.createdAt;
+        if (!d) return <span className="text-xs text-[var(--text-muted)]">--</span>;
+        const date = new Date(d);
+        if (isNaN(date.getTime())) return <span className="text-xs text-[var(--text-secondary)]">{String(d)}</span>;
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return (
+          <span className="text-xs text-[var(--text-secondary)]">
+            {`${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`}
+          </span>
+        );
+      }
+      if (colLower.includes('date expiration') || colLower.includes('expiration')) {
+        const d = item.expirationDate || item.subscriptionEndDate;
+        if (!d) return <span className="text-xs text-[var(--text-muted)]">--</span>;
+        const date = new Date(d);
+        if (isNaN(date.getTime())) return <span className="text-xs text-[var(--text-secondary)]">{String(d)}</span>;
+        const pad = (n: number) => String(n).padStart(2, '0');
+        return (
+          <span className="text-xs text-[var(--text-secondary)]">
+            {`${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`}
+          </span>
+        );
+      }
       if (colLower.includes('statut')) {
         const STATUS_FR: Record<string, { label: string; cls: string }> = {
           MOVING: { label: 'En route', cls: 'bg-green-100 text-green-700' },
@@ -2212,9 +2281,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Véhicule"
             type="vehicle"
             icon={Box}
-            columns={['Nom', 'Plaque', 'Modèle', 'Groupe', 'Statut']}
+            columns={[
+              'Nom',
+              'Plaque',
+              'IMEI',
+              'SIM',
+              'Modèle',
+              'Type engin',
+              'Type sonde',
+              'Branche',
+              'Groupe',
+              'Date installation',
+              'Date création',
+              'Date expiration',
+              'Statut',
+            ]}
             useRealVehicles
             vehicles={vehicles}
+            branches={branches}
             {...commonProps}
           />
         );
