@@ -99,7 +99,9 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           onToggle={() => toggleFieldVisibility('currentTrip')}
         >
           <div className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-sm h-full">
-            <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold block mb-1">Dernier trajet</span>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase font-bold block mb-1">
+              Dernier trajet
+            </span>
             <span className="text-lg font-bold text-[var(--primary)]">
               {(vehicle.lastTripDistance ?? 0).toFixed(1)} km
             </span>
@@ -112,7 +114,9 @@ export const ActivityBlock: React.FC<ActivityBlockProps> = ({
           onToggle={() => toggleFieldVisibility('dailyDist')}
         >
           <div className="p-2 bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-sm h-full">
-            <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold block mb-1">Distance (Jour)</span>
+            <span className="text-[10px] text-[var(--text-secondary)] uppercase font-bold block mb-1">
+              Distance (Jour)
+            </span>
             <span className="text-lg font-bold text-[var(--text-primary)]">
               {(totalDistance ?? vehicle.dailyMileage ?? 0).toFixed(1)} km
             </span>

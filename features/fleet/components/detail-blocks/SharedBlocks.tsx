@@ -120,9 +120,9 @@ export const CollapsibleSection: React.FC<{
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-2.5 border-b border-[var(--brand-primary)]/40 bg-[var(--brand-primary)]/15 hover:bg-[var(--brand-primary)]/25 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2 border-b border-[var(--border)] bg-[var(--brand-primary-dim)] hover:bg-[var(--brand-primary)]/15 transition-colors"
       >
-        <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider text-[var(--brand-primary)]">
+        <div className="flex items-center gap-2 font-medium text-[11px] uppercase tracking-wider text-[var(--text-secondary)]">
           {Icon && <Icon className="w-3.5 h-3.5 text-[var(--brand-primary)]" />}
           {title}
         </div>

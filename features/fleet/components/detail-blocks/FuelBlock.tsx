@@ -126,7 +126,9 @@ function StatCard({
         {value}
       </span>
       {sub && (
-        <span className={`${small ? 'text-[8px]' : 'text-[9px]'} text-[var(--text-muted)] leading-tight`}>{sub}</span>
+        <span className={`${small ? 'text-[8px]' : 'text-[9px]'} text-[var(--text-secondary)] leading-tight`}>
+          {sub}
+        </span>
       )}
     </div>
   );
@@ -376,7 +378,7 @@ export const FuelBlock: React.FC<FuelBlockProps> = ({
             onClick={() => setActiveFuelTab(tab)}
             className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${
               activeFuelTab === tab
-                ? 'bg-[var(--card,white)] text-[var(--primary)] shadow-sm'
+                ? 'bg-[var(--bg-card)] text-[var(--primary)] shadow-sm'
                 : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
             }`}
           >

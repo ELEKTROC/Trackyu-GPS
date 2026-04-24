@@ -179,10 +179,10 @@ textarea:focus {
   --bg-elevated: #1c1c21;
   --bg-overlay: rgba(0, 0, 0, 0.65);
 
-  --brand-primary: #f58220;
-  --brand-primary-light: #f5943a;
-  --brand-primary-dim: rgba(245, 130, 32, 0.1);
-  --brand-gradient: linear-gradient(135deg, #f58220 0%, #c85f0e 50%, #8b3a00 100%);
+  --brand-primary: #d96d4c;
+  --brand-primary-light: #e08a70;
+  --brand-primary-dim: rgba(217, 109, 76, 0.1);
+  --brand-gradient: linear-gradient(135deg, #d96d4c 0%, #c85f0e 50%, #8b3a00 100%);
 
   --text-main: #f9fafb;
   --text-secondary: #9ca3af;
@@ -369,10 +369,10 @@ textarea:focus {
   --bg-elevated: #f1f5f9;
   --bg-overlay: rgba(15, 23, 42, 0.45);
 
-  --brand-primary: #f58220;
-  --brand-primary-light: #f5943a;
-  --brand-primary-dim: rgba(245, 130, 32, 0.05);
-  --brand-gradient: linear-gradient(135deg, #f58220 0%, #c85f0e 50%, #8b3a00 100%);
+  --brand-primary: #d96d4c;
+  --brand-primary-light: #e08a70;
+  --brand-primary-dim: rgba(217, 109, 76, 0.05);
+  --brand-gradient: linear-gradient(135deg, #d96d4c 0%, #c85f0e 50%, #8b3a00 100%);
 
   --text-main: #0f172a;
   --text-secondary: #64748b;

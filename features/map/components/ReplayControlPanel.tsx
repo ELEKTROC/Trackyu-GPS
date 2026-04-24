@@ -46,7 +46,7 @@ import {
 import { loadHtml2Canvas } from '../../../services/pdfLoader';
 import { PERIOD_PRESETS, type PeriodPreset } from '../../../hooks/useDateRange';
 import { exportToGPX, exportToKML, downloadFile } from '../../../utils/gpsExport';
-import { computeVehicleStats } from '../../../utils/computeVehicleStats';
+import { computeVehicleStats, formatHumanDuration } from '../../../utils/computeVehicleStats';
 import { API_URL, getHeaders } from '../../../services/api/client';
 import { useTranslation } from '../../../i18n';
 
@@ -170,14 +170,8 @@ function filterDriftGPS(points: any[]): any[] {
   return kept;
 }
 
-// Format duration in human-readable format
-const formatDuration = (minutes: number): string => {
-  if (minutes < 1) return '< 1 min';
-  if (minutes < 60) return `${Math.round(minutes)} min`;
-  const hours = Math.floor(minutes / 60);
-  const mins = Math.round(minutes % 60);
-  return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
-};
+// Helper adaptateur : formatHumanDuration prend des ms, nos tripStats stockent des minutes.
+const formatDuration = (minutes: number): string => formatHumanDuration(minutes * 60_000);
 
 // Composant autonome pour géocodage live dans les tableaux (STOPS/IDLE)
 // IMPORTANT : défini en dehors du composant principal — ne jamais mettre un composant avec hooks dans un useCallback

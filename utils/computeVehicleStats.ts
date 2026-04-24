@@ -10,8 +10,18 @@
  */
 import { VehicleStatus } from '../types';
 
-const GAP_DIST_MS = 10 * 60 * 1000; // 10 min — au-delà : ne pas cumuler la distance
-const GAP_OFFLINE_MS = 30 * 60 * 1000; // 30 min — au-delà : qualifier le gap
+// ═══ Seuils métier centralisés — source de vérité unique ═══
+// Modifier ici implique toutes les consommateurs (VehicleDetailPanel, ReplayControlPanel,
+// useVehicleStats hook, etc.) de façon cohérente.
+
+/** Vitesse minimale (km/h) au-dessus de laquelle un point est considéré en MOUVEMENT. */
+export const SPEED_MOVING_THRESHOLD_KMH = 2;
+
+/** Gap entre 2 points au-delà duquel la distance n'est PAS cumulée (anti-dérive GPS). */
+export const GAP_DIST_MS = 10 * 60 * 1000; // 10 min
+
+/** Gap entre 2 points au-delà duquel on qualifie l'interruption (offline vs stop prolongé). */
+export const GAP_OFFLINE_MS = 30 * 60 * 1000; // 30 min
 
 export interface VehicleStatsResult {
   movingMs: number;
@@ -33,7 +43,7 @@ export function getPointTs(p: any): number {
 
 export function getPointStatus(p: any): VehicleStatus {
   const speed = typeof p.speed === 'number' ? p.speed : parseFloat(p.speed ?? '0') || 0;
-  if (speed >= 2) return VehicleStatus.MOVING;
+  if (speed >= SPEED_MOVING_THRESHOLD_KMH) return VehicleStatus.MOVING;
   const ign = p.ignition;
   if (ign === true || ign === 'true' || ign === 't') return VehicleStatus.IDLE;
   return VehicleStatus.STOPPED;
@@ -77,6 +87,13 @@ export function computeVehicleStats(
   const periodStartMs = periodStart.getTime();
   const periodEndMs = periodEnd.getTime();
 
+  // Clip : ne conserver que les points dans [periodStart, periodEnd]
+  // Protège contre les timestamps futurs dus à des horloges boîtier décalées
+  const clippedHistory = history.filter((p) => {
+    const ts = getPointTs(p);
+    return ts >= periodStartMs && ts <= periodEndMs;
+  });
+
   // Répartit un gap dans le bon bucket selon le statut qui précède le trou
   const assignGap = (dt: number, statusBeforeGap: VehicleStatus) => {
     if (statusBeforeGap === VehicleStatus.MOVING || statusBeforeGap === VehicleStatus.IDLE) {
@@ -87,7 +104,7 @@ export function computeVehicleStats(
     }
   };
 
-  if (history.length === 0) {
+  if (clippedHistory.length === 0) {
     // Aucun point GPS sur la période → tout en hors ligne
     offlineMs = Math.max(0, periodEndMs - periodStartMs);
     offlineGaps = offlineMs > 0 ? 1 : 0;
@@ -104,7 +121,7 @@ export function computeVehicleStats(
     };
   }
 
-  const sorted = [...history].sort((a, b) => getPointTs(a) - getPointTs(b));
+  const sorted = [...clippedHistory].sort((a, b) => getPointTs(a) - getPointTs(b));
 
   // 1. Gap : début de période → premier point GPS
   const firstTs = getPointTs(sorted[0]);
@@ -202,4 +219,24 @@ export function formatEngineHours(ms: number): string {
   const h = Math.floor(ms / 3_600_000);
   const min = Math.floor((ms % 3_600_000) / 60_000);
   return `${h}h${min > 0 ? ` ${min}min` : ''}`;
+}
+
+/**
+ * Format humain-friendly pour tooltips/listes :
+ *   < 0ms        → "N/A" (valeur invalide)
+ *   = 0ms        → "0 min" (donnée connue, zéro)
+ *   0 < x < 1min → "< 1 min"
+ *   < 1h         → "X min"
+ *   ≥ 1h + min   → "Xh Ymin"
+ *   ≥ 1h exact   → "Xh"
+ */
+export function formatHumanDuration(ms: number): string {
+  if (ms < 0) return 'N/A';
+  if (ms === 0) return '0 min';
+  const minutes = ms / 60_000;
+  if (minutes < 1) return '< 1 min';
+  if (minutes < 60) return `${Math.round(minutes)} min`;
+  const hours = Math.floor(minutes / 60);
+  const mins = Math.round(minutes % 60);
+  return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
 }

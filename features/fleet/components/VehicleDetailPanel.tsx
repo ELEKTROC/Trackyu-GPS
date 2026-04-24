@@ -48,7 +48,8 @@ import { MaintenanceModalContent, FuelModalContent, ViolationsModalContent } fro
 import { useDataContext } from '../../../contexts/DataContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
-import { computeVehicleStats, formatDurationHHMM, formatEngineHours } from '../../../utils/computeVehicleStats';
+import { formatDurationHHMM, formatEngineHours } from '../../../utils/computeVehicleStats';
+import { useVehicleStats } from '../../../hooks/useVehicleStats';
 import { ListItemSkeleton, StatsCardSkeleton } from '../../../components/Skeleton';
 import { useTranslation } from '../../../i18n';
 
@@ -92,7 +93,6 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     getFuelRecords,
     getMaintenanceRecords,
     toggleImmobilization,
-    getVehicleHistory,
     getVehicleAlerts,
     updateVehicle,
     getFuelHistory,
@@ -137,10 +137,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     queryFn: () => getMaintenanceRecords(vehicle.id),
   });
 
-  const { data: history = [] } = useQuery({
-    queryKey: ['history', vehicle.id, new Date().toDateString()],
-    queryFn: () => getVehicleHistory(vehicle.id, new Date()),
-  });
+  // Stats harmonisées + historique GPS (période : jour calendaire)
+  const { stats: rawStats, history } = useVehicleStats(vehicle, { period: 'today' });
 
   const { data: alerts = [], isLoading: isLoadingAlerts } = useQuery({
     queryKey: ['alerts', vehicle.id],
@@ -189,24 +187,31 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
     return [];
   }, [longFuelHistory]);
 
+  // Formatage des stats pour l'affichage (source : useVehicleStats → rawStats)
   const stats = useMemo(() => {
-    const now = new Date();
-    const dayStart = new Date(now);
-    dayStart.setHours(0, 0, 0, 0);
-
-    const s = computeVehicleStats(history, vehicle.status, dayStart, now);
-
+    if (!rawStats) {
+      return {
+        drivingTime: '00:00',
+        idleTime: '00:00',
+        stoppedTime: '00:00',
+        offlineTime: '00:00',
+        statusDuration: '00:00',
+        engineHours: 'N/A',
+        totalDistance: 0,
+        idleMs: 0,
+      };
+    }
     return {
-      drivingTime: formatDurationHHMM(s.movingMs),
-      idleTime: formatDurationHHMM(s.idleMs),
-      stoppedTime: formatDurationHHMM(s.stoppedMs),
-      offlineTime: formatDurationHHMM(s.offlineMs),
-      statusDuration: formatDurationHHMM(s.statusDurationMs),
-      engineHours: formatEngineHours(s.movingMs + s.idleMs),
-      totalDistance: s.totalDistance,
-      idleMs: s.idleMs,
+      drivingTime: formatDurationHHMM(rawStats.movingMs),
+      idleTime: formatDurationHHMM(rawStats.idleMs),
+      stoppedTime: formatDurationHHMM(rawStats.stoppedMs),
+      offlineTime: formatDurationHHMM(rawStats.offlineMs),
+      statusDuration: formatDurationHHMM(rawStats.statusDurationMs),
+      engineHours: formatEngineHours(rawStats.movingMs + rawStats.idleMs),
+      totalDistance: rawStats.totalDistance,
+      idleMs: rawStats.idleMs,
     };
-  }, [history, vehicle.status]);
+  }, [rawStats]);
 
   // --- ÉTATS ---
   const [isConfigMode, setIsConfigMode] = useState(false);
@@ -595,7 +600,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
   return (
     <div className="h-full flex flex-col bg-[var(--bg-elevated)]">
       {/* --- HEADER --- */}
-      <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] shrink-0 p-4 shadow-md relative">
+      <div className="bg-[var(--brand-primary)] text-[var(--text-on-primary)] shrink-0 p-4 shadow-md relative">
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-center gap-3">
             {(() => {
@@ -628,11 +633,11 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             })()}
             <div>
               <h2 className="text-lg font-bold leading-tight">{vehicle.name}</h2>
-              {vehicle.plate && <p className="text-[var(--text-muted)] text-xs mt-0.5">{vehicle.plate}</p>}
+              {vehicle.plate && <p className="text-white/70 text-xs mt-0.5">{vehicle.plate}</p>}
               <div className="flex items-center gap-1 mt-1">
-                <MapPin className="w-3 h-3 text-[var(--primary)] shrink-0" />
+                <MapPin className="w-3 h-3 text-white/80 shrink-0" />
                 <span
-                  className="text-xs text-[var(--text-muted)] truncate max-w-[160px]"
+                  className="text-xs text-white/80 truncate max-w-[160px]"
                   title={vehicle.address || vehicle.geofence || ''}
                 >
                   {vehicle.address ||
@@ -643,7 +648,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
                   onClick={() => navigator.clipboard.writeText(`${vehicle.location?.lat},${vehicle.location?.lng}`)}
                   title={t('fleet.detailPanel.headerTooltips.copyCoords')}
                   aria-label={t('fleet.detailPanel.headerTooltips.copyCoordsAria')}
-                  className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
+                  className="p-1 rounded hover:bg-white/20 text-white/70 hover:text-white transition-colors shrink-0"
                 >
                   <Copy className="w-3 h-3" />
                 </button>
@@ -653,7 +658,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
                   rel="noreferrer"
                   title={t('fleet.detailPanel.headerTooltips.openInMaps')}
                   aria-label={t('fleet.detailPanel.headerTooltips.openInMapsAria')}
-                  className="p-1 rounded hover:bg-white/10 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors shrink-0"
+                  className="p-1 rounded hover:bg-white/20 text-white/70 hover:text-white transition-colors shrink-0"
                 >
                   <ExternalLink className="w-3 h-3" />
                 </a>
@@ -663,7 +668,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           <div className="flex gap-2">
             <button
               onClick={() => setIsConfigMode(!isConfigMode)}
-              className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-[var(--primary)] text-white' : 'bg-white/10 text-[var(--text-muted)] hover:bg-white/20'}`}
+              className={`p-2 rounded-full transition-colors ${isConfigMode ? 'bg-white text-[var(--brand-primary)]' : 'bg-white/15 text-white/80 hover:bg-white/25 hover:text-white'}`}
               title={t('fleet.detailPanel.headerTooltips.configure')}
               aria-label={t('fleet.detailPanel.headerTooltips.configure')}
             >
@@ -671,7 +676,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors text-[var(--text-muted)]"
+              className="p-2 bg-white/15 rounded-full hover:bg-white/25 transition-colors text-white/80 hover:text-white"
               title={t('fleet.detailPanel.headerTooltips.close')}
               aria-label={t('fleet.detailPanel.headerTooltips.closeAria')}
             >
@@ -681,7 +686,7 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
         </div>
 
         {/* Ligne d'infos : Statut | Durée | Km | Heures Moteur */}
-        <div className="flex flex-wrap items-center gap-3 bg-slate-800/50 p-2 rounded-lg border border-white/5 backdrop-blur-sm">
+        <div className="flex flex-wrap items-center gap-3 bg-black/20 p-2 rounded-lg border border-white/10 backdrop-blur-sm">
           {/* Statut + Durée */}
           <div
             className={`flex items-center gap-2 px-2 py-1 rounded text-xs font-bold border ${statusColors[vehicle.status]}`}
@@ -692,8 +697,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
           </div>
 
           {/* Kilométrage */}
-          <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--text-muted)]">
-            <Navigation className="w-3 h-3 text-[var(--primary)]" />
+          <div className="flex items-center gap-1.5 text-xs font-mono text-white/80">
+            <Navigation className="w-3 h-3 text-white" />
             <span>{(vehicle.mileage / 1000).toFixed(1)} km</span>
           </div>
 
@@ -704,8 +709,8 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
             isHidden={hiddenFields.has('headerEngineHours')}
             onToggle={() => toggleFieldVisibility('headerEngineHours')}
           >
-            <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--text-muted)]">
-              <Activity className="w-3 h-3 text-orange-400" />
+            <div className="flex items-center gap-1.5 text-xs font-mono text-white/80">
+              <Activity className="w-3 h-3 text-white" />
               <span>{mockData.engineHoursTotal}</span>
             </div>
           </ConfigurableRow>
