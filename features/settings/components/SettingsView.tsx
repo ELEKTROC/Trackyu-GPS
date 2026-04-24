@@ -893,8 +893,8 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
       );
     }
     if (colLower.includes('rôle') || colLower.includes('role')) {
-      // Sous-compte : afficher le sub_role (User/Viewer). Sinon : role (CLIENT, Manager, etc.)
-      const displayRole = item.subRole || item.role || '--';
+      // Sous-compte : afficher uniquement le sub_role (User/Viewer). Sinon : role (CLIENT, etc.)
+      const displayRole = type === 'subaccount' ? item.subRole || '—' : item.subRole || item.role || '--';
       return <span className="text-sm font-medium text-[var(--text-primary)]">{displayRole}</span>;
     }
     if (colLower.includes('erreurs'))
@@ -1701,10 +1701,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
       }
     } else if (activeTab === 'users' || activeTab === 'subaccounts') {
       if (editingItem?.id) {
+        const dataAny = data as Record<string, any>;
+        // En édition de sous-compte, SubUserForm soumet `role` = User/Viewer
+        // → on doit forcer role=SOUS_COMPTE et transposer en subRole (comme à la création)
         const userData = {
           ...editingItem,
           ...data,
-          name: (data as any).name || (data as any).nom || editingItem.name,
+          name: dataAny.name || dataAny.nom || editingItem.name,
+          role: activeTab === 'subaccounts' ? 'SOUS_COMPTE' : dataAny.role || editingItem.role,
+          subRole: activeTab === 'subaccounts' ? dataAny.role : editingItem.subRole,
           subUsers: data.subUsers || [],
         };
         updateUser(userData);
@@ -2179,16 +2184,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           />
         );
       case 'subaccounts': {
-        const subUsers = users.filter((u: any) => (u.role || '').toUpperCase() === 'SOUS_COMPTE');
+        const subUsers = users
+          .filter((u: any) => (u.role || '').toUpperCase() === 'SOUS_COMPTE')
+          .map((u: any) => ({
+            ...u,
+            vehicleCount: u.allVehicles
+              ? vehicles.filter((v: any) => v.clientId === u.clientId || v.client === u.clientId).length
+              : (u.vehicleIds || []).length,
+          }));
         return (
           <GenericTableContent
             title="Sous-utilisateur"
             type="subaccount"
             icon={Users}
-            columns={['ID', 'Client', 'Nom', 'Email', 'Rôle', 'Statut']}
+            columns={['Client', 'Nom', 'Email', 'Rôle', 'Véhicules', 'Dernière Connexion', 'Statut']}
             useRealUsers
             users={subUsers}
             onStatusChange={handleUserStatusChange}
+            onResetPassword={handleResetPassword}
             {...commonProps}
           />
         );
