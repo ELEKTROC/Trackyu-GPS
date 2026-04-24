@@ -46,7 +46,8 @@ import {
 import { loadHtml2Canvas } from '../../../services/pdfLoader';
 import { PERIOD_PRESETS, type PeriodPreset } from '../../../hooks/useDateRange';
 import { exportToGPX, exportToKML, downloadFile } from '../../../utils/gpsExport';
-import { computeVehicleStats, formatHumanDuration } from '../../../utils/computeVehicleStats';
+import { formatHumanDuration } from '../../../utils/computeVehicleStats';
+import { useVehicleStats } from '../../../hooks/useVehicleStats';
 import { API_URL, getHeaders } from '../../../services/api/client';
 import { useTranslation } from '../../../i18n';
 
@@ -270,6 +271,18 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   // filteredHistory = données filtrées anti-drift pour l'affichage carte uniquement (polyline, marqueurs)
   // Pour les stats et la détection d'arrêts, on utilise `history` brut = même source que VehicleDetailPanel
   const filteredHistory = useMemo(() => filterDriftGPS(history), [history]);
+
+  // Phase 5 chantier géoloc 360 — stats depuis le backend (source unique serveur).
+  // Remplace les anciens appels directs à computeVehicleStats() qui recalculaient
+  // côté client (violation règle CLAUDE.md "calculs source serveur uniquement").
+  // Le hook fait le fallback client tout seul si l'endpoint est down.
+  const { stats: replayStats } = useVehicleStats(
+    selectedVehicle ? { id: selectedVehicle.id, status: selectedVehicle.status ?? '' } : null,
+    {
+      period: { start: dateRange.start, end: dateRange.end },
+      enabled: history.length >= 2,
+    }
+  );
 
   // Filter vehicles based on search (name or client)
   const filteredVehicles = useMemo(() => {
@@ -525,9 +538,12 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       .filter((s): s is TripSegment => s !== null);
   }, [history, stops]);
 
-  // Calculate overall trip statistics — via moteur partagé computeVehicleStats
+  // Calculate overall trip statistics — depuis le hook useVehicleStats (backend).
   const tripStats = useMemo<TripStats>(() => {
-    if (!history || history.length < 2) {
+    const now = new Date();
+    const periodEnd = dateRange.end > now ? now : dateRange.end;
+    const totalDuration = (periodEnd.getTime() - dateRange.start.getTime()) / 60000;
+    if (!replayStats || history.length < 2) {
       return {
         totalDistance: 0,
         totalDuration: 0,
@@ -536,26 +552,22 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
         idleTime: 0,
         avgSpeed: 0,
         maxSpeed: 0,
-        stopCount: 0,
-        speedingEvents: 0,
+        stopCount: stops.length,
+        speedingEvents: speedingEvents.length,
       };
     }
-    const now = new Date();
-    const periodEnd = dateRange.end > now ? now : dateRange.end;
-    const s = computeVehicleStats(history, selectedVehicle?.status ?? '', dateRange.start, periodEnd);
-    const totalDuration = (periodEnd.getTime() - dateRange.start.getTime()) / 60000;
     return {
-      totalDistance: s.totalDistance,
+      totalDistance: replayStats.totalDistance,
       totalDuration,
-      drivingTime: s.movingMs / 60000,
-      stoppedTime: s.stoppedMs / 60000,
-      idleTime: s.idleMs / 60000,
-      avgSpeed: s.avgSpeed,
-      maxSpeed: s.maxSpeed,
+      drivingTime: replayStats.movingMs / 60000,
+      stoppedTime: replayStats.stoppedMs / 60000,
+      idleTime: replayStats.idleMs / 60000,
+      avgSpeed: replayStats.avgSpeed,
+      maxSpeed: replayStats.maxSpeed,
       stopCount: stops.length,
       speedingEvents: speedingEvents.length,
     };
-  }, [history, stops, speedingEvents, dateRange, selectedVehicle?.status]);
+  }, [replayStats, history.length, stops, speedingEvents, dateRange]);
 
   // Sync stops and events to parent component (MapView)
   useEffect(() => {
@@ -664,14 +676,15 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     return withFuel.length > 0 ? (withFuel[withFuel.length - 1].fuelLevel as number) : null;
   }, [filteredHistory]);
 
-  // Coupures GPS — dérivées du même moteur que tripStats (source unique)
+  // Coupures GPS — dérivées du hook useVehicleStats (backend source unique).
+  // Note : l'ancien calcul utilisait filteredHistory (anti-drift) alors que
+  // tripStats utilisait history brut. Cet alignement sur le backend fait
+  // disparaître cette incohérence (le backend travaille sur les positions brutes
+  // stockées).
   const { offlineGaps, offlineTimeMin } = useMemo(() => {
-    if (filteredHistory.length < 2) return { offlineGaps: 0, offlineTimeMin: 0 };
-    const now = new Date();
-    const periodEnd = dateRange.end > now ? now : dateRange.end;
-    const s = computeVehicleStats(filteredHistory, selectedVehicle?.status ?? '', dateRange.start, periodEnd);
-    return { offlineGaps: s.offlineGaps, offlineTimeMin: s.offlineMs / 60000 };
-  }, [filteredHistory, dateRange, selectedVehicle?.status]);
+    if (!replayStats) return { offlineGaps: 0, offlineTimeMin: 0 };
+    return { offlineGaps: replayStats.offlineGaps, offlineTimeMin: replayStats.offlineMs / 60000 };
+  }, [replayStats]);
 
   // Export screenshot
   const handleExportVideo = useCallback(async () => {
