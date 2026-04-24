@@ -25,6 +25,8 @@ import type {
   StockMovement,
   VehiclePositionHistory,
   FuelRecord,
+  FuelEvent,
+  FuelEventStatus,
   MaintenanceRecord,
   Tier,
   Anomaly,
@@ -279,6 +281,17 @@ interface DataContextType {
   // Fuel Actions
   getFuelHistory: (vehicleId: string, duration?: '24h' | '7d' | '30d') => Promise<any[]>;
   getFuelStats: (vehicleId: string) => Promise<any>;
+
+  // Fuel Events (détection auto — phase 4)
+  getFuelEvents: (
+    vehicleId: string,
+    opts?: { limit?: number; status?: FuelEventStatus | 'ALL' }
+  ) => Promise<FuelEvent[]>;
+  reviewFuelEvent: (
+    eventId: string,
+    status: 'CONFIRMED' | 'DISMISSED' | 'DISPUTED',
+    opts?: { notes?: string; vehicleId?: string; onSuccess?: () => void; onError?: (err: unknown) => void }
+  ) => void;
 
   // Refresh All Data (for Pull-to-Refresh)
   refreshData: () => Promise<void>;
@@ -899,6 +912,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       queryClient.setQueryData(['vehicles', tenantId], (old: Vehicle[] = []) =>
         old.map((v) => (v.id === updatedVehicle.id ? updatedVehicle : v))
       );
+      // Invalider les caches liés au véhicule (tankCapacity, fuelHistory dépendent de la fiche)
+      queryClient.invalidateQueries({ queryKey: ['fuelStats', updatedVehicle.id] });
+      queryClient.invalidateQueries({ queryKey: ['fuelHistory', updatedVehicle.id] });
+      queryClient.invalidateQueries({ queryKey: ['fuel', updatedVehicle.id] });
     },
     onError: (error: unknown) => {
       logger.error('[DataContext] updateVehicle failed:', error);
@@ -909,6 +926,27 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     mutationFn: api.fuel.add,
     onSuccess: (newRecord) => {
       queryClient.invalidateQueries({ queryKey: ['fuel', newRecord.vehicleId] });
+    },
+  });
+
+  // Mutation de review d'un fuel event (CONFIRM / DISMISS / DISPUTE)
+  const reviewFuelEventMutation = useMutation({
+    mutationFn: (args: {
+      eventId: string;
+      status: 'CONFIRMED' | 'DISMISSED' | 'DISPUTED';
+      notes?: string;
+      vehicleId?: string;
+    }) => api.fuelEvents.review(args.eventId, args.status, args.notes),
+    onSuccess: (_data, variables) => {
+      // Invalider la liste events du véhicule concerné
+      if (variables.vehicleId) {
+        queryClient.invalidateQueries({ queryKey: ['fuelEvents', variables.vehicleId] });
+      }
+      queryClient.invalidateQueries({ queryKey: ['fuelEvents', 'list'] });
+      queryClient.invalidateQueries({ queryKey: ['fuelEvents', 'summary'] });
+    },
+    onError: (error: unknown) => {
+      logger.error('[DataContext] reviewFuelEvent failed:', error);
     },
   });
 
@@ -1916,6 +1954,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       getFuelRecords: api.fuel.list,
       getFuelHistory: api.fuel.getHistory,
+      getFuelEvents: (vehicleId, opts) => api.fuelEvents.listByVehicle(vehicleId, opts),
+      reviewFuelEvent: (eventId, status, opts) => {
+        const { notes, vehicleId, onSuccess, onError } = opts ?? {};
+        reviewFuelEventMutation.mutate({ eventId, status, notes, vehicleId }, { onSuccess, onError });
+      },
       getFuelStats: api.fuel.getStats,
       addFuelRecord: api.fuel.add,
       getMaintenanceRecords,

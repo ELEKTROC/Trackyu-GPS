@@ -668,10 +668,20 @@ export interface Intervention {
   tankShape?: 'RECTANGULAR' | 'CYLINDRICAL_H' | 'CYLINDRICAL_V' | 'L_SHAPE' | 'D_SHAPE'; // Added
 
   // New Fuel Management Fields
-  fuelSensorType?: 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC';
+  fuelSensorType?: 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' | 'ANALOG' | 'RS232' | 'BLUETOOTH';
   calibrationTable?: string; // CSV format: height,volume
   refillThreshold?: number;
   theftThreshold?: number;
+
+  // Sensor config (mirrored from vehicle sensor_config)
+  sensorUnit?: 'tension' | 'litres' | 'gallons' | 'pourcentage' | 'hauteur';
+  fuelConversionFactor?: number;
+  voltageEmptyMv?: number;
+  voltageHalfMv?: number;
+  voltageFullMv?: number;
+  sensorBrand?: string;
+  sensorModel?: string;
+  sensorInstallDate?: string;
 
   gaugeVoltage?: string;
   gaugeBrand?: string;
@@ -796,6 +806,57 @@ export interface FuelRecord {
   location?: string;
   driver?: string;
   odometer?: number; // Mileage at time of event
+}
+
+// ─── Fuel events (détection auto REFILL/THEFT/CONSUMPTION/ANOMALY) ───────────
+// Phase 4 chantier carburant — table backend `fuel_events`
+export type FuelEventType = 'REFILL' | 'THEFT' | 'CONSUMPTION' | 'ANOMALY';
+export type FuelEventSeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type FuelEventStatus = 'NEW' | 'CONFIRMED' | 'DISMISSED' | 'DISPUTED';
+
+export interface FuelEvent {
+  id: string;
+  tenant_id: string;
+  object_id: string;
+  type: FuelEventType;
+  severity: FuelEventSeverity;
+  status: FuelEventStatus;
+
+  start_time: string; // ISO
+  end_time: string; // ISO
+  duration_seconds: number;
+
+  delta_liters: number; // positif REFILL, négatif THEFT
+  before_liters: number | null;
+  after_liters: number | null;
+  tank_capacity: number | null;
+
+  start_lat: number | null;
+  start_lng: number | null;
+  end_lat: number | null;
+  end_lng: number | null;
+  start_address: string | null;
+  end_address: string | null;
+
+  confidence: number; // 0-100
+  max_speed: number | null;
+  acc_during: boolean | null;
+  driver_id: string | null;
+
+  raw_before: number | null;
+  raw_after: number | null;
+
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  notes: string | null;
+
+  created_at: string; // ISO
+  updated_at: string; // ISO
+
+  // Enrichissement backend (jointure)
+  vehicle_name?: string | null;
+  vehicle_plate?: string | null;
+  vehicle_imei?: string | null;
 }
 
 export interface MaintenanceRecord {

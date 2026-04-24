@@ -197,12 +197,78 @@ export const VehicleForm = React.forwardRef<
   // ── Onglet Jauge conditionnel ──────────────────────────────────────────
   const watchedSensors = watch('sensors');
   const hasFuelSensor = Array.isArray(watchedSensors) && watchedSensors.includes('FUEL');
+  const watchedFuelSensorType = watch('fuelSensorType');
+  const watchedSensorUnit = watch('sensorUnit');
+  const isCanbus = watchedFuelSensorType === 'CANBUS';
+  const isTension = watchedSensorUnit === 'tension' || (!watchedSensorUnit && watchedFuelSensorType === 'ANALOG');
 
   useEffect(() => {
     if (activeTab === 'fuel' && !hasFuelSensor) {
       setActiveTab('device');
     }
   }, [hasFuelSensor, activeTab]);
+
+  // Auto-détection depuis préfixe IMEI : capteur carburant + config par défaut + modèle boîtier
+  useEffect(() => {
+    if (!watchedImei || watchedImei.length < 4) return;
+
+    const IMEI_PROFILES: Array<{
+      prefix: string;
+      modelId: string;
+      sensorUnit: 'litres' | 'tension';
+      fuelSensorType: 'CAPACITIVE' | 'ANALOG';
+      voltages?: { empty: number; half: number; full: number };
+    }> = [
+      {
+        prefix: '15042',
+        modelId: 'a470f46c-1cb4-4f7f-9700-3a0170479372', // Concox GT02
+        sensorUnit: 'litres',
+        fuelSensorType: 'CAPACITIVE',
+      },
+      {
+        prefix: '3515',
+        modelId: '5157b121-8d40-4931-af88-b315cd57e93c', // Concox GT800
+        sensorUnit: 'tension',
+        fuelSensorType: 'ANALOG',
+        voltages: { empty: 0, half: 2500, full: 5000 },
+      },
+      {
+        prefix: '86513',
+        modelId: 'd1d6ab1d-96dd-4743-9314-45741795a681', // Concox X3
+        sensorUnit: 'tension',
+        fuelSensorType: 'ANALOG',
+        voltages: { empty: 0, half: 2500, full: 5000 },
+      },
+    ];
+
+    const profile = IMEI_PROFILES.find((p) => watchedImei.startsWith(p.prefix));
+    if (!profile) return;
+
+    // Jauge carburant : ajouter FUEL aux capteurs si pas déjà présent
+    const currentSensors: string[] = watch('sensors') || [];
+    if (!currentSensors.includes('FUEL')) {
+      setValue('sensors', [...currentSensors, 'FUEL']);
+    }
+
+    // Champs capteur : ne pas écraser si déjà configurés manuellement
+    if (!watch('sensorUnit')) setValue('sensorUnit', profile.sensorUnit);
+    if (!watch('fuelSensorType')) setValue('fuelSensorType', profile.fuelSensorType);
+    if (!watch('tankCapacity')) setValue('tankCapacity', 350);
+    if (profile.voltages) {
+      if (watch('voltageEmptyMv') === undefined || watch('voltageEmptyMv') === null)
+        setValue('voltageEmptyMv', profile.voltages.empty);
+      if (watch('voltageHalfMv') === undefined || watch('voltageHalfMv') === null)
+        setValue('voltageHalfMv', profile.voltages.half);
+      if (watch('voltageFullMv') === undefined || watch('voltageFullMv') === null)
+        setValue('voltageFullMv', profile.voltages.full);
+    }
+
+    // Modèle boîtier : affecter au format "Brand Model" attendu par le Select
+    if (!watch('deviceType')) {
+      const model = deviceModels.find((m) => m.id === profile.modelId);
+      if (model) setValue('deviceType', `${model.brand} ${model.model}`);
+    }
+  }, [watchedImei, deviceModels]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Emplacement boîtier (preset + saisie libre) ───────────────────────
   const watchedLocation = watch('deviceLocation') ?? '';
@@ -242,17 +308,19 @@ export const VehicleForm = React.forwardRef<
   const calibrationTable = watch('calibrationTable');
 
   useEffect(() => {
-    if (tankHeight && tankCapacity && !calibrationTable) {
-      const steps = 10;
-      let table = '';
-      for (let i = 0; i <= steps; i++) {
-        const h = Math.round((i / steps) * (tankHeight ?? 0));
-        const v = Math.round((i / steps) * (tankCapacity ?? 0));
-        table += `${h},${v}\n`;
-      }
-      setValue('calibrationTable', table.trim());
+    if (!tankCapacity || calibrationTable) return;
+    const steps = 10;
+    let table = '';
+    // Si tankHeight défini → calibration hauteur(mm) → volume(L)
+    // Sinon → calibration tension(mV 0-5000) → volume(L), linéaire par défaut
+    const axisMax = tankHeight || 5000;
+    for (let i = 0; i <= steps; i++) {
+      const x = Math.round((i / steps) * axisMax);
+      const v = Math.round((i / steps) * (tankCapacity ?? 0));
+      table += `${x},${v}\n`;
     }
-  }, [tankHeight, tankCapacity, setValue]);
+    setValue('calibrationTable', table.trim());
+  }, [tankHeight, tankCapacity, calibrationTable, setValue]);
 
   // ── Submit ────────────────────────────────────────────────────────────
   const [isSaving, setIsSaving] = useState(false);
@@ -261,6 +329,9 @@ export const VehicleForm = React.forwardRef<
     setIsSaving(true);
     try {
       await onFormSubmit(data);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
+      setValidationError(msg);
     } finally {
       setIsSaving(false);
     }
@@ -268,13 +339,134 @@ export const VehicleForm = React.forwardRef<
 
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  const FIELD_LABELS: Record<string, string> = {
+    resellerId: 'Revendeur',
+    client: 'Client',
+    branchId: 'Branche',
+    licensePlate: 'Immatriculation',
+    wwPlate: 'Plaque WW',
+    name: 'Alias / Nom',
+    odometer: 'Compteur Distance',
+    brand: 'Marque',
+    model: 'Modèle véhicule',
+    year: 'Année',
+    color: 'Couleur',
+    vehicleType: "Type d'engin",
+    vin: 'VIN / Châssis',
+    mileage: 'Kilométrage initial',
+    odometerSource: 'Source odomètre',
+    group: 'Groupe',
+    driver: 'Conducteur',
+    status: 'Statut',
+    imei: 'IMEI boîtier',
+    deviceId: 'ID boîtier',
+    deviceType: 'Modèle boîtier',
+    deviceStatus: 'Statut boîtier',
+    installDate: 'Date installation',
+    serverAddress: 'Adresse serveur',
+    deviceLocation: 'Emplacement boîtier',
+    timezone: 'Fuseau horaire',
+    simOperator: 'Opérateur SIM',
+    sim: 'Numéro SIM',
+    iccid: 'ICCID SIM',
+    sensors: 'Capteurs',
+    tankCapacity: 'Capacité réservoir',
+    fuelType: 'Type carburant',
+    fuelSensorType: 'Type capteur',
+    sensorUnit: 'Unité capteur',
+    fuelConversionFactor: 'Facteur conversion',
+    sensorBrand: 'Marque capteur',
+    sensorModel: 'Modèle capteur',
+    sensorInstallDate: 'Date installation capteur',
+    voltageEmptyMv: 'Voltage vide (mV)',
+    voltageHalfMv: 'Voltage mi-niveau (mV)',
+    voltageFullMv: 'Voltage plein (mV)',
+    tankHeight: 'Hauteur réservoir',
+    tankWidth: 'Largeur réservoir',
+    tankLength: 'Longueur réservoir',
+    consumption: 'Consommation théorique',
+    refillThreshold: 'Seuil plein',
+    theftThreshold: 'Seuil vol',
+    calibrationTable: 'Table calibration',
+    nextMaintenanceKm: 'Prochaine maintenance (km)',
+    nextMaintenanceDate: 'Prochaine maintenance (date)',
+    insuranceExpiry: 'Fin assurance',
+    techVisitExpiry: 'Fin visite technique',
+    contractExpiry: 'Expiration contrat',
+    maxSpeed: 'Vitesse max',
+    maxIdleTime: 'Ralenti max',
+  };
+
+  const FIELD_TAB: Record<string, string> = {
+    resellerId: 'info',
+    client: 'info',
+    branchId: 'info',
+    licensePlate: 'info',
+    wwPlate: 'info',
+    name: 'info',
+    odometer: 'info',
+    brand: 'info',
+    model: 'info',
+    year: 'info',
+    color: 'info',
+    vehicleType: 'info',
+    vin: 'info',
+    mileage: 'info',
+    odometerSource: 'info',
+    group: 'info',
+    driver: 'info',
+    status: 'info',
+    imei: 'device',
+    deviceId: 'device',
+    deviceType: 'device',
+    deviceStatus: 'device',
+    installDate: 'device',
+    serverAddress: 'device',
+    deviceLocation: 'device',
+    timezone: 'device',
+    simOperator: 'device',
+    sim: 'device',
+    iccid: 'device',
+    sensors: 'device',
+    tankCapacity: 'fuel',
+    fuelType: 'fuel',
+    fuelSensorType: 'fuel',
+    sensorUnit: 'fuel',
+    fuelConversionFactor: 'fuel',
+    sensorBrand: 'fuel',
+    sensorModel: 'fuel',
+    sensorInstallDate: 'fuel',
+    voltageEmptyMv: 'fuel',
+    voltageHalfMv: 'fuel',
+    voltageFullMv: 'fuel',
+    tankHeight: 'fuel',
+    tankWidth: 'fuel',
+    tankLength: 'fuel',
+    consumption: 'fuel',
+    refillThreshold: 'fuel',
+    theftThreshold: 'fuel',
+    calibrationTable: 'fuel',
+    nextMaintenanceKm: 'maintenance',
+    nextMaintenanceDate: 'maintenance',
+    insuranceExpiry: 'maintenance',
+    techVisitExpiry: 'maintenance',
+    contractExpiry: 'maintenance',
+    maxSpeed: 'maintenance',
+    maxIdleTime: 'maintenance',
+  };
+
   const onInvalid = (errs: typeof errors) => {
     const entries = Object.entries(errs);
     if (entries.length === 0) return;
-    const messages = entries
-      .map(([field, err]) => (err as { message?: string })?.message || `Champ requis : ${field}`)
-      .filter(Boolean);
-    setValidationError(messages.join(' · '));
+    // Navigate to the tab containing the first error
+    const firstTab = entries.map(([f]) => FIELD_TAB[f]).find(Boolean);
+    if (firstTab) setActiveTab(firstTab);
+    const messages = entries.map(([field, err]) => {
+      const label = FIELD_LABELS[field] || field;
+      const msg = (err as { message?: string })?.message || 'valeur invalide';
+      return `${label} : ${msg}`;
+    });
+    setValidationError(messages.join('  ·  '));
   };
 
   // ── Helpers UI ────────────────────────────────────────────────────────
@@ -404,31 +596,31 @@ export const VehicleForm = React.forwardRef<
             </FormGrid>
 
             <FormGrid columns={2}>
-              <FormField label="Alias / Nom (Optionnel)">
+              <FormField label="Alias / Nom (Optionnel)" error={errors.name?.message as string}>
                 <Input {...register('name')} placeholder="Ex: Camion Benne 01" />
               </FormField>
-              <FormField label="Compteur Distance (Km)">
+              <FormField label="Compteur Distance (Km)" error={errors.odometer?.message as string}>
                 <Input {...register('odometer')} type="number" />
               </FormField>
             </FormGrid>
 
             <FormGrid columns={2}>
-              <FormField label="Marque">
+              <FormField label="Marque" error={errors.brand?.message as string}>
                 <Input {...register('brand')} />
               </FormField>
-              <FormField label="Modèle">
+              <FormField label="Modèle" error={errors.model?.message as string}>
                 <Input {...register('model')} />
               </FormField>
             </FormGrid>
 
             <FormGrid columns={3}>
-              <FormField label="Année">
+              <FormField label="Année" error={errors.year?.message as string}>
                 <Input {...register('year')} />
               </FormField>
-              <FormField label="Couleur">
+              <FormField label="Couleur" error={errors.color?.message as string}>
                 <Input {...register('color')} />
               </FormField>
-              <FormField label="Type d'engin">
+              <FormField label="Type d'engin" error={errors.vehicleType?.message as string}>
                 <Select {...register('vehicleType')}>
                   <option value="">— Sélectionner —</option>
                   {VEHICLE_TYPE_OPTIONS.map((o) => (
@@ -441,10 +633,10 @@ export const VehicleForm = React.forwardRef<
             </FormGrid>
 
             <FormGrid columns={2}>
-              <FormField label="VIN (Châssis)">
+              <FormField label="VIN (Châssis)" error={errors.vin?.message as string}>
                 <Input {...register('vin')} />
               </FormField>
-              <FormField label="Kilométrage Initial">
+              <FormField label="Kilométrage Initial" error={errors.mileage?.message as string}>
                 <Input {...register('mileage')} type="number" />
               </FormField>
             </FormGrid>
@@ -489,7 +681,7 @@ export const VehicleForm = React.forwardRef<
             <FormSection icon={Cpu} title="Informations Boîtier">
               <FormGrid columns={2}>
                 <FormField label="IMEI Boîtier" required error={errors.imei?.message as string}>
-                  <Input {...register('imei')} placeholder="15 chiffres" />
+                  <Input {...register('imei')} placeholder="Ex: 15042020102" />
                 </FormField>
                 <FormField label="ID Boîtier (S/N)">
                   <Input {...register('deviceId')} />
@@ -532,7 +724,7 @@ export const VehicleForm = React.forwardRef<
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 px-3 py-2 border border-[var(--border)] rounded-lg bg-[var(--bg-elevated)] text-sm text-[var(--text-muted)]">
-                      {watchedImei && watchedImei.length >= 15
+                      {watchedImei && watchedImei.length >= 8
                         ? 'Non référencé dans le stock'
                         : "Saisir l'IMEI pour afficher le statut"}
                     </div>
@@ -542,10 +734,10 @@ export const VehicleForm = React.forwardRef<
 
               {/* Emplacement boîtier — dropdown + saisie libre */}
               <FormGrid columns={2}>
-                <FormField label="Date Installation">
+                <FormField label="Date Installation" error={errors.installDate?.message as string}>
                   <Input {...register('installDate')} type="date" />
                 </FormField>
-                <FormField label="Adresse Serveur">
+                <FormField label="Adresse Serveur" error={errors.serverAddress?.message as string}>
                   <Input {...register('serverAddress')} placeholder="IP ou DNS" />
                 </FormField>
               </FormGrid>
@@ -677,10 +869,10 @@ export const VehicleForm = React.forwardRef<
           <div className="space-y-4 animate-in fade-in duration-200">
             <FormSection icon={Fuel} title="Configuration Carburant">
               <FormGrid columns={3}>
-                <FormField label="Capacité Réservoir (L)">
+                <FormField label="Capacité Réservoir (L)" error={errors.tankCapacity?.message as string}>
                   <Input {...register('tankCapacity')} type="number" />
                 </FormField>
-                <FormField label="Type Carburant">
+                <FormField label="Type Carburant" error={errors.fuelType?.message as string}>
                   <Select {...register('fuelType')}>
                     <option value="">-- Sélectionner --</option>
                     {FUEL_TYPE_OPTIONS.map((o) => (
@@ -690,8 +882,9 @@ export const VehicleForm = React.forwardRef<
                     ))}
                   </Select>
                 </FormField>
-                <FormField label="Type de Capteur">
+                <FormField label="Type de Capteur" error={errors.fuelSensorType?.message as string}>
                   <Select {...register('fuelSensorType')}>
+                    <option value="">-- Sélectionner --</option>
                     <option value="CANBUS">CANBUS (Origine)</option>
                     <option value="CAPACITIVE">Sonde Capacitive</option>
                     <option value="ANALOG">Sonde Analogique (0-V)</option>
@@ -702,27 +895,113 @@ export const VehicleForm = React.forwardRef<
                 </FormField>
               </FormGrid>
 
+              {/* ── Section capteur (masquée si CANBUS) ── */}
+              {!isCanbus && (
+                <>
+                  <FormGrid columns={3}>
+                    <FormField label="Unité mesure capteur" error={errors.sensorUnit?.message as string}>
+                      <Select {...register('sensorUnit')}>
+                        <option value="">-- Sélectionner --</option>
+                        <option value="tension">Tension (mV)</option>
+                        <option value="litres">Litres</option>
+                        <option value="gallons">Gallons</option>
+                        <option value="pourcentage">Pourcentage (%)</option>
+                        <option value="hauteur">Hauteur (mm)</option>
+                      </Select>
+                    </FormField>
+                    <FormField
+                      label="Facteur de conversion"
+                      hint="Multiplicateur appliqué sur la valeur brute (défaut=1)"
+                      error={errors.fuelConversionFactor?.message as string}
+                    >
+                      <Input {...register('fuelConversionFactor')} type="number" step="0.01" placeholder="1" />
+                    </FormField>
+                    <FormField label="Marque capteur" error={errors.sensorBrand?.message as string}>
+                      <Select {...register('sensorBrand')}>
+                        <option value="">-- Sélectionner --</option>
+                        {[
+                          'Concox',
+                          'Ligo',
+                          'Ruptela',
+                          'Mielta',
+                          'Mechatronics',
+                          'Omnicomm',
+                          'Technoton',
+                          'Escort',
+                          'Noname',
+                          'Autres',
+                        ].map((b) => (
+                          <option key={b} value={b}>
+                            {b}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormField>
+                  </FormGrid>
+
+                  <FormGrid columns={2}>
+                    <FormField label="Modèle capteur (optionnel)" error={errors.sensorModel?.message as string}>
+                      <Input {...register('sensorModel')} placeholder="ex: LS-200" />
+                    </FormField>
+                    <FormField label="Date installation capteur" error={errors.sensorInstallDate?.message as string}>
+                      <Input {...register('sensorInstallDate')} type="date" />
+                    </FormField>
+                  </FormGrid>
+
+                  {/* Champs tension conditionnels */}
+                  {isTension && (
+                    <FormGrid columns={3}>
+                      <FormField
+                        label="Voltage vide (mV)"
+                        hint="Signal capteur à réservoir vide"
+                        error={errors.voltageEmptyMv?.message as string}
+                      >
+                        <Input {...register('voltageEmptyMv')} type="number" step="1" placeholder="0" />
+                      </FormField>
+                      <FormField label="Voltage mi-niveau (mV)" error={errors.voltageHalfMv?.message as string}>
+                        <Input {...register('voltageHalfMv')} type="number" step="1" placeholder="2500" />
+                      </FormField>
+                      <FormField
+                        label="Voltage plein (mV)"
+                        hint="Signal capteur à réservoir plein"
+                        error={errors.voltageFullMv?.message as string}
+                      >
+                        <Input {...register('voltageFullMv')} type="number" step="1" placeholder="5000" />
+                      </FormField>
+                    </FormGrid>
+                  )}
+                </>
+              )}
+
               <FormGrid columns={3}>
-                <FormField label="Hauteur (mm)">
+                <FormField label="Hauteur (mm)" error={errors.tankHeight?.message as string}>
                   <Input {...register('tankHeight')} type="number" />
                 </FormField>
-                <FormField label="Largeur (mm)">
+                <FormField label="Largeur (mm)" error={errors.tankWidth?.message as string}>
                   <Input {...register('tankWidth')} type="number" />
                 </FormField>
-                <FormField label="Longueur (mm)">
+                <FormField label="Longueur (mm)" error={errors.tankLength?.message as string}>
                   <Input {...register('tankLength')} type="number" />
                 </FormField>
               </FormGrid>
 
-              <FormField label="Consommation Théorique (L/100km)">
+              <FormField label="Consommation Théorique (L/100km)" error={errors.consumption?.message as string}>
                 <Input {...register('consumption')} type="number" step="0.1" />
               </FormField>
 
               <FormGrid columns={2}>
-                <FormField label="Seuil Détection Plein (%)" hint="Hausse min. pour considérer un plein">
+                <FormField
+                  label="Seuil Détection Plein (%)"
+                  hint="Hausse min. pour considérer un plein"
+                  error={errors.refillThreshold?.message as string}
+                >
                   <Input {...register('refillThreshold')} type="number" step="0.1" defaultValue={5.0} />
                 </FormField>
-                <FormField label="Seuil Détection Vol (%)" hint="Baisse min. à l'arrêt pour alerte vol">
+                <FormField
+                  label="Seuil Détection Vol (%)"
+                  hint="Baisse min. à l'arrêt pour alerte vol"
+                  error={errors.theftThreshold?.message as string}
+                >
                   <Input {...register('theftThreshold')} type="number" step="0.1" defaultValue={3.0} />
                 </FormField>
               </FormGrid>
@@ -744,24 +1023,24 @@ export const VehicleForm = React.forwardRef<
           <div className="space-y-4 animate-in fade-in duration-200">
             <FormSection icon={Wrench} title="Maintenance & Échéances">
               <FormGrid columns={2}>
-                <FormField label="Prochaine Maintenance (Km)">
+                <FormField label="Prochaine Maintenance (Km)" error={errors.nextMaintenanceKm?.message as string}>
                   <Input {...register('nextMaintenanceKm')} type="number" />
                 </FormField>
-                <FormField label="Prochaine Maintenance (Date)">
+                <FormField label="Prochaine Maintenance (Date)" error={errors.nextMaintenanceDate?.message as string}>
                   <Input {...register('nextMaintenanceDate')} type="date" />
                 </FormField>
               </FormGrid>
 
               <FormGrid columns={2}>
-                <FormField label="Fin Assurance">
+                <FormField label="Fin Assurance" error={errors.insuranceExpiry?.message as string}>
                   <Input {...register('insuranceExpiry')} type="date" />
                 </FormField>
-                <FormField label="Fin Visite Technique">
+                <FormField label="Fin Visite Technique" error={errors.techVisitExpiry?.message as string}>
                   <Input {...register('techVisitExpiry')} type="date" />
                 </FormField>
               </FormGrid>
 
-              <FormField label="Date d'expiration Contrat">
+              <FormField label="Date d'expiration Contrat" error={errors.contractExpiry?.message as string}>
                 <Input {...register('contractExpiry')} type="date" />
               </FormField>
             </FormSection>
@@ -771,10 +1050,10 @@ export const VehicleForm = React.forwardRef<
                 Seuils d'alerte
               </h4>
               <FormGrid columns={2}>
-                <FormField label="Vitesse Max (km/h)">
+                <FormField label="Vitesse Max (km/h)" error={errors.maxSpeed?.message as string}>
                   <Input {...register('maxSpeed')} type="number" />
                 </FormField>
-                <FormField label="Ralenti Max (min)">
+                <FormField label="Ralenti Max (min)" error={errors.maxIdleTime?.message as string}>
                   <Input {...register('maxIdleTime')} type="number" />
                 </FormField>
               </FormGrid>

@@ -25,6 +25,8 @@ import type {
   ScheduleRule,
   EcoDrivingProfile,
   FuelRecord,
+  FuelEvent,
+  FuelEventStatus,
   MaintenanceRecord,
   VehiclePositionHistory,
   Branch,
@@ -1204,6 +1206,104 @@ export function createFleetApi(lazyApi: () => any) {
         }
         const response = await fetch(`${API_URL}/objects/${vehicleId}/fuel/stats`, { headers: getHeaders() });
         if (!response.ok) throw new Error('Failed to fetch fuel stats');
+        return response.json();
+      },
+    },
+
+    // --- FUEL EVENTS (détection automatique REFILL / THEFT / etc) ---
+    // Phase 4 chantier carburant — endpoint backend /api/v1/fuel-events
+    fuelEvents: {
+      listByVehicle: async (
+        vehicleId: string,
+        opts: { limit?: number; status?: FuelEventStatus | 'ALL' } = {}
+      ): Promise<FuelEvent[]> => {
+        if (USE_MOCK) {
+          await sleep(NETWORK_DELAY);
+          return [];
+        }
+        const params = new URLSearchParams();
+        if (opts.limit) params.set('limit', String(opts.limit));
+        if (opts.status) params.set('status', opts.status);
+        const qs = params.toString() ? `?${params.toString()}` : '';
+        const response = await fetch(`${API_URL}/fuel-events/vehicle/${vehicleId}${qs}`, {
+          credentials: 'include',
+          headers: getHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to fetch fuel events');
+        const payload = await response.json();
+        return payload.data || [];
+      },
+
+      list: async (
+        opts: {
+          status?: FuelEventStatus | 'ALL';
+          type?: 'REFILL' | 'THEFT' | 'CONSUMPTION' | 'ANOMALY';
+          severity?: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+          from?: string;
+          to?: string;
+          limit?: number;
+          offset?: number;
+        } = {}
+      ): Promise<{ data: FuelEvent[]; total: number; limit: number; offset: number }> => {
+        if (USE_MOCK) {
+          await sleep(NETWORK_DELAY);
+          return { data: [], total: 0, limit: opts.limit ?? 100, offset: opts.offset ?? 0 };
+        }
+        const params = new URLSearchParams();
+        if (opts.status) params.set('status', opts.status);
+        if (opts.type) params.set('type', opts.type);
+        if (opts.severity) params.set('severity', opts.severity);
+        if (opts.from) params.set('from', opts.from);
+        if (opts.to) params.set('to', opts.to);
+        if (opts.limit) params.set('limit', String(opts.limit));
+        if (opts.offset) params.set('offset', String(opts.offset));
+        const qs = params.toString() ? `?${params.toString()}` : '';
+        const response = await fetch(`${API_URL}/fuel-events${qs}`, {
+          credentials: 'include',
+          headers: getHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to fetch fuel events');
+        return response.json();
+      },
+
+      review: async (
+        eventId: string,
+        status: 'CONFIRMED' | 'DISMISSED' | 'DISPUTED',
+        notes?: string
+      ): Promise<FuelEvent> => {
+        if (USE_MOCK) {
+          await sleep(NETWORK_DELAY);
+          return { id: eventId, status } as unknown as FuelEvent;
+        }
+        const response = await fetch(`${API_URL}/fuel-events/${eventId}/review`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: getHeaders(),
+          body: JSON.stringify({ status, notes }),
+        });
+        if (!response.ok) {
+          let msg = `Failed to review fuel event (HTTP ${response.status})`;
+          try {
+            const err = await response.json();
+            if (err?.message) msg = `Validation serveur : ${err.message}`;
+          } catch {
+            /* ignore */
+          }
+          throw new Error(msg);
+        }
+        return response.json();
+      },
+
+      getSummary: async (days = 30): Promise<{ data: any[]; window_days: number }> => {
+        if (USE_MOCK) {
+          await sleep(NETWORK_DELAY);
+          return { data: [], window_days: days };
+        }
+        const response = await fetch(`${API_URL}/fuel-events/stats/summary?days=${days}`, {
+          credentials: 'include',
+          headers: getHeaders(),
+        });
+        if (!response.ok) throw new Error('Failed to fetch fuel events summary');
         return response.json();
       },
     },

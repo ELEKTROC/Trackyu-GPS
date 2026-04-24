@@ -286,6 +286,11 @@ const AppContent: React.FC = () => {
     setIsMobileMenuOpen(false);
     // Clear specific states
     setReplayVehicle(null);
+    // Sélection automatique du véhicule quand on navigue vers la carte avec vehicleId
+    if (view === View.MAP && params?.vehicleId) {
+      const targetVehicle = vehicles.find((v) => v.id === params.vehicleId);
+      if (targetVehicle) setSelectedVehicle(targetVehicle);
+    }
   };
 
   // Pull-to-refresh handler
@@ -433,6 +438,7 @@ const AppContent: React.FC = () => {
             initialAction={viewParams.action}
             initialId={viewParams.id}
             initialTab={viewParams.tab as Parameters<typeof LazySettingsView>[0]['initialTab']}
+            onNavigate={handleNavigate}
           />
         );
       default:
@@ -516,7 +522,7 @@ const AppContent: React.FC = () => {
       <OfflineBanner />
       <Sidebar currentView={currentView} onNavigate={handleNavigate} isMobileMenuOpen={isMobileMenuOpen} />
 
-      <div className="flex-1 flex flex-col overflow-hidden relative lg:ml-64 transition-all duration-300">
+      <div className="flex-1 flex flex-col overflow-hidden relative lg:ml-20 transition-all duration-300">
         {/* Top Header - with safe-area support on mobile */}
         <header
           className="h-16 flex items-center justify-between px-4 sm:px-6 shadow-sm z-10 shrink-0 transition-colors mobile-header"
