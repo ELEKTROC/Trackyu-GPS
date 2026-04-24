@@ -612,10 +612,10 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     }
   }, [speedingEvents, onEventsDetected]);
 
-  // Prepare Chart Data from History
-  // Note : fuel vient de fuelByTime (endpoint dédié /fuel/history). Les
-  // positions /history/snapped ne portent pas fuelLevel, donc la courbe fuel
-  // restait plate à 0 auparavant.
+  // Prepare Chart Data from History (sert pour les onglets SPEED, EVENTS, etc.)
+  // Pour l'onglet FUEL, on utilise un dataset dédié `fuelChartData` ci-dessous,
+  // dérivé de fuelHistoryRaw (endpoint /fuel/history) car les timestamps GPS
+  // (filteredHistory) et fuel (fuelHistoryRaw) ne sont pas alignés.
   const chartData = useMemo(() => {
     if (!filteredHistory || filteredHistory.length === 0) return [];
 
@@ -636,6 +636,35 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
         };
       });
   }, [filteredHistory, fuelByTime, selectedVehicle]);
+
+  // Dataset dédié à l'onglet FUEL — source = fuelHistoryRaw directement, donc
+  // chaque point porte un vrai niveau (au lieu d'un lookup HH:MM qui ratait
+  // 99% des matchs vu que les timestamps positions GPS ≠ timestamps fuel).
+  // Speed/ignition sont enrichis depuis chartData en lookup HH:MM (best-effort,
+  // pour les checkboxes annexes).
+  const fuelChartData = useMemo(() => {
+    const speedByTime = new Map<string, number>();
+    const ignByTime = new Map<string, number>();
+    for (const c of chartData) {
+      speedByTime.set(c.time, c.speed);
+      ignByTime.set(c.time, c.ignition);
+    }
+    return (fuelHistoryRaw as Array<{ date: string; level: number | null }>)
+      .filter((p) => p.date != null)
+      .map((p) => {
+        const time = new Date(p.date).toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        return {
+          time,
+          fuel: p.level ?? 0,
+          speed: speedByTime.get(time) ?? 0,
+          ignition: ignByTime.get(time) ?? 0,
+          maxSpeed: selectedVehicle?.maxSpeed || 120,
+        };
+      });
+  }, [fuelHistoryRaw, chartData, selectedVehicle]);
 
   // Detect fuel events (refills and suspicious losses)
   interface FuelEvent {
@@ -1590,23 +1619,27 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       {t('map.replay.fuel')}
                     </h3>
 
-                    {/* Stats */}
-                    {chartData.length > 0 && chartData[0].fuel !== undefined && (
+                    {/* Stats — alignées sur fuelChartData (source endpoint /fuel/history) */}
+                    {fuelChartData.length > 0 && (
                       <div className="flex gap-3 text-xs">
                         <span className="text-[var(--text-secondary)]">
                           {t('map.replay.start')}:{' '}
-                          <strong className="text-[var(--text-primary)]">{chartData[0].fuel.toFixed(0)}%</strong>
+                          <strong className="text-[var(--text-primary)]">{fuelChartData[0].fuel.toFixed(0)}%</strong>
                         </span>
                         <span className="text-[var(--text-secondary)]">
                           {t('map.replay.end')}:{' '}
                           <strong className="text-[var(--text-primary)]">
-                            {chartData[chartData.length - 1]?.fuel?.toFixed(0) || 0}%
+                            {fuelChartData[fuelChartData.length - 1]?.fuel?.toFixed(0) || 0}%
                           </strong>
                         </span>
                         <span
-                          className={`font-medium ${chartData[0].fuel - (chartData[chartData.length - 1]?.fuel || 0) > 10 ? 'text-red-600' : 'text-green-600'}`}
+                          className={`font-medium ${fuelChartData[0].fuel - (fuelChartData[fuelChartData.length - 1]?.fuel || 0) > 10 ? 'text-red-600' : 'text-green-600'}`}
                         >
-                          Δ {((chartData[0].fuel || 0) - (chartData[chartData.length - 1]?.fuel || 0)).toFixed(1)}%
+                          Δ{' '}
+                          {(
+                            (fuelChartData[0].fuel || 0) - (fuelChartData[fuelChartData.length - 1]?.fuel || 0)
+                          ).toFixed(1)}
+                          %
                         </span>
                       </div>
                     )}
@@ -1673,7 +1706,7 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       minWidth={200}
                       initialDimension={{ width: 200, height: 200 }}
                     >
-                      <AreaChart data={chartData}>
+                      <AreaChart data={fuelChartData}>
                         <defs>
                           <linearGradient id="fuelGradient" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
