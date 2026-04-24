@@ -1144,6 +1144,10 @@
       "IDLING": "⏱️ Excessive idling",
       "BATTERY": "🔋 Battery",
       "TOWING": "🚗 Towing"
+    },
+    "unknownImei": {
+      "title": "Unknown IMEI detected",
+      "body": "Device {{imei}} ({{protocol}}) is trying to connect — check the discovery panel"
     }
   },
   "agenda": {

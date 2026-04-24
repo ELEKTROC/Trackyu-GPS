@@ -1144,6 +1144,10 @@
       "IDLING": "⏱️ Ralentí excesivo",
       "BATTERY": "🔋 Batería",
       "TOWING": "🚗 Remolque"
+    },
+    "unknownImei": {
+      "title": "IMEI desconocido detectado",
+      "body": "Dispositivo {{imei}} ({{protocol}}) intenta conectarse — revisar el panel de descubrimiento"
     }
   },
   "agenda": {

@@ -149,10 +149,41 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
     socket.on('ticket:message:new', handleTicketMessage);
 
+    // Phase 4 chantier géoloc 360 — Toast temps-réel quand un IMEI inconnu se
+    // connecte au serveur GPS. Reçu uniquement par les SUPERADMIN (filtre côté
+    // backend via room 'superadmin'). Debounce 5 min par IMEI pour éviter le
+    // spam quand un boîtier inconnu se reconnecte en boucle.
+    const unknownImeiNotifiedAt = new Map<string, number>();
+    const UNKNOWN_IMEI_DEBOUNCE_MS = 5 * 60 * 1000;
+
+    const handleUnknownImei = (payload: { imei: string; protocol: string; ip: string; lastSeen: string }) => {
+      logger.debug('[NotificationContext] Unknown IMEI detected:', payload);
+      const now = Date.now();
+      const last = unknownImeiNotifiedAt.get(payload.imei) ?? 0;
+      if (now - last < UNKNOWN_IMEI_DEBOUNCE_MS) return;
+      unknownImeiNotifiedAt.set(payload.imei, now);
+
+      notify({
+        id: `unknown-imei-${payload.imei}-${now}`,
+        title: t('notifications.unknownImei.title') || 'IMEI inconnu détecté',
+        body:
+          t('notifications.unknownImei.body', {
+            imei: payload.imei,
+            protocol: payload.protocol,
+          }) || `${payload.imei} (${payload.protocol}) depuis ${payload.ip}`,
+        type: 'INFO',
+        severity: 'MEDIUM',
+        link: '/admin?tab=devices',
+      });
+    };
+
+    socket.on('admin:unknown-imei', handleUnknownImei);
+
     return () => {
       socket.off('alert:new', handleNewAlert);
       socket.off('new_alert', handleNewAlert);
       socket.off('ticket:message:new', handleTicketMessage);
+      socket.off('admin:unknown-imei', handleUnknownImei);
     };
   }, [notifyAlert, notify, notifications.preferences.ticketMessagesEnabled, t]);
 
