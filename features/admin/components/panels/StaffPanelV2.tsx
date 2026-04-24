@@ -250,17 +250,20 @@ const COLOR_CLASSES: Record<
 const getColorClasses = (color: string) => COLOR_CLASSES[color] || COLOR_CLASSES.slate;
 
 // Rôles disponibles — id = valeur système DB, label = affichage français
+// Panel réservé au staff tenant — CLIENT/SOUS_COMPTE non créables ici (voir Paramètres > Utilisateurs / Sous-comptes)
 const AVAILABLE_ROLES = [
   { id: 'SUPERADMIN', label: 'Superadmin', color: 'purple', icon: Shield, system: true },
   { id: 'ADMIN', label: 'Administrateur', color: 'blue', icon: Settings },
   { id: 'MANAGER', label: 'Manager', color: 'green', icon: Users },
+  { id: 'RESELLER_ADMIN', label: 'Admin revendeur', color: 'indigo', icon: Shield },
   { id: 'COMMERCIAL', label: 'Commercial', color: 'amber', icon: TrendingUp },
   { id: 'TECH', label: 'Technicien', color: 'orange', icon: Settings },
   { id: 'SUPPORT_AGENT', label: 'Support Client', color: 'cyan', icon: Mail },
   { id: 'AGENT_TRACKING', label: 'Agent Tracking', color: 'teal', icon: Users },
   { id: 'COMPTABLE', label: 'Comptable', color: 'emerald', icon: TrendingUp },
-  { id: 'CLIENT', label: 'Client', color: 'slate', icon: UserCheck },
 ];
+
+const UNKNOWN_ROLE = { id: 'UNKNOWN', label: 'Inconnu', color: 'slate', icon: UserCheck };
 
 export const StaffPanelV2: React.FC = () => {
   const { users, tiers, addUser, updateUser, deleteUser } = useDataContext();
@@ -311,7 +314,7 @@ export const StaffPanelV2: React.FC = () => {
     name: '',
     email: '',
     phone: '',
-    role: 'CLIENT',
+    role: 'TECH',
     status: 'Actif',
     permissions: ['VIEW_DASHBOARD'],
     sendInvite: true,
@@ -334,8 +337,15 @@ export const StaffPanelV2: React.FC = () => {
     'RESELLER_ADMIN',
   ]);
 
+  // Staff TKY (tenant_default) et SUPERADMIN voient tous les tenants, sinon restreint au tenant courant
+  const canSeeAllTenants = isSuperAdmin || currentUser?.tenantId === 'tenant_default';
+
   const filteredUsers = useMemo(() => {
-    let result = users.filter((u) => STAFF_ROLES.has((u.role || '').toUpperCase()));
+    let result = users.filter((u) => {
+      if (!STAFF_ROLES.has((u.role || '').toUpperCase())) return false;
+      if (canSeeAllTenants) return true;
+      return u.tenantId === currentUser?.tenantId;
+    });
 
     // Recherche
     if (filters.search) {
@@ -369,15 +379,21 @@ export const StaffPanelV2: React.FC = () => {
   const totalPages = Math.ceil(sortedUsers.length / itemsPerPage);
   const paginatedUsers = sortedUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // Stats
+  // Stats — sur le staff uniquement (CLIENT / SOUS_COMPTE gérés hors de ce panneau)
+  // + restriction tenant si l'utilisateur courant n'est pas cross-tenant
   const stats = useMemo(() => {
-    const total = users.length;
-    const active = users.filter((u) => u.status === 'Actif').length;
+    const staffUsers = users.filter((u) => {
+      if (!STAFF_ROLES.has((u.role || '').toUpperCase())) return false;
+      if (canSeeAllTenants) return true;
+      return u.tenantId === currentUser?.tenantId;
+    });
+    const total = staffUsers.length;
+    const active = staffUsers.filter((u) => u.status === 'Actif').length;
     const byRole = AVAILABLE_ROLES.map((r) => ({
       ...r,
-      count: users.filter((u) => u.role === r.id).length,
+      count: staffUsers.filter((u) => u.role === r.id).length,
     }));
-    const recentLogins = users.filter((u) => {
+    const recentLogins = staffUsers.filter((u) => {
       if (!u.lastLogin) return false;
       const lastLogin = new Date(u.lastLogin);
       const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -395,7 +411,7 @@ export const StaffPanelV2: React.FC = () => {
       email: '',
       phone: '',
       password: '',
-      role: 'CLIENT',
+      role: 'TECH',
       status: 'Actif',
       permissions: ['VIEW_DASHBOARD'],
       allowedTenants: [],
@@ -475,12 +491,6 @@ export const StaffPanelV2: React.FC = () => {
     // Validation téléphone (si rempli)
     if (formData.phone && !/^[\d\s+\-()]{6,20}$/.test(formData.phone)) {
       showToast(TOAST.VALIDATION.INVALID_PHONE, 'error');
-      return;
-    }
-
-    // Validation tenant pour rôle CLIENT
-    if (!editingUser && formData.role === 'CLIENT' && (!formData.tenantId || formData.tenantId === 'tenant_default')) {
-      showToast('Veuillez sélectionner le tenant client (organisation) pour cet utilisateur.', 'error');
       return;
     }
 
@@ -610,7 +620,7 @@ export const StaffPanelV2: React.FC = () => {
   };
 
   const getRoleConfig = (roleId: string) => {
-    return AVAILABLE_ROLES.find((r) => r.id === roleId) || AVAILABLE_ROLES[AVAILABLE_ROLES.length - 1];
+    return AVAILABLE_ROLES.find((r) => r.id === roleId) || UNKNOWN_ROLE;
   };
 
   const getStatusBadge = (status: string) => {
@@ -665,7 +675,7 @@ export const StaffPanelV2: React.FC = () => {
         >
           <Users className="w-4 h-4" />
           Utilisateurs
-          <span className="px-2 py-0.5 bg-[var(--bg-elevated)] rounded-full text-xs">{users.length}</span>
+          <span className="px-2 py-0.5 bg-[var(--bg-elevated)] rounded-full text-xs">{stats.total}</span>
         </button>
         <button
           onClick={() => setActiveTab('roles')}

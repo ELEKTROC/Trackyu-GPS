@@ -20,9 +20,15 @@ export const SubUserPermissionsSchema = z.object({
   canViewReports: z.boolean().default(true),
   canExportReports: z.boolean().default(false),
 
-  // Interventions
+  // Interventions (création réservée au staff — canCreate toujours false pour sous-compte)
   canViewInterventions: z.boolean().default(false),
   canCreateInterventions: z.boolean().default(false),
+
+  // Tickets
+  canCreateTickets: z.boolean().default(false),
+
+  // Zones / Geofences
+  canCreateGeofences: z.boolean().default(false),
 
   // Stock
   canViewStock: z.boolean().default(false),
@@ -42,8 +48,8 @@ export const SubUserSchema = z.object({
   clientId: z.string().min(1, 'Client requis'),
   branchId: z.string().optional(),
 
-  // Rôle et accès
-  role: z.enum(['Manager', 'User', 'Viewer'], {
+  // Rôle et accès (Manager réservé aux staff tenant via UserForm — interdit pour sous-compte)
+  role: z.enum(['User', 'Viewer'], {
     message: 'Rôle requis',
   }),
   statut: z.enum(['Actif', 'Inactif', 'En attente']).default('Actif'),
@@ -63,9 +69,9 @@ export const SubUserSchema = z.object({
 export type SubUserFormData = z.infer<typeof SubUserSchema>;
 export type SubUserPermissions = z.infer<typeof SubUserPermissionsSchema>;
 
-// Presets de permissions par rôle
+// Presets de permissions par rôle sous-compte
 export const ROLE_PERMISSION_PRESETS: Record<string, Partial<SubUserPermissions>> = {
-  Manager: {
+  User: {
     canViewVehicles: true,
     canEditVehicles: true,
     canViewDrivers: true,
@@ -77,11 +83,13 @@ export const ROLE_PERMISSION_PRESETS: Record<string, Partial<SubUserPermissions>
     canViewReports: true,
     canExportReports: true,
     canViewInterventions: true,
-    canCreateInterventions: true,
-    canViewStock: true,
+    canCreateInterventions: false,
+    canCreateTickets: true,
+    canCreateGeofences: true,
+    canViewStock: false,
     canManageStock: false,
   },
-  User: {
+  Viewer: {
     canViewVehicles: true,
     canEditVehicles: false,
     canViewDrivers: true,
@@ -92,24 +100,10 @@ export const ROLE_PERMISSION_PRESETS: Record<string, Partial<SubUserPermissions>
     canConfigureAlerts: false,
     canViewReports: true,
     canExportReports: false,
-    canViewInterventions: true,
-    canCreateInterventions: false,
-    canViewStock: false,
-    canManageStock: false,
-  },
-  Viewer: {
-    canViewVehicles: true,
-    canEditVehicles: false,
-    canViewDrivers: true,
-    canEditDrivers: false,
-    canViewMap: true,
-    canViewHistory: false,
-    canViewAlerts: true,
-    canConfigureAlerts: false,
-    canViewReports: false,
-    canExportReports: false,
     canViewInterventions: false,
     canCreateInterventions: false,
+    canCreateTickets: false,
+    canCreateGeofences: false,
     canViewStock: false,
     canManageStock: false,
   },

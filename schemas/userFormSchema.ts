@@ -4,8 +4,7 @@ import { z } from 'zod';
 // Les rôles Staff/Admin sont gérés dans le module Administration
 export const UserFullSchema = z.object({
   // Tab 1: Personal Data
-  firstName: z.string().min(2, 'Le prénom est requis'),
-  lastName: z.string().min(2, 'Le nom est requis'),
+  name: z.string().min(2, 'Le nom complet est requis'),
   email: z.string().email('Email invalide'),
   phone: z.string().optional(),
   address: z.string().optional(),
@@ -31,7 +30,8 @@ export const UserFullSchema = z.object({
   }),
 
   // Tab 3: Permissions
-  role: z.enum(['CLIENT', 'Admin', 'Manager', 'User', 'Viewer']).default('CLIENT'),
+  // User/Viewer sont des sub_role (gérés dans SubUserForm), pas des role principal
+  role: z.enum(['CLIENT', 'Admin', 'Manager']).default('CLIENT'),
   accessLevel: z.enum(['Read', 'Write', 'Admin']),
   allowedVehicles: z.array(z.string()).default([]),
   allowedGroups: z.array(z.string()).default([]),

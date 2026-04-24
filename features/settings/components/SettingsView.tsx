@@ -87,7 +87,7 @@ import type {
   ScheduleRule,
   EcoDrivingProfile,
 } from '../../../types';
-import { Lead, VehicleStatus } from '../../../types';
+import { Lead, VehicleStatus, View } from '../../../types';
 import type { SystemUser } from '../../../types/auth';
 import { useDataContext } from '../../../contexts/DataContext';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -155,6 +155,7 @@ interface SettingsViewProps {
   initialAction?: string;
   initialTab?: TabId;
   initialId?: string;
+  onNavigate?: (view: View, params?: Record<string, string>) => void;
 }
 
 type TabId =
@@ -879,6 +880,11 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
         </div>
       );
     }
+    if (colLower.includes('rôle') || colLower.includes('role')) {
+      // Sous-compte : afficher le sub_role (User/Viewer). Sinon : role (CLIENT, Manager, etc.)
+      const displayRole = item.subRole || item.role || '--';
+      return <span className="text-sm font-medium text-[var(--text-primary)]">{displayRole}</span>;
+    }
     if (colLower.includes('erreurs'))
       return <span className="text-xs font-mono text-red-500">{item.passwordErrors || 0}</span>;
     if (colLower.includes('actions'))
@@ -1244,7 +1250,7 @@ const GenericTableContent: React.FC<GenericTableProps & { readOnly?: boolean }> 
   );
 };
 
-export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initialTab, initialId }) => {
+export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initialTab, initialId, onNavigate }) => {
   // const [activeTab, setActiveTab] = useState<TabId>(initialTab || 'profile'); // REPLACED BY 2-LEVEL STATE BELOW
   const {
     vehicles,
@@ -1355,6 +1361,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
   const [isResellerDetailOpen, setIsResellerDetailOpen] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
+  const initialActionHandled = useRef(false);
 
   // Generate mock resellers for the dropdown
   const resellers = tiers.filter((t) => t.type === 'RESELLER');
@@ -1363,42 +1370,46 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
   // Drivers are now from context
 
   useEffect(() => {
+    if (!initialAction || initialActionHandled.current) return;
+
     if (initialAction === 'create_vehicle') {
       setActiveTab('objects');
       setEditingItem(null);
       setIsModalOpen(true);
+      initialActionHandled.current = true;
     } else if (initialAction === 'edit_vehicle' && initialId) {
       const vehicleToEdit = vehicles.find((v) => v.id === initialId);
-      if (vehicleToEdit) {
-        // Enrich vehicle data with resellerId from client lookup + align field names with VehicleForm
-        const clientObj = clients.find((c) => c.id === (vehicleToEdit.clientId || vehicleToEdit.client));
-        const enrichedVehicle = {
-          ...vehicleToEdit,
-          licensePlate: vehicleToEdit.licensePlate || vehicleToEdit.plate || vehicleToEdit.name || '',
-          client: vehicleToEdit.clientId || vehicleToEdit.client || '',
-          resellerId: clientObj?.resellerId || '',
-          branchId: vehicleToEdit.branchId || '',
-          vehicleType: vehicleToEdit.vehicleType || vehicleToEdit.type || '',
-          deviceType: vehicleToEdit.deviceType || vehicleToEdit.deviceModel || '',
-          odometer: vehicleToEdit.odometer || vehicleToEdit.mileage || 0,
-          driver: vehicleToEdit.driver || '',
-          status: (['MOVING', 'IDLE', 'STOPPED', 'OFFLINE', 'ONLINE'].includes(vehicleToEdit.status)
-            ? vehicleToEdit.status
-            : 'STOPPED') as 'MOVING' | 'IDLE' | 'STOPPED' | 'OFFLINE' | 'ONLINE',
-          odometerSource: (vehicleToEdit.odometerSource === 'CAN'
-            ? 'CANBUS'
-            : vehicleToEdit.odometerSource || 'GPS') as 'GPS' | 'CANBUS',
-        };
-        setActiveTab('objects');
-        setEditingItem(enrichedVehicle);
-        setIsModalOpen(true);
-      }
+      if (!vehicleToEdit) return; // attendre que vehicles soit chargé
+      // Enrich vehicle data with resellerId from client lookup + align field names with VehicleForm
+      const clientObj = clients.find((c) => c.id === (vehicleToEdit.clientId || vehicleToEdit.client));
+      const enrichedVehicle = {
+        ...vehicleToEdit,
+        licensePlate: vehicleToEdit.licensePlate || vehicleToEdit.plate || vehicleToEdit.name || '',
+        client: vehicleToEdit.clientId || vehicleToEdit.client || '',
+        resellerId: clientObj?.resellerId || '',
+        branchId: vehicleToEdit.branchId || '',
+        vehicleType: vehicleToEdit.vehicleType || vehicleToEdit.type || '',
+        deviceType: vehicleToEdit.deviceType || vehicleToEdit.deviceModel || '',
+        odometer: vehicleToEdit.odometer || vehicleToEdit.mileage || 0,
+        driver: vehicleToEdit.driver || '',
+        status: (['MOVING', 'IDLE', 'STOPPED', 'OFFLINE', 'ONLINE'].includes(vehicleToEdit.status)
+          ? vehicleToEdit.status
+          : 'STOPPED') as 'MOVING' | 'IDLE' | 'STOPPED' | 'OFFLINE' | 'ONLINE',
+        odometerSource: (vehicleToEdit.odometerSource === 'CAN' ? 'CANBUS' : vehicleToEdit.odometerSource || 'GPS') as
+          | 'GPS'
+          | 'CANBUS',
+      };
+      setActiveTab('objects');
+      setEditingItem(enrichedVehicle);
+      setIsModalOpen(true);
+      initialActionHandled.current = true;
     } else if (initialAction === 'create_client') {
       setActiveTab('clients');
       setEditingItem(null);
       setIsModalOpen(true);
+      initialActionHandled.current = true;
     }
-  }, [initialAction, initialId, vehicles]);
+  }, [initialAction, initialId, vehicles]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCreate = () => {
     setEditingItem(null);
@@ -1409,6 +1420,26 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
     // Enrich vehicle data for VehicleForm when editing from objects tab
     if (activeTab === 'objects' && item?.id) {
       const clientObj = clients.find((c) => c.id === (item.clientId || item.client));
+      const sc = (item as any).sensorConfig || null;
+      // Calibration : backend renvoie un array [{voltage, liters}, ...] ou JSON string
+      // → conversion en string "voltage,liters" par ligne pour la Textarea
+      const rawCalib: any = (item as any).calibrationTable;
+      let calibrationString = '';
+      if (Array.isArray(rawCalib)) {
+        calibrationString = rawCalib.map((e: any) => `${e.voltage ?? ''},${e.liters ?? ''}`).join('\n');
+      } else if (typeof rawCalib === 'string') {
+        // Peut être un JSON string OU déjà en format "v,l" par ligne
+        try {
+          const parsed = JSON.parse(rawCalib);
+          if (Array.isArray(parsed)) {
+            calibrationString = parsed.map((e: any) => `${e.voltage ?? ''},${e.liters ?? ''}`).join('\n');
+          } else {
+            calibrationString = rawCalib;
+          }
+        } catch {
+          calibrationString = rawCalib;
+        }
+      }
       const enrichedItem = {
         ...item,
         licensePlate: item.licensePlate || item.plate || item.name || '',
@@ -1426,6 +1457,25 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
           | 'OFFLINE'
           | 'ONLINE',
         odometerSource: (item.odometerSource === 'CAN' ? 'CANBUS' : item.odometerSource || 'GPS') as 'GPS' | 'CANBUS',
+        calibrationTable: calibrationString,
+        // Valeurs par défaut pour les champs non-essentiels bloquants côté backend (contraintes .positive())
+        tankCapacity: (item as any).tankCapacity || 350,
+        consumption: (item as any).theoreticalConsumption || (item as any).consumption || undefined,
+        refillThreshold: (item as any).refillThreshold || 5.0,
+        theftThreshold: (item as any).theftThreshold || 3.0,
+        // Sensor config → champs plats pour VehicleForm (defaults si sensorConfig absent)
+        sensorUnit: sc?.sensor_unit || 'tension',
+        fuelConversionFactor: sc?.factor && sc.factor > 0 ? sc.factor : 1,
+        voltageEmptyMv: sc?.v_empty_mv ?? 0,
+        voltageHalfMv: sc?.v_half_mv ?? 2500,
+        voltageFullMv: sc?.v_full_mv ?? 5000,
+        ...(sc
+          ? {
+              sensorBrand: sc.sensor_brand,
+              sensorModel: sc.sensor_model,
+              sensorInstallDate: sc.sensor_install_date,
+            }
+          : {}),
       };
       setEditingItem(enrichedItem);
     } else {
@@ -1632,10 +1682,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
         const userData = {
           ...editingItem,
           ...data,
-          name:
-            data.firstName && data.lastName
-              ? `${data.firstName} ${data.lastName}`
-              : (data as any).nom || data.name || editingItem.name,
+          name: (data as any).name || (data as any).nom || editingItem.name,
           subUsers: data.subUsers || [],
         };
         updateUser(userData);
@@ -1652,7 +1699,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
 
         const newUser = {
           ...data,
-          name: data.firstName && data.lastName ? `${data.firstName} ${data.lastName}` : (data as any).nom || data.name,
+          name: (data as any).name || (data as any).nom,
           role: activeTab === 'subaccounts' ? 'SOUS_COMPTE' : data.role || 'CLIENT',
           subRole: activeTab === 'subaccounts' ? data.role : undefined,
           createdAt: new Date(),
@@ -1745,17 +1792,33 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
         sensors: vData.sensors?.length ? vData.sensors : undefined,
         // odometerSource : CANBUS (formulaire) → CAN (backend)
         odometerSource: vData.odometerSource === 'CANBUS' ? 'CAN' : vData.odometerSource || 'GPS',
-        // Carburant
-        tankCapacity: vData.tankCapacity ?? undefined,
+        // Carburant — backend exige .positive() (>0). Filtrer 0/null pour éviter validation error.
+        tankCapacity: vData.tankCapacity && vData.tankCapacity > 0 ? vData.tankCapacity : undefined,
         tankHeight: vData.tankHeight ?? undefined,
         tankWidth: vData.tankWidth ?? undefined,
         tankLength: vData.tankLength ?? undefined,
         fuelType: vData.fuelType || undefined,
         fuelSensorType: vData.fuelSensorType || undefined,
-        calibrationTable: parsedCalibration,
-        theoreticalConsumption: vData.consumption ?? undefined,
-        refillThreshold: vData.refillThreshold ?? undefined,
-        theftThreshold: vData.theftThreshold ?? undefined,
+        calibrationTable: parsedCalibration && parsedCalibration.length > 0 ? parsedCalibration : undefined,
+        theoreticalConsumption: vData.consumption && vData.consumption > 0 ? vData.consumption : undefined,
+        refillThreshold: vData.refillThreshold && vData.refillThreshold > 0 ? vData.refillThreshold : undefined,
+        theftThreshold: vData.theftThreshold && vData.theftThreshold > 0 ? vData.theftThreshold : undefined,
+        // Sensor config — factor backend .positive(), voltages .min(0)
+        sensorConfig:
+          vData.sensorUnit ||
+          (vData.fuelConversionFactor && vData.fuelConversionFactor > 0) ||
+          vData.voltageEmptyMv != null
+            ? {
+                sensor_unit: vData.sensorUnit || 'tension',
+                factor: vData.fuelConversionFactor && vData.fuelConversionFactor > 0 ? vData.fuelConversionFactor : 1,
+                v_empty_mv: vData.voltageEmptyMv ?? 0,
+                v_half_mv: vData.voltageHalfMv ?? 2500,
+                v_full_mv: vData.voltageFullMv ?? 5000,
+                sensor_brand: vData.sensorBrand || undefined,
+                sensor_model: vData.sensorModel || undefined,
+                sensor_install_date: vData.sensorInstallDate || undefined,
+              }
+            : undefined,
         // Maintenance & alertes
         maxSpeed: vData.maxSpeed ?? editingItem?.maxSpeed ?? undefined,
         maxIdleTime: vData.maxIdleTime ?? undefined,
@@ -1777,6 +1840,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
         showToast(`Véhicule ${vehicleLabel} ${editingItem?.id ? 'mis à jour' : 'ajouté'}`, 'success');
         setIsModalOpen(false);
         setIsSavingVehicle(false);
+        // Si l'édition vient de la map (initialAction=edit_vehicle), retour à la map avec le véhicule sélectionné
+        if (initialAction === 'edit_vehicle' && editingItem?.id && onNavigate) {
+          onNavigate(View.MAP, { vehicleId: editingItem.id });
+        }
       };
       const onError = (err: unknown) => {
         const msg = err instanceof Error ? err.message : 'Erreur lors de la sauvegarde';
@@ -2017,7 +2084,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
       case 'users': {
         const clientUsers = users.filter((u: any) => {
           const r = (u.role || '').toUpperCase();
-          return r === 'CLIENT' || r === 'SOUS_COMPTE';
+          return r === 'CLIENT';
         });
         return (
           <GenericTableContent
@@ -2344,6 +2411,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
         <Suspense fallback={<LoadingFallback label="Chargement du formulaire..." />}>
           {activeTab === 'objects' ? (
             <VehicleForm
+              key={editingItem?.id || 'create'}
               ref={formRef}
               initialData={editingItem}
               onFormSubmit={handleFormSubmit}

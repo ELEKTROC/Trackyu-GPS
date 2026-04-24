@@ -15,6 +15,8 @@ import {
   FileText,
   Wrench,
   Package,
+  Ticket,
+  MapPinned,
   CheckSquare,
   Square,
   ChevronDown,
@@ -106,8 +108,18 @@ const PERMISSION_GROUPS = [
     icon: Wrench,
     permissions: [
       { key: 'canViewInterventions', label: 'Voir les interventions' },
-      { key: 'canCreateInterventions', label: 'Créer des interventions' },
+      // Création d'intervention réservée au staff — non exposée aux sous-comptes
     ],
+  },
+  {
+    title: 'Tickets',
+    icon: Ticket,
+    permissions: [{ key: 'canCreateTickets', label: 'Créer des tickets' }],
+  },
+  {
+    title: 'Zones',
+    icon: MapPinned,
+    permissions: [{ key: 'canCreateGeofences', label: 'Créer des zones' }],
   },
   {
     title: 'Stock',
@@ -155,19 +167,40 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
       formState: { errors },
     } = useForm<SubUserFormData>({
       resolver: zodResolver(SubUserSchema) as Resolver<SubUserFormData>,
-      defaultValues: initialData || {
-        nom: '',
-        email: '',
-        phone: '',
-        clientId: forcedClientId || '',
-        branchId: '',
-        role: 'User',
-        statut: 'Actif',
-        vehicleIds: [],
-        allVehicles: false,
-        permissions: ROLE_PERMISSION_PRESETS.User,
-        notes: '',
-      },
+      // Mapping édition : l'API renvoie { name, subRole, clientId, status, ... }
+      // alors que le schéma attend { nom, role, clientId, statut, ... }.
+      defaultValues: initialData
+        ? {
+            id: (initialData as any).id,
+            nom: (initialData as any).nom || (initialData as any).name || '',
+            email: initialData.email || '',
+            phone: initialData.phone || '',
+            password: undefined,
+            clientId: initialData.clientId || forcedClientId || '',
+            branchId: initialData.branchId || '',
+            role:
+              ((initialData as any).role && ['User', 'Viewer'].includes((initialData as any).role)
+                ? (initialData as any).role
+                : (initialData as any).subRole) || 'User',
+            statut: (initialData as any).statut || (initialData as any).status || 'Actif',
+            vehicleIds: initialData.vehicleIds || [],
+            allVehicles: !!initialData.allVehicles,
+            permissions: initialData.permissions || ROLE_PERMISSION_PRESETS.User,
+            notes: initialData.notes || '',
+          }
+        : {
+            nom: '',
+            email: '',
+            phone: '',
+            clientId: forcedClientId || '',
+            branchId: '',
+            role: 'User',
+            statut: 'Actif',
+            vehicleIds: [],
+            allVehicles: false,
+            permissions: ROLE_PERMISSION_PRESETS.User,
+            notes: '',
+          },
     });
 
     // Sync forcedClientId into form when provided
@@ -375,15 +408,12 @@ export const SubUserForm = React.forwardRef<HTMLFormElement, BaseFormProps>(
                 label="Rôle"
                 required
                 hint={
-                  selectedRole === 'Manager'
-                    ? 'Accès complet sauf administration'
-                    : selectedRole === 'User'
-                      ? 'Accès standard en lecture/écriture limitée'
-                      : 'Accès en lecture seule'
+                  selectedRole === 'User'
+                    ? 'Accès CRUD sur le périmètre client (véhicules, conducteurs, alertes, rapports, tickets, zones)'
+                    : 'Lecture seule — inclut historique et rapports'
                 }
               >
-                <Select {...register('role')}>
-                  <option value="Manager">👔 Gestionnaire</option>
+                <Select {...register('role')} defaultValue="User">
                   <option value="User">👤 Utilisateur</option>
                   <option value="Viewer">👁️ Lecteur seul</option>
                 </Select>

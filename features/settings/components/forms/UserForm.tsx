@@ -198,8 +198,7 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
       if (errorKeys.length > 0) {
         const fieldToTab: Record<string, number> = {
           // Tab 0: Personnel
-          firstName: 0,
-          lastName: 0,
+          name: 0,
           email: 0,
           phone: 0,
           address: 0,
@@ -276,13 +275,11 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
                       </div>
                     )}
 
-                    <FormField label="Prénom" required error={errors.firstName?.message}>
-                      <Input {...register('firstName')} />
-                    </FormField>
-
-                    <FormField label="Nom" required error={errors.lastName?.message}>
-                      <Input {...register('lastName')} />
-                    </FormField>
+                    <div className="col-span-2">
+                      <FormField label="Nom complet" required error={errors.name?.message}>
+                        <Input {...register('name')} />
+                      </FormField>
+                    </div>
 
                     <div className="col-span-2">
                       <FormField label="Email" required error={errors.email?.message}>
