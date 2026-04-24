@@ -2178,7 +2178,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Conducteur"
             type="driver"
             icon={Car}
-            columns={['ID', 'Nom', 'Permis', 'Téléphone', 'RFID Tag', 'Statut']}
+            columns={['Nom', 'Permis', 'Téléphone', 'RFID Tag', 'Statut']}
             useRealDrivers
             drivers={drivers}
             {...commonProps}
@@ -2246,7 +2246,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Commande Technique"
             type="command"
             icon={Terminal}
-            columns={['ID', 'Véhicule', 'Type', 'Canal', 'Envoyé', 'Statut', 'Réponse']}
+            columns={['Véhicule', 'Type', 'Canal', 'Envoyé', 'Statut', 'Réponse']}
             useRealCommands
             commands={commands}
             {...commonProps}
@@ -2308,7 +2308,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Groupe"
             type="group"
             icon={Layers}
-            columns={['ID', 'Nom', 'Description', 'Véhicules', 'Statut']}
+            columns={['Nom', 'Description', 'Véhicules', 'Statut']}
             useRealGroups
             groups={groups}
             {...commonProps}
@@ -2332,7 +2332,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Zone"
             type="geofence"
             icon={Hexagon}
-            columns={['ID', 'Revendeur', 'Client', 'Nom', 'Type', 'Véhicules', 'Statut']}
+            columns={['Revendeur', 'Client', 'Nom', 'Type', 'Véhicules', 'Statut']}
             {...commonProps}
           />
         );
@@ -2342,7 +2342,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Point d'intérêt"
             type="poi"
             icon={MapPin}
-            columns={['ID', 'Revendeur', 'Client', 'Nom', 'Type', 'Adresse', 'Rayon', 'Statut']}
+            columns={['Revendeur', 'Client', 'Nom', 'Type', 'Adresse', 'Rayon', 'Statut']}
             useRealPOIs
             pois={pois}
             {...commonProps}
@@ -2354,7 +2354,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Règle Maintenance"
             type="maintenance"
             icon={Wrench}
-            columns={['ID', 'Revendeur', 'Client', 'Nom', 'Type', 'Intervalle', 'Véhicules', 'Statut']}
+            columns={['Revendeur', 'Client', 'Nom', 'Type', 'Intervalle', 'Véhicules', 'Statut']}
             useRealMaintenanceRules
             maintenanceRules={maintenanceRules}
             {...commonProps}
@@ -2366,7 +2366,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Configuration Alerte"
             type="alert"
             icon={Bell}
-            columns={['ID', 'Revendeur', 'Client', 'Nom', 'Type', 'Priorité', 'Destinataires', 'Statut']}
+            columns={['Revendeur', 'Client', 'Nom', 'Type', 'Priorité', 'Destinataires', 'Statut']}
             useRealAlertConfigs
             alertConfigs={alertConfigs}
             {...commonProps}
@@ -2378,7 +2378,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Règle de travail"
             type="schedule"
             icon={Calendar}
-            columns={['ID', 'Nom', 'Horaires', 'Distance', 'Vitesse', 'Moteur', 'Custom', 'Véhicules', 'Statut']}
+            columns={['Nom', 'Horaires', 'Distance', 'Vitesse', 'Moteur', 'Custom', 'Véhicules', 'Statut']}
             useRealScheduleRules
             scheduleRules={scheduleRules}
             {...commonProps}
@@ -2390,7 +2390,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ initialAction, initi
             title="Seuil Eco-conduite"
             type="ecodriving"
             icon={Leaf}
-            columns={['ID', 'Nom', 'Score Cible', 'Vitesse Max', 'Accélération', 'Freinage', 'Ralenti', 'Statut']}
+            columns={['Nom', 'Score Cible', 'Vitesse Max', 'Accélération', 'Freinage', 'Ralenti', 'Statut']}
             useRealEcoDrivingProfiles
             ecoDrivingProfiles={ecoDrivingProfiles}
             {...commonProps}
