@@ -43,7 +43,13 @@ interface GpsPipelineStats {
   }[];
   unknownImeis: { imei: string; packetCount: number; lastSeen: string }[];
   totals: { packets: number; valid: number; rejected: number; crcErrors: number };
-  kalman?: { trackedVehicles: number };
+  kalman?: {
+    trackedVehicles: number;
+    convergedCount?: number;
+    meanP?: number;
+    medianP?: number;
+    p95P?: number;
+  };
 }
 
 type Tab = 'OVERVIEW' | 'PIPELINE_GPS' | 'ALERTS' | 'OFFLINE' | 'ANOMALIES' | 'SYSTEM' | 'USERS';
@@ -313,15 +319,45 @@ function PipelineGpsTab() {
             <Zap className="h-4 w-4 text-[var(--primary)]" />
             Filtre Kalman 2D
           </h4>
-          <div className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
-            <span>
-              Véhicules filtrés:{' '}
-              <strong className="text-[var(--text-primary)]">
-                {stats.kalman?.trackedVehicles ?? 0}
-              </strong>
-            </span>
-            <span className="text-xs">Dead Reckoning actif sur les pertes GPS</span>
-          </div>
+          {(() => {
+            const k = stats.kalman;
+            const tracked = k?.trackedVehicles ?? 0;
+            const converged = k?.convergedCount ?? 0;
+            const ratio = tracked > 0 ? Math.round((converged / tracked) * 100) : 0;
+            return (
+              <div className="flex flex-col gap-2 text-sm text-[var(--text-secondary)]">
+                <div className="flex items-center justify-between">
+                  <span>Véhicules filtrés</span>
+                  <strong className="text-[var(--text-primary)]">{tracked}</strong>
+                </div>
+                {tracked > 0 && (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span>Convergés (P&lt;0.1)</span>
+                      <strong className="text-[var(--text-primary)]">
+                        {converged} / {tracked} ({ratio}%)
+                      </strong>
+                    </div>
+                    <div className="w-full h-1.5 bg-[var(--bg-card)] rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-[var(--primary)] transition-all"
+                        style={{ width: `${ratio}%` }}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between text-xs">
+                      <span>P médian / p95</span>
+                      <span className="font-mono text-[var(--text-primary)]">
+                        {k?.medianP?.toFixed(4) ?? '—'} / {k?.p95P?.toFixed(4) ?? '—'}
+                      </span>
+                    </div>
+                  </>
+                )}
+                <span className="text-xs text-[var(--text-muted)]">
+                  P = covariance position (→ 0 = filtre convergé). DR actif sur pertes GPS.
+                </span>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
