@@ -649,71 +649,90 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     duration?: number; // minutes for losses
   }
 
+  // Détection REFILL/LOSS depuis fuelHistoryRaw (endpoint dédié /fuel/history)
+  // au lieu de filteredHistory.fuelLevel qui n'est jamais alimenté par
+  // /history/snapped — ce qui rendait fuelEvents toujours vide en prod.
   const fuelEvents = useMemo<FuelEvent[]>(() => {
-    if (!filteredHistory || filteredHistory.length < 2) return [];
+    type FuelPoint = {
+      date: string;
+      level: number | null;
+      lat?: number | null;
+      lng?: number | null;
+    };
+    const points = (fuelHistoryRaw as FuelPoint[])
+      .filter((p) => p.date != null && p.level != null)
+      .map((p) => ({
+        date: new Date(p.date),
+        level: p.level as number,
+        lat: p.lat ?? null,
+        lng: p.lng ?? null,
+      }))
+      .sort((a, b) => a.date.getTime() - b.date.getTime());
+    if (points.length < 2) return [];
 
     const events: FuelEvent[] = [];
-    const REFILL_THRESHOLD = 5; // % increase = refill
-    const LOSS_THRESHOLD = -3; // % drop in short time = suspicious loss
+    const REFILL_THRESHOLD = 5;
+    const LOSS_THRESHOLD = -3;
 
-    for (let i = 1; i < filteredHistory.length; i++) {
-      const prev = filteredHistory[i - 1];
-      const curr = filteredHistory[i];
-      const prevFuel = prev.fuelLevel || 0;
-      const currFuel = curr.fuelLevel || 0;
-      const delta = currFuel - prevFuel;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const delta = curr.level - prev.level;
+      const duration = (curr.date.getTime() - prev.date.getTime()) / 60000;
 
-      const prevTime = new Date(prev.timestamp || prev.time);
-      const currTime = new Date(curr.timestamp || curr.time);
-      const duration = (currTime.getTime() - prevTime.getTime()) / 60000; // minutes
+      const location: Coordinate = {
+        lat: curr.lat ?? 0,
+        lng: curr.lng ?? 0,
+      };
 
-      // Detect refill (fuel increase > threshold)
       if (delta > REFILL_THRESHOLD) {
         events.push({
           id: `refill_${events.length}`,
           type: 'REFILL',
-          timestamp: currTime,
-          location: curr.location || { lat: curr.lat, lng: curr.lng },
-          fuelBefore: prevFuel,
-          fuelAfter: currFuel,
+          timestamp: curr.date,
+          location,
+          fuelBefore: prev.level,
+          fuelAfter: curr.level,
           delta,
         });
       }
-
-      // Detect suspicious loss (fuel drop > threshold in short time without engine running long)
       if (delta < LOSS_THRESHOLD && duration < 30) {
-        // Rapid drop in < 30 min
         events.push({
           id: `loss_${events.length}`,
           type: 'LOSS',
-          timestamp: currTime,
-          location: curr.location || { lat: curr.lat, lng: curr.lng },
-          fuelBefore: prevFuel,
-          fuelAfter: currFuel,
+          timestamp: curr.date,
+          location,
+          fuelBefore: prev.level,
+          fuelAfter: curr.level,
           delta,
           duration,
         });
       }
     }
-
     return events;
-  }, [filteredHistory]);
+  }, [fuelHistoryRaw]);
 
   // Carburant consommé = (premier niveau - dernier niveau) + somme des recharges
+  // Source : fuelHistoryRaw (endpoint /fuel/history) au lieu de filteredHistory
+  // dont fuelLevel n'est jamais peuplé.
   const fuelConsumed = useMemo<number | null>(() => {
-    const withFuel = filteredHistory.filter((h) => h.fuelLevel != null && h.fuelLevel > 0);
+    const withFuel = (fuelHistoryRaw as Array<{ level: number | null }>).filter(
+      (h) => h.level != null && (h.level as number) > 0
+    );
     if (withFuel.length < 2) return null;
-    const first = withFuel[0].fuelLevel as number;
-    const last = withFuel[withFuel.length - 1].fuelLevel as number;
+    const first = withFuel[0].level as number;
+    const last = withFuel[withFuel.length - 1].level as number;
     const totalRefill = fuelEvents.filter((e) => e.type === 'REFILL').reduce((s, e) => s + e.delta, 0);
     return Math.max(0, first - last + totalRefill);
-  }, [filteredHistory, fuelEvents]);
+  }, [fuelHistoryRaw, fuelEvents]);
 
   // Niveau de carburant actuel (dernier point avec donnée)
   const currentFuelLevel = useMemo<number | null>(() => {
-    const withFuel = filteredHistory.filter((h) => h.fuelLevel != null && h.fuelLevel > 0);
-    return withFuel.length > 0 ? (withFuel[withFuel.length - 1].fuelLevel as number) : null;
-  }, [filteredHistory]);
+    const withFuel = (fuelHistoryRaw as Array<{ level: number | null }>).filter(
+      (h) => h.level != null && (h.level as number) > 0
+    );
+    return withFuel.length > 0 ? (withFuel[withFuel.length - 1].level as number) : null;
+  }, [fuelHistoryRaw]);
 
   // Coupures GPS — dérivées du hook useVehicleStats (backend source unique).
   // Note : l'ancien calcul utilisait filteredHistory (anti-drift) alors que
