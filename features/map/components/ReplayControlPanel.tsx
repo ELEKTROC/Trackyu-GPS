@@ -48,6 +48,8 @@ import { PERIOD_PRESETS, type PeriodPreset } from '../../../hooks/useDateRange';
 import { exportToGPX, exportToKML, downloadFile } from '../../../utils/gpsExport';
 import { formatHumanDuration } from '../../../utils/computeVehicleStats';
 import { useVehicleStats } from '../../../hooks/useVehicleStats';
+import { useDataContext } from '../../../contexts/DataContext';
+import { useQuery } from '@tanstack/react-query';
 import { API_URL, getHeaders } from '../../../services/api/client';
 import { useTranslation } from '../../../i18n';
 
@@ -283,6 +285,34 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
       enabled: history.length >= 2,
     }
   );
+
+  // Fix bug — la courbe carburant de l'onglet FUEL n'est plus alimentée par
+  // /history/snapped (qui ne retourne pas fuelLevel). On fetche l'endpoint
+  // fuel dédié, même pattern que VehicleDetailPanel.
+  const { getFuelHistory } = useDataContext();
+  const fuelDuration: '24h' | '7d' | '30d' = useMemo(() => {
+    const daysSpan = (dateRange.end.getTime() - dateRange.start.getTime()) / 86400000;
+    if (daysSpan <= 1.5) return '24h';
+    if (daysSpan <= 10) return '7d';
+    return '30d';
+  }, [dateRange]);
+  const { data: fuelHistoryRaw = [] } = useQuery({
+    queryKey: ['fuelHistory', selectedVehicle?.id, fuelDuration],
+    queryFn: () => getFuelHistory(selectedVehicle!.id, fuelDuration),
+    enabled: !!selectedVehicle?.id,
+  });
+  // Lookup fuel par clé HH:MM pour aligner sur chartData (qui est aussi formaté
+  // en HH:MM). Les collisions sont rares (gap minimum ~30s dans la plupart des
+  // cas). Si null/0, on garde undefined pour signaler "pas de mesure".
+  const fuelByTime = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const p of fuelHistoryRaw as Array<{ date: string; level: number | null }>) {
+      if (p.date == null || p.level == null) continue;
+      const t = new Date(p.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      map.set(t, p.level);
+    }
+    return map;
+  }, [fuelHistoryRaw]);
 
   // Filter vehicles based on search (name or client)
   const filteredVehicles = useMemo(() => {
@@ -583,20 +613,29 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
   }, [speedingEvents, onEventsDetected]);
 
   // Prepare Chart Data from History
+  // Note : fuel vient de fuelByTime (endpoint dédié /fuel/history). Les
+  // positions /history/snapped ne portent pas fuelLevel, donc la courbe fuel
+  // restait plate à 0 auparavant.
   const chartData = useMemo(() => {
     if (!filteredHistory || filteredHistory.length === 0) return [];
 
     const step = Math.ceil(filteredHistory.length / 100);
     return filteredHistory
       .filter((_, i) => i % step === 0)
-      .map((h) => ({
-        time: new Date(h.timestamp || h.time).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-        speed: h.speed || 0,
-        fuel: h.fuelLevel || 0,
-        ignition: h.ignition ? 100 : 0, // Scale to 0-100 for chart visibility
-        maxSpeed: selectedVehicle?.maxSpeed || 120,
-      }));
-  }, [filteredHistory, selectedVehicle]);
+      .map((h) => {
+        const time = new Date(h.timestamp || h.time).toLocaleTimeString('fr-FR', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        return {
+          time,
+          speed: h.speed || 0,
+          fuel: fuelByTime.get(time) ?? 0,
+          ignition: h.ignition ? 100 : 0, // Scale to 0-100 for chart visibility
+          maxSpeed: selectedVehicle?.maxSpeed || 120,
+        };
+      });
+  }, [filteredHistory, fuelByTime, selectedVehicle]);
 
   // Detect fuel events (refills and suspicious losses)
   interface FuelEvent {
@@ -1071,9 +1110,9 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
                       {stops.filter((s) => s.type === 'STOP').length}
                     </span>
                   )}
-                  {tab.id === 'TRIPS' && tripSegments.length > 0 && (
+                  {tab.id === 'TRIPS' && serverTrips.length > 0 && (
                     <span className="ml-1 px-1.5 py-0.5 text-xs bg-[var(--primary-dim)] text-[var(--primary)] rounded-full">
-                      {tripSegments.length}
+                      {serverTrips.length}
                     </span>
                   )}
                   {tab.id === 'IDLE' && stops.filter((s) => s.type === 'IDLE').length > 0 && (
