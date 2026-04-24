@@ -357,6 +357,27 @@ CREATE TABLE position_anomalies (...);
 - 🟡 Frontend staging déployé (108 chunks JS) — **en attente validation user** sur staging.trackyugps.com avant deploy prod
 - **Prochaine étape** : valider staging UI → deploy prod frontend → ouvrir Phase 2 (JT808 downlink)
 
+**2026-04-24 soir** — Phase 2 v1 livrée backend prod (JT808 downlink PING/0x8201)
+
+- ✅ `src/gps-server/utils.ts` : ajout `escape()` (mirror de `unescape`, JT/T 808 byte stuffing 0x7e/0x7d)
+- ✅ `src/gps-server/parsers/jt808.ts` refacto + extension :
+  - `wrapJt808Message(msgId, phoneBytes, serial, body): Buffer` extrait pour DRY (réutilisé par les 2 ACK existants)
+  - `encodeLocationQuery(phoneBytes, serial)` : 0x8201 body vide
+  - `imeiToJt808Phone(imei)` : conversion IMEI ASCII → 6 bytes BCD (12 derniers digits pad-left)
+  - `jt808Phones: Map<imei, Buffer>` exportée, peuplée au login
+  - `nextJt808OutSerial(imei)` : compteur outbound monotone
+  - Parser détecte `0x0001` General Terminal Response → `isCommandResponse=true` → réutilise flow ACK Socket.IO existant
+- ✅ `src/gps-server/server.ts` : `jt808Phones.set()` au login JT808 (0x0100/0x0102)
+- ✅ `src/gps-server/commandFactory.ts` : case `JT808`, type `'LOCATION_QUERY'` (alias `'PING'`), `socket.write(buffer)`, INSERT `pending_commands` SENT
+- ✅ `src/controllers/deviceCommandController.ts` : zod enum étendu, détection protocol via device_model OU `jt808Phones.has(imei)` (fallback runtime)
+- ✅ Test live prod (15042020175 tenant_smt) :
+  - Encodage conforme : `7e820100000150420201750001e77e` (15 bytes, checksum XOR validé manuellement)
+  - HTTP 200 sur `POST /api/v1/devices/:imei/command` body `{type:'PING'}`
+  - Buffer écrit sur socket TCP active
+  - **Pas d'ACK 0x0001 explicite** du boîtier test (firmware ancien GT02 non-strict JT/T 808) — infra prête pour boîtiers récents
+- 🟢 Périmètre v1 volontairement restreint : seul `0x8201 Location Query` (PING inoffensif). `0x8103 Set Terminal Parameter` + `0x8105 Terminal Control` reportés en v2 après validation terrain
+- **Prochaine étape** : Phase 3 (TimescaleDB compression + retention + continuous aggregates) ou Phase 4 (Sprint 4-bis résiduel) selon priorité user
+
 ---
 
 ## 8. Questions ouvertes
