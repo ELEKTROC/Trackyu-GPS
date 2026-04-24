@@ -376,7 +376,16 @@ CREATE TABLE position_anomalies (...);
   - Buffer écrit sur socket TCP active
   - **Pas d'ACK 0x0001 explicite** du boîtier test (firmware ancien GT02 non-strict JT/T 808) — infra prête pour boîtiers récents
 - 🟢 Périmètre v1 volontairement restreint : seul `0x8201 Location Query` (PING inoffensif). `0x8103 Set Terminal Parameter` + `0x8105 Terminal Control` reportés en v2 après validation terrain
-- **Prochaine étape** : Phase 3 (TimescaleDB compression + retention + continuous aggregates) ou Phase 4 (Sprint 4-bis résiduel) selon priorité user
+
+**2026-04-24 nuit** — Phase 4 sub-item 1/3 livrée prod : toast temps-réel IMEI inconnu
+
+- ✅ Backend déjà émet `admin:unknown-imei` sur room `superadmin` (server.ts:196) — découvert lors de l'audit, donc rien à coder côté backend
+- ✅ Frontend `NotificationContext.tsx` : listener Socket.IO ajouté avec debounce 5 min/IMEI (Map locale), toast type INFO severity MEDIUM avec link `/admin?tab=devices`. Cleanup `socket.off()` au unmount
+- ✅ i18n FR/EN/ES : section `notifications.unknownImei` (title + body interpolé `{{imei}}`/`{{protocol}}`)
+- ✅ Filtre rôle assuré côté backend : room `superadmin` joinable seul par SUPERADMIN (socket.ts:79-88) → pas de fuite vers ADMIN tenant ou CLIENT
+- ✅ Déployé staging puis prod — commit `7171457`
+- 🟡 Reste Phase 4 sub-items : Kalman stats graph (MonitoringView), Config GPS runtime (settings rateLimitPerSec/hdopThreshold sans restart worker)
+- **Prochaine étape** : finir Phase 4 (Kalman graph + config runtime) ou attaquer Phase 3 (TimescaleDB compression — bloquée par décision rétention raw user) ou Phase 5 (computeVehicleStats dé-dup, partiellement fait : endpoint backend déjà créé via commit a17a1ea, reste à déprécier le calcul frontend)
 
 ---
 
