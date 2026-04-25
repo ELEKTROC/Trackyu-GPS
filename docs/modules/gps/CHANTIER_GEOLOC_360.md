@@ -1,9 +1,25 @@
 # Chantier — Géolocalisation 360° (hors carburant)
 
 **Démarré** : 2026-04-25
-**Statut** : roadmap proposée, en attente validation utilisateur avant phase 1
+**Statut au 2026-04-25 nuit** : 🟢 6 / 10 phases livrées prod (P1, P2 v1, P3, P4, P5, P6 v1) + bonus chantier socket-stability Phase 1. Reste P6 v2/v3, P7 (bloquée KVM2), P8, P9, mini-chantier infra monitoring.
 **Pilote** : Smartrack CI / Elektro Com
 **Branche** : `chore/phase-2-10-gps-server`
+
+## 🎯 Vue d'ensemble (2026-04-25 nuit)
+
+| Phase   | Titre                                            | État            | Détail                                                                                                              |
+| ------- | ------------------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **P1**  | Anti-spoofing + confidence score                 | ✅ prod         | 8 types anomalies, score 0-100, modal frontend                                                                      |
+| **P2**  | JT808 downlink                                   | 🟢 v1 prod      | PING/0x8201 inoffensif. 0x8103/0x8105 reportés v2                                                                   |
+| **P3**  | TimescaleDB compression + retention + aggregates | ✅ prod         | Compression 7d (existant), retention 365d (existant), aggregates 1h/1d (cette session)                              |
+| **P4**  | Sprint 4-bis résiduel                            | ✅ prod         | 3/3 sub-items : IMEI toast + config hot-reload + Kalman stats                                                       |
+| **P5**  | computeVehicleStats dé-dup                       | ✅ prod         | Hook + endpoint + ReplayControlPanel migré                                                                          |
+| **P6**  | Replay enrichi                                   | 🟡 v1 prod      | Timeline + jump-to + interpolation marker. v2 (GPS pings, markers map) + v3 (continuous playback) à venir           |
+| **P7**  | OSRM map matching                                | ⏳ bloqué       | Attente migration KVM2                                                                                              |
+| **P8**  | Kalman adaptive Q/R                              | ❌ pas commencé | —                                                                                                                   |
+| **P9**  | Teltonika Codec 12 downlink                      | ❌ pas commencé | —                                                                                                                   |
+| **P10** | Observability                                    | 🟡 prêt code    | 25 alertes + dashboards + metrics dans le repo. Mini-chantier infra requis pour activer la stack monitoring en prod |
+| 🎁      | Chantier socket-stability (bonus)                | ✅ Phase 1 prod | Cookie fallback + nginx timeouts + auto-refresh client. Bug "Actualisation suspendue" résolu                        |
 
 **Enjeu stratégique** : hisser le pipeline géolocalisation TrackYu au niveau état de l'art industrie (Wialon / Geotab / Samsara / Motive). Fiabilité données + détection anomalies + commandes distantes + performance scaling.
 
