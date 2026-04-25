@@ -1,6 +1,7 @@
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { WS_BASE_URL } from '../utils/apiConfig';
+import { logger } from '../utils/logger';
 
 // URL dynamique selon l'environnement (supporte web et mobile Capacitor)
 const getSocketUrl = (): string => {
@@ -31,10 +32,27 @@ export const initSocket = (token?: string) => {
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 30000,
+      // Phase 2 chantier socket-stability — envoie les cookies httpOnly avec
+      // l'upgrade WebSocket (l'access_token est en cookie côté HTTP) +
+      // timeout connect plus long pour réseaux lents.
+      withCredentials: true,
+      timeout: 20000,
     });
 
-    socket.on('connect_error', () => {
-      // Silent — avoid leaking connection error details
+    socket.on('connect_error', (err) => {
+      logger.warn(`[Socket] connect_error: ${err.message}`);
+    });
+
+    // Diagnostic — capture la raison de chaque disconnect pour faciliter
+    // l'analyse des "Actualisation suspendue" pré-existantes en prod.
+    socket.on('disconnect', (reason) => {
+      logger.warn(`[Socket] disconnected: ${reason}`);
+      // 'io server disconnect' = serveur a fermé volontairement (souvent
+      // token rejeté). Force un reconnect immédiat ; le browser renvoie le
+      // cookie httpOnly frais (avec son potentiel refresh côté HTTP).
+      if (reason === 'io server disconnect') {
+        setTimeout(() => socket.connect(), 500);
+      }
     });
 
     // Refresh auth token on each reconnect attempt so stale JWTs don't block re-auth
