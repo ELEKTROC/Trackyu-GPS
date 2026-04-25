@@ -396,6 +396,45 @@ CREATE TABLE position_anomalies (...);
 - Commit backend : 76fe650
 - 🟡 Reste Phase 4 sub-item 2/3 : Kalman stats graph (courbe convergence dans MonitoringView)
 
+**2026-04-25 — Phase 6 v1 livrée prod : timeline 24h colorée + jump-to event**
+
+- ✅ `ReplayControlPanel.tsx` — barre Timeline ajoutée au-dessus des contrôles play/pause :
+  - Bandes colorées par status (vert MOVING / orange IDLE / rouge STOPPED / gris OFFLINE)
+  - Calcul depuis `history` brut, segments fusionnés si même status, gap > 5 min = OFFLINE
+  - Légende compacte (couleur + label) en haut à droite
+  - Curseur progress synchronisé (line blanche verticale)
+  - Click sur la timeline → seek au timestamp correspondant
+- ✅ Markers events cliquables sur la timeline (1 px wide) :
+  - Stops (bleu), Speeding (rouge), Refill (vert), Theft (rouge foncé)
+  - Hover scale 1.25, title tooltip type + heure
+  - Click → seek au timestamp de l'event
+- ✅ Boutons Jump-to-prev / Jump-to-next event (icones SkipBack/SkipForward) :
+  - Tri stops + speedingEvents + fuelEvents par timestamp
+  - Disabled si aucun event
+- ✅ Helpers `tsToProgress` / `progressToTs` partagés
+- ✅ i18n FR/EN/ES : 10 nouvelles clés (timeline, movingShort, idleShort, stoppedShort, offlineShort, stopShort, speedingShort, seekTimeline, prevEvent, nextEvent)
+- ✅ Bug "icône ne bouge pas en replay" résolu : interpolation linéaire entre positions adjacentes (`lat = a.lat + (b.lat - a.lat) * frac` au lieu de `Math.floor(pathIndex)`) → marker glisse continuellement à chaque tick d'animation au lieu de sauter tous les ~600ms
+- ✅ Auto-logout sur refresh 401 (services/socket.ts) : si `/auth/refresh` retourne 401, cleanup localStorage + reload → cohérent avec fetchWithRefresh côté HTTP
+- Commits : 0c08fee + 1348e95 + 62f1890 (frontend) — déployés prod
+
+Reste P6 v2 (toggle GPS pings + markers events sur la map) et P6 v3 (continuous playback through stops). v1 livre la valeur la plus visible : navigation rapide aux events + visualisation status sur 24h.
+
+---
+
+**2026-04-25 — Bug fixes fuel suite chantier P5 (ReplayControlPanel onglet Carburant)**
+
+Suite à la migration Phase 5 (computeVehicleStats → useVehicleStats hook), validation utilisateur sur staging a remonté 4 problèmes pré-existants ou liés sur l'onglet Carburant. Tous corrigés :
+
+- Bug C : badge onglet TRIPS divergeait de la liste (tripSegments.length local vs serverTrips.length backend) → aligné sur source serveur (commit 655be33)
+- Bug B : courbe carburant plate à 0 dans l'onglet FUEL — le payload `/history/snapped` ne retourne pas `fuelLevel`. Bascule sur endpoint dédié `getFuelHistory` + nouveau dataset `fuelChartData` séparé (commits 655be33 + 51617b5)
+- Markers REFILL/LOSS sur la courbe — `dot` custom du `<Area>` avec cercles ⛽ vert et ⚠ rouge (même rendu que FuelModalContent du VehicleDetailPanel), événements depuis backend `fuel_events` au lieu de détection locale (commits c74310a + 8ea0002 + dfeb641)
+- Affichage en LITRES partout (cohérent avec backend `delta_liters`/`before_liters`/`after_liters`/`tank_capacity`) — Y axis chart, KPIs Consommation/Niveau, Δ Début/Fin/écart, tableau d'événements (commit dfeb641)
+- Tooltip blanc-sur-blanc → tokens CSS `var(--bg-card)` / `var(--text-primary)` / `var(--border)` (commit dfeb641)
+- Hauteur tableau `max-h-24` + `flex-shrink-0` pour ne plus masquer la courbe (commit dfeb641)
+- i18n FR harmonisée : "Ravitaillement" → "Recharge", "Perte suspecte" → "Baisse suspecte" (commit 8ea0002) — alignement sur les termes utilisés dans FuelBlock du VehicleDetailPanel
+
+---
+
 **2026-04-25 — État réel découvert (vérif DB + code)**
 
 État vérifié des phases hors session — plusieurs étaient déjà partiellement faites :
