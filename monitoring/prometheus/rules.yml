@@ -186,6 +186,25 @@ groups:
           summary: "Buffer de positions saturé ({{ $value }})"
           description: "Plus de 500 positions en attente d'insertion. La DB est potentiellement lente."
 
+      - alert: GpsUnknownImeiSpike
+        expr: rate(gps_unknown_imei_total[1h]) * 3600 > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pic IMEI inconnus ({{ $value | printf \"%.0f\" }}/h)"
+          description: "Plus de 10 IMEI non enregistrés/h tentent de se connecter. Possible scan ou flotte non provisionnée."
+
+      - alert: SocketHighDisconnectRate
+        expr: |
+          sum(rate(socket_disconnects_total[5m])) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disconnects Socket.IO élevés ({{ $value | printf \"%.2f\" }}/s)"
+          description: "Plus de 0.5 disconnect/s sur 5 min. Vérifier la stabilité réseau ou le chantier socket-stability."
+
   # ============================================
   # ALERTES BASE DE DONNÉES
   # ============================================
