@@ -1,5 +1,6 @@
 import type { Socket } from 'socket.io-client';
 import { io } from 'socket.io-client';
+import { API_URL } from './api/client';
 import { WS_BASE_URL } from '../utils/apiConfig';
 import { logger } from '../utils/logger';
 
@@ -39,8 +40,38 @@ export const initSocket = (token?: string) => {
       timeout: 20000,
     });
 
+    // Refresh HTTP cookie httpOnly access_token si invalide (le cookie
+    // expire en 15 min, fetchWithRefresh ne s'active que sur 401 HTTP, jamais
+    // côté socket). Tente un POST /auth/refresh pour obtenir un cookie frais
+    // puis retry le connect.
+    let isRefreshing = false;
+    const refreshAndRetry = async () => {
+      if (isRefreshing) return;
+      isRefreshing = true;
+      try {
+        const r = await fetch(`${API_URL}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        if (r.ok) {
+          logger.info('[Socket] cookie refreshed, retrying connect');
+          setTimeout(() => socket.connect(), 300);
+        } else {
+          logger.warn(`[Socket] refresh failed (HTTP ${r.status}), user must re-login`);
+        }
+      } catch (e) {
+        logger.warn(`[Socket] refresh error: ${(e as Error).message}`);
+      } finally {
+        isRefreshing = false;
+      }
+    };
+
     socket.on('connect_error', (err) => {
       logger.warn(`[Socket] connect_error: ${err.message}`);
+      if (err.message === 'Invalid token' || err.message === 'Authentication required') {
+        refreshAndRetry();
+      }
     });
 
     // Diagnostic — capture la raison de chaque disconnect pour faciliter
@@ -48,10 +79,9 @@ export const initSocket = (token?: string) => {
     socket.on('disconnect', (reason) => {
       logger.warn(`[Socket] disconnected: ${reason}`);
       // 'io server disconnect' = serveur a fermé volontairement (souvent
-      // token rejeté). Force un reconnect immédiat ; le browser renvoie le
-      // cookie httpOnly frais (avec son potentiel refresh côté HTTP).
+      // token rejeté). Tente un refresh HTTP puis reconnect.
       if (reason === 'io server disconnect') {
-        setTimeout(() => socket.connect(), 500);
+        refreshAndRetry();
       }
     });
 
