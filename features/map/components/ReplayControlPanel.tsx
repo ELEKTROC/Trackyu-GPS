@@ -11,6 +11,8 @@ import {
   Pause,
   FastForward,
   Rewind,
+  SkipBack,
+  SkipForward,
   ChevronUp,
   ChevronDown,
   MapPin,
@@ -794,6 +796,111 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
     return { offlineGaps: replayStats.offlineGaps, offlineTimeMin: replayStats.offlineMs / 60000 };
   }, [replayStats]);
 
+  // Phase 6 chantier géoloc 360 — Timeline 24h colorée par status
+  // (MOVING vert / IDLE orange / STOPPED rouge / OFFLINE gris). Segments
+  // calculés depuis history brut (cohérent avec stops local + backend
+  // /vehicles/:id/stats qui renvoie offlineMs).
+  type TimelineStatus = 'MOVING' | 'IDLE' | 'STOPPED' | 'OFFLINE';
+  type TimelineSegment = { start: number; end: number; status: TimelineStatus };
+
+  const timelineSegments = useMemo<TimelineSegment[]>(() => {
+    if (!history || history.length === 0) return [];
+    const startMs = dateRange.start.getTime();
+    const endMs = dateRange.end.getTime();
+    const totalMs = endMs - startMs;
+    if (totalMs <= 0) return [];
+
+    const points = history
+      .map((h) => ({
+        ts: new Date(h.timestamp || h.time).getTime(),
+        speed: h.speed || 0,
+        ignition: !!h.ignition,
+      }))
+      .filter((p) => p.ts >= startMs && p.ts <= endMs)
+      .sort((a, b) => a.ts - b.ts);
+    if (points.length === 0) return [];
+
+    const OFFLINE_GAP_MS = 5 * 60 * 1000;
+    const segs: TimelineSegment[] = [];
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      const next = points[i + 1];
+      const gapMs = next ? next.ts - p.ts : 0;
+      let status: TimelineStatus;
+      if (next && gapMs > OFFLINE_GAP_MS) status = 'OFFLINE';
+      else if (p.speed > 2) status = 'MOVING';
+      else if (p.ignition) status = 'IDLE';
+      else status = 'STOPPED';
+
+      const segEndMs = next ? next.ts : endMs;
+      const startPct = ((p.ts - startMs) / totalMs) * 100;
+      const endPct = Math.min(100, ((segEndMs - startMs) / totalMs) * 100);
+      const last = segs[segs.length - 1];
+      if (last && last.status === status && Math.abs(last.end - startPct) < 0.5) {
+        last.end = endPct;
+      } else {
+        segs.push({ start: startPct, end: endPct, status });
+      }
+    }
+    return segs;
+  }, [history, dateRange]);
+
+  // Tous les events (stops + speeding + fuel) pour Jump-to-next/prev
+  type TimelineEvent = {
+    ts: number;
+    type: 'stop' | 'speeding' | 'refill' | 'theft';
+    label: string;
+  };
+
+  const allTimelineEvents = useMemo<TimelineEvent[]>(() => {
+    const events: TimelineEvent[] = [];
+    for (const s of stops) {
+      const ts = new Date(s.startTime).getTime();
+      if (!isNaN(ts)) events.push({ ts, type: 'stop', label: t('map.replay.stopShort') || 'Arrêt' });
+    }
+    for (const e of speedingEvents) {
+      const ts = new Date(e.timestamp).getTime();
+      if (!isNaN(ts)) events.push({ ts, type: 'speeding', label: t('map.replay.speedingShort') || 'Vitesse' });
+    }
+    for (const e of fuelEvents) {
+      events.push({
+        ts: e.timestamp.getTime(),
+        type: e.type === 'REFILL' ? 'refill' : 'theft',
+        label: e.type === 'REFILL' ? t('map.replay.refillShort') : t('map.replay.lossShort'),
+      });
+    }
+    return events.sort((a, b) => a.ts - b.ts);
+  }, [stops, speedingEvents, fuelEvents, t]);
+
+  // Conversion timestamp ↔ progress %
+  const tsToProgress = useCallback(
+    (ts: number) => {
+      const startMs = dateRange.start.getTime();
+      const endMs = dateRange.end.getTime();
+      const totalMs = endMs - startMs;
+      if (totalMs <= 0) return 0;
+      return Math.max(0, Math.min(100, ((ts - startMs) / totalMs) * 100));
+    },
+    [dateRange]
+  );
+  const progressToTs = useCallback(
+    (p: number) => dateRange.start.getTime() + (p / 100) * (dateRange.end.getTime() - dateRange.start.getTime()),
+    [dateRange]
+  );
+
+  const jumpToNextEvent = useCallback(() => {
+    const cur = progressToTs(progress);
+    const next = allTimelineEvents.find((e) => e.ts > cur + 1000);
+    if (next) onProgressChange(Math.round(tsToProgress(next.ts)));
+  }, [allTimelineEvents, progress, progressToTs, tsToProgress, onProgressChange]);
+
+  const jumpToPrevEvent = useCallback(() => {
+    const cur = progressToTs(progress);
+    const candidates = allTimelineEvents.filter((e) => e.ts < cur - 1000);
+    const prev = candidates[candidates.length - 1];
+    if (prev) onProgressChange(Math.round(tsToProgress(prev.ts)));
+  }, [allTimelineEvents, progress, progressToTs, tsToProgress, onProgressChange]);
+
   // Export screenshot
   const handleExportVideo = useCallback(async () => {
     setIsExporting(true);
@@ -1056,9 +1163,104 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
 
       {/* BOTTOM PANEL */}
       <div className="pointer-events-auto w-full flex flex-col print:m-0">
+        {/* Phase 6 — Timeline 24h colorée par status + markers events */}
+        {timelineSegments.length > 0 && (
+          <div className="flex flex-col items-center px-4 mb-2 print:hidden">
+            <div className="bg-[var(--bg-elevated)] shadow-lg rounded-lg px-3 py-2 w-full max-w-[800px] border border-[var(--border)]">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                  {t('map.replay.timeline') || 'Timeline'}
+                </span>
+                <div className="flex items-center gap-3 text-[9px] text-[var(--text-secondary)]">
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block w-2 h-2 rounded-sm bg-green-500" />{' '}
+                    {t('map.replay.movingShort') || 'Mouvement'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block w-2 h-2 rounded-sm bg-orange-500" />{' '}
+                    {t('map.replay.idleShort') || 'Ralenti'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block w-2 h-2 rounded-sm bg-red-500" />{' '}
+                    {t('map.replay.stoppedShort') || 'Arrêt'}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="inline-block w-2 h-2 rounded-sm bg-slate-500" />{' '}
+                    {t('map.replay.offlineShort') || 'Offline'}
+                  </span>
+                </div>
+              </div>
+              <div
+                className="relative w-full h-3 bg-slate-800 rounded overflow-hidden cursor-pointer"
+                title={t('map.replay.seekTimeline') || 'Cliquer pour aller au moment'}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                  onProgressChange(Math.round(ratio * 100));
+                }}
+              >
+                {timelineSegments.map((s, i) => {
+                  const colorMap: Record<TimelineStatus, string> = {
+                    MOVING: '#22c55e',
+                    IDLE: '#f97316',
+                    STOPPED: '#ef4444',
+                    OFFLINE: '#6b7280',
+                  };
+                  return (
+                    <div
+                      key={i}
+                      className="absolute top-0 h-full"
+                      style={{
+                        left: `${s.start}%`,
+                        width: `${Math.max(0.2, s.end - s.start)}%`,
+                        backgroundColor: colorMap[s.status],
+                      }}
+                    />
+                  );
+                })}
+                {/* Markers events */}
+                {allTimelineEvents.map((evt, i) => {
+                  const left = tsToProgress(evt.ts);
+                  const colorMap: Record<TimelineEvent['type'], string> = {
+                    stop: '#3b82f6',
+                    speeding: '#dc2626',
+                    refill: '#16a34a',
+                    theft: '#b91c1c',
+                  };
+                  return (
+                    <div
+                      key={`evt-${i}`}
+                      className="absolute top-0 h-full w-1 cursor-pointer hover:scale-125 transition-transform"
+                      style={{ left: `${left}%`, backgroundColor: colorMap[evt.type] }}
+                      title={`${evt.label} — ${new Date(evt.ts).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onProgressChange(Math.round(left));
+                      }}
+                    />
+                  );
+                })}
+                {/* Curseur progress */}
+                <div
+                  className="absolute top-0 h-full w-0.5 bg-white shadow pointer-events-none"
+                  style={{ left: `${progress}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Playback Controls — centrés avec marges latérales */}
         <div className="flex flex-col items-center px-4 mb-2">
           <div className="bg-[var(--bg-elevated)] shadow-lg rounded-full px-6 py-2 mb-2 flex items-center gap-6 border border-[var(--border)] print:hidden">
+            <button
+              className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors disabled:opacity-30"
+              onClick={jumpToPrevEvent}
+              disabled={allTimelineEvents.length === 0}
+              title={t('map.replay.prevEvent') || 'Évènement précédent'}
+            >
+              <SkipBack size={18} />
+            </button>
             <button
               className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
               onClick={() => onProgressChange(Math.max(0, progress - 10))}
@@ -1083,6 +1285,14 @@ export const ReplayControlPanel: React.FC<ReplayControlPanelProps> = ({
               title={t('map.replay.forward10')}
             >
               <FastForward size={20} />
+            </button>
+            <button
+              className="text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors disabled:opacity-30"
+              onClick={jumpToNextEvent}
+              disabled={allTimelineEvents.length === 0}
+              title={t('map.replay.nextEvent') || 'Évènement suivant'}
+            >
+              <SkipForward size={18} />
             </button>
             <div className="h-4 w-px bg-[var(--border)] mx-2"></div>
             <div className="flex items-center gap-1" title={t('map.replay.playbackSpeed')}>
