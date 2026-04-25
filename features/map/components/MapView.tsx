@@ -2959,25 +2959,32 @@ export const MapView: React.FC<MapViewProps> = ({
                       );
                     })()}
 
-                  {/* Marqueur véhicule replay — plaque + vitesse + distance cumulée */}
+                  {/* Marqueur véhicule replay — plaque + vitesse + distance cumulée
+                      Interpolation linéaire entre positions adjacentes pour fluidité
+                      visuelle (sinon le marker saute toutes les ~600ms à 1× quand
+                      pathIndex change ; visuellement "ne bouge pas"). */}
                   {(() => {
                     if (replayPath.length === 0) return null;
-                    const pathIndex = Math.min(
-                      Math.floor((replayProgress / 100) * (replayPath.length - 1)),
-                      replayPath.length - 1
-                    );
-                    const currentPos = replayPath[pathIndex];
-                    const histPoint = replayHistory[Math.min(pathIndex, replayHistory.length - 1)];
-                    if (!currentPos || !activeReplayVehicle) return null;
+                    const lastIdx = replayPath.length - 1;
+                    const exactIndex = (replayProgress / 100) * lastIdx;
+                    const baseIndex = Math.min(Math.floor(exactIndex), lastIdx);
+                    const frac = exactIndex - baseIndex;
+                    const a = replayPath[baseIndex];
+                    const b = replayPath[Math.min(baseIndex + 1, lastIdx)] ?? a;
+                    if (!a || !activeReplayVehicle) return null;
+                    const lat = a.lat + (b.lat - a.lat) * frac;
+                    const lng = a.lng + (b.lng - a.lng) * frac;
+
+                    const histPoint = replayHistory[Math.min(baseIndex, replayHistory.length - 1)];
                     const speed = histPoint?.speed ?? 0;
                     const ign = histPoint?.ignition;
                     const replayStatus: VehicleStatus =
                       speed >= 2 ? VehicleStatus.MOVING : ign === true ? VehicleStatus.IDLE : VehicleStatus.STOPPED;
                     const heading = histPoint?.heading ?? 0;
-                    const distKm = replayCumDist[pathIndex] ?? 0;
+                    const distKm = replayCumDist[baseIndex] ?? 0;
                     return (
                       <Marker
-                        position={[currentPos.lat, currentPos.lng]}
+                        position={[lat, lng]}
                         icon={createReplayMarkerIcon(activeReplayVehicle, replayStatus, heading, speed, distKm)}
                         zIndexOffset={1000}
                       />
