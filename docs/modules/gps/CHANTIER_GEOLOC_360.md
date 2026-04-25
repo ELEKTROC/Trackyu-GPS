@@ -396,6 +396,25 @@ CREATE TABLE position_anomalies (...);
 - Commit backend : 76fe650
 - 🟡 Reste Phase 4 sub-item 2/3 : Kalman stats graph (courbe convergence dans MonitoringView)
 
+**2026-04-25 — État réel découvert (vérif DB + code)**
+
+État vérifié des phases hors session — plusieurs étaient déjà partiellement faites :
+
+- **P3 TimescaleDB** : compression 7d ✅ + retention 365d ✅ déjà actifs (jobs 1000/1001) — non documenté avant. Continuous aggregates ajoutés cette session (commit 5ced69b) :
+  - `positions_1h` (avg_speed/max_speed/n_points/n_moving/n_stopped/avg_lat/avg_lng) refresh 10 min
+  - `positions_1d` (mêmes axes sans lat/lng) refresh 1 h
+  - Backfill initial : 2350 rows / 180 rows
+  - **Phase 3 100% terminée**
+- **P6 Replay enrichi** : `ReplayFollower` (follow vehicle mode) déjà implémenté dans MapView.tsx:467+2988. 5/6 sub-features restantes
+- **P10 Observability** : prom-client metrics (gpsActiveConnections, gpsMessagesReceived, gpsProcessingLatency, gpsPositionsSaved, gpsParsingErrors, cacheOperations, dbPool, positionBufferSize, wsMessages…), 3 dashboards Grafana (api-performance, business-realtime, system-overview), 23 alertes Prometheus (incluant 4 GPS pipeline) déjà en code. **MAIS** : la stack monitoring (Prometheus/Grafana/Alertmanager) n'est PAS déployée en prod — aucun container ne tourne. Configs présentes dans docker-compose.monitoring.yml mais inactives.
+- 2 metrics ajoutés cette session (commits dcc100d + 450bd55) : `gps_unknown_imei_total{protocol}` + `socket_disconnects_total{reason}` + 2 alertes (GpsUnknownImeiSpike, SocketHighDisconnectRate) — prêts pour quand la stack sera déployée
+
+**🎁 Bonus hors roadmap initiale** : Chantier socket-stability ouvert + Phase 1 livrée (P1 cookie fallback + P2 nginx timeouts + P3 client withCredentials/auto-refresh). Bug "Actualisation suspendue" résolu. Voir `CHANTIER_SOCKET_STABILITY.md`.
+
+**Mini-chantier infra à ouvrir** : déployer la stack monitoring en prod (docker-compose up monitoring + Prometheus scrape /metrics + Alertmanager Slack/email + sécuriser Grafana auth). Hors scope chantier géoloc 360°, à voir séparément.
+
+---
+
 **2026-04-24 nuit (fin)** — Phase 4 sub-item 2/3 livrée prod : stats Kalman convergence
 
 - ✅ Backend `positionWorker.ts` : `KalmanFilter2D.getStats()` enrichi avec `convergedCount` (P<0.1, seuil empirique), `meanP`, `medianP`, `p95P` (valeurs arrondies 4 décimales). Commit `66e3b7b`
