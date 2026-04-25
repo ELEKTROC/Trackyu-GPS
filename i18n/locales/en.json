@@ -304,7 +304,17 @@
       "lossShort": "Loss",
       "totalIdleTime": "Total idle time",
       "back10": "Back 10%",
-      "forward10": "Forward 10%"
+      "forward10": "Forward 10%",
+      "timeline": "Timeline",
+      "movingShort": "Moving",
+      "idleShort": "Idle",
+      "stoppedShort": "Stopped",
+      "offlineShort": "Offline",
+      "stopShort": "Stop",
+      "speedingShort": "Speeding",
+      "seekTimeline": "Click to seek",
+      "prevEvent": "Previous event",
+      "nextEvent": "Next event"
     },
     "view": {
       "engineStop": "Engine stop",

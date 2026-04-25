@@ -304,7 +304,17 @@
       "lossShort": "Baisse",
       "totalIdleTime": "Temps de ralenti total",
       "back10": "Reculer de 10%",
-      "forward10": "Avancer de 10%"
+      "forward10": "Avancer de 10%",
+      "timeline": "Timeline",
+      "movingShort": "Mouvement",
+      "idleShort": "Ralenti",
+      "stoppedShort": "Arrêt",
+      "offlineShort": "Offline",
+      "stopShort": "Arrêt",
+      "speedingShort": "Excès",
+      "seekTimeline": "Cliquer pour aller à ce moment",
+      "prevEvent": "Évènement précédent",
+      "nextEvent": "Évènement suivant"
     },
     "view": {
       "engineStop": "Arrêt moteur",

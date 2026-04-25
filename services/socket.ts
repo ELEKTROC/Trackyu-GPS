@@ -57,8 +57,19 @@ export const initSocket = (token?: string) => {
         if (r.ok) {
           logger.info('[Socket] cookie refreshed, retrying connect');
           setTimeout(() => socket.connect(), 300);
+        } else if (r.status === 401) {
+          // Refresh_token aussi expiré → logout cohérent avec fetchWithRefresh
+          logger.warn('[Socket] refresh failed (HTTP 401), forcing logout');
+          try {
+            localStorage.removeItem('fleet_user');
+            localStorage.removeItem('fleet_token');
+            localStorage.removeItem('token');
+          } catch (_e) {
+            /* ignore localStorage errors */
+          }
+          window.location.reload();
         } else {
-          logger.warn(`[Socket] refresh failed (HTTP ${r.status}), user must re-login`);
+          logger.warn(`[Socket] refresh failed (HTTP ${r.status})`);
         }
       } catch (e) {
         logger.warn(`[Socket] refresh error: ${(e as Error).message}`);
