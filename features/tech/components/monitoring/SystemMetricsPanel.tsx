@@ -440,7 +440,7 @@ export const SystemMetricsPanel: React.FC = () => {
             </p>
           </div>
           <a
-            href={import.meta.env.VITE_GRAFANA_URL || 'http://148.230.126.62:3000'}
+            href={import.meta.env.VITE_GRAFANA_URL || 'https://monitoring.trackyugps.com'}
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
