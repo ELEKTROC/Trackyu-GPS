@@ -266,102 +266,7 @@ textarea:focus {
   --color-gray-950: var(--bg-primary);
 }
 
-/* ── Thème 2 : Ocean Dark ────────────────────────────────────────────────── */
-[data-theme='ocean'] {
-  /* ── Canonical tokens ──────────────────────────────────────────────── */
-  --bg-app: #080e1a;
-  --bg-card: #0f172a;
-  --bg-elevated: #1e293b;
-  --bg-overlay: rgba(0, 8, 26, 0.7);
-
-  --brand-primary: #38bdf8;
-  --brand-primary-light: #7dd3fc;
-  --brand-primary-dim: rgba(56, 189, 248, 0.1);
-  --brand-gradient: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 50%, #0369a1 100%);
-
-  --text-main: #f1f5f9;
-  --text-secondary: #8baac4;
-  --text-muted: #94a3b8;
-  --text-inverse: #080e1a;
-  --text-on-primary: #ffffff;
-
-  --border-ui: rgba(148, 163, 184, 0.15);
-  --border-strong: #2a3f58;
-
-  --brand-sidebar-bg: #0f172a;
-  --brand-sidebar-text: #f1f5f9;
-
-  --nav-bg: var(--brand-sidebar-bg);
-  --nav-active: var(--brand-primary);
-  --nav-inactive: #4a6580;
-  --nav-border: var(--border-ui);
-
-  /* ── Backward-compat aliases ───────────────────────────────────────── */
-  --bg-primary: var(--bg-app);
-  --bg-surface: var(--bg-card);
-  --primary: var(--brand-primary);
-  --primary-light: var(--brand-primary-light);
-  --primary-dim: var(--brand-primary-dim);
-  --text-primary: var(--text-main);
-  --border: var(--border-ui);
-  --brand-secondary: var(--brand-primary-light);
-
-  /* ── Remap Tailwind slate/gray → theme tokens */
-  --color-slate-950: var(--bg-primary);
-  --color-slate-900: var(--bg-surface);
-  --color-slate-800: var(--bg-elevated);
-  --color-slate-700: var(--bg-elevated);
-  --color-gray-950: var(--bg-primary);
-  --color-gray-900: var(--bg-surface);
-  --color-gray-800: var(--bg-elevated);
-  --color-gray-700: var(--bg-elevated);
-
-  /* ── Couleurs sémantiques — ocean (identiques à dark) ───────────────── */
-  --clr-success: #4ade80;
-  --clr-success-strong: #86efac;
-  --clr-success-dim: rgba(20, 83, 45, 0.2);
-  --clr-success-muted: rgba(20, 83, 45, 0.3);
-  --clr-success-border: #166534;
-  --clr-success-badge: #14532d;
-  --clr-success-badge-text: #bbf7d0;
-  --clr-danger: #f87171;
-  --clr-danger-strong: #fca5a5;
-  --clr-danger-dim: rgba(127, 29, 29, 0.2);
-  --clr-danger-muted: rgba(127, 29, 29, 0.3);
-  --clr-danger-border: #991b1b;
-  --clr-danger-badge: #7f1d1d;
-  --clr-danger-badge-text: #fecaca;
-  --clr-warning: #fb923c;
-  --clr-warning-strong: #fdba74;
-  --clr-warning-dim: rgba(124, 45, 18, 0.2);
-  --clr-warning-muted: rgba(124, 45, 18, 0.3);
-  --clr-warning-border: #9a3412;
-  --clr-warning-badge: #7c2d12;
-  --clr-warning-badge-text: #fed7aa;
-  --clr-caution: #fbbf24;
-  --clr-caution-strong: #fcd34d;
-  --clr-caution-dim: rgba(120, 53, 15, 0.2);
-  --clr-caution-muted: rgba(120, 53, 15, 0.3);
-  --clr-caution-border: #92400e;
-  --clr-caution-badge: #78350f;
-  --clr-caution-badge-text: #fde68a;
-  --clr-info: #c084fc;
-  --clr-info-strong: #d8b4fe;
-  --clr-info-dim: rgba(88, 28, 135, 0.2);
-  --clr-info-muted: rgba(88, 28, 135, 0.3);
-  --clr-info-border: #6b21a8;
-  --clr-info-badge: #581c87;
-  --clr-info-badge-text: #e9d5ff;
-  --clr-emerald: #34d399;
-  --clr-emerald-strong: #6ee7b7;
-  --clr-emerald-dim: rgba(6, 78, 59, 0.2);
-  --clr-emerald-muted: rgba(6, 78, 59, 0.3);
-  --clr-emerald-border: #065f46;
-  --clr-emerald-badge: #064e3b;
-  --clr-emerald-badge-text: #a7f3d0;
-}
-
-/* ── Thème 3 : Light Pro ─────────────────────────────────────────────────── */
+/* ── Thème 2 : Light Pro ─────────────────────────────────────────────────── */
 [data-theme='light'] {
   /* ── Canonical tokens ──────────────────────────────────────────────── */
   --bg-app: #f8fafc;
@@ -458,13 +363,6 @@ textarea:focus {
   --brand-sidebar-border: #2a2a2e; /* gris très sombre */
 }
 
-/* dark sidebar — marine très profond (ocean theme) */
-[data-theme='ocean'][data-sidebar='dark'] {
-  --brand-sidebar-bg: #060c16; /* marine très profond */
-  --brand-sidebar-text: #c8dff0; /* blanc bleuté */
-  --brand-sidebar-border: #1e2e42; /* marine sombre */
-}
-
 /* dark sidebar — ardoise foncé forcé (light theme) */
 [data-theme='light'][data-sidebar='dark'] {
   --brand-sidebar-bg: #1e293b; /* ardoise foncé */
@@ -479,10 +377,10 @@ textarea:focus {
   --brand-sidebar-border: #e2e8f0; /* gris perle */
 }
 
-/* colored sidebar — couleur primaire du thème (orange ou bleu selon thème) */
+/* colored sidebar — couleur primaire du thème (ou couleur tenant via AppearanceContext) */
 [data-sidebar='colored'] {
-  --brand-sidebar-bg: var(--primary); /* orange (dark/light) ou bleu (ocean) */
-  --brand-sidebar-text: #ffffff; /* blanc */
+  --brand-sidebar-bg: var(--primary);
+  --brand-sidebar-text: #ffffff;
   --brand-sidebar-border: rgba(255, 255, 255, 0.15);
 }
 

@@ -27,8 +27,8 @@ export interface AppearanceSettings {
   logoUrl?: string;
 }
 
-// Empty color strings = no override, laisse le thème CSS (dark/ocean/light) gérer --brand-primary.
-// Fallback orange Trackyu = #FF5C00 (défini dans src/index.css sur [data-theme='dark'/'light']).
+// Empty color strings = no override, laisse le thème CSS (dark/light) gérer --brand-primary.
+// Fallback orange Trackyu = #d96d4c (terracotta, défini dans src/index.css sur [data-theme='dark'/'light']).
 const DEFAULT_APPEARANCE: AppearanceSettings = {
   primaryColor: '',
   secondaryColor: '',
@@ -107,7 +107,7 @@ const applyToDOM = (s: AppearanceSettings) => {
   const root = document.documentElement;
 
   // Couleurs de marque : on override UNIQUEMENT si le tenant a une couleur custom explicite.
-  // Sinon on laisse le thème CSS (`[data-theme='dark'/'ocean'/'light']`) fixer --brand-primary.
+  // Sinon on laisse le thème CSS (`[data-theme='dark'/'light']`) fixer --brand-primary.
   if (s.primaryColor) {
     root.style.setProperty('--primary', s.primaryColor);
     root.style.setProperty('--brand-primary', s.primaryColor);

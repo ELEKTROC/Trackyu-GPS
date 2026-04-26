@@ -15,7 +15,6 @@ import {
   X,
   Sun,
   Moon,
-  Waves,
   Calculator,
   Activity,
   ShieldCheck,
@@ -163,12 +162,11 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ currentView,
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-[var(--text-primary)]">{t('nav.common.moreOptions')}</h3>
               <div className="flex items-center gap-2">
-                {/* Theme switcher — dark / ocean / light */}
+                {/* Theme switcher — dark / light */}
                 <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-full p-0.5 gap-0.5">
                   {(
                     [
                       { id: 'dark', Icon: Moon, label: t('nav.theme.dark') },
-                      { id: 'ocean', Icon: Waves, label: t('nav.theme.ocean') },
                       { id: 'light', Icon: Sun, label: t('nav.theme.light') },
                     ] as const
                   ).map(({ id, Icon, label }) => (

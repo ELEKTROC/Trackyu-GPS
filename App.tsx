@@ -27,7 +27,7 @@ import {
   LazyFleetTable,
 } from './LazyViews';
 
-import { Menu, Bell, MessageCircle, X, Search, Moon, Sun, Waves, RefreshCw } from 'lucide-react';
+import { Menu, Bell, MessageCircle, X, Search, Moon, Sun, RefreshCw } from 'lucide-react';
 import { Drawer } from './components/Drawer';
 import { useAuth } from './contexts/AuthContext';
 import { LoginView } from './features/auth/components/LoginView';
@@ -634,12 +634,11 @@ const AppContent: React.FC = () => {
             <div className="h-8 w-px mx-1 hidden sm:block" style={{ backgroundColor: 'var(--border)' }}></div>
 
             <div className="flex items-center gap-1 sm:gap-2">
-              {/* Theme switcher — dark / ocean / light */}
+              {/* Theme switcher — dark / light */}
               <div className="flex items-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-full p-0.5 gap-0.5">
                 {(
                   [
                     { id: 'dark', Icon: Moon, label: 'Sombre' },
-                    { id: 'ocean', Icon: Waves, label: 'Océan' },
                     { id: 'light', Icon: Sun, label: 'Clair' },
                   ] as const
                 ).map(({ id, Icon, label }) => (
