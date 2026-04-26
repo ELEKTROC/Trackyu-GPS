@@ -16,6 +16,7 @@ groups:
         annotations:
           summary: "Backend API indisponible"
           description: "Le backend TrackYu ne répond plus depuis {{ $value }}s. Vérifier le container Docker."
+          runbook_url: "https://github.com/ELEKTROC/Trackyu-GPS/blob/main/monitoring/runbooks/BackendDown.md"
 
       - alert: RedisDown
         expr: up{job="redis"} == 0
@@ -156,6 +157,7 @@ groups:
         annotations:
           summary: "Aucune donnée GPS reçue depuis 10 min"
           description: "Le serveur GPS ne reçoit plus de messages. Vérifier le port TCP 5000 et les trackers."
+          runbook_url: "https://github.com/ELEKTROC/Trackyu-GPS/blob/main/monitoring/runbooks/GpsNoData.md"
 
       - alert: GpsHighErrorRate
         expr: |
@@ -167,6 +169,7 @@ groups:
         annotations:
           summary: "Taux d'erreurs GPS élevé ({{ $value | printf \"%.1f\" }}%)"
           description: "Plus de 20% des messages GPS échouent le parsing."
+          runbook_url: "https://github.com/ELEKTROC/Trackyu-GPS/blob/main/monitoring/runbooks/GpsHighErrorRate.md"
 
       - alert: GpsHighLatency
         expr: histogram_quantile(0.95, rate(gps_message_processing_seconds_bucket[5m])) > 0.5
@@ -185,6 +188,7 @@ groups:
         annotations:
           summary: "Buffer de positions saturé ({{ $value }})"
           description: "Plus de 500 positions en attente d'insertion. La DB est potentiellement lente."
+          runbook_url: "https://github.com/ELEKTROC/Trackyu-GPS/blob/main/monitoring/runbooks/PositionBufferBacklog.md"
 
       - alert: GpsUnknownImeiSpike
         expr: rate(gps_unknown_imei_total[1h]) * 3600 > 10
@@ -204,6 +208,7 @@ groups:
         annotations:
           summary: "Disconnects Socket.IO élevés ({{ $value | printf \"%.2f\" }}/s)"
           description: "Plus de 0.5 disconnect/s sur 5 min. Vérifier la stabilité réseau ou le chantier socket-stability."
+          runbook_url: "https://github.com/ELEKTROC/Trackyu-GPS/blob/main/monitoring/runbooks/SocketHighDisconnectRate.md"
 
   # ============================================
   # ALERTES BASE DE DONNÉES
