@@ -1,7 +1,14 @@
-# Alertmanager Configuration - TrackYu GPS
-# 
-# Configure les canaux de notification pour les alertes Prometheus.
-# En production, configurer les receivers avec les vrais endpoints.
+# Alertmanager — TrackYu GPS
+#
+# Routing simplifié : tous les receivers pointent vers le webhook backend
+# (POST /api/v1/system/alerts) qui dispatche ensuite vers email Resend +
+# Socket.IO + INSERT system_alerts. Centralise la logique de routing côté
+# backend (modifiable sans restart Alertmanager) et utilise les helpers
+# existants (emailService, socket throttle, audit DB).
+#
+# Variables substituées par envsubst au démarrage du container :
+#   $ALERTMANAGER_WEBHOOK_TOKEN — token shared, vérifié backend en constant-time
+#   $BACKEND_WEBHOOK_URL        — URL interne backend (défaut http://172.17.0.1:3001)
 
 global:
   resolve_timeout: 5m
@@ -11,50 +18,40 @@ route:
   group_wait: 10s
   group_interval: 5m
   repeat_interval: 4h
-  receiver: 'default'
+  receiver: 'backend-webhook'
+
   routes:
-    # Alertes critiques → notification immédiate
+    # Critical → notification immédiate, repeat 1h
     - match:
         severity: critical
-      receiver: 'critical'
+      receiver: 'backend-webhook'
       group_wait: 0s
       repeat_interval: 1h
 
-    # Alertes warning → groupées
+    # Warning → groupé, repeat 4h
     - match:
         severity: warning
-      receiver: 'default'
+      receiver: 'backend-webhook'
       repeat_interval: 4h
 
-    # Alertes info → faible priorité
+    # Info → faible priorité, repeat 12h
     - match:
         severity: info
-      receiver: 'default'
+      receiver: 'backend-webhook'
       repeat_interval: 12h
 
 receivers:
-  # Receiver par défaut (logs uniquement en dev)
-  - name: 'default'
-    # TODO: Configurer en production :
-    # webhook_configs:
-    #   - url: 'http://backend:3001/api/system/alerts'
-    #     send_resolved: true
+  - name: 'backend-webhook'
+    webhook_configs:
+      - url: '${BACKEND_WEBHOOK_URL}/api/v1/system/alerts'
+        send_resolved: true
+        max_alerts: 0  # 0 = no limit
+        http_config:
+          authorization:
+            type: Bearer
+            credentials: '${ALERTMANAGER_WEBHOOK_TOKEN}'
 
-  # Receiver critique (Telegram + webhook backend)
-  - name: 'critical'
-    # TODO: Configurer en production :
-    # webhook_configs:
-    #   - url: 'http://backend:3001/api/system/alerts'
-    #     send_resolved: true
-    # telegram_configs:
-    #   - bot_token: '${TELEGRAM_BOT_TOKEN}'
-    #     chat_id: ${TELEGRAM_CHAT_ID}
-    #     message: |
-    #       🚨 {{ .CommonAnnotations.summary }}
-    #       {{ .CommonAnnotations.description }}
-    #       Status: {{ .Status }}
-
-# Inhibe les alertes warning quand une alerte critical existe pour le même groupe
+# Inhibe les alertes warning quand une critical du même alertname est active
 inhibit_rules:
   - source_match:
       severity: 'critical'

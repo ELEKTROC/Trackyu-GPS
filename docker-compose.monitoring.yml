@@ -16,7 +16,7 @@ services:
     container_name: trackyu-prometheus
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./monitoring/prometheus/rules.yml:/etc/prometheus/rules.yml:ro
@@ -47,7 +47,12 @@ services:
     container_name: trackyu-alertmanager
     restart: unless-stopped
     ports:
-      - "9093:9093"
+      - "127.0.0.1:9093:9093"
+    extra_hosts:
+      # Permet à Alertmanager d'atteindre le backend via host.docker.internal:3001
+      # (le backend tourne dans un autre projet compose, DNS Docker ne résout
+      # pas le container_name entre projets distincts)
+      - "host.docker.internal:host-gateway"
     volumes:
       - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager_data:/alertmanager
@@ -68,13 +73,13 @@ services:
     container_name: trackyu-grafana
     restart: unless-stopped
     ports:
-      - "3030:3000"
+      - "172.17.0.1:3030:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-changeme}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=http://148.230.126.62:3030
-      - GF_ALERTING_ENABLED=true
+      - GF_ALERTING_ENABLED=false
       - GF_UNIFIED_ALERTING_ENABLED=true
     volumes:
       - grafana_data:/var/lib/grafana
@@ -103,7 +108,7 @@ services:
     container_name: trackyu-node-exporter
     restart: unless-stopped
     ports:
-      - "9100:9100"
+      - "127.0.0.1:9100:9100"
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -131,7 +136,7 @@ services:
     container_name: trackyu-redis-exporter
     restart: unless-stopped
     ports:
-      - "9121:9121"
+      - "127.0.0.1:9121:9121"
     environment:
       - REDIS_ADDR=redis:6379
     healthcheck:
@@ -152,7 +157,7 @@ services:
     container_name: trackyu-postgres-exporter
     restart: unless-stopped
     ports:
-      - "9187:9187"
+      - "127.0.0.1:9187:9187"
     environment:
       - DATA_SOURCE_NAME=postgresql://${POSTGRES_USER:-fleet_user}:${POSTGRES_PASSWORD:-fleet_password}@postgres:5432/${POSTGRES_DB:-fleet_db}?sslmode=disable
     healthcheck:
