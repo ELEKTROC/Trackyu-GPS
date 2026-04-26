@@ -558,6 +558,29 @@ export function createAdminApi(lazyApi: () => any) {
         if (!response.ok) throw new Error('Failed to fetch system metrics');
         return response.json();
       },
+      alertsFiring: async () => {
+        if (USE_MOCK) {
+          await sleep(NETWORK_DELAY);
+          return { data: [], count: 0 };
+        }
+        const response = await fetch(`${API_URL}/system/alerts/firing`, { headers: getHeaders() });
+        if (!response.ok) throw new Error('Failed to fetch firing system alerts');
+        return response.json();
+      },
+      monitoringHealth: async () => {
+        if (USE_MOCK) {
+          await sleep(NETWORK_DELAY);
+          return {
+            timestamp: new Date().toISOString(),
+            prometheus: { up: true, latencyMs: 5, status: 200 },
+            grafana: { up: true, latencyMs: 12, status: 200 },
+            alertmanager: { up: true, latencyMs: 7, status: 200 },
+          };
+        }
+        const response = await fetch(`${API_URL}/system/monitoring-health`, { headers: getHeaders() });
+        if (!response.ok) throw new Error('Failed to fetch monitoring health');
+        return response.json();
+      },
     },
 
     // --- ADMIN FEATURES ---
