@@ -54,19 +54,9 @@ Archives/
 backups/
 *.sql.gz
 
-# Mobile app — unifié dans le monorepo (ex-dépôt séparé)
-# Secrets mobile (keystore, credentials, service accounts)
-trackyu-mobile-expo/credentials/
-trackyu-mobile-expo/credentials.json
-trackyu-mobile-expo/secrets/
-# google-services.json : volontairement tracké (repo privé, clé FCM restreinte
-# côté Firebase Console : package + SHA-1). Nécessaire aux builds EAS.
-trackyu-mobile-expo/node_modules/
-trackyu-mobile-expo/.expo/
-trackyu-mobile-expo/ios/
-trackyu-mobile-expo/android/
-trackyu-mobile-expo/*.aab
-trackyu-mobile-expo/*.apk
+# Mobile app — repo dédié depuis 2026-04-28 (github.com/ELEKTROC/trackyu-mobile)
+# Le dossier a son propre .git — tout le contenu est ignoré ici
+trackyu-mobile-expo/
 trackyu-mobile-expo/load-tests/*-report.json
 trackyu-mobile-expo/load-tests/*-report.html
 
