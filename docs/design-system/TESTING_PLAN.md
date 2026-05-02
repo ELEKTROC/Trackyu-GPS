@@ -2,7 +2,7 @@
 
 > Plan de tests prioritaires pour `trackyu-front-V2/`. À lire **après** STATE.md.
 >
-> Dernière mise à jour : **2026-05-02** — bootstrap infra + 6 fichiers tests (`utils/dateRange` + `SettingsPage` smoke + `mapInvoice` + `vehicleStatus` + `geo` + `currencies`) → **151 tests verts**. Tier 1 utils purs ✅ COMPLET.
+> Dernière mise à jour : **2026-05-02** — bootstrap infra + 8 fichiers tests → **195 tests verts**. Tier 1 utils purs ✅ COMPLET (4/4). Tier 1 mappers : `mapInvoice` ✅ + `mapContract` ✅. `formatDuration` ✅. Bloqués : `getBillingMonths` (extract requis), `useVehicleFuel` (refactor mappers inline).
 
 ---
 
@@ -131,10 +131,11 @@ Composants qui supportent **toutes les pages**. Une régression = tout casse.
 
 - [x] `mapInvoice` test (sérialisation Invoice complète + edge cases statuts) — **53 tests · livré 2026-05-02**
 - [ ] `getBillingMonths` test (algo planning facturation)
-- [ ] `useContracts` mapper test
+- [x] `useContracts` mapper test (`mapContract` — fallbacks, calcDuration, formatAmount, mapStatus) — **27 tests · livré 2026-05-02**
 - [ ] `useDashboardData` agrégations test
-- [ ] `useVehicleActivity` day-stats test (jour calendaire)
-- [ ] `useVehicleFuel` events test
+- [~] `useVehicleActivity` : `formatDuration` helper testé (17 tests, livré 2026-05-02). Le hook lui-même nécessite mock React Query — différé Tier 2
+- [ ] `useVehicleActivity` day-stats test (jour calendaire) — différé (mock React Query requis)
+- [ ] `useVehicleFuel` events test — bloqué : mappers défensifs (snake_case ↔ camelCase) inline dans queryFn, refactor extract requis avant test
 - [x] `vehicleStatus` test (4 statuts × labels FR + couleurs métier fixes) — **24 tests · livré 2026-05-02**
 - [x] `geo` test (isValidCoord + haversine Abidjan/Paris-NY/antipodes) — **22 tests · livré 2026-05-02**
 - [x] `currencies` test (XOF/EUR/USD/MAD/GNF + edge cases) — **35 tests · livré 2026-05-02**
