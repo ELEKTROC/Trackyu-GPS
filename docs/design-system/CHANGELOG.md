@@ -7,6 +7,320 @@
 
 ---
 
+## [Session 12 — Chantier RAPPORTS V2 — Pilote R-ACT-01 Trajets détaillés livré en prod] — 2026-05-02
+
+### Contexte
+
+Pilote du module Rapports : 78 sous-rapports en V2 dont **75 sont des placeholders** (vue détail générique sans génération réelle). Mobile a déjà un système robuste (10 modules, types `ReportGroup`/`ReportFilters`, générateurs par catégorie). Décision : pattern serveur (calcul backend, format normalisé `ReportResult`), workflow filtres permanent (option B), démarrage par R-ACT-01 Trajets détaillés en pilote.
+
+### Backend — endpoint POST /api/v1/reports/activity/trips
+
+**Nouveaux fichiers** :
+
+- `src/repositories/reportsRepository.ts` — `TripsReportFilters`, `getTripsKpis` (agrégat global), `findTripsSummaryByVehicle` (`GROUP BY o.id` + `LEFT JOIN tiers c ON c.id::text = o.client_id::text AND c.type='CLIENT'`), `findTripsDetailsLimited` (window function `ROW_NUMBER() OVER (PARTITION BY object_id ORDER BY start_time DESC)` + `WHERE rn <= N`), `findTripsRows` (legacy flat préservé).
+- `src/controllers/reportsController.ts` — handler avec validation Zod, RBAC `tenantId` + `clientId` enforced, formatters FR (date/heure/durée/km/vitesse).
+- `src/routes/reportsRoutes.ts` — mount + `authenticateToken` + `requirePermission('VIEW_FLEET')`.
+
+**Modifs** :
+
+- `src/routes/v1Router.ts` — `import reportsRoutes` + `v1Router.use('/reports', reportsRoutes)`.
+
+**Format réponse (groupé)** :
+
+```json
+{
+  "title": "Trajets détaillés",
+  "kpis": [{label, value, color}],
+  "summaryColumns": ["Engin","Plaque","Client","Conducteur","Trajets","Distance totale","Durée totale","Vit. moy.","Vit. max"],
+  "detailColumns":  ["Date","H. départ","H. arrivée","Départ","Arrivée","Durée","Distance","Vit. moy.","Vit. max"],
+  "groups": [{ summary: string[], details: string[][], meta: { tripCount, detailsTruncated } }],
+  "meta": { totalCount, truncated, exportOnly, viewThreshold:500, exportOnlyThreshold:5000, perVehicleDetailsLimit:100 }
+}
+```
+
+**Seuils** :
+
+- `totalCount ≤ 500` → tableau complet
+- `500 < totalCount ≤ 5000` → summary + 100 détails max/véhicule + bandeau
+- `totalCount > 5000` → `exportOnly=true` (pas de details transmis)
+
+### Frontend V2 — features/reports/
+
+**Types** (`features/reports/types.ts`) — `ReportResult` étendu avec `summaryColumns + detailColumns + groups[]` (compat flat conservée), `ReportGroup` (summary + details + meta tripCount/detailsTruncated), `ReportMeta` (perVehicleDetailsLimit).
+
+**API** (`features/reports/api.ts`) — `useTripsReport()` mutation React Query → `POST /reports/activity/trips`.
+
+**Composants** :
+
+- `MultiSelectField.tsx` — multi-select générique : recherche live, "Tout cocher" filtré, fermeture au clic d'item, **pagination 20/page** (mini-paginateur ◀▶), reset page sur recherche.
+- `ReportFilterPanel.tsx` — panneau permanent : **cascade revendeur→client→véhicule** (matching par nom côté UI, IDs côté backend), DateRangePicker, RBAC role-based (revendeur masqué pour ADMIN tenant, revendeur+client pour CLIENT), bouton "Générer le rapport".
+- `ExpandableReportTable.tsx` — master/detail : 1 ligne summary par groupe + chevron 90° rotation au clic + sous-tableau détails dessous (mêmes colonnes pour tous), boutons "Tout déployer/replier", banner ambré si `detailsTruncated` au niveau groupe.
+- `RptDetailTrips.tsx` — vue détail R-ACT-01 : toggle filtres (auto-masquage après `isSuccess`), KPIs (4), toolbar (ColumnManager pour summary + boutons export désactivés), banner exportOnly global.
+
+**Wiring** (`ReportsPage.tsx`) — branchement `subId === 'R-ACT-01'` → `<RptDetailTrips />`. Les 77 autres restent sur `RptDetailGeneric` ou détails existants (Km/Alerts/MRR).
+
+**Bouton Retour** — déplacé en bas de `RptDetailTrips` + `RptDetailGeneric` (border-top + style ghost).
+
+### Bugs fixés en cours de session
+
+1. **Cascade revendeur → 0 clients/véhicules** : `useVenteClients` lisait `r.reseller_id` (snake) mais backend renvoie `resellerId` (camel via `mapTierRow`). 1634/1635 clients ont leur `reseller_id` peuplé en DB. **Fix** : `r.resellerId ?? r.reseller_id ?? '—'` (idem `createdAt`/`created_at`).
+2. **DateRangePicker dropdown sous sidebar** : `right: 0` + bouton près du bord gauche → dropdown sortait à `−110px` du viewport, masqué par sidebar (z-index plus élevé). **Fix** : `useLayoutEffect` mesure `getBoundingClientRect` à l'ouverture, bascule en `left: 0` si débordement gauche.
+3. **DateRangePicker raccourcis manquants** : ajout Hier · Sem. préc. · Mois préc. (en plus d'Auj./Sem./Mois/Trim./Année).
+4. **DateRangePicker format date OS** : `<input type="date">` affichait jj/mm/aaaa locale OS → remplacé par `<input type="text">` avec parser custom `dd-mm-yyyy` (accepte tirets/slashes/points), validation au blur, valeur interne ISO `YYYY-MM-DD` conservée.
+5. **Tableau vide >500 trajets** : controller `if (!truncated)` cachait le tableau dès 501 trajets → `if (!exportOnly)` (affiche les 500 plus récents jusqu'à 5000).
+6. **ReportsPage filter chips dupliqués** dans la vue Catalogue (sous la tab bar) supprimés.
+7. **Icônes onglets/sous-onglets** retirées dans `AdminPage`, `SettingsPage`, `ReportsPage` (tab bars de navigation).
+
+### UX — pattern groupé adopté (sur retour utilisateur)
+
+Première implémentation flat (1 ligne / trajet, max 500). Retour utilisateur : "tous les trajets ne s'affichent pas avec multi-véhicules" (cf. seuil 500). **Refonte** : format groupé inspiré du mobile (`GroupedDataTable`) — 1 ligne summary par véhicule + détails dépliables. Avantages : 1000 véhicules = 1000 lignes summary (pas de seuil), comparaison flotte directe, charge à la demande pour le détail.
+
+### Déploiements (2026-05-02)
+
+| Hour   | Cible                                    | Hash / preuve                                                                                                                          |
+| ------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| ~16:00 | Backend (1ère version reports)           | session geocoding parallèle avait embarqué mon code `if (!truncated)`                                                                  |
+| ~17:30 | Backend (fix `if (!exportOnly)`)         | `deploy.ps1 -backend -nobuild -force` 5min13s · HTTP 200                                                                               |
+| ~18:00 | Backend (format groupé + colonne Client) | `deploy.ps1 -backend -nobuild -force` 4min38s · `dist/controllers/reportsController.js` confirmé `'Client'` + jointure `tiers c`       |
+| ~18:30 | Frontend V2 (final groupé + Client)      | `live.trackyugps.com` index `CDrPzSwq` · `ReportsPage-Deo-vszu.js` HTTP 200, contient `"Tout déployer"` (chaîne ExpandableReportTable) |
+
+### Fichiers nouveaux (Session 12)
+
+**Backend** :
+
+- `src/controllers/reportsController.ts`
+- `src/repositories/reportsRepository.ts`
+- `src/routes/reportsRoutes.ts`
+
+**Frontend V2** :
+
+- `src/features/reports/types.ts`
+- `src/features/reports/api.ts`
+- `src/features/reports/components/MultiSelectField.tsx`
+- `src/features/reports/components/ReportFilterPanel.tsx`
+- `src/features/reports/components/ExpandableReportTable.tsx`
+- `src/features/reports/components/RptDetailTrips.tsx`
+
+### Fichiers modifiés (Session 12)
+
+- `trackyu-backend/src/routes/v1Router.ts` (mount /reports)
+- `trackyu-front-V2/src/components/ui/DateRangePicker.tsx` (alignement auto + raccourcis + format dd-mm-yyyy)
+- `trackyu-front-V2/src/features/vente/hooks/useVenteClients.ts` (camelCase fallback)
+- `trackyu-front-V2/src/features/admin/AdminPage.tsx` (retrait icônes onglets)
+- `trackyu-front-V2/src/features/settings/SettingsPage.tsx` (retrait icônes sous-onglets)
+- `trackyu-front-V2/src/features/reports/ReportsPage.tsx` (suppr filter chips dupliqués, branchement R-ACT-01, retrait icônes onglets)
+
+### Reste à faire (Module Rapports)
+
+- 7 autres rapports d'Activités (R-ACT-02 à R-ACT-08) — pattern groupé/véhicule réutilisable
+- 70 rapports d'autres catégories (Alertes · Carburant · CRM · Finance · Comptabilité · Technique · Support · Admin · Superadmin)
+- Exports CSV/Excel/PDF (3 boutons actuellement désactivés)
+- Graphiques par rapport (étape ultérieure validée par utilisateur)
+
+---
+
+## [Session 11-bis — Chantier FINANCE V2 démarré : LOT 1 Relancer + LOT 2 Saisir paiement livrés] — 2026-05-02
+
+### Contexte
+
+Audit du menu facture V2 demandé par l'utilisateur. Constat : **100 % des boutons d'action sont `disabled` avec `title="Bientôt disponible"`** — les CRUD ne sont pas câblés malgré l'existence du service `services/api/finance.ts` (port legacy de 2058 lignes). Le hook `useRecovery.sendReminder` existait mais n'était pas branché à l'UI.
+
+13 régressions identifiées vs legacy `features/finance/` (3269 lignes FinanceView + 970 lignes InvoiceForm + Zod). Routes backend toutes vérifiées en prod : `POST/PUT/DELETE /finance/invoices`, `POST /finance/invoices/:id/send`, `POST/DELETE /finance/payments`, `POST /recovery/invoices/:id/{remind,mark-paid,partial-payment}`.
+
+### Spec FINANCE.md créée
+
+[`docs/design-system/modules/FINANCE.md`](modules/FINANCE.md) (290 L) — spec auto-suffisante :
+
+- Mapping fidèle Templates Design (A facture · G modale · vc-billing · vr-views) → composants V2
+- 6 lots de livraison priorisés
+- Endpoints backend + permissions + RBAC
+- Tokens DLS + couleurs statuts métier
+- Décisions métier documentées
+
+### LOT 1 ✅ Relancer
+
+**Hook `useRecovery.ts` enrichi** : `sendReminder` passe d'une simple fonction à `useMutation` :
+
+- Body POST : `{ channel: 'EMAIL'|'SMS'|'CALL', template?: 'COURTOISE'|'FERME'|'MISE_EN_DEMEURE', note?: string }`
+- `onSuccess` invalide `['recovery']` + `['invoices']`
+
+**`ReminderModal.tsx`** créé dans `features/vente/modals/` :
+
+- Port Template G (Dialog 420px) — pattern QuickActionPage
+- Récap facture en haut + 3 FormField (canal/modèle/note)
+- Pré-sélection intelligente du template selon `daysLate`
+- Toast succès/erreur
+
+**4 endroits câblés dans VentePage** : icône 🔔 liste, bouton RELANCER Kanban, cercle 🔔 panel EN DÉTAIL, bouton 🔔 FactureDetailPanel.
+
+### Décision métier — "Marquer comme payée" retiré
+
+Pas de raccourci "Mark as paid" en UI. **Pour passer une facture en PAID, on doit OBLIGATOIREMENT saisir un paiement** (LOT 2). Endpoint `POST /recovery/invoices/:id/mark-paid` existe mais n'est **pas exposé**. Raison : rigueur comptable, traçabilité, pas de raccourci administratif.
+
+### LOT 2 ✅ Saisir paiement
+
+**`usePaymentMutations.ts`** : POST/DELETE `/finance/payments` snake_case + invalidations `['payments', 'invoices', 'recovery']`.
+
+**`PaymentModal.tsx`** : Port Template G (Dialog 420px). Récap facture pré-rempli + 6 FormField. Mobile Money 4 sous-options (MTN/Orange/Moov/Wave) consolidées en `MOBILE_MONEY` backend, précision conservée dans `reference`.
+
+**Branchements** : Toolbar `+ Saisir paiement` + boutons `💰 Saisir un paiement` sur ViewInvoiceDetail (panel actions) et FactureDetailPanel (slide-in), conditionnés à `status !== 'paid' && status !== 'draft'`.
+
+### LOT 3 ✅ Nouvelle facture / édition / suppression
+
+**Inauguration Zod 4 + react-hook-form + @hookform/resolvers en V2** (deps installées depuis le bootstrap, jamais utilisées jusqu'ici).
+
+**`schemas/invoiceFormSchema.ts`** :
+
+- `invoiceLineSchema` (description min 1, quantity ≥ 1, price ≥ 0)
+- `invoiceFormSchema` avec `.refine()` pour `dueDate ≥ date`
+- Helper `computeTotals(items, vatRate)` → `{ subtotalHT, tva, totalTTC }` consommé en live dans la modale
+
+**`useInvoiceMutations.ts`** :
+
+- POST `/finance/invoices` (CREATE_INVOICES)
+- PUT `/finance/invoices/:id` (EDIT_INVOICES)
+- DELETE `/finance/invoices/:id` (DELETE_INVOICES)
+- POST `/finance/invoices/:id/send` (préparé pour LOT 4)
+- Mapping camelCase Zod → snake_case backend (`items[].price` → `items[].unit_price`, `amount` = TTC calculé front, `vat_rate` envoyé séparé)
+
+**`InvoiceFormModal.tsx`** — port Template A (`TplAFormInvoice` `_raw/tpl-views.jsx:36-130`) en composant réutilisable :
+
+- Dialog 1000px (overlay sombre, body scrollable)
+- Bloc 2 cols Émetteur (readonly TrackYu GPS) + Destinataire (Select client depuis `useVenteClients`)
+- Card Références 4×2 cols : Type · Date émission · Échéance · Catégorie / Contrat (depuis `useContracts`) · Plaque · Bon cmd · Sujet
+- Card Lignes éditables fidèle Design : **Désignation · Période · Qté · PU HT · Total HT · ✕** (`useFieldArray` pour add/remove)
+- Totaux live HT / TVA (`Select` 0/9/18 %) / TTC mis à jour à chaque change
+- Card Conditions + Notes en grid 2 cols
+- Footer : Annuler · **Enregistrer brouillon** (`status='DRAFT'`) · **Émettre la facture** (`status='SENT'` → déclenche écriture comptable backend)
+- Mode édition : `initialInvoice.id` fourni → PUT au lieu de POST
+
+**Branchements VentePage** :
+
+- Bouton `+ Nouvelle facture` toolbar (était `disabled`) → ouvre modale création
+- Action `✏ Éditer` sur ligne table (nouvelle icône) → ouvre modale édition préremplie via helper `mapInvoiceToFormDefaults` (extraction date/montant/items du backend Invoice mappé)
+- Action `🗑 Supprimer` sur ligne (nouvelle icône) → `Dialog` confirm avec récap + warning irréversible + `deleteInvoice` mutation
+
+**Décision Design** : suivi fidèle TplAFormInvoice (colonne Période ajoutée comme dans le mockup, valait pour les factures d'abonnement mensuel).
+
+### Build LOT 3
+
+```
+✓ built in 11.87s
+VentePage : 241.71 kB (gzip 62.09 kB) — +114 kB vs LOT 2 (Zod + react-hook-form + InvoiceFormModal complète, première utilisation V2 → coût initial justifié, sera mutualisé pour les futurs forms)
+0 erreur · 0 warning
+```
+
+### LOT 4 ✅ Actions panel détail (refonte fidélité mockup utilisateur 2026-05-02)
+
+L'utilisateur a fourni la capture du mockup Design `VcInvoiceDetail` (`_raw/vc-billing-views.jsx:88-286`) montrant la cible exacte du panel ACTIONS. Refonte complète pour fidélité maximale :
+
+**Bouton géant "Envoyer relance" (port fidèle)** :
+
+- 170px hauteur, fond `stColor` (rouge `#ef4444` si late, autre selon statut)
+- Icône huge 140px (🔔 si late, ✓ si paid, 📄 sinon) en filigrane top-center, opacity 0.85
+- Label "Envoyer relance" bottom-right, font 13px bold blanc
+- Variantes statut : late (rouge cliquable) · paid (vert non cliquable) · partial · draft
+
+**Card actions secondaires** (boutons stack, helpers `actionBtnStyle`/`actionBtnSecondaryStyle`/`actionBtnGhostDanger`) :
+
+- `💰 Saisir un paiement` (primary orange) si `status !== 'paid' && status !== 'draft'`
+- `↓ Télécharger PDF` (secondary)
+- `✉ Renvoyer par email` (secondary)
+- `Émettre avoir` (ghost border rouge `#ef444466` color `#fca5a5`)
+
+**`SendInvoiceModal.tsx`** créé — Template G Dialog 460px :
+
+- Récap facture + 4 FormField : To (validation email regex), Cc optionnel (validation email regex), Subject (default `Facture {ref}`), Message (Textarea 80px)
+- POST `/finance/invoices/:id/send` body `{ to, cc, subject, message }` (backend génère HTML)
+- Toast succès `"Facture {ref} envoyée à {email}"`
+
+**`generateInvoicePDF.ts`** helper créé — jspdf + jspdf-autotable :
+
+- Header : émetteur TrackYu GPS SAS (orange brand) + FACTURE titre + ref + badge status coloré
+- Bloc 3 cols : FACTURÉ À · RÉFÉRENCES (contrat/abonnement/période) · DATES (émise/échéance)
+- AutoTable lignes : DÉSIGNATION · PÉRIODE · QTÉ · PU HT · TOTAL HT
+- Totaux : Sous-total HT · TVA · **TOTAL TTC** (orange brand, ligne séparatrice)
+- Footer : conditions paiement + IBAN
+- Sortie : `{ref}.pdf` téléchargement direct
+
+**Lazy-loading dynamique** : `await import('./utils/generateInvoicePDF')` au clic PDF — chunk dédié 425 kB (jspdf + html2canvas) chargé uniquement à la demande. Sans ce split, VentePage faisait 672 kB (warning Vite). Avec : VentePage reste 245 kB.
+
+**Émettre avoir** : réutilise `InvoiceFormModal` avec `initialInvoice = { invoiceType: 'AVOIR', subject: 'Avoir sur {ref}', items: [{ description: 'Avoir sur facture {ref}', quantity: 1, price: HT }], notes: 'Avoir émis pour annulation/régularisation…' }`. Le formulaire est éditable, l'utilisateur ajuste le montant et émet.
+
+**Branchements `FactureDetailPanel` slide-in** : ajouts boutons PDF (toujours visible), Email (toujours), Relance (si late), Émettre avoir (si paid).
+
+### Build LOT 4
+
+```
+✓ built in 15.07s
+VentePage : 245.25 kB (gzip 63.23 kB) — +3.5 kB vs LOT 3
+generateInvoicePDF chunk : 424.78 kB (gzip 139 kB) — chargé uniquement au clic PDF
+html2canvas.esm chunk : 202.42 kB (gzip 48 kB) — dépendance jspdf
+0 erreur · 0 warning chunk size (résolu via dynamic import)
+```
+
+### LOT 5 ✅ Filtres avancés + ColumnManager + Export CSV
+
+**Filtres composables** (côté client sur la page courante) :
+
+- **Recherche texte** (`ToolbarSearch`) — câblée `value/onChange`, filtre multi-critères : ref + client + clientRef + plate + reseller + subject + sub (lowercase contains)
+- **Filtre Statut** — pattern existant FilterChip cycle (paid/issued/late/partial/draft + Tous)
+- **Filtre Catégorie** — nouveau FilterChip cycle 4 options (STANDARD/INSTALLATION/ABONNEMENT/AUTRES_VENTES). Note : le champ `category` n'est pas encore exposé par `useInvoices` mapping V2 → filtre fonctionnel mais retournera 0 résultat tant que le mapping n'est pas enrichi (à faire backend/hook plus tard)
+- **ResetFiltersButton** — visible si au moins un filtre actif, reset les 3 d'un coup
+
+**ColumnManager** primitive câblée :
+
+- Bouton `⚙ Colonnes` (était `disabled`) → toggle popover `ColumnManager`
+- Constante `INVOICE_COLUMNS_DEFAULT` : 13 colonnes (4 lockées : `select`, `ref`, `client`, `amount`, `actions`)
+- État `colVisible` persistant via `localStorage` clé `vente_invoices_visible_cols_v1`
+- Helpers `toggleCol(key)`, `resetCols()`, `isVis(key)`
+- Render conditionnel `<TH>`/`<TD>` selon `isVis()`
+
+**Export CSV** — `utils/exportInvoicesCSV.ts` :
+
+- Lib `papaparse` 5.5.3 (déjà dans deps V2)
+- 14 colonnes avec statut traduit FR
+- Délimiteur `;` (Excel FR friendly) + BOM UTF-8 pour caractères accentués
+- Filename auto `factures_YYYY-MM-DD.csv`
+- **Lazy-import dynamique** au clic — papaparse hors bundle initial
+- Bouton désactivé si `displayed.length === 0`
+- Export = factures **filtrées** uniquement
+
+### Build LOT 5
+
+```
+✓ built in 14.93s
+VentePage : 248.01 kB (gzip 64.36 kB) — +2.76 kB vs LOT 4
+0 erreur · 0 warning
+```
+
+### Fichiers touchés
+
+**Créés** :
+
+- `docs/design-system/modules/FINANCE.md`
+- `trackyu-front-V2/src/features/vente/modals/ReminderModal.tsx`
+- `trackyu-front-V2/src/features/vente/modals/PaymentModal.tsx`
+- `trackyu-front-V2/src/features/vente/modals/InvoiceFormModal.tsx`
+- `trackyu-front-V2/src/features/vente/modals/SendInvoiceModal.tsx`
+- `trackyu-front-V2/src/features/vente/hooks/usePaymentMutations.ts`
+- `trackyu-front-V2/src/features/vente/hooks/useInvoiceMutations.ts`
+- `trackyu-front-V2/src/features/vente/schemas/invoiceFormSchema.ts`
+- `trackyu-front-V2/src/features/vente/utils/generateInvoicePDF.ts`
+- `trackyu-front-V2/src/features/vente/utils/exportInvoicesCSV.ts`
+
+**Modifiés** :
+
+- `trackyu-front-V2/src/features/vente/hooks/useRecovery.ts` (sendReminder → useMutation)
+- `trackyu-front-V2/src/features/vente/VentePage.tsx` (12 branchements + imports modales + helpers actionBtn\* + lazy-import PDF + ViewInvoiceDetail panel refondu fidélité + FactureDetailPanel enrichi)
+
+### Reste du chantier FINANCE V2
+
+- LOT 5 — Filtres avancés + ColumnManager + Export CSV
+- LOT 6 — Recouvrement complet (Overview/DossierFocus/Workflow VrViews)
+
+---
+
 ## [Session 11 — Bootstrap infra Vitest V2 + plan de tests prioritaires] — 2026-05-02
 
 ### Contexte
@@ -50,14 +364,52 @@ Décision : écrire des **équivalents fonctionnels** adaptés à V2, pas un por
 - Mocking : préférer mocker `services/api/*` plutôt que React Query · contextes via `vi.mock('@/contexts/...')` · date pivot recommandée = lundi 15/06/2026 12:00 UTC
 - Estimation : ~8 jours-dev pour atteindre 60-70 % couverture
 
-### Résultat
+### Suite session — Tier 1 utils + mappers (4 commits V2 supplémentaires)
 
-**17/17 tests verts** (`npm test -- --run` : 2 files passed, 17 tests passed, 10.5s).
-Typecheck : 0 erreur dans les fichiers ajoutés (les erreurs pré-existantes sur Map/GoogleMaps/ReportFilterPanel sont indépendantes).
+Après le bootstrap (commits V2 `7a9cec6` + TRACKING `70b24e4`), on enchaîne directement sur le Tier 1 du backlog sans relâche.
+
+**Commit V2 `826e86e` — `mapInvoice` (53 tests)** — sérialise BackendInvoice → Invoice pour les ~7133 factures prod. Couverture : mapping nominal · 11 fallbacks valeurs nulles · `paidAmount` 0/null → `"—"` · `normalizeStatus` 10 cases (incluant alias backend `overdue`→`late`, `pending`/`sent`→`issued` + case-insensitive) · `calcDaysLate` 5 cases (dépend de `Date.now()` via `vi.setSystemTime`) · montants priorité ttc/ht + parsing string/number/invalide · `vatRate` default 18 (incluant edge case documenté `parseFloat(0) || 18 = 18`) · `category` 3 valeurs valides + `STANDARD` legacy → null · dates formatées + raw.
+
+**Commit V2 `1fd7112` — `vehicleStatus` + `geo` + `currencies` (81 tests)** — ferme le Tier 1 utils purs.
+
+- `vehicleStatus.test.ts` (24) : labels FR canoniques + lowercase + couleurs métier FIXES (#22C55E vert, #F97316 orange, #EF4444 rouge, #6B7280 gris) + statut inconnu → fallback gris + cohérence UPPERCASE = lowercase pour labels/colors/classes Tailwind.
+- `geo.test.ts` (22) : `isValidCoord` Abidjan/Yamoussoukro · règle anti-fix non convergé `(0,0)` · null/undefined/NaN/Infinity · bornes WGS84 ; `haversineMeters` point identique → 0 · Abidjan↔Yamoussoukro ~217 km · Paris↔NY ~5837 km · symétrie · antipodes ~20015 km.
+- `currencies.test.ts` (35) : 6 devises supportées (XOF/XAF/EUR/USD/MAD/GNF) · décimales (0 pour CFA/GNF, 2 pour EUR/USD/MAD) · prefix/suffix · `formatCurrency` null/undefined/NaN → `'--'` · XOF arrondit · EUR fr-FR (1 500,00) · USD en-US (1,500.00) · devise inconnue → fallback fr-FR + suffixe code · `getCurrencyConfig`.
+- **Bug attrapé en passant** : estimation initiale Abidjan↔Yamoussoukro à 235 km était fausse (j'avais pris la route au lieu du vol d'oiseau). Vraie valeur haversine = ~217 km. Test corrigé, commentaire explicatif ajouté.
+
+**Commit V2 `a0391bf` — `mapContract` + `formatDuration` (44 tests)** — ferme le Tier 1 mappers métier (2/2).
+
+- `mapContract.test.ts` (27) : mapping nominal (id/ref/client/reseller/type + raw values) · 5 fallbacks valeurs nulles · `calcDuration` (`endDate` null → "Indéfini" CDI · 24/12/6 mois exacts) · `formatAmount` 4 cycles (MONTHLY/QUARTERLY/ANNUAL/SEMIANNUAL) + fallback + lowercase + format "X F / cycle" + edge case 0 · `mapStatus` 5 mappings (ACTIVE/EXPIRED/TERMINATED→canceled/SUSPENDED/PENDING) + lowercase + fallback "active" · dates formatées.
+- `formatDuration.test.ts` (17) — helper exporté de `useVehicleActivity` : `<` 1h → "X min" (0/59s/60s/42min/59min59s) · `>=` 1h → "Xh MM" avec padding zéro (1h 00, 1h 05, 24h 00, 100h 00) · robustesse arrondi (secondes résiduelles ignorées, seuil 3599).
+
+### Résultat final session
+
+**195/195 tests verts** (`npm test -- --run` : 8 files passed, 195 tests passed, ~10s).
+0 régression. Typecheck : 0 erreur dans les fichiers ajoutés (les erreurs pré-existantes sur Map/GoogleMaps/ReportFilterPanel sont indépendantes).
+
+| Item Tier 1 backlog                               | Statut                                                     |
+| ------------------------------------------------- | ---------------------------------------------------------- |
+| `mapInvoice`                                      | ✅ 53 tests                                                |
+| `mapContract`                                     | ✅ 27 tests                                                |
+| `vehicleStatus`                                   | ✅ 24 tests                                                |
+| `geo`                                             | ✅ 22 tests                                                |
+| `currencies`                                      | ✅ 35 tests                                                |
+| `formatDuration` (helper de `useVehicleActivity`) | ✅ 17 tests                                                |
+| `useDashboardData`                                | ⏳ différé (mock React Query requis)                       |
+| `useVehicleActivity` (hook complet)               | ⏳ différé (mock React Query requis)                       |
+| `useVehicleFuel`                                  | 🔒 bloqué — refactor extract mappers requis                |
+| `getBillingMonths`                                | 🔒 bloqué — refactor extract requis (dans `VentePage.tsx`) |
+
+### Conventions adoptées (mémorisées)
+
+2 feedback memories enregistrées pour les sessions futures :
+
+- `feedback_vitest_v2_pitfalls.md` : (1) `vi.mock` factories hoistées → inliner stubs ; (2) regex RTL strictes `^X$` sur libellés FR (collisions Utilisateurs/Sous-utilisateurs)
+- `feedback_v2_test_conventions.md` : co-localisation `__tests__/` (≠ legacy `tests/` racine) · naming `.test/.smoke/.integration` · date pivot lundi 15/06/2026 12:00 UTC · setup file global déjà fourni
 
 ### Prochaine action
 
-Attaquer Tier 1 — commencer par `mapInvoice` (7133 factures en prod, criticité maximale) puis `getBillingMonths` (algo planning Kanban facturation).
+Items Tier 1 restants demandent soit mock React Query (lourd setup `QueryClientProvider` + `vi.mock` httpGet + `renderHook` + `waitFor`) soit refactor extract (`getBillingMonths` + `useVehicleFuel` mappers inline). Décision : s'arrêter là pour cette session — ROI marginal des hooks restants plus faible. Refactors à valider avec utilisateur en début de session suivante.
 
 ---
 
