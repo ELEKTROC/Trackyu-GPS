@@ -2,7 +2,7 @@
 
 > Plan de tests prioritaires pour `trackyu-front-V2/`. À lire **après** STATE.md.
 >
-> Dernière mise à jour : **2026-05-02** — bootstrap infra Vitest + 2 premiers tests (`utils/dateRange` + `SettingsPage` smoke).
+> Dernière mise à jour : **2026-05-02** — bootstrap infra Vitest + 3 premiers tests (`utils/dateRange` + `SettingsPage` smoke + `mapInvoice` Tier 1) → **70 tests verts**.
 
 ---
 
@@ -129,7 +129,7 @@ Composants qui supportent **toutes les pages**. Une régression = tout casse.
 
 À traiter dans l'ordre Tier 1 → Tier 2 → Tier 3 → Tier 4 :
 
-- [ ] `mapInvoice` test (sérialisation Invoice complète + edge cases statuts)
+- [x] `mapInvoice` test (sérialisation Invoice complète + edge cases statuts) — **53 tests · livré 2026-05-02**
 - [ ] `getBillingMonths` test (algo planning facturation)
 - [ ] `useContracts` mapper test
 - [ ] `useDashboardData` agrégations test
