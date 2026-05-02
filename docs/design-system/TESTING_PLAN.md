@@ -2,7 +2,7 @@
 
 > Plan de tests prioritaires pour `trackyu-front-V2/`. À lire **après** STATE.md.
 >
-> Dernière mise à jour : **2026-05-02** — bootstrap infra Vitest + 3 premiers tests (`utils/dateRange` + `SettingsPage` smoke + `mapInvoice` Tier 1) → **70 tests verts**.
+> Dernière mise à jour : **2026-05-02** — bootstrap infra + 6 fichiers tests (`utils/dateRange` + `SettingsPage` smoke + `mapInvoice` + `vehicleStatus` + `geo` + `currencies`) → **151 tests verts**. Tier 1 utils purs ✅ COMPLET.
 
 ---
 
@@ -135,9 +135,9 @@ Composants qui supportent **toutes les pages**. Une régression = tout casse.
 - [ ] `useDashboardData` agrégations test
 - [ ] `useVehicleActivity` day-stats test (jour calendaire)
 - [ ] `useVehicleFuel` events test
-- [ ] `vehicleStatus` test (4 statuts × labels FR)
-- [ ] `geo` test (distance, haversine)
-- [ ] `currencies` test (XOF/EUR + edge cases)
+- [x] `vehicleStatus` test (4 statuts × labels FR + couleurs métier fixes) — **24 tests · livré 2026-05-02**
+- [x] `geo` test (isValidCoord + haversine Abidjan/Paris-NY/antipodes) — **22 tests · livré 2026-05-02**
+- [x] `currencies` test (XOF/EUR/USD/MAD/GNF + edge cases) — **35 tests · livré 2026-05-02**
 - [ ] `DataTable` test (pagination, tri, sélection)
 - [ ] `VehicleDrawer` test (4 onglets)
 - [ ] Smoke `DashboardPage`, `FleetPage`, `VentePage`, `MapPage`, `AdminPage`
