@@ -4,7 +4,11 @@
 >
 > Mis à jour à la fin de chaque session significative.
 >
-> Dernière mise à jour : **2026-05-02 (Session 12) — Chantier RAPPORTS V2 — Pilote R-ACT-01 Trajets détaillés livré en prod**. Backend `POST /api/v1/reports/activity/trips` (controller + repository + route + mount v1Router) — RBAC tenant + clientId, query KPIs agrégés, query summary par véhicule (`GROUP BY o.id`), query détails limités 100/véhicule (window function `ROW_NUMBER() OVER (PARTITION BY object_id)`), seuils 500/5000. Format réponse groupé : `summaryColumns + detailColumns + groups[]` (pattern transposé du mobile `ReportGroup`). Frontend V2 : types réponse + `useTripsReport` mutation + `ReportFilterPanel` (cascade revendeur→client→véhicule, RBAC role-based) + `MultiSelectField` (recherche, pagination 20/page, fermeture au clic, "Tout cocher") + `ExpandableReportTable` (rows expand chevron 90°, sous-tableau détails, tout déployer/replier) + `RptDetailTrips` (toggle filtres auto-masqué après génération, ColumnManager, exports désactivés MVP). Colonnes summary : Engin · Plaque · **Client** · Conducteur · Trajets · Distance totale · Durée totale · Vit. moy. · Vit. max. Colonnes détail : Date · H. départ · H. arrivée · Départ · Arrivée · Durée · Distance · Vit. moy. · Vit. max. **Bugs fixés** : (1) cascade vide → `useVenteClients` lisait `r.reseller_id` snake mais backend renvoie `resellerId` camel → double-lecture mappée. (2) DateRangePicker dropdown caché sous sidebar → alignement auto droite/gauche via `getBoundingClientRect`. (3) DateRangePicker raccourcis enrichis (Hier · Sem. préc. · Mois préc.) + format input `dd-mm-yyyy` custom (input texte + parser au lieu de `<input type=date>`). (4) tableau caché >500 trajets → `if (!truncated)` → `if (!exportOnly)` (affiche les 500 plus récents jusqu'à 5000). 🚀 **Déployé prod 2026-05-02 ~18:43** (backend `deploy.ps1 -backend -nobuild -force` + frontend `deploy-v2.ps1 -nobuild`). Reste : 77 autres rapports à porter, exports CSV/Excel/PDF (boutons désactivés).
+> Dernière mise à jour : **2026-05-03 (Session 14) — Chantier Vente/Facturation/Contrats complet + 3 bugs FleetPage critiques corrigés.** FINANCE V2 Priorité 3 entière livrée (b+c+d+a+f+e) : send multi-dest tags UI, Mobile Money sous-types `payment_provider` (migration + backend + PaymentModal Select opérateur), smart contract matching v3 (items depuis `contracts.items` JSONB + plaque depuis `vehicle_ids`), filtres Planning cycle complet (Client/Revendeur/Cycle cyclent sur toutes les valeurs). Chantier facturation abonnements complet (bouton 🧾 + anti-doublon étapes 1-4 + réactivation + badge "✓ Facturé"). CRUD Contrats (enveloppe : Client/Sujet/Dates/Statut/Notes + panel détail 👁 : table abonnements colonnes Véhicule/Cycle/Installation/Début/Fin/Montant/Statut + ligne MRR total). CRUD Abonnements (SubscriptionFormModal : contrat/véhicule/catalogue/tarif/cycle/dates/toggle-fin + panel détail 👁 : 3 onglets Détails/Factures/Historique + menu ••• Suspendre/Résilier). Migrations SQL appliquées prod : `recovery_dossiers` + `recovery_actions` + `payments.payment_provider`. Backend : `GET /contracts/:id/subscriptions` + `GET /subscriptions/:id/invoices` + `POST /subscriptions/:id/suspend` + corrections POST/PUT subscriptions (vehicle_id, contract_id, catalog_item_id). Catalogue : `useCatalogue()` + dropdown Désignation dans InvoiceFormModal (optgroup par catégorie, sélection auto unit_price/accountingSale). 3 bugs FleetPage TDZ/référence corrigés en urgence (useMemo non importé VentePage, queryClient déclaré dans sous-composant VehicleRow, filtered TDZ dans exportSelection). Tout déployé prod `index-DZ20v-L0.js`.
+>
+> Session 13 (2026-05-03) — Alignement données carburant V2 sur legacy (VehicleDetailPanel + VehicleDrawer). Audit utilisateur : le bloc Carburant V2 n'utilisait qu'environ 10% du travail legacy (1343 L de code dédié). Refonte intégrale en 4 lots, design V2 préservé, données legacy alignées. **Bug critique fixé** : `useVehicleFuel.events` recevait toujours `[]` car backend renvoie `{data:[...]}` mais le hook faisait `Array.isArray(data)` → false (aucun véhicule n'avait jamais d'événements carburant en V2). **Lot 1** : hook `useVehicleFuel.ts` réécrit — déballage `data.data ?? data`, filtre `DISMISSED`, ajout des 8 champs backend manquants (`totalRefillVolume`, `totalTheftVolume`, `refillCount`, `theftCount`, `totalConsumption`, `idlingWaste`, `tankCapacity`, `fuelType`), `FuelPoint` enrichi avec `level`/`consumption`, `FuelEvent` avec `amount`/`severity`/`confidence`, alias rétrocompat (`avg`, `min`, `max`, `tank_capacity`) pour ne pas casser le Replay. **Lot 2** : bloc Carburant `MapPage.tsx` — jauge ronde affiche les vrais litres + capacité réelle (avant : `60` codé en dur), 4 KPI alignés legacy (Recharge `+X L · n×`, Baisses, Consommation `X L · L/100km`, Pertes ralenti `X L · h/min` formule `idleHours × 1.89`), tabs Today/Semaine fonctionnels (formule legacy `start + refills − thefts − end`), bouton "📈 Courbe & détails". **Lot 3** : nouveau composant `features/fleet/components/FuelDetailModal.tsx` (529 L) — port de `legacy/FuelModalContent` avec design V2, modale 760px tabs Aujourd'hui/Semaine, 4 KPI cards, **ComposedChart Recharts** (Area niveau bleu + Line pertes ralenti orange pointillé + markers `+`/`−` REFILL/THEFT au point d'historique le plus proche), tooltip enrichi, légende, section "Événements détectés" (12 max, statut backend, confidence %). **Lot 4** : onglet Carburant `VehicleDrawer.tsx` Fleet refait — section "Niveau actuel" (grand chiffre + barre + capacité), section "Aujourd'hui" (mêmes 4 KPI), sparkline 7j alignée bleue, bouton modale, événements avec confidence %. **Build vert** : MapPage 64.73 → 182.79 kB, nouveau chunk lazy `FuelDetailModal-*.js` 383.15 kB (gzip 113.59) chargé à l'ouverture de la modale, 24.80s. Différé (à voir si métier prioritaire) : bar chart hebdo Mon-Sun, géocodage tooltip courbe, modale review events workflow CONFIRMER/REJETER (endpoint `POST /fuel-events/:id/review` déjà câblé). 🟧 En attente déploiement staging.
+>
+> Session 12 (2026-05-02) — Chantier RAPPORTS V2 — Pilote R-ACT-01 Trajets détaillés livré en prod. Backend `POST /api/v1/reports/activity/trips` (controller + repository + route + mount v1Router) — RBAC tenant + clientId, query KPIs agrégés, query summary par véhicule (`GROUP BY o.id`), query détails limités 100/véhicule (window function `ROW_NUMBER() OVER (PARTITION BY object_id)`), seuils 500/5000. Format réponse groupé : `summaryColumns + detailColumns + groups[]` (pattern transposé du mobile `ReportGroup`). Frontend V2 : types réponse + `useTripsReport` mutation + `ReportFilterPanel` (cascade revendeur→client→véhicule, RBAC role-based) + `MultiSelectField` (recherche, pagination 20/page, fermeture au clic, "Tout cocher") + `ExpandableReportTable` (rows expand chevron 90°, sous-tableau détails, tout déployer/replier) + `RptDetailTrips` (toggle filtres auto-masqué après génération, ColumnManager, exports désactivés MVP). 🚀 Déployé prod 2026-05-02 ~18:43.
 >
 > Session 12-bis (2026-05-02) — **Audit prod chantier FINANCE V2** : tout confirmé en prod. Backend `getInvoiceById` (3×) + route `invoices/:id` (4×) + `findInvoiceById` (1×) présents dans `/var/www/trackyu-gps/backend/dist/`. Endpoint répond HTTP 401 (auth = enregistré). Frontend V2 bundle prod `index-CDrPzSwq.js` (467 488 B, Last-Modified 2026-05-02 18:44:47) = identique build local. Doc passation [`CONTEXTE_SESSION_SUIVANTE.md`](CONTEXTE_SESSION_SUIVANTE.md) mis à jour (statut "🟧 en attente" → "✅ déployé"). **Phase 2 backend recouvrement livrée (build vert, attend deploy)** : migration SQL `20260502_recovery_dossiers_and_actions.sql` (tables `recovery_dossiers` 4 statuts + `recovery_actions` 9 types + index partiel "1 dossier ouvert max par tier"). Backend = 9 endpoints (formal-notice/log-call/note/suspend·unsuspend/litigation·exit·cancel·reopen) + `GET /dossiers/:tierId` (détail + historique 100 actions) — toutes transitions réversibles, validation Zod, `requirePermission('MANAGE_INVOICES')` pour les 4 actions engageantes, auth simple pour log-call/note. Frontend = `useDossier(tierId)` + `useRecoveryActions()` (9 mutations) + 1 fichier `RecoveryActionModals.tsx` (FormalNotice/LogCall/Note + DossierTransitionModal générique 6 actions). `ViewRecovFocus` panel ACTIONS refait : 6 boutons dynamiques (label/icône changent selon backend status — "Suspendre"↔"Réactiver", "Transférer contentieux"↔"Sortir contentieux", "Annuler"↔"Réouvrir") + badge status dossier (SUSPENDU/CONTENTIEUX/ANNULÉ) + nouveau bloc HISTORIQUE DOSSIER (8 dernières actions, icônes + auteur + horodatage). VentePage 263.79 kB (+14 kB), backend dist build vert.
 >
@@ -231,32 +235,41 @@ Déposés dans [`trackyu-front-V2/_design-source/_handoff/`](../../trackyu-front
 
 ## 🚦 Prochaine action concrète
 
-### Session 2026-04-30 (7-bis) — Audits Frontend + Map + Dashboard
+### Session 13 (2026-05-03) — Carburant V2 aligné legacy ✅ — En attente staging
 
-**Phase A déployée prod** ✅ (ErrorBoundary + Toast + NotificationsPanel + 10 modales câblées + barrel imports + Réductions + PasswordModal).
+**4 lots livrés en local** (TS vert + Vite build vert 24.80s) :
 
-**Phase B + C en attente déploiement** ⚠️ :
+- Lot 1 — `features/fleet/hooks/useVehicleFuel.ts` réécrit (bug events `{data:[]}` fixé + 8 champs backend ajoutés)
+- Lot 2 — `features/map/MapPage.tsx` bloc Carburant refait (vrais litres, vraie capacité, KPI legacy, tabs Today/Week)
+- Lot 3 — `features/fleet/components/FuelDetailModal.tsx` créé (529 L, ComposedChart Recharts + markers + événements)
+- Lot 4 — `features/fleet/VehicleDrawer.tsx` onglet Carburant aligné (mêmes KPI + bouton modale)
 
-- Map fixes (mode détail GoogleMapView · ViewReplay réécrit avec `useReplayData` · IMMOBILISER API · ViewAlerts useAlerts(200) · 6 mineurs)
-- Dashboard fixes (4 critiques · 4 nav links · code mort retiré · erreurs Phase B loggées)
-- 🆕 D&D sections Dashboard avec `@dnd-kit/sortable` + persistance localStorage
-
-**Action #1 demain** — déployer Phases B+C :
+**Action #1** — smoke test en local :
 
 ```bash
-cd "C:\Users\ADMIN\Desktop\TRACKING"
+cd C:\Users\ADMIN\Desktop\trackyu-front-V2
+npm run dev
+```
+
+→ Ouvrir Carte (`/map`) · sélectionner un véhicule · vérifier le bloc Carburant + le bouton "📈 Courbe & détails" · vérifier l'onglet Carburant du Drawer Fleet (`/fleet`).
+
+**Action #2** — déployer staging si validation OK :
+
+```bash
+cd C:\Users\ADMIN\Desktop\TRACKING
 powershell -File .\deploy-v2.ps1 -nobuild
 ```
 
-(Build déjà à jour dans `trackyu-front-V2/dist/`.)
+(Build déjà à jour dans `trackyu-front-V2/dist/` — `index-Df4OSsQG.js` 467.53 kB + `FuelDetailModal-sPazUmf2.js` 383.15 kB lazy.)
 
-**Action #2** — tester le D&D Dashboard en prod et valider la persistance localStorage.
+**Action #3** — valider en staging puis prod (workflow `staging → accord explicite → prod`).
 
-**Action #3** — décider de la suite des audits :
+**Action #4** — décider des points différés (à faire en lots dédiés si métier prioritaire) :
 
-1. Audits autres modules (Stock · Prévente · Vente · Compta · Tech · Support · Monitoring · Settings · Admin · Reports · Agenda)
-2. Sparklines KPI Dashboard depuis `activityByDay` (au lieu des paths fixes)
-3. DateRangePicker Dashboard global (Sections 2/3/4 ignorent le range actuellement)
+1. Bar chart hebdo Mon-Sun composition Début/Recharge/Baisse/Conso/Fin (legacy `WeeklyBarChart`).
+2. Géocodage adresse au survol des points de la courbe (le `start_address` events est déjà affiché).
+3. Modale review events workflow (CONFIRMER/REJETER/DISPUTER) — endpoint `POST /fuel-events/:id/review` déjà câblé côté `services/api/fleet.ts`.
+4. Saisie manuelle d'un plein (`fuel_records`) — endpoint backend non identifié pour V2.
 
 → **Règle cardinale** : pas-à-pas, accord explicite utilisateur avant chaque nouveau module. Build vert entre chaque étape.
 

@@ -7,6 +7,189 @@
 
 ---
 
+## [Session 14 — Vente/Facturation/Contrats complet + bugs FleetPage] — 2026-05-03
+
+### FINANCE V2 — Priorité 3 complète
+
+**f) Send multi-destinataires** : `sendInvoiceEmailSchema` accepte `to: string | string[]` et `cc: string | string[]` via Zod union + `normalizeEmails()`. `SendInvoiceModal` refait avec composant `EmailTags` (input + chips, Entrée/virgule/Backspace pour ajouter/supprimer, validation email+doublon). Bouton "Envoyer (N)" affiche le compte. `useInvoiceMutations.sendInvoice` mis à jour.
+
+**e) Mobile Money sous-types** : migration `20260503_payments_add_provider.sql` (`payments.payment_provider VARCHAR(20)` appliquée prod). `paymentSchema` + `PaymentInsertData` + `insertPayment` enrichis avec `provider`. `PaymentModal` simplifié (1 entrée "Mobile Money") + Select Opérateur conditionnel (MTN/Orange/Moov/Wave) affiché en grille 2 cols quand MOBILE_MONEY sélectionné. `MobileMoneyProvider` type exporté.
+
+### Chantier facturation abonnements (étapes 1-4 + réactivation)
+
+- Migration SQL `20260502_recovery_dossiers_and_actions.sql` appliquée prod (tables `recovery_dossiers` + `recovery_actions` + 8 index)
+- Bouton 🧾 dans ViewAbonnements → modale génération (billingDate + dueDate)
+- Backend anti-doublon : `computeBillingPeriod(startDate, billingDate, cycle)` depuis date d'installation, 409 si doublon (tous statuts), période injectée dans `items[].period` et `subject`
+- Guard `start_date` manquante → 400 `MISSING_START_DATE` → frontend chaîne `PUT /subscriptions/:id { startDate }` puis régénère
+- Modale doublon enrichie (Dialog 460px) : carte facture existante colorée selon statut + bouton "Réactiver en brouillon" si CANCELLED (via `POST /finance/invoices/:id/reactivate`)
+- Badge "✓ Facturé" / "⏰ À facturer" sous montant (depuis `next_billing_date > today`)
+- `next_billing_date` avancé à `periodEndExclusive` après génération réussie
+
+### CRUD Contrats (modèle métier correct)
+
+Contrat = enveloppe commerciale (pas de cycle, articles, ni véhicules). Actions : Créer / Éditer / Supprimer.
+
+- `ContractFormModal` simplifié : Client · Sujet · Dates · Statut · Notes
+- `useContractMutations` : POST/PUT/DELETE
+- Panel détail 👁 (`ContractDetailPanel`, slide-in 520px) :
+  - KPIs : MRR abonnements actifs / nb actifs / nb total
+  - Table abonnements : Véhicule · Cycle · Installation · Début · Fin · Montant · Statut + **ligne total MRR orange**
+  - Backend `GET /contracts/:id/subscriptions` (JOIN objects pour plaque)
+  - Bouton "Modifier" → ContractFormModal
+
+### CRUD Abonnements
+
+Abonnement = 1 véhicule · 1 catalogue · 1 cycle · 1 montant. Actions : Créer (rattacher) / Éditer / 🧾 Générer facture / Suspendre/Réactiver / Résilier.
+
+- `useSubscriptionMutations` : POST/PUT + suspend (toggle) + cancel + delete
+- Backend `POST /subscriptions` et `PUT /subscriptions/:id` corrigés : insèrent `vehicle_id`, `contract_id`, `catalog_item_id`, `next_billing_date`, `notes`, `items`. Auto-résolution `client_id` depuis `contract_id`. `POST /:id/suspend` créé (toggle ACTIVE↔SUSPENDED).
+- `SubscriptionFormModal` (Dialog 600px) : contrat / véhicule (recherche+select) / article catalogue Abonnement / tarif / cycle / date installation / toggle "N'expire jamais" / date fin / nextBillingDate (édition) / notes
+- Panel détail 👁 (`SubscriptionDetailPanel`, slide-in 520px) : 3 onglets Détails/Factures/Historique. Backend `GET /subscriptions/:id/invoices` créé.
+- Menu ••• abonnement : Suspendre/Réactiver · Résilier (modale motif)
+- Toolbar "+ Rattacher un abonnement"
+
+### Catalogue dropdown dans InvoiceFormModal
+
+- `useCatalogue()` : `GET /api/v1/catalog` filtré par tenant, trié alpha, status=ACTIVE
+- `invoiceLineSchema` : +`catalogItemId` +`minPrice` +`maxPrice` +`accountingSale`
+- Dropdown Désignation (select compact, optgroup par catégorie) dans chaque ligne item
+- Sélection → préremplie description/price/vatRate/accountingSale, indicateur min/max sous PU
+- `useInvoiceMutations.formToPayload` : mappe `catalog_item_id` + `accounting_account_sale`
+- Smart contract matching v3 : contrat sélectionné → items depuis `contracts.items` JSONB (source vérité) ou fallback premier produit Abonnement catalogue · plaque depuis `vehicle_ids` filtré
+
+### Filtres Planning cycle complet
+
+FilterChip Client, Revendeur, Cycle : cycle complet (toutes valeurs, pas juste toggle premier)
+
+### Bugs FleetPage critiques corrigés en prod
+
+3 TDZ / référence manquante (Session 13 Carburant) :
+
+1. `useMemo` non importé dans VentePage.tsx → crash page Vente
+2. `queryClient` déclaré dans sous-composant `VehicleRow` mais utilisé dans `FleetPage` (lignes 106/117) → crash page Fleet
+3. `const filtered` (ligne 149) utilisé dans `useCallback exportSelection` (ligne 121) → TDZ, crash Fleet
+
+Tous corrigés + déployés en urgence.
+
+### Prod — état final
+
+Bundle prod : `index-DZ20v-L0.js` · Migrations : `recovery_dossiers` + `recovery_actions` + `payments.payment_provider` · Backend : routes subscriptions/contracts enrichies.
+
+---
+
+## [Session 15 — Fleet bouclé + Polish Playbook] — 2026-05-03
+
+Replay connecté (drawer → MapPage `?replay=vehicleId`) · 4 colonnes (Km/jour, Expiration, État, Batterie) · 4 presets Column Manager · Dépenses CRUD complet · Import CSV retiré · Bug fix RptDetailTrips · Fleet V2 déclaré bouclé · Polish Playbook créé (`docs/design-system/POLISH_PLAYBOOK.md` + mémoire).
+
+---
+
+## [Session 12 ext. 2 — Module Rapports V2 COMPLET : 78/78 rapports livrés en prod] — 2026-05-03
+
+**78/78 rapports portés au pattern V2** — Support (8) + Admin (6) + Superadmin (5) livrés, complétant les catégories Activités/Alertes/Carburant/CRM/Finance/Compta/Technique (59) déjà en prod.
+
+**Nouveaux endpoints** : `POST /reports/support/{open,resolved,priority,agent,sla,anomaly,satisfaction,channel}` · `POST /reports/admin/{users,activity,resellers,logs,audit,sessions}` · `POST /reports/superadmin/{global,resellers,mrr,gps,balises}`. Repositories : `findTicketsForReport` + inline queries SQL pour users/audit_logs/devices/positions/tenants.
+
+**Frontend V2** : fichier `supportAdminReports.tsx` (19 wrappers `RptDetailFlat`) + imports + FLAT_MAP complet dans `ReportsPage.tsx`. **Resto MVP** : exports CSV/Excel/PDF (boutons disabled → prochain chantier).
+
+---
+
+## [Session 14 — VehicleList : Score tab + Bulk actions + Column Manager + actions drawer + modales] — 2026-05-03
+
+### Contexte
+
+Suite audit VehicleList (Session 13). Objectif : amener la FleetPage V2 à parité fonctionnelle avec le legacy sur les points prioritaires.
+
+### Livraisons
+
+**VehicleDrawer — Tab Score (Comportement)** :
+
+- Jauge arc 270° couleur dynamique (≥80 vert / ≥60 ambre / <60 rouge) + verdict textuel
+- **Excès de vitesse** (seuil 70 km/h) depuis `useVehicleActivity` : compteur trajets > 70 + vitesse max + liste 3 derniers événements
+- 3 indicateurs comportement (Freinages / Accélérations / Virages) → `—` (données non disponibles en DB — aucune colonne `harsh_*` dans `objects`, aucun type d'alerte comportement en prod)
+- Onglet GPS retiré
+
+**VehicleDrawer — Header couleur dynamique selon statut** :
+
+- moving → gradient vert foncé · idle → ambre · stopped → rouge · offline → gris sombre
+
+**VehicleDrawer — Footer actions réelles** :
+
+- 🔒 Immobiliser / 🔓 En service → `POST /fleet/vehicles/:id/immobilize`
+- 🔧 Panne / ✅ Réparé → `POST /fleet/vehicles/:id/panne`
+
+**FleetPage — Colonne Client + filtre Client** :
+
+- Colonne Client ajoutée après Carburant
+- Filtre dropdown Chauffeur → Client
+
+**FleetPage — Menu contextuel `···` par ligne** :
+
+- Modifier → `VehicleEditModal` (formulaire prérempli, `PUT /fleet/vehicles/:id`)
+- Voir abonnement → `VehicleSubscriptionModal` (lecture seule, `GET /fleet/vehicles/:id/subscription` : n° abo/contrat, expiration, impayés)
+- Immobiliser / Panne directement depuis la liste
+
+**FleetPage — Bulk actions** (barre slide-up) :
+
+- Exporter sélection CSV · Immobiliser tous · Signaler panne · Désélectionner tout
+
+**FleetPage — Column Manager** :
+
+- Bouton ⚙ → panel toggle 8 colonnes (Statut, Vitesse, Position, Carburant, Client, Conducteur, Score, Dernière maj)
+- Immat/Alias + Actions verrouillées (always visible)
+- Persistance `localStorage` (`fleet-visible-cols-v1`)
+
+### DB — résultat diagnostic comportement
+
+`objects` : seul `driver_score` disponible. Colonnes `harsh_*` absentes. Alertes prod : COMMUNICATION_LOST / EXCESSIVE_IDLING / IMMOBILIZATION uniquement. Données comportement détaillées non stockées en DB → tab Score affiche `—` honnêtement.
+
+### Build
+
+TS vert · Vite build vert 21s · déployé prod 2026-05-03.
+
+---
+
+## [Session 13 ext. — Audit & correctifs données carburant + Fleet VehicleDrawer] — 2026-05-03
+
+### Correctifs déployés (suite Session 13)
+
+**Cohérence données carburant sur toute l'app V2** :
+
+- `useVehicleFuel` : bug critique fixé (`events` toujours vide car backend renvoie `{data:[...]}`) · champs enrichis · filtre DISMISSED · `DEFAULT_TANK_L = 350` exporté
+- **Logique capteur** : fallback 350L uniquement si `fuelHistory.length > 0` (capteur actif) · sinon `—` / "Pas de capteur" · uniformisé sur MapPage VehicleDetailPanel + VehicleDrawer + FuelDetailModal + Replay
+- **Replay FuelChart** : yMax basé sur données seules (+20% marge) au lieu de `tankCapacity` — la courbe ne s'écrase plus à 1% de hauteur · couleur alignée bleu `#3b82f6` · taux ralenti aligné 1.89 L/h
+- **MapPage KPI header** : `Math.round((v.fuel/100)*60)` (60 codé en dur) → litres réels depuis `fuelDerived`
+- **VehicleDrawer Fleet** :
+  - Quick stats carburant : `v.fuel * 0.95` → litres réels via `useVehicleFuel` (React Query cache = 0 requête en double) · "Donnée indisponible" → "Pas de capteur" si pas de sensor
+  - Tabs tronquées : `padding: 13px 14px / font 12.5px` → `10px / 11.5px` → "Maintenance" et "Dépenses" visibles sans troncature
+- **Backend Rapports carburant** : `buildFuelConditions` sans filtre DISMISSED → ajout `fe.status <> 'DISMISSED'` par défaut · flag `includeDismissed` pour R-FUE-06 · statut `'REJECTED'` → `'DISPUTED'` dans `getFuelAnomaliesReport` · déployé backend
+
+**Audit FleetPage V2** réalisé — 10 colonnes V2 vs 25+ legacy · tabs Comportement/GPS/Dépenses placeholder Phase 4.x · actions immobiliser/panne absentes du drawer · filtres dropdown non fonctionnels · pagination client-side OK pour flotte actuelle.
+
+---
+
+## [Session 12 ext. — Rapports V2 : Activités (R-ACT-02..08) + Alertes (R-ALR-01..04) industrialisés] — 2026-05-03
+
+### Résumé
+
+Suite Session 12. **11 nouveaux rapports** portés au pattern V2. Total : **12/78 rapports** en V2 natif.
+
+**Backend — 11 nouveaux endpoints** :
+
+- Activités : `km · daily · driving · idle · stopped · offline · synthese`
+- Alertes : `synthese · list · geofence · notifications`
+- Repositories : `findKilometrageByVehicleMonthly · findDistanceByVehicleDaily · findVehiclesByStatus · getAlertsKpis · findTopVehiclesByAlertCount · findAlertsListForReport`
+
+**Frontend V2 — architecture générique** :
+
+- `RptDetailFlat` — composant générique (toggle filtres, KPIs, tableau, ColumnManager, locked cols, highlight, snapshot)
+- `activityFlatReports.tsx` — 6 wrappers R-ACT-03..08 (1 ligne chacun)
+- `alertsFlatReports.tsx` — 4 wrappers R-ALR-01..04
+- `ReportsPage.tsx` — map `subId → composant` extensible (FLAT_MAP)
+
+**Économie** : sans générique ~1 700 L dupliquées ; avec générique : ~120 L générique + ~180 L wrappers = -1 400 L.
+
+---
+
 ## [Session 13 — Alignement données carburant V2 sur legacy (VehicleDetailPanel + VehicleDrawer)] — 2026-05-03
 
 ### Contexte

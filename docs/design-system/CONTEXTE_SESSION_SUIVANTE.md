@@ -1,8 +1,8 @@
 # CONTEXTE — Prochaine session Claude Code
 
-> Préparé le **2026-05-02 fin de session 11-bis** — Chantier **FINANCE V2** (menu Facture + Recouvrement) livré et déployé prod.
+> Mis à jour le **2026-05-03 fin de Session 14** — Module Vente/Facturation/Contrats complet.
 >
-> **Lire ce fichier + STATE.md + modules/FINANCE.md avant toute reprise du chantier.**
+> **Lire STATE.md en premier, puis CHANGELOG.md entrée Session 14.**
 
 ---
 
@@ -10,11 +10,46 @@
 
 ```
 1. CLAUDE.md (auto-loaded) — règles permanentes
-2. docs/design-system/STATE.md — état global du chantier (Session 11-bis)
-3. docs/design-system/CHANGELOG.md — entrée Session 11-bis (2026-05-02)
-4. docs/design-system/modules/FINANCE.md — spec module facture (290+ L)
-5. Ce fichier CONTEXTE_SESSION_SUIVANTE.md (passation chirurgicale)
+2. docs/design-system/STATE.md — état global (Session 14)
+3. docs/design-system/CHANGELOG.md — entrée Session 14 (2026-05-03)
+4. Ce fichier CONTEXTE_SESSION_SUIVANTE.md
 ```
+
+---
+
+## 🎯 ÉTAT PROD — 2026-05-03 fin session 14
+
+### Module Vente / Finance / Contrats / Abonnements — COMPLET ✅
+
+**Tout déployé en prod** (`index-DZ20v-L0.js`, backend up).
+
+| Sous-module                                                  | État    |
+| ------------------------------------------------------------ | ------- |
+| Factures CRUD (LOTs 1-6 + Priorité 3 a-f)                    | ✅ prod |
+| Recouvrement Phase 2 (9 endpoints + modales)                 | ✅ prod |
+| Catalogue dropdown dans lignes facture                       | ✅ prod |
+| Smart contract matching v3                                   | ✅ prod |
+| Send multi-destinataires                                     | ✅ prod |
+| Mobile Money sous-types (payment_provider)                   | ✅ prod |
+| CRUD Contrats (enveloppe) + panel détail 👁                  | ✅ prod |
+| CRUD Abonnements + panel détail 👁 + 🧾 + Suspendre/Résilier | ✅ prod |
+| Facturation anti-doublon (étapes 1-4 + réactivation)         | ✅ prod |
+
+### Migrations SQL appliquées en prod
+
+- `recovery_dossiers` + `recovery_actions` + 8 index
+- `payments.payment_provider VARCHAR(20)`
+
+### Ce qui reste (backlog)
+
+1. **Vue détail contrat** ✅ (livré en fin de session)
+2. **Tests fonctionnels UI prod** — Settings POI · Admin Corbeille · Admin Revendeurs
+3. **Drift schéma** — `contracts.vehicle_count` (pas bloquant)
+4. **Tests Vitest Tier 2-4** (~6j-dev pour 60-70% couverture)
+5. **Admin/CRM Phase 6** (périmètre à définir)
+6. **Polish Playbook** — Fleet ✅ · Vente ✅ · 11 modules restants (selon mémoire `project_polish_playbook`)
+
+---
 
 ---
 
