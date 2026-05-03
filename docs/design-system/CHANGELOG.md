@@ -7,6 +7,94 @@
 
 ---
 
+## [Session 13 — Alignement données carburant V2 sur legacy (VehicleDetailPanel + VehicleDrawer)] — 2026-05-03
+
+### Contexte
+
+Audit utilisateur du bloc Carburant dans le `VehicleDetailPanel` V2 (Carte) : la richesse legacy (1 343 L de code dédié — calculs consommation, courbe ComposedChart, modale review events, KPIs métier, jauge avancée) n'avait pas été portée. Le V2 se résumait à 42 L inline avec données mockées (`60` codé en dur comme capacité réservoir pour tous les véhicules). Décision : préserver le design V2, aligner intégralement les données + workflow sur le legacy en restant pas-à-pas.
+
+### Bug critique fixé
+
+`useVehicleFuel.events` recevait toujours `[]` :
+
+- Le backend `/fuel-events/vehicle/:id` renvoie `{ data: [...] }` (Phase 4 fuelEventRoutes.ts).
+- Le hook V2 faisait `Array.isArray(data)` → false → fallback `[]`.
+- Conséquence : aucune balise n'avait jamais d'événements carburant en V2 depuis la mise en service de l'endpoint.
+
+Fix : déballage `data.data ?? data` + filtre `status !== 'DISMISSED'` (faux positifs rejetés par manager).
+
+### Lot 1 — Hook `features/fleet/hooks/useVehicleFuel.ts` (réécriture complète)
+
+**Nouveaux champs `FuelStats`** (alignés `objectRepository.getFuelStats`) :
+
+- `avgConsumption`, `totalConsumption`, `totalRefillVolume`, `totalTheftVolume`, `totalCost`
+- `refillCount`, `theftCount`, `tankCapacity`, `fuelType`, `idlingWaste`
+- Alias rétrocompat (lecture) : `avg`, `min`, `max`, `tank_capacity`, `fuel_type`, `current` — pour ne pas casser Replay et autres consommateurs
+
+**`FuelPoint` enrichi** : `level` (%) + `consumption` (L) conservés depuis backend (forme `{date, level, volume, consumption}`), aliases `time`/`fuel_liters` conservés pour compat V2.
+
+**`FuelEvent` enrichi** : `amount` (alias `Math.abs(delta_liters)`), `severity`, `confidence`, `notes`, `reviewed_by`, `reviewed_at`, addresses début/fin, `vehicle_name`/`vehicle_plate`.
+
+### Lot 2 — Bloc Carburant `features/map/MapPage.tsx` (VehicleDetailPanel sur la Carte)
+
+- Jauge ronde affiche les **vrais litres + capacité réelle** depuis `tankCapacity` backend (avant : `Math.round((v.fuel/100)*60)` codé en dur pour tous).
+- 4 KPI mini-cards alignées legacy : Recharge `+X L · n×` · Baisses `−X L · n×` · Consommation `X L · L/100km` · Pertes ralenti `X L · h/min` (formule `idleHours × 1.89 L/h`).
+- Tabs Today/Semaine **fonctionnels** : recalcule events + conso sur la fenêtre (formule legacy `start + refills − thefts − end`).
+- Bouton "📈 Courbe & détails" → ouvre `FuelDetailModal`.
+- Memoization `fuelDerived` pour tous les calculs.
+
+### Lot 3 — Nouveau composant `features/fleet/components/FuelDetailModal.tsx` (529 L)
+
+Port fonctionnel de `legacy/FuelModalContent.tsx` (554 L) avec **design V2** (tokens CSS, font-display/mono, brand-primary) :
+
+- Modale 760 px avec tabs Aujourd'hui / Cette semaine.
+- 4 KPI cards (Conso + L/100km, Recharges, Baisses, Niveau actuel `X / capacity L`).
+- **ComposedChart Recharts** : Area niveau (bleu) + Line pertes ralenti (orange pointillé) + markers `+` REFILL (vert) / `−` THEFT (rouge) attachés au point d'historique le plus proche.
+- Tooltip avec date/heure + détail event au survol.
+- Légende.
+- Section "Événements détectés" (12 max) avec icônes Droplets/AlertTriangle, statut backend (Confirmé/À vérifier), confidence %, adresse tronquée 320px.
+
+### Lot 4 — Onglet Carburant `features/fleet/VehicleDrawer.tsx` (Fleet)
+
+Refonte du `CarburantTab` (90 → 165 L) :
+
+- Section "Niveau actuel" : grand chiffre litres + barre progression + capacité réservoir + type carburant (DIESEL/GASOLINE).
+- Section "Aujourd'hui" : mêmes 4 KPI legacy.
+- Sparkline 7 jours (couleur bleue alignée Lot 3).
+- Bouton "📈 Courbe & détails" → même `FuelDetailModal`.
+- Événements enrichis avec `confidence %` affichée.
+
+### Données backend confirmées
+
+Lecture du `src/repositories/objectRepository.ts` :
+
+- `getFuelHistory(id, duration)` — `date_bin()` PostgreSQL, buckets adaptatifs (1h→1min, 24h→5min, 7d→30min, 30d→2h), retourne `{date, level, volume, consumption}`.
+- `getFuelStats(id, tenantId)` — UNION `fuel_records` + `fuel_events` filtrés `status <> 'DISMISSED'`, agrégat sur `CURRENT_DATE` (today only).
+
+### Build / impact bundle
+
+- TypeScript : 0 erreur.
+- `MapPage` : 64.73 → 182.79 kB (+118 kB — calculs derived + 5 states + import modale).
+- Nouveau chunk lazy `FuelDetailModal-*.js` 383.15 kB (gzip 113.59) — recharts inclus, chargé uniquement à l'ouverture de la modale.
+- Build vert en 24.80 s.
+
+### Reste à faire (différé)
+
+- Bar chart hebdo Mon-Sun avec composition Début/Recharge/Baisse/Conso/Fin (legacy `WeeklyBarChart`).
+- Géocodage adresse au survol des points de la courbe (le `start_address` events est déjà affiché).
+- Modale review events workflow (CONFIRMER/REJETER/DISPUTER) — endpoint `POST /fuel-events/:id/review` déjà câblé côté `services/api/fleet.ts`.
+- Saisie manuelle d'un plein (`fuel_records` legacy) — endpoint backend non identifié pour V2.
+
+### Statut
+
+🟧 En attente déploiement staging — `dist/` à jour, prochaine action :
+
+```
+powershell -File .\deploy-v2.ps1 -nobuild
+```
+
+---
+
 ## [Session 12 — Chantier RAPPORTS V2 — Pilote R-ACT-01 Trajets détaillés livré en prod] — 2026-05-02
 
 ### Contexte
@@ -116,6 +204,84 @@ Première implémentation flat (1 ligne / trajet, max 500). Retour utilisateur :
 - 70 rapports d'autres catégories (Alertes · Carburant · CRM · Finance · Comptabilité · Technique · Support · Admin · Superadmin)
 - Exports CSV/Excel/PDF (3 boutons actuellement désactivés)
 - Graphiques par rapport (étape ultérieure validée par utilisateur)
+
+---
+
+## [Session 12-bis (suite) — Priorité 3 b + c FINANCE V2 : édition items réels + cleanup mocks] — 2026-05-03
+
+### Contexte
+
+Suite immédiate de la Phase 2 backend recouvrement (Session 12-bis principale, 2026-05-02). L'utilisateur a validé la Priorité 3 du backlog FINANCE V2 et choisi d'attaquer **b** (édition facture avec items réels) puis **c** (cleanup mocks `venteData.ts`).
+
+Avant chaque tâche, vérification systématique que le travail n'a pas déjà été livré par une session parallèle (cf nouveau feedback `feedback_check_already_done.md`) :
+
+- **b** : `fetchInvoiceWithItems` était déjà importé dans `VentePage.tsx` (ligne 29) mais utilisé uniquement par `downloadInvoicePDF` (ligne 42) — **pas par le handler d'édition** → tâche bien à faire
+- **c** : audit `grep` sur 5 mocks ciblés → 3 zero usage (`VR_DOSSIERS`/`VR_WORKFLOW`/`VR_HISTORY`), 2 encore référencés (`VC_INVOICES`/`VC_PAYMENTS`)
+
+### (b) Édition facture avec items réels
+
+**`VentePage.tsx`** :
+
+- Bouton ✏ Éditer ligne facture refait en async :
+  - `setEditLoadingId(inv.id)` pour griser le bouton (~200ms perçus)
+  - `await fetchInvoiceWithItems(inv.id)` → merge avec `inv` (items + vatRate réels)
+  - Fallback silencieux sur `inv` brut si erreur (rétrocompat synthèse)
+  - `setEditInvoice(...) + setInvoiceFormOpen(true)` après fetch
+- State `editLoadingId: string | null` ajouté
+- Bouton affiche `…` pendant le fetch (au lieu de `✏`), cursor `wait`, opacity 0.5
+
+**`mapInvoiceToFormDefaults`** enrichi :
+
+- Si `inv.items[]` présent (vraies items du backend) → mappe :
+  - `unit_price` (backend snake) → `price` (Zod camel)
+  - `period` (string optional)
+  - `quantity` cast Number
+  - `description` (string)
+- Sinon → recrée 1 item synthétique à partir de `subject` + `amountRaw / (1 + vatRate/100)` (rétrocompat)
+- TVA dynamique selon `inv.vatRate` (default 18) au lieu de hardcoded 18
+
+### (c) Cleanup mocks `venteData.ts`
+
+Audit `grep -rn "VR_DOSSIERS|VR_WORKFLOW|VR_HISTORY|VC_INVOICES|VC_PAYMENTS" src/` :
+
+| Mock          | Lignes referencées                                                           | Action                                     |
+| ------------- | ---------------------------------------------------------------------------- | ------------------------------------------ |
+| `VR_DOSSIERS` | aucune (panel ACTIONS refondu Session 12-bis utilise `useRecovery.dossiers`) | **retiré** ✅                              |
+| `VR_WORKFLOW` | aucune (Kanban Workflow utilise `dossiersByStage`)                           | **retiré** ✅                              |
+| `VR_HISTORY`  | aucune (HISTORIQUE DOSSIER utilise `useDossier(tierId).actions`)             | **retiré** ✅                              |
+| `VC_INVOICES` | sous-titre SUBS ligne 2551                                                   | **gardé** (encore utilisé)                 |
+| `VC_PAYMENTS` | rapprochement bancaire mock (ligne 1760, 1792, 1794) + sous-titre SUBS 2552  | **gardé** (rapprochement non encore câblé) |
+
+**`venteData.ts`** : retrait des 3 exports + commentaire indiquant le remplacement par `useRecovery` / `useDossier`. `VR_AGING` conservé (pas encore d'agrégation backend équivalente).
+
+**`VentePage.tsx`** : import ligne 57 réduit à `VR_AGING` (3 noms retirés).
+
+### Builds
+
+```
+Build après b : ✓ 33.26s · VentePage 264.46 kB (+0.67 kB pour state + handler async)
+Build après c : ✓ 20.01s · VentePage 264.46 kB inchangé · sourcemap -4.8 kB (mocks tree-shakés)
+```
+
+### Reste de la Priorité 3 (à attaquer plus tard)
+
+- **a** Smart contract matching (préremplir items/plaque depuis contrat sélectionné) — ~2h
+- **d** Harmoniser RBAC front/back (perms fines `CREATE/EDIT/DELETE_INVOICES`) — ~1h
+- **e** Mobile Money sous-types (colonne `payment_provider` backend + UI) — ~3h
+- **f** Endpoint send multi-destinataires (`to: string \| string[]`) — ~2h
+
+### Fichiers touchés
+
+**Modifiés** :
+
+- `trackyu-front-V2/src/features/vente/VentePage.tsx` (handler ✏ async + state editLoadingId + mapInvoiceToFormDefaults enrichi + import venteData réduit)
+- `trackyu-front-V2/src/features/vente/venteData.ts` (retrait VR_DOSSIERS/VR_WORKFLOW/VR_HISTORY + commentaire de remplacement)
+- `docs/design-system/modules/FINANCE.md` (entrée changelog Session 12-bis suite)
+- `docs/design-system/CHANGELOG.md` (cette entrée)
+
+### Nouvelle mémoire feedback enregistrée
+
+- `feedback_check_already_done.md` — toujours vérifier dans le code (grep + lecture handler ciblé) qu'une tâche du backlog/doc passation n'est pas déjà livrée par une session parallèle, AVANT de coder
 
 ---
 
