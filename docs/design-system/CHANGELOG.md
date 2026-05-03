@@ -119,6 +119,118 @@ Première implémentation flat (1 ligne / trajet, max 500). Retour utilisateur :
 
 ---
 
+## [Session 12-bis — Phase 2 backend recouvrement : 9 endpoints + dossiers + modales front (build vert, attend deploy)] — 2026-05-02
+
+### Contexte
+
+Audit prod chantier FINANCE V2 (lots 1-6 + items détaillés PDF) : tout confirmé en prod. Bundle frontend V2 `index-CDrPzSwq.js` identique local↔prod, backend `getInvoiceById` présent dans dist. Documentation passation alignée (statut "🟧 en attente" → "✅ déployé").
+
+Suite : **Phase 2 backend recouvrement** — activer les 6 boutons "ACTIONS DE RECOUVREMENT" de `ViewRecovFocus` qui étaient `disabled title="Phase 2 — endpoint backend à venir"`.
+
+### Décisions architecturales (tranchées avec l'utilisateur)
+
+- **Option B** = vraie table `recovery_dossiers` dédiée + table `recovery_actions` qui référence `dossier_id`
+- **Réversibles** : 3 actions état ont chacune leur endpoint inverse (suspend↔unsuspend, transfer-litigation↔exit-litigation, cancel↔reopen)
+- **Mise en demeure** = email simple via `recoveryService.sendManualReminder` + log dans `recovery_actions` (pas de PDF lettre formelle)
+- **Permissions** : `requirePermission('MANAGE_INVOICES')` pour formal-notice / suspend / litigation / cancel + auth simple pour log-call / note
+- **Migration SQL** : pattern existant `migrations/YYYYMMDD_description.sql`, exécution manuelle ssh+psql
+
+### Migration SQL livrée
+
+`trackyu-backend/migrations/20260502_recovery_dossiers_and_actions.sql` :
+
+- Table `recovery_dossiers` (id UUID PK, tenant_id, tier_id, status [ACTIVE/SUSPENDED/LITIGATION/CANCELLED], opened_at, closed_at, metadata, created_by) avec **index partiel** `idx_recovery_dossiers_one_open` qui garantit "1 seul dossier non-CANCELLED par (tenant, tier)" tout en permettant N dossiers CANCELLED historiques
+- Table `recovery_actions` (id UUID PK, tenant_id, dossier_id UUID FK CASCADE, invoice_id UUID nullable, action_type [9 valeurs], note, metadata JSONB, performed_by, performed_at) avec 3 index
+- 100 % idempotente (`IF NOT EXISTS` partout)
+- Distinct de la table `dunning_actions` existante (relances techniques EMAIL/SMS/CALL avec status SENT/FAILED)
+
+### Backend livré (build vert)
+
+**`recoveryRepository.ts`** — 8 fonctions Phase 2 :
+
+- `findOpenDossierByTier` / `findLastCancelledDossierByTier` / `findDossierById`
+- `getOrCreateOpenDossier` (idempotent grâce à l'index unique partiel)
+- `updateDossierStatus` (gère `closed_at` automatiquement)
+- `insertRecoveryAction`
+- `findRecoveryActionsByDossier` (JOIN users pour `performed_by_name`) / `findRecoveryActionsByInvoice`
+- `findInvoiceTierForOwnership` (helper ownership tenant + lookup tier_id)
+
+**`recoveryController.ts`** — 9 nouveaux handlers + 1 GET dossier :
+
+- `formalNotice` : log + envoi email via `recoveryService.sendManualReminder`. Si email échoue, action loggée quand même avec `metadata.emailSent=false` (toast warning côté front).
+- `logCall` : metadata `{ durationMinutes, contactName, outcome }`
+- `addNote` : note obligatoire (Zod min 1 char)
+- 6 handlers transition via helper `performStatusTransition` (DRY) qui valide `expectedFrom: RecoveryDossierStatus[]` et retourne 409 si transition invalide
+- `getDossierByTier` : retourne `{ dossier, actions: [up to 100] }` ou `{ dossier: null, actions: [] }`
+
+**`recoveryRoutes.ts`** : import `requirePermission`, ajout des 10 routes (1 GET + 9 POST) avec permissions ciblées.
+
+### Frontend V2 livré (build vert · VentePage 263.79 kB +14 kB)
+
+**`hooks/useRecovery.ts`** enrichi (sans modifier `useRecovery` existant) :
+
+- Types `RecoveryBackendStatus`, `RecoveryActionType`, `RecoveryDossierBackend`, `RecoveryActionBackend`, `DossierDetailResponse`
+- `useDossier(tierId)` — `useQuery` lookup dossier + historique 100 actions (enabled si tierId, staleTime 30s)
+- `useRecoveryActions()` — 9 mutations + invalidations `['recovery']` + `['invoices']` + `['recovery','dossier',tierId]`
+
+**`modals/RecoveryActionModals.tsx`** (nouveau, ~370 L) — 4 composants :
+
+- `FormalNoticeModal` (Dialog 460px) — récap facture + Textarea message (default mise en demeure 8 jours) + note interne. Toast warning si email échoue.
+- `LogCallModal` (Dialog 460px) — récap facture + grid 2 cols (Interlocuteur + Durée min via NumberInput) + Select résultat (5 options FR) + Textarea note
+- `NoteModal` (Dialog 420px) — récap + Textarea obligatoire (warning si vide)
+- `DossierTransitionModal` (Dialog 460px **générique**) — paramétré par `action: DossierTransitionAction`, configs internes pour les 6 transitions. Switch sur la mutation appropriée.
+
+**`VentePage.tsx`** :
+
+- `ViewRecovFocus` : ajout state `actionModal`, hook `useDossier(selected.tierId)` pour récupérer status backend
+- Bloc panel ACTIONS remplacé par composant `RecoveryActionsPanel` (~120 L) : 6 boutons grid 2×3 avec **label/icône dynamiques** selon `backendStatus` (ex: "Suspendre auto" → "Réactiver relances" si SUSPENDED). Badge status dossier (SUSPENDU/CONTENTIEUX/ANNULÉ) en top-right si non-ACTIVE. Disable selon transitions valides depuis le statut courant.
+- Bloc HISTORIQUE DOSSIER (nouveau) : si `actions.length > 0`, affiche 8 dernières actions avec icône (mapping `ACTION_ICONS`) + label FR + note + horodatage + auteur (`performed_by_name`)
+- 4 modales rendues conditionnellement selon `actionModal.kind`
+
+### Endpoints livrés (à déployer)
+
+| Méthode | Route                                                   | Permission      |
+| ------- | ------------------------------------------------------- | --------------- |
+| GET     | `/api/v1/recovery/dossiers/:tierId`                     | (auth)          |
+| POST    | `/api/v1/recovery/invoices/:id/formal-notice`           | MANAGE_INVOICES |
+| POST    | `/api/v1/recovery/invoices/:id/log-call`                | (auth)          |
+| POST    | `/api/v1/recovery/invoices/:id/note`                    | (auth)          |
+| POST    | `/api/v1/recovery/dossiers/:tierId/suspend-auto`        | MANAGE_INVOICES |
+| POST    | `/api/v1/recovery/dossiers/:tierId/unsuspend-auto`      | MANAGE_INVOICES |
+| POST    | `/api/v1/recovery/dossiers/:tierId/transfer-litigation` | MANAGE_INVOICES |
+| POST    | `/api/v1/recovery/dossiers/:tierId/exit-litigation`     | MANAGE_INVOICES |
+| POST    | `/api/v1/recovery/dossiers/:tierId/cancel`              | MANAGE_INVOICES |
+| POST    | `/api/v1/recovery/dossiers/:tierId/reopen`              | MANAGE_INVOICES |
+
+### Build
+
+```
+Backend  : tsc OK (dist/controllers/recoveryController.js + recoveryRepository.js + recoveryRoutes.js)
+Frontend : ✓ built in 15.36s · VentePage 263.79 kB (+13.88 kB) · 0 erreur 0 warning chunk size
+```
+
+### Reste à faire (déploiement séquencé)
+
+1. **Migration SQL en prod** : upload migration + exec via psql container
+2. **Backend deploy** : `.\deploy.ps1 -backend -nobuild -force` (⚠ -force obligatoire)
+3. **Frontend V2 deploy** : `.\deploy-v2.ps1 -nobuild`
+4. **Vérification E2E** : https://live.trackyugps.com/vente?tab=recouvrement → onglet Dossier client → cliquer chaque action
+
+### Fichiers touchés
+
+**Créés** :
+
+- `trackyu-backend/migrations/20260502_recovery_dossiers_and_actions.sql`
+- `trackyu-front-V2/src/features/vente/modals/RecoveryActionModals.tsx`
+
+**Modifiés** :
+
+- `trackyu-backend/src/repositories/recoveryRepository.ts`, `src/controllers/recoveryController.ts`, `src/routes/recoveryRoutes.ts`
+- `trackyu-front-V2/src/features/vente/hooks/useRecovery.ts`, `src/features/vente/VentePage.tsx`
+- `docs/design-system/STATE.md`, `CONTEXTE_SESSION_SUIVANTE.md`, `modules/FINANCE.md`, `CHANGELOG.md`
+
+---
+
 ## [Session 11-bis — Chantier FINANCE V2 démarré : LOT 1 Relancer + LOT 2 Saisir paiement livrés] — 2026-05-02
 
 ### Contexte
