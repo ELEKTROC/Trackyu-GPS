@@ -23,6 +23,7 @@ backend/.env.production
 
 # Sensitive files - API keys, secrets, credentials
 APIS.txt
+GEMAI.txt
 encryption_key.txt
 secrets_production.txt
 *_key.txt
@@ -59,6 +60,16 @@ backups/
 trackyu-mobile-expo/
 trackyu-mobile-expo/load-tests/*-report.json
 trackyu-mobile-expo/load-tests/*-report.html
+
+# Backend — repo git indépendant (github.com/ELEKTROC/trackyu-backend)
+trackyu-backend/
+
+# Artefacts backend dist/ copiés temporairement lors de hotfix VPS
+servicesHooks.js
+towProvidersRoutes.js
+vehicleExtrasRoutes.fixed.js
+servicesHooks.js.bak*
+towProvidersRoutes.js.bak*
 
 # Scripts one-shot / patches historiques (contiennent passwords temporaires)
 patch_*.py
