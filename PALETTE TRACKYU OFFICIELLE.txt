@@ -1,0 +1,35 @@
+PALETTE TRACKYU OFFICIELLE (à utiliser à la place de #F97316)
+
+Brand orange (terracotta) :
+  --orange / --brand-primary       : #d96d4c
+  --orange-light                   : #e08a70
+  --orange-dim                     : rgba(217, 109, 76, 0.1)
+  --orange-600 (hover/strong)      : #c85f0e
+  --orange-deep                    : #8b3a00
+  --brand-gradient                 : linear-gradient(135deg, #d96d4c 0%, #c85f0e 50%, #8b3a00 100%)
+
+Surfaces (mode sombre / dark — auth + app) :
+  --ink / --bg-app                 : #0d0d0f
+  --bg-card                        : #16161a
+  --bg-elevated                    : #1c1c21
+  --border-ui                      : rgba(255, 255, 255, 0.12)
+
+Surfaces (mode clair / light — marketing) :
+  --paper / --bg-app               : #f8fafc
+  --bg-card                        : #ffffff
+  --bg-elevated                    : #f1f5f9
+  --border-ui                      : rgba(0, 0, 0, 0.08)
+
+Texte (dark)  : --text-main #f9fafb · --text-secondary #9ca3af · --text-muted #8e8e93
+Texte (light) : --text-main #0f172a · --text-secondary #64748b · --text-muted #94a3b8
+
+Statut véhicule (à ne pas confondre avec la marque) :
+  moving  : #22c55e
+  idle    : #FBBF24   (ambre — décision charter, pas orange)
+  stopped : #ef4444
+  offline : #6b7280
+
+Polices :
+  Inter (corps & UI)
+  Archivo Black (titres display)
+  JetBrains Mono (mono-labels, valeurs numériques)
