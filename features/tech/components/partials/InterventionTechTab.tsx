@@ -646,12 +646,15 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                 className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
                 value={formData.fuelSensorType || 'CAPACITIVE'}
                 onChange={(e) =>
-                  setFormData({ ...formData, fuelSensorType: e.target.value as 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' })
+                  setFormData({ ...formData, fuelSensorType: e.target.value as Intervention['fuelSensorType'] })
                 }
               >
                 <option value="CANBUS">CANBUS (Origine véhicule)</option>
                 <option value="CAPACITIVE">Sonde Capacitive</option>
                 <option value="ULTRASONIC">Sonde Ultrason</option>
+                <option value="ANALOG">Sonde Analogique</option>
+                <option value="RS232">Sonde RS232</option>
+                <option value="BLUETOOTH">Sonde Bluetooth</option>
               </select>
             </div>
             <div className="space-y-1">
@@ -724,6 +727,133 @@ export const InterventionTechTab: React.FC<TechTabProps> = ({
                   value={formData.gaugeSerial || ''}
                   onChange={(e) => setFormData({ ...formData, gaugeSerial: e.target.value })}
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Row 2b: Sensor config (persisted to vehicle sensor_config) */}
+          {formData.fuelSensorType !== 'CANBUS' && (
+            <div className="border border-[var(--border)] dark:border-[var(--primary)] rounded-lg p-4 mb-4 space-y-4 animate-in fade-in">
+              <h5 className="text-xs font-bold text-[var(--primary)] uppercase">
+                Configuration Capteur (persistée sur véhicule)
+              </h5>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Unité Mesure Capteur</label>
+                  <select
+                    title="Unité Mesure Capteur"
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                    value={formData.sensorUnit || ''}
+                    onChange={(e) =>
+                      setFormData({ ...formData, sensorUnit: e.target.value as Intervention['sensorUnit'] })
+                    }
+                  >
+                    <option value="">— Sélectionner —</option>
+                    <option value="tension">Tension (mV)</option>
+                    <option value="litres">Litres</option>
+                    <option value="gallons">Gallons</option>
+                    <option value="pourcentage">Pourcentage (%)</option>
+                    <option value="hauteur">Hauteur (mm)</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Facteur de Conversion</label>
+                  <input
+                    type="number"
+                    title="Facteur de Conversion"
+                    step="0.0001"
+                    placeholder="1"
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                    value={formData.fuelConversionFactor || ''}
+                    onChange={(e) => setFormData({ ...formData, fuelConversionFactor: parseFloat(e.target.value) })}
+                  />
+                </div>
+              </div>
+
+              {formData.sensorUnit === 'tension' && (
+                <div className="grid grid-cols-3 gap-4 animate-in fade-in">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Tension Vide (mV)</label>
+                    <input
+                      type="number"
+                      title="Tension Vide"
+                      placeholder="0"
+                      className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                      value={formData.voltageEmptyMv ?? ''}
+                      onChange={(e) => setFormData({ ...formData, voltageEmptyMv: parseFloat(e.target.value) })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">
+                      Tension Mi-Plein (mV)
+                    </label>
+                    <input
+                      type="number"
+                      title="Tension Mi-Plein"
+                      placeholder="2500"
+                      className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                      value={formData.voltageHalfMv ?? ''}
+                      onChange={(e) => setFormData({ ...formData, voltageHalfMv: parseFloat(e.target.value) })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Tension Plein (mV)</label>
+                    <input
+                      type="number"
+                      title="Tension Plein"
+                      placeholder="5000"
+                      className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                      value={formData.voltageFullMv ?? ''}
+                      onChange={(e) => setFormData({ ...formData, voltageFullMv: parseFloat(e.target.value) })}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Marque Capteur</label>
+                  <select
+                    title="Marque Capteur"
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                    value={formData.sensorBrand || ''}
+                    onChange={(e) => setFormData({ ...formData, sensorBrand: e.target.value })}
+                  >
+                    <option value="">— Sélectionner —</option>
+                    <option value="Concox">Concox</option>
+                    <option value="Ligo">Ligo</option>
+                    <option value="Ruptela">Ruptela</option>
+                    <option value="Mielta">Mielta</option>
+                    <option value="Mechatronics">Mechatronics</option>
+                    <option value="Omnicomm">Omnicomm</option>
+                    <option value="Technoton">Technoton</option>
+                    <option value="Escort">Escort</option>
+                    <option value="Noname">Noname</option>
+                    <option value="Autres">Autres</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Modèle Capteur</label>
+                  <input
+                    type="text"
+                    title="Modèle Capteur"
+                    placeholder="Optionnel"
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                    value={formData.sensorModel || ''}
+                    onChange={(e) => setFormData({ ...formData, sensorModel: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-[var(--primary)]/70 uppercase">Date Install. Capteur</label>
+                  <input
+                    type="date"
+                    title="Date Installation Capteur"
+                    className="w-full p-2.5 border border-[var(--border)] dark:border-[var(--primary)] rounded-lg bg-[var(--bg-surface)] text-sm"
+                    value={formData.sensorInstallDate || ''}
+                    onChange={(e) => setFormData({ ...formData, sensorInstallDate: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           )}

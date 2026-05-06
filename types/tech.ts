@@ -1,7 +1,18 @@
 // types/tech.ts — Interventions, stock, devices, technicians, tech config
 
 export type InterventionType = 'INSTALLATION' | 'DEPANNAGE';
-export type InterventionNature = 'Installation' | 'Remplacement' | 'Transfert' | 'Retrait' | 'Réinstallation' | 'Contrôle branchements' | 'Recalibrage sonde' | 'Maintenance' | 'Diagnostic' | 'Dépannage' | 'Désinstallation';
+export type InterventionNature =
+  | 'Installation'
+  | 'Remplacement'
+  | 'Transfert'
+  | 'Retrait'
+  | 'Réinstallation'
+  | 'Contrôle branchements'
+  | 'Recalibrage sonde'
+  | 'Maintenance'
+  | 'Diagnostic'
+  | 'Dépannage'
+  | 'Désinstallation';
 
 export interface Intervention {
   id: string;
@@ -14,18 +25,18 @@ export interface Intervention {
   clientId: string;
   contactName?: string; // Nom du contact client
   contactPhone?: string; // Téléphone du contact client
-  technicianId: string | 'UNASSIGNED'; 
+  technicianId: string | 'UNASSIGNED';
   resellerId?: string; // Added
   resellerName?: string; // Nom du revendeur pour affichage
   branchId?: string; // Branche assignée
   description?: string; // Description de l'intervention
-  
+
   type: InterventionType;
-  nature: InterventionNature; 
-  
+  nature: InterventionNature;
+
   // Status mis à jour
   status: 'PENDING' | 'SCHEDULED' | 'EN_ROUTE' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'POSTPONED';
-  
+
   scheduledDate: string; // ISO Date string
   endTime?: string; // Date de fin réelle (Clôture)
   duration: number; // en minutes
@@ -34,8 +45,15 @@ export interface Intervention {
 
   // *** NOUVEAU CHAMP DEMANDÉ ***
   cost?: number; // Montant de l'intervention (sans devise)
-  invoiceItems?: { id?: string; description: string; quantity: number; unitPrice: number; price?: number; total?: number }[]; // Détail facturation
-  
+  invoiceItems?: {
+    id?: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    price?: number;
+    total?: number;
+  }[]; // Détail facturation
+
   // Identifiants Véhicule
   licensePlate?: string; // Plaque Définitive
   tempPlate?: string; // WW (legacy alias)
@@ -43,7 +61,7 @@ export interface Intervention {
   vin?: string; // Châssis
   vehicleName?: string; // Nom du véhicule
   vehicleType?: string; // Type d'engin (e.g., Camion, VUL, Engin TP)
-  
+
   // Lien Contrat (Logique Abonnement)
   contractId?: string; // Contrat rattaché ou généré
   updateContract?: boolean; // Ajout au contrat (Installation/Package)
@@ -74,13 +92,13 @@ export interface Intervention {
   material?: string[]; // Liste du matériel (Device models, SIMs, Câbles...)
   imei?: string;
   simCard?: string; // Numéro SIM (06...)
-  iccid?: string;   // ID Carte SIM (8933...)
+  iccid?: string; // ID Carte SIM (8933...)
   sensorSerial?: string; // Numéro de série Capteur/Accessoire
   deviceLocation?: string; // Emplacement du boîtier (e.g., Tableau de bord, Sous siège)
   beaconType?: string; // Type de balise (BLE, UHF, etc.)
   macAddress?: string; // Adresse MAC du dispositif
   probeType?: 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' | string; // Type de sonde
-  
+
   // Champs Remplacement & Transfert (Onglet Terminer)
   newSim?: string;
   newImei?: string;
@@ -104,12 +122,22 @@ export interface Intervention {
   tankWidth?: number;
   tankLength?: number;
   tankShape?: 'RECTANGULAR' | 'CYLINDRICAL_H' | 'CYLINDRICAL_V' | 'L_SHAPE' | 'D_SHAPE'; // Added
-  
+
   // New Fuel Management Fields
-  fuelSensorType?: 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC';
+  fuelSensorType?: 'CANBUS' | 'CAPACITIVE' | 'ULTRASONIC' | 'ANALOG' | 'RS232' | 'BLUETOOTH';
   calibrationTable?: string; // CSV format: height,volume
   refillThreshold?: number;
   theftThreshold?: number;
+
+  // Sensor config (mirrored from vehicle sensor_config)
+  sensorUnit?: 'tension' | 'litres' | 'gallons' | 'pourcentage' | 'hauteur';
+  fuelConversionFactor?: number;
+  voltageEmptyMv?: number;
+  voltageHalfMv?: number;
+  voltageFullMv?: number;
+  sensorBrand?: string;
+  sensorModel?: string;
+  sensorInstallDate?: string;
 
   gaugeVoltage?: string;
   gaugeBrand?: string;
@@ -152,7 +180,16 @@ export interface DeviceStock {
   phoneNumber?: string; // Pour les cartes SIM
   operator?: string; // Opérateur SIM (Orange, MTN, etc.)
   model: string;
-  status: 'IN_STOCK' | 'INSTALLED' | 'RMA' | 'RMA_PENDING' | 'SENT_TO_SUPPLIER' | 'REPLACED_BY_SUPPLIER' | 'SCRAPPED' | 'LOST' | 'REMOVED'; // Extended with RMA workflow statuses
+  status:
+    | 'IN_STOCK'
+    | 'INSTALLED'
+    | 'RMA'
+    | 'RMA_PENDING'
+    | 'SENT_TO_SUPPLIER'
+    | 'REPLACED_BY_SUPPLIER'
+    | 'SCRAPPED'
+    | 'LOST'
+    | 'REMOVED'; // Extended with RMA workflow statuses
   simCardId?: string;
   assignedClientId?: string;
   assignedVehicleId?: string;
@@ -168,11 +205,10 @@ export interface DeviceStock {
   technicianId?: string; // Si location === 'TECH'
   transferStatus?: 'NONE' | 'PENDING_RECEIPT' | 'PENDING_RETURN'; // État du transfert
 
-  
   // Dates
-  entryDate?: string;        // Date d'entrée en stock
+  entryDate?: string; // Date d'entrée en stock
   installationDate?: string; // Date d'installation
-  removalDate?: string;      // Date de sortie/retrait
+  removalDate?: string; // Date de sortie/retrait
 }
 
 export interface StockMovement {

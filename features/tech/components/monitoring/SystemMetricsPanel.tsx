@@ -1,12 +1,14 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { 
-  Cpu, Activity, HardDrive, Clock, Database, 
+import React, { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  Cpu, Activity, HardDrive, Clock, Database,
   Zap, Radio, RefreshCw, TrendingUp, AlertCircle, Users,
-  Wifi, WifiOff, BarChart3, ArrowUp, ArrowDown
+  Wifi, WifiOff, BarChart3, ArrowUp, ArrowDown,
+  Bell, ShieldCheck, ExternalLink, CheckCircle2
 } from 'lucide-react';
 import { Card } from '../../../../components/Card';
 import { api } from '../../../../services/apiLazy';
+import { getSocket } from '../../../../services/socket';
 
 interface SystemStats {
   cpu: { count: number; percent: number };
@@ -14,6 +16,28 @@ interface SystemStats {
   disk: { percent: number };
   uptime: number;
   platform: string;
+}
+
+interface FiringAlert {
+  id: string | number;
+  alertname: string;
+  severity: 'critical' | 'warning' | 'info' | string;
+  summary: string;
+  description: string;
+  started_at: string;
+  fingerprint: string;
+  labels: Record<string, string>;
+  annotations: Record<string, string>;
+  duration_seconds: string | number;
+}
+interface FiringAlertsResponse { data: FiringAlert[]; count: number }
+
+interface ServiceHealth { up: boolean; latencyMs: number; status?: number; error?: string }
+interface MonitoringHealthResponse {
+  timestamp: string;
+  prometheus: ServiceHealth;
+  grafana: ServiceHealth;
+  alertmanager: ServiceHealth;
 }
 
 interface GpsMetrics {
@@ -144,7 +168,163 @@ const ProgressBar: React.FC<{
   );
 };
 
+const formatDuration = (seconds: number): string => {
+  const s = Math.floor(seconds);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}min`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h${(m % 60).toString().padStart(2, '0')}`;
+  const d = Math.floor(h / 24);
+  return `${d}j${h % 24}h`;
+};
+
+const SEVERITY_STYLES: Record<string, { bg: string; border: string; badge: string; text: string }> = {
+  critical: {
+    bg: 'bg-[var(--clr-danger-dim)]',
+    border: 'border-[var(--clr-danger-border)]',
+    badge: 'bg-[var(--clr-danger)] text-white',
+    text: 'text-[var(--clr-danger-strong)]',
+  },
+  warning: {
+    bg: 'bg-[var(--clr-warning-dim)]',
+    border: 'border-[var(--clr-warning-border)]',
+    badge: 'bg-[var(--clr-warning)] text-white',
+    text: 'text-[var(--clr-warning-strong)]',
+  },
+  info: {
+    bg: 'bg-[var(--clr-info-dim)]',
+    border: 'border-[var(--clr-info-border)]',
+    badge: 'bg-[var(--clr-info)] text-white',
+    text: 'text-[var(--clr-info-strong)]',
+  },
+};
+
+const FiringAlertRow: React.FC<{ alert: FiringAlert }> = ({ alert }) => {
+  const sev = SEVERITY_STYLES[alert.severity] || SEVERITY_STYLES.warning;
+  const runbookUrl = alert.annotations?.runbook_url;
+  const duration = typeof alert.duration_seconds === 'string'
+    ? parseFloat(alert.duration_seconds)
+    : alert.duration_seconds;
+  return (
+    <div className={`flex items-start gap-3 px-3 py-2 rounded-md border ${sev.border} ${sev.bg}`}>
+      <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${sev.badge}`}>
+        {alert.severity}
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className={`font-semibold text-sm ${sev.text}`}>{alert.alertname}</span>
+          <span className="text-xs text-[var(--text-muted)]">· depuis {formatDuration(duration || 0)}</span>
+        </div>
+        <p className="text-xs text-[var(--text-secondary)] truncate" title={alert.summary}>
+          {alert.summary}
+        </p>
+      </div>
+      {runbookUrl && (
+        <a
+          href={runbookUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shrink-0 inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-[var(--primary)] hover:underline"
+          title="Ouvrir le runbook"
+        >
+          Runbook <ExternalLink className="w-3 h-3" />
+        </a>
+      )}
+    </div>
+  );
+};
+
+const SystemAlertsSection: React.FC<{
+  data?: FiringAlertsResponse;
+  isLoading: boolean;
+}> = ({ data, isLoading }) => {
+  if (isLoading && !data) {
+    return (
+      <Card className="p-4 border bg-[var(--bg-elevated)] border-[var(--border)]">
+        <div className="flex items-center gap-2 text-sm text-[var(--text-secondary)]">
+          <RefreshCw className="w-4 h-4 animate-spin" />
+          Chargement des alertes système…
+        </div>
+      </Card>
+    );
+  }
+
+  const alerts = data?.data ?? [];
+  // Dédup par fingerprint (Prometheus refire crée des doublons en DB tant que
+  // l'UPSERT par fingerprint n'est pas en place côté backend)
+  const seen = new Set<string>();
+  const dedup = alerts.filter((a) => {
+    if (seen.has(a.fingerprint)) return false;
+    seen.add(a.fingerprint);
+    return true;
+  });
+
+  if (dedup.length === 0) {
+    return (
+      <Card className="p-4 border bg-[var(--clr-success-dim)] border-[var(--clr-success-border)]">
+        <div className="flex items-center gap-3">
+          <CheckCircle2 className="w-5 h-5 text-[var(--clr-success-strong)]" />
+          <div>
+            <p className="font-bold text-sm text-[var(--clr-success-strong)]">Aucune alerte système active</p>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Stack monitoring sain · 25 règles Prometheus actives
+            </p>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  const visible = dedup.slice(0, 5);
+  const hidden = dedup.length - visible.length;
+  const hasCritical = dedup.some((a) => a.severity === 'critical');
+  const headerStyle = hasCritical ? SEVERITY_STYLES.critical : SEVERITY_STYLES.warning;
+
+  return (
+    <Card className={`p-4 border ${headerStyle.border} ${headerStyle.bg}`}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <Bell className={`w-5 h-5 ${headerStyle.text}`} />
+          <h3 className={`font-bold text-sm ${headerStyle.text}`}>
+            {dedup.length} alerte{dedup.length > 1 ? 's' : ''} système active{dedup.length > 1 ? 's' : ''}
+          </h3>
+        </div>
+        <span className="text-xs text-[var(--text-secondary)]">Prometheus · firing</span>
+      </div>
+      <div className="space-y-2">
+        {visible.map((a) => <FiringAlertRow key={a.fingerprint} alert={a} />)}
+      </div>
+      {hidden > 0 && (
+        <p className="mt-2 text-xs text-[var(--text-muted)] text-center">
+          + {hidden} autre{hidden > 1 ? 's' : ''} alerte{hidden > 1 ? 's' : ''} (voir Alertmanager)
+        </p>
+      )}
+    </Card>
+  );
+};
+
+const ServiceHealthBadge: React.FC<{ name: string; health?: ServiceHealth }> = ({ name, health }) => {
+  const up = health?.up ?? false;
+  const label = up
+    ? `${name} · ${health?.latencyMs ?? '?'}ms`
+    : `${name} · ${health?.error || 'down'}`;
+  const dotColor = up ? 'bg-[var(--clr-success)]' : 'bg-[var(--clr-danger)]';
+  const textColor = up ? 'text-[var(--clr-success-strong)]' : 'text-[var(--clr-danger-strong)]';
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-md bg-[var(--bg-elevated)] border border-[var(--border)]"
+      title={label}
+    >
+      <span className={`w-2 h-2 rounded-full ${dotColor}`} />
+      <span className={textColor}>{name}</span>
+    </span>
+  );
+};
+
 export const SystemMetricsPanel: React.FC = () => {
+  const queryClient = useQueryClient();
+
   // Requête pour les stats système OS
   const { data: systemStats, isLoading: loadingSystem } = useQuery<SystemStats>({
     queryKey: ['systemStats'],
@@ -158,6 +338,36 @@ export const SystemMetricsPanel: React.FC = () => {
     queryFn: api.system.metrics,
     refetchInterval: 3000,
   });
+
+  // Alertes Prometheus firing (mises à jour live via Socket.IO ci-dessous +
+  // poll de secours toutes les 15s en cas d'évènement raté)
+  const { data: firingAlerts, isLoading: loadingAlerts } = useQuery<FiringAlertsResponse>({
+    queryKey: ['systemAlertsFiring'],
+    queryFn: api.system.alertsFiring,
+    refetchInterval: 15000,
+  });
+
+  // Santé stack monitoring (Prometheus / Grafana / Alertmanager)
+  const { data: monitoringHealth } = useQuery<MonitoringHealthResponse>({
+    queryKey: ['monitoringHealth'],
+    queryFn: api.system.monitoringHealth,
+    refetchInterval: 30000,
+  });
+
+  // Socket.IO : invalide la liste des alertes firing dès qu'un évènement
+  // 'admin:system-alert' arrive (room 'superadmin' déjà jointe par DataContext
+  // pour les utilisateurs SUPERADMIN). Pour les non-SUPERADMIN, la room n'est
+  // pas jointe — fallback sur le poll 15s.
+  useEffect(() => {
+    const socket = getSocket();
+    const onSystemAlert = () => {
+      queryClient.invalidateQueries({ queryKey: ['systemAlertsFiring'] });
+    };
+    socket.on('admin:system-alert', onSystemAlert);
+    return () => {
+      socket.off('admin:system-alert', onSystemAlert);
+    };
+  }, [queryClient]);
 
   const formatNumber = (num: number): string => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
@@ -204,6 +414,9 @@ export const SystemMetricsPanel: React.FC = () => {
           <RefreshCw className={`w-4 h-4 text-[var(--text-secondary)] ${loadingGps ? 'animate-spin' : ''}`} />
         </button>
       </div>
+
+      {/* Section 0: Alertes système actives (Prometheus firing) */}
+      <SystemAlertsSection data={firingAlerts} isLoading={loadingAlerts} />
 
       {/* Section 1: Ressources Serveur */}
       <Card title="🖥️ Ressources Serveur" className="p-4">
@@ -428,22 +641,27 @@ export const SystemMetricsPanel: React.FC = () => {
         </Card>
       </div>
 
-      {/* Lien vers Grafana */}
+      {/* Lien vers Grafana + santé stack monitoring */}
       <Card className="p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border-[var(--clr-warning-border)]">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
             <h4 className="font-bold text-[var(--text-primary)]">
               📈 Dashboards Grafana
             </h4>
-            <p className="text-sm text-[var(--text-secondary)]">
+            <p className="text-sm text-[var(--text-secondary)] mb-2">
               Pour des graphiques avancés et l'historique des métriques
             </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <ServiceHealthBadge name="Prometheus"   health={monitoringHealth?.prometheus} />
+              <ServiceHealthBadge name="Grafana"      health={monitoringHealth?.grafana} />
+              <ServiceHealthBadge name="Alertmanager" health={monitoringHealth?.alertmanager} />
+            </div>
           </div>
           <a
             href={import.meta.env.VITE_GRAFANA_URL || 'https://monitoring.trackyugps.com'}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors"
+            className="px-4 py-2 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 transition-colors shrink-0"
           >
             Ouvrir Grafana →
           </a>

@@ -817,6 +817,20 @@ export const getVehicleUpdates = (
     theftThreshold: v.theftThreshold,
     calibrationTable: v.calibrationTable ? v.calibrationTable.map((row: any) => row.join(',')).join('\n') : '',
 
+    // Sensor config (from vehicle sensor_config JSONB)
+    ...(v.sensorConfig
+      ? {
+          sensorUnit: v.sensorConfig.sensor_unit,
+          fuelConversionFactor: v.sensorConfig.factor,
+          voltageEmptyMv: v.sensorConfig.v_empty_mv,
+          voltageHalfMv: v.sensorConfig.v_half_mv,
+          voltageFullMv: v.sensorConfig.v_full_mv,
+          sensorBrand: v.sensorConfig.sensor_brand,
+          sensorModel: v.sensorConfig.sensor_model,
+          sensorInstallDate: v.sensorConfig.sensor_install_date,
+        }
+      : {}),
+
     imei: newImei,
     iccid: newIccid,
     simCard: newPhone,

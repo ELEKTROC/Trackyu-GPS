@@ -8,6 +8,9 @@ import {
   AlertTriangle,
   Battery,
   Check,
+  ChevronDown,
+  ChevronRight,
+  Copy,
   Cpu,
   Edit2,
   Eye,
@@ -19,6 +22,7 @@ import {
   Settings,
   Shield,
   Tag,
+  Terminal,
   Trash2,
   Wifi,
   WifiOff,
@@ -280,9 +284,9 @@ function DeviceHealthTab() {
         <div className="flex gap-2">
           <input
             type="text"
-            placeholder="Entrez l'IMEI (15 chiffres)"
+            placeholder="Entrez l'IMEI"
             value={imeiInput}
-            onChange={(e) => setImeiInput(e.target.value.replace(/\D/g, '').slice(0, 16))}
+            onChange={(e) => setImeiInput(e.target.value.replace(/\D/g, '').slice(0, 20))}
             onKeyDown={(e) => e.key === 'Enter' && fetchDiagnostic()}
             className="flex-1 border border-[var(--border)] rounded-lg px-3 py-2 text-sm font-mono"
             maxLength={16}
@@ -575,6 +579,250 @@ function GlobalConfigTab() {
   );
 }
 
+// ─── Référence commandes par protocole ───────────────────────────────────────
+
+interface ProtocolCommand {
+  fn: string;
+  format: string;
+  note?: string;
+  reply?: string;
+}
+
+interface ProtocolSection {
+  title: string;
+  commands: ProtocolCommand[];
+}
+
+interface ProtocolRef {
+  description: string;
+  warning?: string;
+  sections: ProtocolSection[];
+}
+
+const PROTOCOL_COMMANDS: Record<string, ProtocolRef> = {
+  'CK508D-JT (JT808 ASCII)': {
+    description:
+      'Boîtiers IMEI 15042xxx (modèle JT808 BLE — capteur fuel BLE livre directement le volume) — password par défaut 1234',
+    warning: "Commandes ASCII vendor, pas du JT808 binaire. Acceptation TCP non confirmée — tester d'abord via SMS.",
+    sections: [
+      {
+        title: 'Paramètres généraux',
+        commands: [
+          { fn: 'Set one IP', format: '*SET*P:1234*U:120.77.144.129,808,1#', reply: 'IP:120.77.144.129,808,1>' },
+          { fn: 'Set two IPs', format: '*SET*P:1234*U:ip1,port1,1,ip2,port2,1#' },
+          { fn: 'Set device ID', format: '*SET*P:1234*N:13601408888#', note: '11 chiffres' },
+          { fn: 'Set APN', format: '*SET*P:1234*A:CMNET,CMNET,CMNET,#', note: '3 virgules obligatoires' },
+          { fn: 'Set APN (sans login)', format: '*SET*P:1234*A:CMNET,,,#', note: '3 virgules obligatoires' },
+          { fn: 'GPS upload interval', format: '*SET*P:1234*E:1,x,y#', note: 'x=ACC ON (s), y=ACC OFF (s)' },
+          { fn: 'Set time zone (GMT)', format: '*SET*P:1234*T:0#', note: '0 = UTC' },
+          { fn: 'Check device status', format: '*SET*P:1234*C#', reply: 'P1:...,IP2:...,APN:...' },
+          { fn: 'Reboot device', format: '*SET*P:1234*B#', reply: '<Restart...>' },
+          { fn: 'Check firmware', format: '*SET*P:1234*V#', reply: 'APP:CK508D-JT-V...' },
+          { fn: 'Reset odometer', format: '*SET*P:1234*M:105,0#' },
+        ],
+      },
+      {
+        title: 'Capteurs Bluetooth',
+        commands: [
+          {
+            fn: 'ADD MAC',
+            format: 'BLEn,A,E04E7A401882#',
+            note: 'n=1 fuel · 2 door · 3 speed · 4 heart rate',
+            reply: 'BLE2 SET OK',
+          },
+          { fn: 'Check MAC', format: 'BLEn,C#', reply: 'BLE2,C,E04E7A401882#' },
+          { fn: 'Delete MAC', format: 'BLEn,D#', reply: 'BLE2 CLR OK' },
+        ],
+      },
+    ],
+  },
+  'GT06 / Concox': {
+    description:
+      'Tous les modèles GT06 (J16 JimiIoT, X3, GT800, ET25, Seeworld, ST901, TK309, BW09, Unknown_xxx) — 99.5 % du parc',
+    warning: 'Mode "SMS via TCP" — encapsulation 0x80 (paquet binaire) pas encore implémentée côté serveur.',
+    sections: [
+      {
+        title: 'Commandes implémentées (commandFactory.js)',
+        commands: [
+          { fn: 'CUT_ENGINE', format: 'Relay,1#', note: 'Coupe-circuit carburant / allumage' },
+          { fn: 'RESTORE_ENGINE', format: 'Relay,0#', note: 'Restaure allumage' },
+          { fn: 'CONFIGURE_APN', format: 'APN,<apn>,<user>,<pass>#' },
+          { fn: 'CONFIGURE_SERVER', format: 'SERVER,1,<ip>,<port>,0#' },
+          { fn: 'PING', format: 'STATUS#', note: 'Demande statut device' },
+        ],
+      },
+    ],
+  },
+  H02: {
+    description: 'Boîtiers Sinotrack, TK103, GT02H — parser en réception, aucun boîtier actif en prod',
+    sections: [
+      {
+        title: 'Commandes implémentées (commandFactory.js)',
+        commands: [
+          { fn: 'CUT_ENGINE', format: '*HQ,<imei>,S20,010,1#' },
+          { fn: 'RESTORE_ENGINE', format: '*HQ,<imei>,S20,010,0#' },
+          { fn: 'CONFIGURE_APN', format: '*HQ,<imei>,APN,<apn>#' },
+          { fn: 'CONFIGURE_SERVER', format: '*HQ,<imei>,IP,<ip>,<port>#' },
+          { fn: 'PING', format: '*HQ,<imei>,V1#' },
+        ],
+      },
+    ],
+  },
+  Meitrack: {
+    description: 'MVT600, T399, T1 — parser en réception, aucun boîtier actif en prod',
+    sections: [
+      {
+        title: 'Commandes implémentées (commandFactory.js)',
+        commands: [
+          { fn: 'CUT_ENGINE', format: '@@<len><imei>,C01,0,12222*00\\r\\n' },
+          { fn: 'RESTORE_ENGINE', format: '@@<len><imei>,C01,0,02222*00\\r\\n' },
+          { fn: 'CONFIGURE_APN', format: '@@<len><imei>,A11,<apn>*00\\r\\n' },
+          { fn: 'PING', format: '@@<len><imei>,A10*00\\r\\n' },
+        ],
+      },
+    ],
+  },
+  Teltonika: {
+    description: 'FMB120, FMB920, FMB640 — parser en réception, aucun boîtier actif en prod',
+    warning: "Codec 12 (binaire) non encapsulé — commandes non fonctionnelles en l'état.",
+    sections: [
+      {
+        title: 'Commandes implémentées (commandFactory.js)',
+        commands: [
+          { fn: 'CUT_ENGINE', format: 'setdigout 1' },
+          { fn: 'RESTORE_ENGINE', format: 'setdigout 0' },
+          { fn: 'CONFIGURE_APN', format: 'setparam 2001:<apn>' },
+          { fn: 'PING', format: 'getstatus' },
+        ],
+      },
+    ],
+  },
+  'Wialon IPS': {
+    description: 'Boîtiers compatibles Wialon — parser en réception, aucun boîtier actif en prod',
+    sections: [
+      {
+        title: 'Commandes implémentées (commandFactory.js)',
+        commands: [
+          { fn: 'CUT_ENGINE', format: '#M#relay,1\\r\\n' },
+          { fn: 'RESTORE_ENGINE', format: '#M#relay,0\\r\\n' },
+          { fn: 'PING', format: '#P#\\r\\n' },
+        ],
+      },
+    ],
+  },
+};
+
+function ProtocolCommandsReference() {
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const copy = async (key: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 1500);
+    } catch {
+      // noop
+    }
+  };
+
+  return (
+    <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg overflow-hidden">
+      <div className="px-4 py-2.5 bg-[var(--bg-surface)] border-b border-[var(--border)] flex items-center gap-2">
+        <Terminal className="h-4 w-4 text-[var(--primary)]" />
+        <span className="text-sm font-semibold text-[var(--text-primary)]">Référence commandes par protocole</span>
+        <span className="text-xs text-[var(--text-secondary)]">
+          ({Object.keys(PROTOCOL_COMMANDS).length} protocoles)
+        </span>
+      </div>
+      <div className="divide-y divide-[var(--border)]">
+        {Object.entries(PROTOCOL_COMMANDS).map(([protoName, ref]) => {
+          const isOpen = expanded === protoName;
+          return (
+            <div key={protoName}>
+              <button
+                onClick={() => setExpanded(isOpen ? null : protoName)}
+                className="w-full px-4 py-2.5 flex items-center gap-2 hover:bg-[var(--bg-surface)] text-left transition-colors"
+              >
+                {isOpen ? (
+                  <ChevronDown className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+                ) : (
+                  <ChevronRight className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+                )}
+                <span className="text-sm font-mono font-semibold text-[var(--primary)]">{protoName}</span>
+                <span className="text-xs text-[var(--text-secondary)] flex-1 truncate">— {ref.description}</span>
+              </button>
+              {isOpen && (
+                <div className="px-4 py-3 bg-[var(--bg-primary)] space-y-3">
+                  {ref.warning && (
+                    <div className="flex items-start gap-2 px-3 py-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded text-xs text-amber-900 dark:text-amber-200">
+                      <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" />
+                      <span>{ref.warning}</span>
+                    </div>
+                  )}
+                  {ref.sections.map((section) => (
+                    <div key={section.title}>
+                      <h4 className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wide mb-2">
+                        {section.title}
+                      </h4>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="text-left text-[var(--text-secondary)]">
+                              <th className="py-1.5 pr-3 font-medium">Fonction</th>
+                              <th className="py-1.5 pr-3 font-medium">Format</th>
+                              <th className="py-1.5 pr-3 font-medium">Note</th>
+                              <th className="py-1.5 pr-3 font-medium">Réponse</th>
+                              <th className="py-1.5 w-10"></th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[var(--border)]">
+                            {section.commands.map((cmd, i) => {
+                              const key = `${protoName}-${section.title}-${i}`;
+                              const isCopied = copiedKey === key;
+                              return (
+                                <tr key={key} className="hover:bg-[var(--bg-surface)]">
+                                  <td className="py-1.5 pr-3 text-[var(--text-primary)] font-medium">{cmd.fn}</td>
+                                  <td className="py-1.5 pr-3">
+                                    <code className="px-1.5 py-0.5 bg-[var(--bg-elevated)] border border-[var(--border)] rounded text-[11px] text-[var(--primary)] font-mono">
+                                      {cmd.format}
+                                    </code>
+                                  </td>
+                                  <td className="py-1.5 pr-3 text-[var(--text-secondary)]">{cmd.note || '—'}</td>
+                                  <td className="py-1.5 pr-3 text-[var(--text-secondary)] font-mono text-[11px]">
+                                    {cmd.reply || '—'}
+                                  </td>
+                                  <td className="py-1.5">
+                                    <button
+                                      onClick={() => copy(key, cmd.format)}
+                                      className="p-1 rounded hover:bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors"
+                                      title="Copier"
+                                    >
+                                      {isCopied ? (
+                                        <Check className="h-3.5 w-3.5 text-green-600" />
+                                      ) : (
+                                        <Copy className="h-3.5 w-3.5" />
+                                      )}
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Onglet Modèles & Protocoles ─────────────────────────────────────────────
 function ModelsProtocolsTab() {
   const [models, setModels] = useState<DeviceModelConfig[]>([]);
@@ -710,6 +958,9 @@ function ModelsProtocolsTab() {
           ))}
         </div>
       )}
+
+      {/* Référence commandes par protocole */}
+      <ProtocolCommandsReference />
 
       {/* Bouton ajouter */}
       <div className="flex items-center justify-between">

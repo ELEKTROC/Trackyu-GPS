@@ -38,7 +38,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ initialData, onSubmi
 
   useEffect(() => {
     api.tiers
-      .list()
+      .list(undefined, true)
       .then((all) => {
         setClients(all.filter((t) => t.type === 'CLIENT'));
         setResellers(all.filter((t) => t.type === 'RESELLER'));

@@ -206,13 +206,15 @@ function KpiCard({
   return (
     <Component
       onClick={onClick}
-      className={`flex flex-col gap-0.5 p-3 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border)] text-left transition-all ${isClickable ? 'hover:border-[var(--primary)] hover:-translate-y-px cursor-pointer' : ''}`}
+      className={`flex flex-col gap-1 p-4 rounded-[var(--brand-radius)] bg-[var(--bg-card)] text-left transition-all ${
+        isClickable ? 'hover:ring-1 hover:ring-[var(--brand-primary)]/30 hover:-translate-y-px cursor-pointer' : ''
+      }`}
     >
-      <span className="text-[10px] text-[var(--text-secondary)] font-medium">{label}</span>
-      <span className="font-bold text-[15px] leading-tight" style={{ color }}>
+      <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]">{label}</span>
+      <span className="font-black font-mono text-xl leading-tight" style={{ color }}>
         {value}
       </span>
-      {sub && <span className="text-[10px] text-[var(--text-muted)]">{sub}</span>}
+      {sub && <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-tight">{sub}</span>}
     </Component>
   );
 }
@@ -352,25 +354,25 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <KpiCard
           label="Consommation"
           value={`${activeTab === "Aujourd'hui" ? consommation : weekKpis.consommation} L`}
           sub={realL100 !== null ? `${realL100} L/100 km` : undefined}
-          color="#fbbf24"
+          color="var(--clr-warning-strong)"
         />
         <KpiCard
           label="Recharges"
           value={`${activeTab === "Aujourd'hui" ? (stats.totalRefillVolume ?? 0) : weekKpis.recharges} L`}
           sub={`${stats.refillCount ?? 0} fois`}
-          color="#22c55e"
+          color="var(--clr-success-strong)"
           onClick={onOpenEvents ? () => onOpenEvents('REFILL') : undefined}
         />
         <KpiCard
           label="Baisses suspectes"
           value={`${activeTab === "Aujourd'hui" ? (stats.totalTheftVolume ?? 0) : weekKpis.baisses} L`}
           sub={`${stats.theftCount ?? 0} fois`}
-          color="#ef4444"
+          color="var(--clr-danger-strong)"
           onClick={onOpenEvents ? () => onOpenEvents('THEFT') : undefined}
         />
         <KpiCard
@@ -381,7 +383,7 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({
               : `${currentFuel?.volume ?? 0} L`
           }
           sub={currentFuel ? `${currentFuel.level}% · capacité ${stats.tankCapacity ?? '—'} L` : undefined}
-          color="#3b82f6"
+          color="var(--color-info)"
         />
       </div>
       {/* Pertes au ralenti — retrait */}
@@ -500,9 +502,11 @@ export const FuelModalContent: React.FC<FuelModalContentProps> = ({
         </div>
       </section>
 
-      {/* Derniers pleins */}
+      {/* Dernières recharges */}
       <section>
-        <h3 className="text-xs font-bold text-[var(--text-secondary)] mb-3 uppercase tracking-wide">Derniers pleins</h3>
+        <h3 className="text-xs font-bold text-[var(--text-secondary)] mb-3 uppercase tracking-wide">
+          Dernières recharges
+        </h3>
         <div className="space-y-2">
           {refills.filter((r) => r.type === 'REFILL').length > 0 ? (
             refills

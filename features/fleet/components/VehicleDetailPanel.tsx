@@ -155,16 +155,19 @@ export const VehicleDetailPanel: React.FC<VehicleDetailPanelProps> = ({
 
   // Merge fuel_records (manuels) + fuel_events (auto-détectés Phase 4)
   // DISMISSED filtré (faux positifs rejetés par manager).
+  // date = end_time : pour un THEFT c'est le creux (fuel bas après vol), pour un
+  // REFILL c'est le pic (fuel haut après plein). Dans les 2 cas, le marker
+  // s'affiche là où la chute / remontée est visible sur la courbe (step visible).
   const mergedFuelRecords = useMemo(() => {
     const eventsAsRefills = (fuelEventsForChart ?? [])
       .filter((e: any) => e.status !== 'DISMISSED' && (e.type === 'REFILL' || e.type === 'THEFT'))
       .map((e: any) => ({
         id: e.id,
         type: e.type,
-        date: e.start_time,
+        date: e.end_time,
         volume: Math.abs(Number(e.delta_liters)),
         cost: 0,
-        location: e.start_address || undefined,
+        location: e.end_address || e.start_address || undefined,
       }));
     return [...fuelRecords, ...eventsAsRefills];
   }, [fuelRecords, fuelEventsForChart]);

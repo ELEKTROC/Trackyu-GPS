@@ -120,6 +120,8 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
     tiers,
     tickets,
     updateTicket,
+    vehicles,
+    updateVehicle,
   } = useDataContext();
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -1284,6 +1286,30 @@ export const TechView: React.FC<TechViewProps> = ({ initialViewMode = 'LIST' }) 
               addIntervention(data as Intervention);
               showToast(TOAST.CRUD.CREATED('Intervention'), 'success');
             }
+
+            // Sync sensor_config to vehicle on completion
+            if (data.status === 'COMPLETED' && data.vehicleId && (data as any).sensorUnit !== undefined) {
+              const vehicle = vehicles.find((v) => v.id === data.vehicleId);
+              if (vehicle) {
+                const sensorConfig = {
+                  sensor_unit: (data as any).sensorUnit,
+                  factor: (data as any).fuelConversionFactor ?? null,
+                  v_empty_mv: (data as any).voltageEmptyMv ?? null,
+                  v_half_mv: (data as any).voltageHalfMv ?? null,
+                  v_full_mv: (data as any).voltageFullMv ?? null,
+                  sensor_brand: (data as any).sensorBrand ?? null,
+                  sensor_model: (data as any).sensorModel ?? null,
+                  sensor_install_date: (data as any).sensorInstallDate ?? null,
+                };
+                updateVehicle({
+                  ...vehicle,
+                  fuelSensorType: (data as any).fuelSensorType || vehicle.fuelSensorType,
+                  tankCapacity: (data as any).tankCapacity || vehicle.tankCapacity,
+                  sensorConfig,
+                } as any);
+              }
+            }
+
             setIsModalOpen(false);
             setSelectedIntervention(null);
           }}

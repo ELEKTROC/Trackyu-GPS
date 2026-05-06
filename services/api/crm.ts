@@ -11,29 +11,23 @@ import {
   tierToClient,
   clientToTier,
   tierToSupplier,
-  supplierToTier
+  supplierToTier,
 } from './client';
 import { logger } from '../../utils/logger';
-import type {
-  Tier,
-  Client,
-  Branch,
-  Lead,
-  Supplier,
-  Task,
-  AutomationRule
-} from '../../types';
+import type { Tier, Client, Branch, Lead, Supplier, Task, AutomationRule } from '../../types';
 
 export function createCrmApi(lazyApi: () => any) {
   return {
     // --- TIERS (UNIFIED PARTNERS) ---
     tiers: {
-      list: async (tenantId?: string): Promise<Tier[]> => {
+      list: async (tenantId?: string, activeOnly = false): Promise<Tier[]> => {
         await sleep(NETWORK_DELAY);
         if (USE_MOCK) return db.get(DB_KEYS.TIERS, [] as Tier[]);
         try {
-          // Ne pas envoyer tenantId si undefined - le backend utilise le tenant du JWT
-          const url = tenantId ? `${API_URL}/tiers?tenantId=${tenantId}` : `${API_URL}/tiers`;
+          const params = new URLSearchParams();
+          if (tenantId) params.set('tenantId', tenantId);
+          if (activeOnly) params.set('active', 'true');
+          const url = `${API_URL}/tiers${params.toString() ? `?${params}` : ''}`;
           const response = await fetch(url, { headers: getHeaders() });
           if (!response.ok) throw new Error('Failed to fetch tiers');
           return await response.json();
@@ -54,7 +48,7 @@ export function createCrmApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/tiers`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(tier)
+            body: JSON.stringify(tier),
           });
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
@@ -70,7 +64,7 @@ export function createCrmApi(lazyApi: () => any) {
         await sleep(NETWORK_DELAY);
         if (USE_MOCK) {
           const tiers = db.get(DB_KEYS.TIERS, []);
-          const updated = tiers.map((t: Tier) => t.id === tier.id ? tier : t);
+          const updated = tiers.map((t: Tier) => (t.id === tier.id ? tier : t));
           db.set(DB_KEYS.TIERS, updated);
           return tier;
         }
@@ -78,7 +72,7 @@ export function createCrmApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/tiers/${tier.id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify(tier)
+            body: JSON.stringify(tier),
           });
           if (!response.ok) throw new Error('Failed to update tier');
           return await response.json();
@@ -91,13 +85,16 @@ export function createCrmApi(lazyApi: () => any) {
         await sleep(NETWORK_DELAY);
         if (USE_MOCK) {
           const tiers = db.get(DB_KEYS.TIERS, []);
-          db.set(DB_KEYS.TIERS, tiers.filter((t: Tier) => t.id !== id));
+          db.set(
+            DB_KEYS.TIERS,
+            tiers.filter((t: Tier) => t.id !== id)
+          );
           return id;
         }
         try {
           const response = await fetch(`${API_URL}/tiers/${id}`, {
             method: 'DELETE',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to delete tier');
           return id;
@@ -105,7 +102,7 @@ export function createCrmApi(lazyApi: () => any) {
           logger.error(e);
           throw e;
         }
-      }
+      },
     },
 
     // --- RESELLER STATS ---
@@ -118,8 +115,8 @@ export function createCrmApi(lazyApi: () => any) {
             stats: {
               clients: { total: 0, active: 0 },
               vehicles: { total: 0, active: 0 },
-              mrr: { amount: 0, currency: 'FCFA', perVehicle: 15000 }
-            }
+              mrr: { amount: 0, currency: 'FCFA', perVehicle: 15000 },
+            },
           };
         }
         try {
@@ -133,8 +130,8 @@ export function createCrmApi(lazyApi: () => any) {
             stats: {
               clients: { total: 0, active: 0 },
               vehicles: { total: 0, active: 0 },
-              mrr: { amount: 0, currency: 'FCFA', perVehicle: 15000 }
-            }
+              mrr: { amount: 0, currency: 'FCFA', perVehicle: 15000 },
+            },
           };
         }
       },
@@ -150,9 +147,9 @@ export function createCrmApi(lazyApi: () => any) {
               totalVehicles: 0,
               activeVehicles: 0,
               totalMRR: 0,
-              currency: 'FCFA'
+              currency: 'FCFA',
             },
-            resellers: []
+            resellers: [],
           };
         }
         try {
@@ -170,18 +167,18 @@ export function createCrmApi(lazyApi: () => any) {
               totalVehicles: 0,
               activeVehicles: 0,
               totalMRR: 0,
-              currency: 'FCFA'
+              currency: 'FCFA',
             },
-            resellers: []
+            resellers: [],
           };
         }
-      }
+      },
     },
 
     // --- CLIENTS ---
     clients: {
-      list: async (tenantId?: string): Promise<Client[]> => {
-        const tiers = await lazyApi().tiers.list(tenantId);
+      list: async (tenantId?: string, activeOnly = false): Promise<Client[]> => {
+        const tiers = await lazyApi().tiers.list(tenantId, activeOnly);
         // Pass all tiers so tierToClient can lookup reseller names
         return tiers.filter((t: Tier) => t.type === 'CLIENT').map((t: Tier) => tierToClient(t, tiers));
       },
@@ -197,7 +194,7 @@ export function createCrmApi(lazyApi: () => any) {
           clientId: createdClient.id,
           isDefault: true,
           createdAt: new Date().toISOString(),
-          statut: 'ACTIVE'
+          statut: 'ACTIVE',
         };
         await lazyApi().branches.create(defaultBranch);
 
@@ -217,7 +214,7 @@ export function createCrmApi(lazyApi: () => any) {
         for (const t of targets) {
           await lazyApi().tiers.update({ ...t, status });
         }
-      }
+      },
     },
 
     // --- LEADS ---
@@ -244,9 +241,13 @@ export function createCrmApi(lazyApi: () => any) {
             sector: l.sector,
             source: l.source,
             resellerId: l.reseller_id,
-            interestedProducts: l.interested_products ? (typeof l.interested_products === 'string' ? JSON.parse(l.interested_products) : l.interested_products) : [],
+            interestedProducts: l.interested_products
+              ? typeof l.interested_products === 'string'
+                ? JSON.parse(l.interested_products)
+                : l.interested_products
+              : [],
             createdAt: new Date(l.created_at),
-            updatedAt: l.updated_at ? new Date(l.updated_at) : undefined
+            updatedAt: l.updated_at ? new Date(l.updated_at) : undefined,
           }));
         } catch (e) {
           logger.error('API Error (leads):', e);
@@ -266,7 +267,7 @@ export function createCrmApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/crm/leads`, {
             method: 'POST',
             headers: getHeaders(),
-            body: JSON.stringify(lead)
+            body: JSON.stringify(lead),
           });
           if (!response.ok) {
             const errorData = await response.json().catch(() => null);
@@ -289,9 +290,13 @@ export function createCrmApi(lazyApi: () => any) {
             sector: rawData.sector,
             source: rawData.source,
             resellerId: rawData.reseller_id,
-            interestedProducts: rawData.interested_products ? (typeof rawData.interested_products === 'string' ? JSON.parse(rawData.interested_products) : rawData.interested_products) : [],
+            interestedProducts: rawData.interested_products
+              ? typeof rawData.interested_products === 'string'
+                ? JSON.parse(rawData.interested_products)
+                : rawData.interested_products
+              : [],
             createdAt: new Date(rawData.created_at),
-            updatedAt: rawData.updated_at ? new Date(rawData.updated_at) : undefined
+            updatedAt: rawData.updated_at ? new Date(rawData.updated_at) : undefined,
           };
         } catch (e) {
           logger.error(e);
@@ -314,7 +319,7 @@ export function createCrmApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/crm/leads/${lead.id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify(lead)
+            body: JSON.stringify(lead),
           });
           if (!response.ok) throw new Error('Failed to update lead');
           const rawData = await response.json();
@@ -333,9 +338,13 @@ export function createCrmApi(lazyApi: () => any) {
             sector: rawData.sector,
             source: rawData.source,
             resellerId: rawData.reseller_id,
-            interestedProducts: rawData.interested_products ? (typeof rawData.interested_products === 'string' ? JSON.parse(rawData.interested_products) : rawData.interested_products) : [],
+            interestedProducts: rawData.interested_products
+              ? typeof rawData.interested_products === 'string'
+                ? JSON.parse(rawData.interested_products)
+                : rawData.interested_products
+              : [],
             createdAt: new Date(rawData.created_at),
-            updatedAt: rawData.updated_at ? new Date(rawData.updated_at) : undefined
+            updatedAt: rawData.updated_at ? new Date(rawData.updated_at) : undefined,
           };
         } catch (e) {
           logger.error(e);
@@ -353,7 +362,7 @@ export function createCrmApi(lazyApi: () => any) {
         try {
           const response = await fetch(`${API_URL}/crm/leads/${id}`, {
             method: 'DELETE',
-            headers: getHeaders()
+            headers: getHeaders(),
           });
           if (!response.ok) throw new Error('Failed to delete lead');
         } catch (e) {
@@ -377,7 +386,7 @@ export function createCrmApi(lazyApi: () => any) {
           const response = await fetch(`${API_URL}/crm/leads/${id}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify({ status })
+            body: JSON.stringify({ status }),
           });
           if (!response.ok) throw new Error('Failed to update lead status');
         } catch (e) {
@@ -406,7 +415,7 @@ export function createCrmApi(lazyApi: () => any) {
       delete: async (id: string) => {
         await lazyApi().tiers.delete(id);
         return id;
-      }
+      },
     },
 
     // --- CRM (Tasks, Automation) ---
@@ -415,7 +424,7 @@ export function createCrmApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/crm/leads/${leadId}/convert`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
         });
         return response.json();
       },
@@ -428,7 +437,7 @@ export function createCrmApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/crm/tasks`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify(task)
+          body: JSON.stringify(task),
         });
         if (!response.ok) throw new Error(`Erreur ${response.status}: ${await response.text()}`);
         return response.json();
@@ -437,7 +446,7 @@ export function createCrmApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/crm/tasks/${id}`, {
           method: 'PUT',
           headers: getHeaders(),
-          body: JSON.stringify(task)
+          body: JSON.stringify(task),
         });
         if (!response.ok) throw new Error(`Erreur ${response.status}: ${await response.text()}`);
         return response.json();
@@ -445,7 +454,7 @@ export function createCrmApi(lazyApi: () => any) {
       deleteTask: async (id: string): Promise<string> => {
         const response = await fetch(`${API_URL}/crm/tasks/${id}`, {
           method: 'DELETE',
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error(`Erreur ${response.status}: ${await response.text()}`);
         // Backend returns the deleted id as a plain string
@@ -460,7 +469,7 @@ export function createCrmApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/crm/automation-rules`, {
           method: 'POST',
           headers: getHeaders(),
-          body: JSON.stringify(rule)
+          body: JSON.stringify(rule),
         });
         if (!response.ok) throw new Error(`Erreur ${response.status}: ${await response.text()}`);
         return response.json();
@@ -469,7 +478,7 @@ export function createCrmApi(lazyApi: () => any) {
         const response = await fetch(`${API_URL}/crm/automation-rules/${id}`, {
           method: 'PUT',
           headers: getHeaders(),
-          body: JSON.stringify(rule)
+          body: JSON.stringify(rule),
         });
         if (!response.ok) throw new Error(`Erreur ${response.status}: ${await response.text()}`);
         return response.json();
@@ -477,11 +486,11 @@ export function createCrmApi(lazyApi: () => any) {
       deleteAutomationRule: async (id: string): Promise<string> => {
         const response = await fetch(`${API_URL}/crm/automation-rules/${id}`, {
           method: 'DELETE',
-          headers: getHeaders()
+          headers: getHeaders(),
         });
         if (!response.ok) throw new Error(`Erreur ${response.status}: ${await response.text()}`);
         return response.json();
-      }
-    }
+      },
+    },
   };
 }

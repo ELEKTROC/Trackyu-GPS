@@ -199,8 +199,12 @@ export const VehicleForm = React.forwardRef<
   const hasFuelSensor = Array.isArray(watchedSensors) && watchedSensors.includes('FUEL');
   const watchedFuelSensorType = watch('fuelSensorType');
   const watchedSensorUnit = watch('sensorUnit');
+  const watchedDeviceType = watch('deviceType');
   const isCanbus = watchedFuelSensorType === 'CANBUS';
   const isTension = watchedSensorUnit === 'tension' || (!watchedSensorUnit && watchedFuelSensorType === 'ANALOG');
+  // JT808 BLE : capteur BLE qui livre directement le volume calibré (calibration faite
+  // dans la jauge via app mobile dédiée). Aucun champ calibration côté serveur n'est utile.
+  const isJT808BLE = watchedDeviceType === 'JT808 BLE';
 
   useEffect(() => {
     if (activeTab === 'fuel' && !hasFuelSensor) {
@@ -221,7 +225,7 @@ export const VehicleForm = React.forwardRef<
     }> = [
       {
         prefix: '15042',
-        modelId: 'a470f46c-1cb4-4f7f-9700-3a0170479372', // Concox GT02
+        modelId: 'a470f46c-1cb4-4f7f-9700-3a0170479372', // JT808 BLE (catalogue renommé depuis l'historique Concox GT02)
         sensorUnit: 'litres',
         fuelSensorType: 'CAPACITIVE',
       },
@@ -948,8 +952,8 @@ export const VehicleForm = React.forwardRef<
                     </FormField>
                   </FormGrid>
 
-                  {/* Champs tension conditionnels */}
-                  {isTension && (
+                  {/* Champs tension conditionnels (masqués pour JT808 BLE : capteur livre déjà le volume) */}
+                  {isTension && !isJT808BLE && (
                     <FormGrid columns={3}>
                       <FormField
                         label="Voltage vide (mV)"
@@ -1006,14 +1010,28 @@ export const VehicleForm = React.forwardRef<
                 </FormField>
               </FormGrid>
 
-              <FormField label="Table de Calibration" hint="Format: hauteur(mm),volume(L) par ligne">
-                <Textarea
-                  {...register('calibrationTable')}
-                  rows={5}
-                  className="font-mono"
-                  placeholder="mm,litres&#10;0,0&#10;10,5&#10;20,12..."
-                />
-              </FormField>
+              {!isJT808BLE && (
+                <FormField label="Table de Calibration" hint="Format: hauteur(mm),volume(L) par ligne">
+                  <Textarea
+                    {...register('calibrationTable')}
+                    rows={5}
+                    className="font-mono"
+                    placeholder="mm,litres&#10;0,0&#10;10,5&#10;20,12..."
+                  />
+                </FormField>
+              )}
+
+              {isJT808BLE && (
+                <div className="text-xs text-[var(--text-muted)] bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg px-3 py-2 flex items-start gap-2">
+                  <Fuel className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                  <span>
+                    Capteur <strong>JT808 BLE</strong> : la calibration hauteur ↔ volume est faite directement dans la
+                    jauge via l&apos;application mobile dédiée. Aucune table de calibration côté serveur n&apos;est
+                    requise. Seul le <em>facteur de conversion</em> ci-dessus reste utilisé pour un éventuel ajustement
+                    fin.
+                  </span>
+                </div>
+              )}
             </FormSection>
           </div>
         )}

@@ -45,11 +45,11 @@ const ADMIN_MOBILE_HIDDEN = new Set([
   'trash',
 ]);
 
-export const SuperAdminView: React.FC = () => {
+export const SuperAdminView: React.FC<{ initialTab?: string }> = ({ initialTab }) => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const { filterTabsForView } = useMobileViewTabs();
-  const [activeTab, setActiveTab] = useState('staff');
+  const [activeTab, setActiveTab] = useState(initialTab || 'staff');
 
   const ADMIN_TABS = useMemo(() => {
     const tabs = [

@@ -481,7 +481,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { data: rawClients = [], isLoading: loadingClients } = useQuery({
     queryKey: ['clients', tenantId],
     queryFn: async () => {
-      const data = await api.clients.list(tenantId);
+      const data = await api.clients.list(tenantId, true);
       return data.map((c) => ({ ...c, createdAt: new Date(c.createdAt) }));
     },
     enabled: !!user,
@@ -704,7 +704,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const { data: rawTiers = [], isLoading: loadingTiers } = useQuery({
     queryKey: ['tiers', tenantId],
-    queryFn: () => api.tiers.list(),
+    queryFn: () => api.tiers.list(undefined, true),
     enabled: !!user,
   });
 

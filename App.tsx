@@ -293,6 +293,37 @@ const AppContent: React.FC = () => {
     }
   };
 
+  // Listener pour les navigations déclenchées par les toasts de NotificationContext.
+  // L'app n'a pas de routeur URL classique : un click toast dispatch un
+  // CustomEvent('app:navigate', {detail: {link: '/admin?tab=devices'}}) qu'on
+  // mappe ici sur handleNavigate(View.X, params). Si le path n'est pas câblé,
+  // fallback sur window.location.href (legacy / liens externes éventuels).
+  const handleNavigateRef = useRef(handleNavigate);
+  handleNavigateRef.current = handleNavigate;
+  useEffect(() => {
+    const ROUTE_TO_VIEW: Record<string, View> = {
+      '/admin': View.ADMIN,
+      '/map': View.MAP,
+      '/support': View.SUPPORT,
+      '/dashboard': View.DASHBOARD,
+      '/fleet': View.FLEET,
+    };
+    const onAppNavigate = (e: Event) => {
+      const detail = (e as CustomEvent<{ link: string }>).detail;
+      if (!detail?.link) return;
+      const [path, query] = detail.link.split('?');
+      const params = Object.fromEntries(new URLSearchParams(query || ''));
+      const view = ROUTE_TO_VIEW[path];
+      if (view) {
+        handleNavigateRef.current(view, Object.keys(params).length ? params : undefined);
+      } else {
+        window.location.href = detail.link;
+      }
+    };
+    window.addEventListener('app:navigate', onAppNavigate as EventListener);
+    return () => window.removeEventListener('app:navigate', onAppNavigate as EventListener);
+  }, []);
+
   // Pull-to-refresh handler
   const handlePullToRefresh = async () => {
     if (refreshData) {
@@ -429,7 +460,7 @@ const AppContent: React.FC = () => {
       case View.SUPPORT:
         return hasPermission('VIEW_SUPPORT') ? <LazySupportView /> : AccessDenied;
       case View.ADMIN:
-        return hasPermission('VIEW_ADMIN') ? <LazySuperAdminView /> : AccessDenied;
+        return hasPermission('VIEW_ADMIN') ? <LazySuperAdminView initialTab={viewParams.tab} /> : AccessDenied;
       case View.AGENDA:
         return hasPermission('VIEW_TECH') ? <LazyAgendaView /> : AccessDenied;
       case View.SETTINGS:

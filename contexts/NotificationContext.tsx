@@ -193,7 +193,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       if (toast.link) {
         // Whitelist: uniquement les liens internes (commençant par /)
         const safeLink = toast.link.startsWith('/') ? toast.link : null;
-        if (safeLink) window.location.href = safeLink;
+        if (safeLink) {
+          // L'app web n'a pas de routeur URL classique (View enum géré en
+          // state). On dispatch un event que App.tsx intercepte pour appeler
+          // handleNavigate(view, params). Pour les routes non câblées, le
+          // listener fait un fallback window.location.href (legacy).
+          window.dispatchEvent(new CustomEvent('app:navigate', { detail: { link: safeLink } }));
+        }
       }
       notifications.markAsRead(1);
     },

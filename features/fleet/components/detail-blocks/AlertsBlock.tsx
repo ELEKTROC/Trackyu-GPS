@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { ConfigurableRow } from './SharedBlocks';
 import type { Alert } from '../../../../types';
 
@@ -21,14 +21,28 @@ export const AlertsBlock: React.FC<AlertsBlockProps> = ({
   const [expanded, setExpanded] = useState(false);
 
   if (!alerts || alerts.length === 0) {
-    return <div className="text-xs text-[var(--text-muted)] italic p-2">Aucune alerte aujourd'hui.</div>;
+    return (
+      <div className="text-[11px] text-[var(--text-muted)] italic p-4 bg-[var(--bg-card)] rounded-[var(--brand-radius)] border border-dashed border-[var(--border)] text-center">
+        Aucune alerte aujourd'hui.
+      </div>
+    );
   }
 
   const visible = expanded ? alerts : alerts.slice(0, PREVIEW_COUNT);
   const hasMore = alerts.length > PREVIEW_COUNT;
 
+  const getSeverityClasses = (severity: string) => {
+    if (severity === 'HIGH' || severity === 'CRITICAL') {
+      return 'border-[var(--clr-danger)] bg-[var(--clr-danger-dim)]';
+    }
+    if (severity === 'MEDIUM') {
+      return 'border-[var(--clr-warning)] bg-[var(--clr-warning-dim)]';
+    }
+    return 'border-[var(--clr-caution)] bg-[var(--clr-caution-dim)]';
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {visible.map((alert) => (
         <ConfigurableRow
           key={alert.id}
@@ -38,21 +52,20 @@ export const AlertsBlock: React.FC<AlertsBlockProps> = ({
           onToggle={() => toggleFieldVisibility(`alert-${alert.id}`)}
         >
           <div
-            className={`p-3 rounded border-l-4 ${
-              alert.severity === 'HIGH' || alert.severity === 'CRITICAL'
-                ? 'border-[var(--clr-danger)] bg-[var(--clr-danger-dim)]'
-                : alert.severity === 'MEDIUM'
-                  ? 'border-[var(--clr-warning)] bg-[var(--clr-warning-dim)]'
-                  : 'border-[var(--clr-caution)] bg-[var(--clr-caution-dim)]'
-            }`}
+            className={`p-3 rounded-r-[var(--brand-radius)] border-l-4 transition-all ${getSeverityClasses(alert.severity)}`}
           >
             <div className="flex justify-between items-start">
-              <span className="text-xs font-bold text-[var(--text-primary)]">{alert.type}</span>
-              <span className="text-[10px] text-[var(--text-muted)]">
-                {new Date(alert.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+              <span className="text-[10px] font-black uppercase tracking-wider text-[var(--text-primary)]">
+                {alert.type}
               </span>
+              <div className="flex items-center gap-1 text-[9px] opacity-70 font-mono text-[var(--text-muted)]">
+                <Clock className="w-2.5 h-2.5" />
+                {new Date(alert.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+              </div>
             </div>
-            <div className="text-[10px] text-[var(--text-secondary)] mt-1">{alert.message}</div>
+            <div className="text-[11px] mt-1 font-medium leading-relaxed text-[var(--text-secondary)]">
+              {alert.message}
+            </div>
           </div>
         </ConfigurableRow>
       ))}
@@ -60,9 +73,9 @@ export const AlertsBlock: React.FC<AlertsBlockProps> = ({
       {hasMore && (
         <button
           onClick={() => setExpanded((e) => !e)}
-          className="w-full py-2 text-xs text-[var(--primary)] hover:bg-[var(--primary-dim)] font-medium rounded transition-colors"
+          className="w-full py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/10 rounded-[var(--brand-radius)] transition-all"
         >
-          {expanded ? 'Réduire' : `Voir toutes les alertes (${alerts.length})`}
+          {expanded ? 'Réduire' : `Voir les ${alerts.length - PREVIEW_COUNT} autres alertes`}
         </button>
       )}
     </div>
