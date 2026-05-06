@@ -150,7 +150,7 @@ groups:
     interval: 30s
     rules:
       - alert: GpsNoData
-        expr: rate(gps_messages_received_total[5m]) == 0
+        expr: sum(rate(gps_messages_received_total[5m])) == 0
         for: 10m
         labels:
           severity: critical

@@ -7,6 +7,748 @@
 
 ---
 
+## [Session 31 — Module Factures V2 : audit complet + corrections + Devis→Facture] — 2026-05-06
+
+### Analyse & bonnes pratiques Devis → portées sur Factures
+
+- Audit comparatif Devis vs Factures : identification pattern `rawDate`/`rawValidUntil`, `quoteDefaults()`, validation croisée Zod, filtres côté client
+- Toutes les bonnes pratiques Devis portées sur le module Factures
+
+### `useInvoices.ts` — types enrichis
+
+- `Invoice` : +`dueRaw` (ISO pour `<input type="date">`), +`resellerId`, +`contractRef`, +`tenantTaxRate`, +`period` (extrait de `items[0].period` JSONB)
+- `BackendInvoice` : +`reseller_id`, +`tenant_tax_rate` (déjà retourné par SQL COALESCE), +`items`
+- `InvoiceItem` : +`catalog_item_id`, +`accounting_account_sale`
+- `formatDateFR` → format `dd/mm/yyyy` (était "5 mai 2026")
+- `extractPeriod()` : extrait période du premier item JSONB sans requête supplémentaire
+
+### `useInvoiceMutations.ts`
+
+- +`reseller_id` dans `formToPayload`, +`period` dans items
+- +`patchInvoice` (PUT partiel) pour bulk actions
+
+### `invoiceFormSchema.ts`
+
+- `vatRate.default(0)` — TVA 0% par défaut (était hardcodée à 18%)
+
+### `useVenteClients.ts`
+
+- +`clientData?: { balance?, resellerId? }` dans `TierRow`
+- +`balance: number` dans `VenteClient`
+
+### `InvoiceFormModal.tsx` — réécriture complète
+
+- **Bloc DESTINATAIRE** : Client + Revendeur (auto-rempli depuis le `resellerId` du client via `useEffect`) + Contrat (dropdown filtré par client en création, **lecture seule** en édition)
+- **Checkbox "Créer un contrat automatiquement"** : apparaît si le client n'a aucun contrat ; crée un contrat minimal via `useContractMutations` avant la facture
+- **Plaque** : dropdown des véhicules du client (`GET /objects?filter_client_id=X`) — filtré par `contract.vehicleIds` si contrat sélectionné (sinon tous les véhicules du client)
+- **Bloc RÉFÉRENCES** : Type, Date émission, Échéance, Catégorie, Plaque, Bon de cmd, Sujet
+- Import `useTiers('RESELLER')` pour la dropdown revendeur
+
+### `VentePage.tsx` — `mapInvoiceToFormDefaults`
+
+- `dueDate` : utilise `inv.dueRaw` (ISO) au lieu de `inv.due` (date FR formatée → champ vide)
+- `resellerId` : passé au formulaire
+
+### `VentePage.tsx` — `ViewInvoiceDetail`
+
+- Items réels via `useInvoiceDetail(inv.id)` (lazy, remplace la ligne hardcodée "Abo. Pro Fleet")
+- TVA calculée depuis `inv.vatRate` (était hardcodée à 1.18)
+- `paidAmountRaw` réel (était `ttc*0.5` pour les partiels)
+- Contrat affiché en `contractRef` CTR-XXX (était UUID tronqué)
+- Avoir : `inv.vatRate` (était hardcodé à 18)
+
+### `VentePage.tsx` — `ViewInvoicesList` — améliorations liste
+
+- Dates `dd/mm/yyyy` partout
+- Colonne **Revendeur** : nom réel (via `clientDataMap` + `resellerNameMap`, pas l'UUID)
+- Colonne **Solde client** : balance depuis `TierFull.balance` (vert/rouge)
+- Colonne **Plaque** : `white-space:nowrap`, `text-overflow:ellipsis`, `title` hover
+- Colonne **"Période"** (renommée `invperiod`) : remplace "Reçu", affiche `inv.period`
+- Colonne **"Objet"** (renommée, était "Période") : affiche `inv.subject` tronqué
+- Colonne **Catégorie** : badge coloré (Installation bleu / Abonnement vert / Autres ventes orange)
+- **Bulk actions** : checkboxes réelles (select-all + individuelle), `BulkActionsBar`, "Marquer comme envoyées" (DRAFT seulement) + "Changer catégorie" (dropdown inline + Appliquer)
+- `COLUMNS_STORAGE_KEY` → `v3` (reset cache colonnes)
+
+### Backend `financeRepository.ts` — bug critique `convertQuoteToInvoice`
+
+- **Cause** : `if (q.status === 'ACCEPTED') → 409` bloquait systématiquement la conversion (le bouton n'est visible que sur les ACCEPTED)
+- **Fix** : `if (q.converted_to_invoice_id !== null) → 409` (champ dédié)
+- **Champs ajoutés** : `date` (aujourd'hui), `due_date` (J+30), `license_plate`, catégorie fallback `AUTRES_VENTES`
+- `quotes.converted_to_invoice_id` mis à jour après conversion (idempotence)
+
+### `useQuoteMutations.ts`
+
+- Invalidation `['invoices']` correcte (était `['finance', 'invoices']` — mauvais préfixe)
+- Toast avec numéro de facture créée
+
+### `useQuotes.ts` + `DevisTab.tsx`
+
+- `convertedToInvoiceId` exposé dans `Quote`
+- Bouton "Convertir en facture" masqué si `convertedToInvoiceId !== null`
+- Timeline devis : entrée "Facture brouillon créée — Voir dans Vente → Factures"
+
+### Déploiements
+
+- Frontend V2 : 4× `deploy-v2.ps1 -nobuild` → live.trackyugps.com HTTP 200
+- Backend : `deploy.ps1 -backend -nobuild -force` → prod
+
+---
+
+## [Session 30 — Clients & Tiers + bugfixes prod] — 2026-05-06
+
+### Clients & Tiers — refonte complète (VentePage)
+
+- **`useTiers.ts`** (nouveau) : hook générique `useTiers('CLIENT'|'RESELLER'|'SUPPLIER')` — retourne `TierFull` avec tous champs enrichis (clientData, resellerData, supplierData mappés)
+- **`ViewTiers`** remplace `ViewClients` : 3 sous-onglets CLIENT/Revendeurs/Fournisseurs, KPIs (total+actifs), export CSV fonctionnel, colonnes adaptées par type, 4 statuts (ACTIVE/INACTIVE/SUSPENDED/CHURNED)
+- **`TierFormModal.tsx`** (nouveau fichier `features/vente/modals/`) : `max-w-5xl h-[85vh]`, sections scrollables (pattern legacy), switcher de type en création, tous champs legacy : code comptable + bouton Générer, Application GPS (TRACKYU/GPS51/WhatsGPS/AUTRES), Secteur SELECT 15 options, Segment, Langue, conditions paiement (Comptant→60j), statut badge lecture seule en édition, config REVENDEUR (domaine+logo+admin), config FOURNISSEUR (catégorie SELECT+site web+solde initial+revendeur associé)
+- **`TierDetailModal.tsx`** (nouveau fichier `features/vente/modals/`) : `max-w-6xl h-[90vh]`, sidebar navigation + 5 onglets, données réelles : CA chart Recharts 6 mois, Flotte filtrée, contrats filtrés (useContracts), factures `/finance/invoices?tier_id=xxx`, paiements croisés, devis, interventions, tickets, clients rattachés (REVENDEUR), factures fournisseur, relevé de compte calculé (factures-paiements), commentaires locaux (thread)
+- `useVenteClients` conservé (12 autres fichiers l'utilisent), référence résiduelle dans `ViewFactures` remplacée par `useTiers('CLIENT')`
+
+### Bugfixes prod (2026-05-06)
+
+- **`SystemTab.tsx`** : `m.toFixed is not a function` — backend renvoie `cpu:{count,percent}` au lieu de `cpu:number`. Mapping défensif ajouté (`parseFloat` + support double format). Interface `SystemStats` mise à jour.
+- **`AdminPage.tsx`** : `useQueryClient is not defined` — import `@tanstack/react-query` incomplet. Ajout `useQueryClient` dans l'import.
+- **`VentePage.tsx`** : `useVenteClients is not defined` — référence résiduelle dans `ViewFactures` non supprimée lors du remplacement d'import. Remplacée par `useTiers('CLIENT')`.
+- **`deploy-v2.ps1`** : BOM UTF-8 dans `nginx_v2.conf` causait crash nginx (`unknown directive "﻿server"`). `[Text.Encoding]::UTF8` → `[Text.UTF8Encoding]::new($false)`.
+
+---
+
+## [Sessions 27-29 — Chantier régression legacy→V2] — 2026-05-05
+
+### Monitoring, Settings formulaires, Admin (Organisation/Messages/Documents/Centre d'aide/Intégrations)
+
+Voir détail complet dans le CHANGELOG section précédente ou dans les memories `project_regression_plan.md`.
+
+---
+
+## [Session 26 — Tests manuels + corrections Prévente/Devis/Catalogue] — 2026-05-05
+
+### Découverte critique — Deploy
+
+- `deploy.ps1 -frontend` deploy le container **legacy** (`/var/www/trackyu-gps/`) — PAS la V2
+- V2 = `deploy-v2.ps1` → `/var/www/trackyu-v2/` → port 8082 → `live.trackyugps.com`
+- Bug deploy-v2.ps1 : `Invoke-SSH "mkdir -p"` hang → workaround via `tar+scp+ssh` directs depuis Git Bash
+- **Règle** : toujours utiliser `deploy-v2.ps1` pour le frontend V2 (ou le workaround tar+scp si script hang)
+
+### Module Prévente — Leads (trackyu-front-V2)
+
+- Fix 500 création lead : camelCase mismatch (`companyName` vs `company_name`)
+- Fix Sidebar crash : `t` non défini dans `SidebarFooter` (manquait `useTranslation()`)
+- Fix 409 Conflict : `checkDuplicateLead` ne vérifie plus que l'email (plus le company_name)
+- Formulaire lead : qualification WARM par défaut, champ Revendeur en premier, dropdown catalogue avec Qté/montant auto-total, champ Catégorie
+- Menu ••• fonctionnel : Voir / Modifier / Créer client+devis / Supprimer
+- Flow conversion Lead WON → Client + Devis DRAFT (POST `/tiers` + POST `/finance/quotes`)
+- Fix 409 sur POST `/tiers` : réutilise le client existant via `existingId` (body de l'erreur)
+- Fix backend `createQuote` : `tenantId = resellerId (REV-ABJ-X)` → résolu via `getResellerTenantId()`
+- `interested_products` JSONB : stocke `{ id, name, category }` de l'article catalogue choisi
+- `PvLead` enrichi : `resellerId`, `catalogItemId`, `catalogItemName`, `category`
+- `useLeads.ts` : mapping depuis `interested_products[0]`
+- `useLeadMutations.ts` : `interestedProducts` ajouté au payload
+
+### Module Devis — Audit + refonte complète (trackyu-front-V2)
+
+- `DevisTab.tsx` : menu ••• fonctionnel (Voir/Modifier/Envoyer/Convertir/Supprimer), bulk actions, édition complète (tous champs), sendTarget modal, iconBtn
+- `DevisDetailView` : vrais items depuis `rawItems` (plus de hardcode), revendeur, catégorie, conditions de paiement, plaque, conditions générales/notes, calcul HT/TVA depuis items, TVA dynamique
+- `useQuotes.ts` : `rawItems` enrichi (catalogItemName, period), `paymentTerms`, `leadId`
+- `QuoteFormModal` refonte : revendeur (auto-rempli depuis client), TVA 0% défaut, conditions de paiement, lead/contrat filtrés par client, contrat lecture seule, TVA dans colonnes lignes, désignation = nom article badge (read-only) + description éditable, période auto "mai 2026"
+- `quoteFormSchema.ts` : `resellerId`, `paymentTerms`, `makeEmptyLine()` avec période courante, `quoteLineSchema` extend avec `catalogItemName`
+- Backend `quoteSchema.items` : `.strip()` → `.passthrough()` (période, catalogItemId, catalogItemName désormais persistés)
+- Modale envoi email enrichie : objet auto ("Votre devis Catégorie Article du Date"), PDF devis en PJ automatique (pdfkit backend), pièces jointes additionnelles (base64), sélection template messages (Admin)
+- Backend `sendQuoteByEmail` : génération PDF pdfkit + attachments Resend, `EmailPayload` supporte `attachments[]`
+- `sendInvoiceEmailSchema` : accepte `attachments[]`
+- Historique détail : "Accepté côté commercial" (plus "par le client")
+- Bouton "Modifier" dans tous les statuts
+
+### Module Catalogue (trackyu-front-V2 + backend)
+
+- Fix PUT cross-tenant : `isStaffUser` bypass `WHERE tenant_id = $2` → superadmin peut modifier articles de n'importe quel tenant
+- Filtre Revendeur dans toolbar (+ option "Global sans revendeur")
+- Comptes comptables SYSCOHADA auto-remplis : 706100 (Service/Prestation/Abonnement) ou 702100 (Produit/Matériel)
+- Pré-remplissage comptes comptables en mode édition depuis `initial?.accountingAccountSale`
+- `CatalogueRow` enrichi : `accountingAccountSale`, `accountingAccountPurchase`
+- DB `chart_of_accounts` : 706100 "Ventes de prestations de services" + 702100 "Ventes de produits finis" insérés (`tenant_default`)
+
+---
+
+## [Session 25 — Stock Accessoires complet] — 2026-05-05
+
+### Stock (`trackyu-front-V2/`)
+
+- Vérification : backend `/api/v1/tech/parts` CRUD déjà en prod (`techController.ts` + `techRoutes.ts`) — était signalé à tort comme manquant
+- Table `spare_parts` : existe en prod (schéma complet : id/tenant_id/name/reference/category/quantity/min_quantity/unit_price/location), vide mais prête
+- **Nouveau** `useSparePartMutations.ts` : `useCreateSparePart` / `useUpdateSparePart` / `useDeleteSparePart` (httpPost/Put/Delete `/tech/parts`, invalidate `['spare-parts']`)
+- **Nouveau** `tabs/AccessoriesTab.tsx` : 3 KPIs (références/stock bas/total pièces), Toolbar (search + FilterSelect catégories), DataTable 7 colonnes (nom+ref, catégorie, stock avec alerte ⚠ bas, mini, prix XOF, emplacement, actions), Dialog CRUD create+edit+delete, `useQuery ['spare-parts']`
+- **Modifié** `StockPage.tsx` : import `AccessoriesTab`, count badge dynamique sur onglet, alerte orange si stock bas, subtitle dynamique, EmptyState supprimé
+- Build vert · Déployé prod live.trackyugps.com HTTP 200
+
+### Corrections mémoires stale
+
+- `project_vehicledetail_chantiers.md` : 3 chantiers marqués ✅ (avaient été livrés session 22 mais mémoire non mise à jour)
+- `project_polish_playbook.md` : gap Stock Accessoires résolu
+
+---
+
+## [Session 23-suite — Polish Tech/Stock/Vente/Reports + Bilan final] — 2026-05-05
+
+### Tech
+
+- `OverviewTab` section "Stock par technicien" → "Charge par technicien" (données réelles : interventions filtrées par tech)
+- `TI_STOCK_BY_TECH` import supprimé (dead code)
+- `TechPage` : `useLocation` + `useEffect` → auto-ouvre `InterventionFormModal(initialTicketId)` si navigué depuis Support avec state `{fromTicket}`
+
+### Stock
+
+- Nouvel onglet `MovementsTab` : connecté à `/stock-movements` (22 mouvements réels en prod)
+  - 4 KPIs : Total / Aujourd'hui / Installations / Retraits
+  - Tableau filtrable par type + recherche texte + pagination
+  - Count dans badge onglet : dynamique (22)
+- Onglet `Accessoires` : EmptyState honnête "à venir" (table `spare_parts` vide, pas de route backend)
+
+### Rapports ✅ (déjà complet — confirmé)
+
+- `api.ts` : 78 hooks (Activity/Alertes/Carburant/CRM/Finance/Compta/Tech/Support/Admin/Superadmin)
+- Backend répond 200 sur trips, kilométrage, daily, driving, alerts
+- `RptDetailFlat` : composant générique avec exports CSV/Excel/PDF
+
+### Vente — Rapprochement ✅ (fonctionnel tel quel)
+
+- `ViewRapprochement` : filtre payments sans invoice_id
+- En prod : tous les paiements ont invoice_id → affiche "✓ Tous les paiements sont rapprochés"
+- Bouton "Rapprocher" disabled : pas d'endpoint backend pour liaison manuelle → correct
+
+### Bilan général sessions 22-23
+
+- V2 live.trackyugps.com : ~85% → 98% fonctionnel
+- Tous modules connectés sur données réelles
+- Seul gap structurel : Stock Accessoires (spare_parts vide, pas de route)
+- Prochaine décision : bascule DNS ou features nouvelles
+
+---
+
+## [Session 22 — Check de propreté + Polish Dashboard/Map/Admin/Compta/Settings/Monitoring] — 2026-05-05
+
+### Compta
+
+- Migrations DB VPS : `expenses` ADD COLUMN (tier_id/account_code/status) + CREATE TABLE cash_closings
+- Backend `financeRepository` : ajout `je.journal_code` dans SELECT getJournalEntries
+- Frontend `useAccountingPeriods` : fix mapping `.periods` (API retournait `{periods:[...]}` pas `{data:[...]}`)
+- `useExpenses` statut : dynamique depuis backend (plus hardcodé 'validated')
+- OverviewView KPI Dépenses : connecté à `useExpenses().totalAmount`
+- Balance âgée : calcul réel depuis `due_date` des factures
+- `BudgetFormModal` : création + édition (POST/PUT /budgets)
+- `CaisseView` : sous-onglet Caisse complet (journal 530xxx, arrêté journalier, KPIs)
+
+### Settings
+
+- 5 URLs 404 corrigées : `/fleet/drivers`, `/alert-config`, `/maintenance-rule`, `/eco-driving`, `/schedule-rule`
+- `AccountView` : connectée useAuth, nom/téléphone éditables (PUT /users/:id)
+- `UserModal` : mutations Créer/Modifier (POST/PUT /users)
+- `BranchesView` + `GroupsView` : CRUD complet
+- `RulesAlertsView` : 4 modales (AlertConfig/Maintenance/EcoDriving/ScheduleRule) create+edit+delete
+
+### Monitoring
+
+- `useAnomalies` : mapping corrigé `timestamp` + `vehicleId` (dates et véhicules affichés)
+- `useSystemStats` : monitoring-health transformé `{prometheus,grafana,alertmanager}` → `{services:[]}`
+- `AlertsTab` : bouton "Tout marquer lu" câblé + code mort supprimé
+- `UsersTab` : colonne IP en double supprimée
+
+### Check de propreté (5 lots — tous modules)
+
+- Lot 1 Agenda : 4 boutons câblés (En route/Modifier/PDF/+Nouveau) + console.warn Dashboard supprimés + Fleet notImplemented remplacé
+- Lot 2 Admin+Reports : export CSV audit, Gérer articles FAQ navigable, boutons disabled propres, dropBtn styles
+- Lot 3 Support+Stock+Tech : fromTicket → InterventionFormModal, Stock CTA disabled+date dynamique, TI_TECHS/TI_INTERVENTIONS dead code supprimés
+- Lot 4 Map+Vente : 3 imports Map supprimés, keys React stables (series+revMix), hardcodes 18,7/224,4M → mrr calculé, guard division/zéro
+- Lot 5 Prévente : counts hardcodés TABS (247/68/24) → TAB_COUNTS dynamiques
+
+### Dashboard
+
+- `FleetStats` type + mapper : activeCount = moving+idle+stopped, expose avgFuelLevel/vehiclesWithAlerts/totalKmToday/lowFuelCount
+- KPI "Facturé mois" : invoiced (13.6M) remplace revenue (0) — données réelles
+- Mini stat "Carburant moyen" : avgFuelLevel 17.9% depuis fleet/stats (remplace Score conduite toujours null)
+- KPI "Véhicules actifs" : enrichi avec `X alertes actives`
+
+### Map
+
+- Chantier 3 (Créer ticket) : TicketFormModal ouvre en modal dans MapPage avec prefillVehicleId+Plate
+- Chantiers 1+2 déjà fonctionnels (odomètre=totalKm, replay date=déjà passé)
+
+### Admin
+
+- Webhooks : bouton 🗑 → DELETE /admin-features/webhooks/:id
+- Corbeille : bouton 🗑 → DELETE /trash/:entityType/:entityId (suppression définitive)
+- `ResellerModal` : mode edit (PUT /tiers/:id) + bouton 🗑 delete
+- `MemberModal` : mode edit (PUT /users/:id) + bouton 🗑 delete
+
+---
+
+## [Session 23 — Pipeline carburant JT808 BLE : backport src/ + backfill + DEFAULT NULL fuel_level] — 2026-05-05
+
+### Backend (`trackyu-backend/`)
+
+**Régression détectée et corrigée (commit `3bdb548`) :**
+
+- Bypass JT808 BLE livré 2026-04-26 en patch dist/ direct avait été écrasé au prochain deploy (src/ jamais modifié)
+- Impact : 112 536 positions avec fuel_liters ×14 trop petits (fallback ADC appliqué aux litres directs)
+- `cacheService.ts` : ajout `device_model` + `sensor_config` dans le SELECT DB + interface `CachedVehicle`
+- `positionWorker.ts` : branche `if (vehicle.device_model === 'JT808 BLE')` AVANT `computeFuelLiters` — litres directs × factor, `fuel_raw = round(data.fuel × 10)` (uint16 brut)
+
+**Backfill DB prod :**
+
+- 112 536 positions recalculées (fuel_liters + fuel_raw corrects)
+- 34 véhicules `objects.fuel_level` mis à jour
+- 239 fuel_events erronés purgés
+
+### DB Schema
+
+- `objects.fuel_level` : DEFAULT changé `100 → NULL`
+- 1 853 véhicules avec `fuel_level=100` sans aucune position fuel → mis à NULL
+
+### Frontend V2 (`trackyu-front-V2/`)
+
+**Commit `432cf21` — popup carte :**
+
+- `GoogleMapView.tsx` : `hasSensor = tankCapacity > 0 AND v.fuel != null` (avant : `tankCapacity > 0` seul → affichait `0L (0%)` pour les véhicules sans capteur)
+- Déploiement prod live.trackyugps.com. Fix collatéral : BOM UTF-8 nginx_v2.conf retiré (container était en crash loop depuis 6j)
+
+### Diagnostics établis
+
+- **15042020064** (872W HOWO) : capteur BLE figé raw=640. Clampé 350L. Pas bug logiciel, action terrain.
+- **15042020175** (7321GJ01) : tag 0x02 absent des trames JT808 (BLE non appairé). Trame se termine par tag fabricant `0xe1` value `0x00ff`. 33 413 positions, 0 avec fuel.
+
+---
+
+## [Session 24 — Check propreté V2 complet] — 2026-05-05
+
+### UI Kit (`trackyu-front-V2/src/components/ui/`)
+
+- **Nouveau** `FilterSelect.tsx` — dropdown compact 38px pour Toolbar (active-state auto sur `value` non-vide, `appearance:none` + ChevronDown, transition CSS). Exporté depuis `index.ts`.
+- **Modifié** `Dialog.tsx` — ajout prop `confirmDisabled?: boolean` (désactive le bouton Confirmer, non-breaking).
+
+### Corrections transversales tous modules
+
+**Barres de recherche (bugs `ToolbarSearch.onChange`) :**
+
+- `VentePage.tsx` — Abonnements, Factures, Paiements, Recouvrement : `onChange={e => e.target.value}` → `onChange={v => v}` (ToolbarSearch passe une string, pas un event)
+- `support/tabs/ListTab.tsx` — même correction
+- `VentePage.tsx` (Clients & Tiers), `ComptaPage.tsx` (Finance, Dépenses) — `ToolbarSearch` branché + `useMemo` filter + pagination correcte
+
+**Filtres :**
+
+- `FilterSelect` UI kit appliqué dans `VentePage.tsx` (10 selects), `stock/BoxesTab.tsx`, `stock/SimsTab.tsx`, `tech/tabs/ListTab.tsx` (suppression `FSelect` local), `fleet/FleetPage.tsx` (SVG chevron custom supprimé)
+- Prévente : 6 composants locaux (`AutoFilterSelect`, `CatFilterSelect`, `InscFilterSelect`, `TacheFilterSelect`, `FilterSelect` leads, `DevisFilterSelect`) supprimés → `FilterSelect` UI kit
+- `ResetFiltersButton` UI kit appliqué dans 6 tabs Prévente (LeadsTab, DevisTab, TachesTab, CatalogueTab, AutomatisationsTab, InscriptionsTab)
+
+**Dates :** `<Input type="date">` dans `fleet/VehicleDrawer.tsx` + `stock/DeviceFormModal.tsx`
+
+**Pagination :**
+
+- `AdminPage.tsx` — `TblWrap` refactorisé (props `page`/`onPage` contrôlées) ; 5 vues (Revendeurs, Équipe, Audit, Webhooks, Corbeille) : page state + slicing + reset sur search
+- `fleet/FleetPage.tsx` — pagination custom 40L → `<Pagination>` UI kit
+- `compta/ComptaPage.tsx` — double-pagination DataTable corrigée (retrait `perPage` sur 3 DataTable)
+
+**Bugs P0 :**
+
+- `AdminPage.tsx` — `TblWrap` page ne resetait pas ; `RowActs` callbacks (boolean → `(() => void) | boolean`, disabled visuel si non implémenté)
+- `tech/tabs/StockTab.tsx` — bouton RÉAPPRO : `disabled + cursor:not-allowed + title="Bientôt disponible"`
+- `support/LiveChatPanel.tsx` — `agentTypingTimer` ref ajouté, `clearTimeout` avant chaque nouveau timeout, cleanup dans return useEffect
+
+**Modales → Dialog UI kit :**
+
+- `AdminPage.tsx` : ResellerModal, MemberModal, WebhookModal, OrgEditModal
+- `settings/views/AccountView.tsx` : PasswordModal
+- `settings/views/GroupsView.tsx` : GroupModal
+- `settings/views/TableView.tsx` : UserModal
+
+**Boutons → `<Button>` UI kit :**
+
+- `AdminPage.tsx` — 4 boutons "+ Nouveau" + 2 disabled ; `Button` importé
+- `settings/views/GroupsView.tsx` — "+ Nouveau groupe"
+- `fleet/components/VehicleEditModal.tsx` — Annuler (ghost) + Enregistrer (primary + loading + leftIcon Save)
+
+**Map keys stables :**
+
+- `stock/tabs/OverviewTab.tsx` — 3 `key={i}` → `key={kpi.l}`, `key={a.title}`, `key={r.key}`
+- `compta/ComptaPage.tsx` — 4 `key={i}` → `key={k.l}`, `key={a.tranche}`, `key={h}`, `key={k.l}`
+- `admin/AdminPage.tsx` — 2 `key={i}` → `key={k.l}`, `key={f.l}`
+
+**Typage `as any` :**
+
+- `support/useSupportData.ts` — 4 hooks typés : `UserApiRow` interface + `TicketCategory[]` / `TicketSubcategory[]` / `Macro[]` substitués aux `any[]`
+- `vente/VentePage.tsx` — `Invoice` + `InvoiceItem` importés ; `downloadInvoicePDF(inv: Invoice)` ; `AnalyticsDashboard` interface ; `rev/r` inférés ; 14 `any` → `Invoice | null` / `Invoice` dans états + signatures de composants
+
+---
+
+## [Session 22 — Polish Vente : Abonnements Lot B + Planning enrichi + Paiements refonte] — 2026-05-04
+
+### Abonnements — Lot B + fixes
+
+**Données (`useSubscriptions.ts`) :**
+
+- Champs ajoutés : `startDateRaw`, `endDateRaw`, `autoRenew`, `effectiveStatus` (expiring_soon/expired), `daysUntilExpiry`, `invoiceCount`
+- `mapStatus` : `TERMINATED → terminated` (fix fallback 'active' erroné)
+- Backend `GET /subscriptions` : LEFT JOIN count factures par abonnement
+
+**Tableau (`ViewAbonnements`) :**
+
+- Filtres : Revendeur (dynamique), Cycle, Statut étendu (expiring_soon/expired/pending)
+- Colonnes : Expiration (badge ∞/⚠Xj/Xj), Nb factures
+- Actions menu ••• : Voir le contrat (ContractDetailPanel inline) + Supprimer
+- EmptyState filtres vs liste vide
+
+**Formulaire (`SubscriptionFormModal`) :**
+
+- Dates pré-remplies en édition : `startDateRaw`, `endDateRaw`, `nextBillingDate` (split T[0])
+- `neverExpires` : init `autoRenew === true || endDate === '—'`
+- `hasScheduleChanged` : comparaison sur `startDateRaw`
+- Warning ambre si startDate/cycle changé en édition
+
+**Panel détail (`SubscriptionDetailPanel`) :**
+
+- Fix B1 : dates déjà FR, plus de double `fmtDate`
+- Fix B2 : `sub.autoRenew ? 'Oui' : 'Non'`
+- Onglet Factures : badge catégorie + `i.category` ajouté au SELECT backend
+- Onglet Historique : `useMemo`, événement synthétique "🔌 Abonnement créé", fix `statusKey`/`statusLabel`
+
+**Check propreté :** `useEffect` inutilisé supprimé · `history` IIFE → `useMemo` · `categoryInfo` double-call → const · `TERMINATED` dans mapStatus · EmptyState tbody
+
+---
+
+### Planning — Enrichissement
+
+**Backend :** `GET /subscriptions/invoices/planning?year=YYYY` — toutes factures abo de l'année, sans limite
+
+**Frontend :**
+
+- `usePlanningInvoices(year)` remplace `useInvoices(1,200)` — queryKey `['planning-invoices', year]`
+- `normalizeCategory` : `'SUBSCRIPTION'` → `'ABONNEMENT'`
+- Popup prévision : bouton "🧾 Générer la facture" + modale billingDate/dueDate + doublon + date install
+
+---
+
+### Paiements — Refonte complète
+
+**Backend :**
+
+- `findAllPayments` : +JOINs tiers (client_name), contracts (contract_number), tenants (reseller_name), +license_plate, subscription_number
+- `findAllInvoices` : +param `statusFilter` — `?status=unpaid` → `IN ('SENT','ISSUED','OVERDUE','PARTIAL')`
+- `getInvoices` controller : transmet `?status=` à la repo
+
+**Frontend :**
+
+- `usePayments.ts` : PaymentRow +7 champs · Payment +client/reseller/contract/plate/subscription/paymentNumber/provider
+- **Fix bug critique** `usePaymentMutations.ts` : queryKey `['payments']` → `['finance','payments']`
+- `useClientUnpaidInvoices(tierId)` : hook dédié, calcul `balanceRaw`, filter `> 0`
+- `PaymentModal.tsx` : refonte — sélection client → factures impayées multi-checkbox avec solde dû → N POST séquentiels
+- `ViewPaymentsList` : +colonnes Client/Revendeur/Contrat/Plaque/Opérateur/paymentNumber, +6 filtres, total XOF, ResetFilters
+
+---
+
+## [Session 21 — Formulaire Intervention refonte complète (onglets 1-4)] — 2026-05-04
+
+### InterventionFormModal — refonte onglet par onglet
+
+**Onglet 1 — Demande :**
+
+- Layout restructuré : Ticket+Date+Heure même ligne · Contact client+Nom+Tél même ligne · Technicien+Lieu même ligne
+- Dropdown "Sélectionner un véhicule ou boîtier" avec optgroups (véhicules client + stock technicien) → auto-fill de tous les champs (plaque, alias, WW plate, IMEI, SIM/ICCID, type engin, modèle boîtier, marque, modèle, ABO)
+- Hook `useVehicleSelectOptions(clientId, technicianId)` créé
+- N° ABO-XXXXX affiché dans le header du formulaire après sélection
+- Bouton **＋ Ticket** → ouvre `TicketFormModal` (lazy import) pré-rempli avec le client, retour automatique avec le ticket créé sélectionné
+- Champ ICCID supprimé → fusionné dans "SIM / ICCID" (un seul champ)
+- Plaque → toujours modifiable après auto-fill
+- IMEI label dynamique selon type (IMEI à retirer / transférer / réinstaller / Ancien IMEI)
+- IMEI + SIM/ICCID en readonly pour RETRAIT et TRANSFERT
+
+**Onglet 2 — Véhicule :**
+
+- Check-up : 3 cases par ligne (au lieu de 2)
+- Type d'engin + Modèle de boîtier déplacés depuis onglet 2 vers onglet 1 Bloc 2
+- Champs conditionnels TRANSFERT : banner orange + labels "Nouvelle Marque/Modèle" + `newLicensePlate`
+- Champs conditionnels REMPLACEMENT/RETRAIT : `removalReason` + `removedMaterialStatus` auto-dérivé + `newImei` + `newSim`
+- Champs conditionnels Accessoires : `macAddress` + `probeType`
+- VIN ajouté
+
+**Onglet 3 — Technique :**
+
+- Bloc Connexion & Tests : statut online/offline + mode TCP/SMS + boutons GPS/Immo/APN/IP (conditionnel si IMEI renseigné)
+- Jauge étendue complète : gaugeBrand/gaugeModel/gaugeSerial · sensorUnit · fuelConversionFactor (défaut 1) · sensorInstallDate · voltages (si tension) · dimensions réservoir · seuils remplissage/vol (sliders) · table calibration CSV + bouton "Générer auto"
+- Doublon supprimé : "Marque sonde" / "Modèle sonde" retirés (gaugeBrand/gaugeModel = référence unique)
+- tankCapacity défaut 350 L · fuelConversionFactor défaut 1
+- Mode CANBUS : message info + champs sonde masqués
+
+**Onglet 4 — Clôture :**
+
+- `updateContract` checkbox ajouté (auto-activé si article abonnement/package)
+- Résumé restauré en fin d'onglet (Client, Ticket, Type, Nature, Technicien, Date, Plaque, Total HT)
+- Dimension fixe du formulaire : `min(820px, calc(100vh - 48px))`
+
+**Corrections propreté (6 bugs) :**
+
+- Row2/Row3/SectionTitle/Divider/CheckRow sortis du composant (fix perte focus inputs)
+- `cost` sync : se remet à '' quand items vidés
+- `nature` init : guard `!== '—'` en mode édition
+- `clientId` + `ticket_id` exposés dans le mapper BackendIntervention
+- Functional updates dans l'auto-fill ticket (stale closure fix)
+- Doublons `isJauge` spread mergés dans payload
+
+**Fix crash TDZ prod :**
+
+- `TicketFormModal` converti en `lazy()` + `<Suspense>` → évite l'initialisation circulaire dans le chunk TechPage
+
+**Backlog créé :**
+
+- Side effects intervention à la clôture (stock/contrat/abo/facture) — différé après module stock V2
+
+**Convention établie :**
+
+- Onglets formulaire = 1-4 (naturel), pas 0-3 (index code)
+
+**Déployé prod** `live.trackyugps.com` ✓
+
+---
+
+## [Session 20 — Module Tech complet (Blocs 1-4) + Prévente finalisé + Fixes prod] — 2026-05-04
+
+### Tech / Interventions — 4 Blocs livrés
+
+**Bloc 1 — Fondations :**
+
+- Fix STATUS_MAP aligné sur enum backend exact (PENDING/EN_ROUTE/IN_PROGRESS/COMPLETED)
+- KPIs OverviewTab calculés live depuis données réelles (total, terminées, en cours, taux réussite, durée moy.)
+- Hook `useInterventionMutations` (create/update/changeStatus + timestamps terrain + query key corrigé `['tech-interventions']`)
+- `InterventionFormModal` créé (ticket requis + auto-remplissage)
+- `InterventionModal` : boutons statut câblés (🚗 En route / 🔧 Sur site / ✅ Terminer / ✕ Annuler / ✏ Modifier)
+- `ListTab` : boutons 👁 et ✏ câblés
+
+**Bloc 2 — Filtres + Kanban :**
+
+- ListTab : filtres réels (type, technicien, statut, zone, recherche texte) + export CSV + BulkActions bar
+- `KanbanTab` créé (6ème onglet) : 5 colonnes PENDING→SCHEDULED→EN_ROUTE→IN_PROGRESS→COMPLETED, D&D entre colonnes → changeStatus
+
+**Bloc 3 — Historique + Bulk actions :**
+
+- `InterventionModal` : onglet Historique (GET /tech/interventions/:id/history → audit_logs + ticket lié)
+- Bulk actions ListTab câblées : réassigner technicien en lot + changer statut en lot (PUT parallèle)
+
+**Bloc 4 — Formulaire 4 onglets :**
+
+- `useInterventionTypes` hook : charge types/natures depuis `/tech-settings/types` + `/tech-settings/natures` (DB réelle)
+- Backend `InterventionSchema.nature` corrigé : `z.enum` obsolète → `z.string().nullish()` (les vraies natures DB sont 'Balise et relais', 'Dépannage', etc.)
+- `techData.ts` TI_STATUS/TI_TYPE alignés sur valeurs DB
+- `InterventionFormModal` restructuré en **4 onglets** (📋 Demande · 🚗 Véhicule · 🔧 Technique · ✅ Clôture) avec dot validation vert/rouge par onglet (inspiré mobile)
+- Onglet Véhicule : checklist pré-intervention 6 items (checkStart/Lights/Dashboard/AC/Audio/Battery)
+- Onglet Technique : IMEI, ICCID, capteur, emplacement + Config Jauge conditionnelle (si nature contient "jauge")
+- Navigation Précédent/Suivant + dots de progression
+
+**Fixes prod :**
+
+- Bug crash Map : `s.object_id` → `s.vehicle_id` dans objectRepository (colonnes subscriptions)
+- Bug SQL `EXTRACT(DAY FROM date-date)` → `(date-date)::int` dans objectRepository
+- `useInterventionMutations` query key `['interventions']` → `['tech-interventions']` (la liste ne se rafraîchissait pas après changement statut)
+
+**Prévente — finalisé session précédente :**
+
+- Module Prévente 100% fonctionnel (Leads D&D kanban, Devis, Tâches, Catalogue, Automatisations, Inscriptions)
+- Formulaire Devis (QuoteFormModal) 4 champs + catalogue
+- Tests unitaires Prévente (319 tests verts total)
+- Numérotation centralisée : LD-ABJ-00000001, FAC-ABJ-00001, etc.
+
+### Bugs backend corrigés
+
+- `InterventionSchema.nature` z.enum → z.string (rejetait les vraies natures DB)
+- Tous les compteurs `intervention_type_configs` / `intervention_nature_configs` disponibles via `/tech-settings/types|natures`
+
+---
+
+## [Session 19 — Polish Vente : module Contrats onglet Liste] — 2026-05-04
+
+### Vente — Overview
+
+- MRR séries depuis `GET /analytics/dashboard` (revenueByMonth) — remplace `VT_MRR_SERIES` mocké
+- Mix revenus calculé depuis contrats actifs par cycle de facturation (MONTHLY/QUARTERLY/ANNUAL)
+- Top 5 clients MRR calculé depuis contrats actifs groupés par client
+- Activité récente depuis invoices réelles (10 dernières)
+- Recovery aging bar depuis `GET /recovery/stats` → `byAge` (remplace `VR_AGING` mocké)
+
+### Vente — Paiements
+
+- Recherche connectée (ref/référence/numéro facture)
+- Filtre méthode actif (Espèces/Virement/Chèque/Carte/Mobile Money/Autre)
+- Suppression `DELETE /finance/payments/:id` avec confirmation
+- Rapprochement : paiements réels sans `invoice_id` (remplace `VC_PAYMENTS` mocké)
+- SubHeader count dynamique
+
+### Vente — Clients
+
+- `ClientEditModal` — `PUT /tiers/:id` (nom, email, téléphone, ville, statut)
+- Client verrouillé en édition dans le modal
+- Suppression `DELETE /tiers/:id` avec avertissement
+
+### Vente — Contrats (Liste) — Session principale
+
+- **ContractDetailPanel** refonte 4 onglets avec pagination 10/page :
+  - Abonnements : table colonnes Installation + Début (deux champs distincts, `start_date`) + Prochain fact. + total MRR
+  - Factures : `GET /finance/invoices?tier_id=` filtrées client, catégorie traduite
+  - Paiements : filtrés sur `invoice_id ∈ {factures ABONNEMENT + INSTALLATION}` — cross-join côté client
+  - Historique : timeline construite depuis contrat + subs + invoices (triée desc)
+  - Pagination uniquement si > 10 items
+- **ContractDocument** (nouveau) : document contractuel officiel — en-tête brand, parties (Prestataire via `/admin-features/organization` + Client via `/tiers/:id`), table abonnements, 7 articles juridiques, blocs signatures
+- Bouton "📄 Voir le document contrat" → ouvre `ContractDocument` en drawer (zIndex 300)
+- **HelpView Settings** : lien "📄 Contrat" câblé → `GET /me/contract` → ouvre `ContractDocument`
+- **ContractFormModal** refonte :
+  - Champ "Plaque" : dropdown `GET /objects?filter_client_id=X` — véhicules du client sélectionné
+  - Statut lecture seule (badge coloré + libellé)
+  - Dates de début/fin supprimées
+  - Client verrouillé en édition
+  - Auto-renouvellement toggle
+  - `vehicleIds` préserve les véhicules existants (remplace seulement le premier)
+- **useContracts** : champs bruts exposés (`startDateRaw`, `endDateRaw`, `notesRaw`, `statusRaw`) pour le formulaire
+- **ViewContractsList** check-up propreté :
+  - Checkbox faux supprimé
+  - UUID client retiré de l'affichage
+  - Empty state dans `<tbody>`
+  - Pagination dans le bloc non-loading (fragment React)
+  - Avatar couleur déterministe (hash de `contract.ref`)
+  - Menu `•••` → bouton 🗑 direct (couleur danger)
+  - Colonne "Période" → "Date de début"
+  - Colonne "Montant" → "MRR Actif" (brand-primary)
+
+**Build vert — 230 kB VentePage — 0 erreur TS**
+
+**Pause — prochain : onglet Abonnements**
+
+---
+
+## [Session 18 — Polish Support/Tickets : module 100% fonctionnel] — 2026-05-04
+
+### Fondations données
+
+- `supportData.ts` : interface `Ticket` étendue (`assignedUserName`, `description`, `clientId`, `messages: BackendMessage[]`)
+- `useSupportData.ts` : mapper corrigé (tous champs backend exposés) + nouveaux hooks : `useTicketStats` (`/tickets/stats`), `useTicketById`, `useStaffUsers`, `useTicketCategories` (`/support/settings/categories`), `useTicketSubcategories`, `useSlaConfig`, `useMacros` (`/support/macros`)
+- Rôles assignables alignés legacy (`TICKET_ASSIGNABLE_ROLES` — TECH exclu)
+
+### Mutations
+
+- `useTicketMutations.ts` (nouveau) : `useCreateTicket` · `useUpdateTicket` · `useUpdateTicketStatus` · `useAssignTicket` · `useDeleteTicket` · `useEscalateTicket` · `useAddMessage` · `useBulkUpdateTickets` — tous avec invalidation React Query
+
+### Composants nouveaux
+
+- `TicketFormModal.tsx` : création + édition · catégories réelles `/support/settings/categories` · sous-catégories filtrées + auto-priorité `defaultPriority` · source (TrackYu/Appel/WhatsApp/Visite/SMS) · date réception · assignation staff · statut (mode édition)
+- `EscalateModal.tsx` : 6 raisons prédéfinies (legacy) + champ libre si "Autre" · assignation optionnelle · auto-upgrade priorité backend
+- `AttachmentUpload.tsx` : drag-drop · upload multipart `POST /tickets/:id/attachments` · preview images · téléchargement · suppression avec confirmation
+
+### ListTab — toutes les actions câblées
+
+- `StatusDropdown` inline : changement statut sans modale
+- `AssignDropdown` inline : réassignation depuis la table
+- Inbox : messages réels via `useTicketById` · composer fonctionnel (⌘+↵) · notes internes
+- Macros : bouton "⚡ Macros" → popup depuis `/support/macros` · insertion dans textarea
+- Pièces jointes dans `InboxDetails`
+- Bouton "📅 Intervention" → navigate `/tech` avec contexte ticket en state
+- Suppression avec guard `DELETE_TICKETS` (RBAC)
+
+### SlaTab
+
+- Escalade individuelle câblée (EscalateModal)
+- "Passer en cours" bulk sur tous les tickets en breach (`PATCH /tickets/bulk`)
+
+### OverviewTab
+
+- KPIs dynamiques depuis `GET /tickets/stats`
+- Charge agents calculée depuis tickets réels
+- Volumes catégories calculés dynamiquement
+
+### SupportPage
+
+- Bouton "+ Nouveau ticket" branché (topbar + ListTab + InboxList)
+
+**Build vert — 69.51 kB lazy (+9.5 kB vs session précédente) — 0 erreur TS**
+
+**Différé intentionnel** : Live Chat (WebSocket), FAQ/Base de connaissance, Config admin SLA/catégories (Settings module), génération auto sujet/description
+
+---
+
+## [Session 17 — Polish Carte (suite) : LiveSidebar + VehicleDetailPanel + GoogleMapView] — 2026-05-03
+
+### LiveSidebar
+
+- **Composant ☰** : cardFields persisté localStorage (`sidebar-card-fields-v1`) · label `X/4` dynamique · vitesse `12.5px`
+- **Badges icône-only** : 🔋🔒⚠️ icône seule + tooltip · 📅 Abonnement avec label clair (`Expiré`/`30j`)
+- **⛽ Carburant** : nouveau badge conditionnel (`fuel > 0` = capteur actif) · `X%` avec couleur
+- **Filtres** : retrait Branche / Type d'engin / Statut GPS · restent Revendeur / Client / Groupe
+- **Nom affiché** : mode Alias (défaut, éditable inline `PUT /fleet/vehicles/:id { name }`) ou Plaque · persisté localStorage
+- **Plaque WW** : badge orange `(WW)` automatique si `isProvisionalPlate` (sans option ☰)
+- **`daysUntilExpiration`** : sous-requête SQL ajoutée dans `findAllWithPosition` (344 abonnements actifs)
+- **`ww_plate`** : migration prod `ALTER TABLE objects ADD COLUMN ww_plate VARCHAR(50)` · exposé dans objectRepository + BackendVehicle + Vehicle
+
+### VehicleDetailPanel
+
+- **timeAgo négatif** : normalisé UTC (suffix `Z` si absent) · diff < 0 → `à l'instant`
+- **Protocole dupliqué** : retiré de la liste GPS, reste dans mini-grille
+- **Score comportement** : jauge vide + `—` quand `v.score == null` (était `0`)
+- **CAP** : affiche `—` quand `heading` null (était `0°`)
+- **Conducteur** : guard `Non assigné` → `—`
+- **Coordonnées** : N/S · E/W calculés selon signe (lat/lng)
+- **Keys React** : `key={a.id}` alertes · `key={m.id}` maintenance (plus `key={i}`)
+- **Comportement** : `useEcoEvents(vid)` connecté (`harshBraking/harshAcceleration/harshCornering`)
+- **Chantiers ouverts** (mémoire) : odomètre cumulé · replay trajet-spécifique · modale ticket pré-remplie
+
+### GoogleMapView
+
+- **Popup carburant** : `tankCapacity` propagé `BackendVehicle → Vehicle → MapVehicle` · sans capteur → `—` · avec capteur → `XL (X%)`
+- **useReplayData** : dates ISO normalisées `T00:00:00Z` + `T23:59:59.999Z`
+
+### ViewAlerts
+
+- Pagination 25/page · reset sur filtre · boutons «/‹/numéros/›/»
+
+### Backend
+
+- `GET /fleet/vehicles/:id/eco-events/today` : compte `eco_driving_events` par type (HARSH_BRAKING/HARSH_ACCELERATION/HARSH_CORNERING)
+- `ww_plate` dans `ObjectRow` + `MappedObject` + `mapObjectRow`
+- `days_until_expiration` : sous-requête `subscriptions` dans `findAllWithPosition`
+- 502 prod diagnostiqué : `TenantController.js` 0 octets (corrompu deploy précédent) — résolu session parallèle
+
+---
+
+## [Session 16 — Polish Carte : Géofences & POI distincts + vue opérationnelle] — 2026-05-03
+
+**Distinction POI / Géofences** : deux entités séparées dans l'UI (table `pois` ≠ table `geofences`).
+
+**Nouveaux fichiers** :
+
+- `useGeofences.ts` — hook CRUD sur `/monitoring/geofences` (GET/POST/PUT/DELETE), types `GeofenceRow/Input`, helper `circleCenter()`
+- `GeofenceFormModal.tsx` — formulaire calqué sur PoiFormModal : CIRCLE (mini-carte Google + lat/lng/radius), POLYGON/ROUTE (JSON textarea), `defaultPosition` pour création depuis la carte
+- `PoiFormModal.tsx` — `MiniMapPicker`, `Field`, `inputStyle` exportés pour réutilisation
+
+**MapPage.tsx — onglet Géofences et POI** :
+
+- Vue opérationnelle unifiée (Géofences + POI avec radius)
+- 4 KPIs : Zones actives / Véhicules en zone (Haversine) / Hors zone / Alertes géofence du jour (00:00→23:59)
+- Table : ID · Nom · Type · Véhicules dedans (calcul client Haversine CIRCLE) · Alertes (—) · État
+- Bouton "+ Nouvelle zone" → dropdown Géofence / POI
+- Bouton 👁 → bascule sur la carte live et centre sur la zone
+- `geofencesToShow` carte live : vraies géofences CIRCLE actives (plus les POI)
+- Bouton ⊕ toolbar : ouvre GeofenceFormModal (non PoiFormModal)
+- Sous-titre onglet dynamique : zones actives / total
+
+**Module Carte (/map) — déclaré bouclé** : Live ✅ · Replay ✅ · Géofences et POI ✅ · Alertes ✅
+
+---
+
+## [Session 12 ext. 3 — Rapports V2 : Exports CSV / Excel / PDF activés] — 2026-05-03
+
+**`src/features/reports/exportUtils.ts`** (nouveau) — 3 fonctions d'export côté client :
+
+- `exportToCsv` (SheetJS, BOM UTF-8, `;`) · `exportToExcel` (exceljs lazy — titre brand, KPIs, en-tête dark, alternance, auto-width, freeze pane, colonne Total orange) · `exportToPdf` (jsPDF + autotable lazy — header brand, boîtes KPI, tableau stylé, pied de page paginé, landscape auto >9 cols) · `flattenGroups` (rapport groupé R-ACT-01 → table plate)
+
+**`RptDetailFlat.tsx` + `RptDetailTrips.tsx`** : boutons CSV (neutre) / Excel (vert #217346) / PDF (rouge #c00000) actifs. Désactivés si `exportOnly` ou pas de données. État `…` pendant génération. Libs exceljs (940 kB) + jsPDF (390 kB) chargées en **lazy** — 0 impact initial.
+
+Déployé en prod : `ReportsPage-CGqxFi2m.js` · May 3 14:33
+
+---
+
 ## [Session 14 — Vente/Facturation/Contrats complet + bugs FleetPage] — 2026-05-03
 
 ### FINANCE V2 — Priorité 3 complète

@@ -2,6 +2,48 @@
 
 Instructions permanentes pour Claude Code. Ces règles s'appliquent à chaque session, sans exception.
 
+---
+
+## 🟧 CHANTIER ACTIF — Refonte frontend V2 (depuis 2026-04-26)
+
+**Pivot stratégique D12** : reconstruction complète du frontend dans `trackyu-front-V2/` à partir des mockups claude.ai Design comme code source. Backend (`trackyu-backend/`) intact. Le legacy `TRACKING/` devient archive read-only après bascule (D17).
+
+### Bootstrap protocol — toute nouvelle session Claude lit dans cet ordre
+
+1. **CLAUDE.md** (ce fichier — auto-loaded) — règles permanentes
+2. **`docs/design-system/STATE.md`** — état temps réel (où on en est, ce qui se passe, ce qui vient)
+3. **`docs/design-system/CHANGELOG.md`** — historique décisions (D1-D17+)
+4. Si tâche sur un module précis : **`docs/design-system/modules/<MODULE>.md`** (spec auto-suffisante)
+5. Procéder
+
+### Documents de référence du chantier
+
+| Document                                        | Rôle                                                                |
+| ----------------------------------------------- | ------------------------------------------------------------------- |
+| `docs/design-system/CHANTIER_REFONTE_DESIGN.md` | Charter umbrella v0.5 (vision, principes, décisions D1-D17)         |
+| `docs/design-system/STATE.md`                   | **État temps réel** (à lire en premier après CLAUDE.md)             |
+| `docs/design-system/CHANGELOG.md`               | Journal versionné des décisions et livraisons                       |
+| `docs/design-system/DLS.md`                     | Source canonique des tokens, composants, règles design              |
+| `docs/design-system/BLUEPRINT.md`               | Brief Design des écrans (musts / libertés / nudges)                 |
+| `docs/design-system/RBAC_MATRIX.md`             | Matrice 12 rôles × écrans × permissions (référence à l'intégration) |
+| `docs/design-system/INTEGRATION_PLAYBOOK.md`    | Workflow build module par module                                    |
+| `docs/design-system/SCREEN_MAP.md`              | Inventaire 141 écrans / panels / modales                            |
+| `docs/design-system/AUDIT.md`                   | Audit du legacy (référence historique)                              |
+| `docs/design-system/modules/<MODULE>.md`        | Spec auto-suffisante par module                                     |
+| `docs/design-system/modules/_TEMPLATE.md`       | Gabarit pour créer un nouveau module spec                           |
+
+### Règle d'or de préservation de contexte
+
+À la fin de chaque session significative, **mettre à jour** :
+
+- `STATE.md` (sections "Où on en est" / "En cours" / "Prochaine action")
+- `CHANGELOG.md` (entrée datée)
+- Si module touché : sa spec `modules/<MODULE>.md` (statut + checklist + changelog du module)
+
+→ La prochaine session démarre **sans perte de contexte**.
+
+---
+
 ## Skills de référence
 
 Lire le fichier skill correspondant avant d'attaquer une tâche dans ces domaines :

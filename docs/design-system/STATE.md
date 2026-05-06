@@ -4,7 +4,19 @@
 >
 > Mis à jour à la fin de chaque session significative.
 >
-> Dernière mise à jour : **2026-05-03 (Session 14) — Chantier Vente/Facturation/Contrats complet + 3 bugs FleetPage critiques corrigés.** FINANCE V2 Priorité 3 entière livrée (b+c+d+a+f+e) : send multi-dest tags UI, Mobile Money sous-types `payment_provider` (migration + backend + PaymentModal Select opérateur), smart contract matching v3 (items depuis `contracts.items` JSONB + plaque depuis `vehicle_ids`), filtres Planning cycle complet (Client/Revendeur/Cycle cyclent sur toutes les valeurs). Chantier facturation abonnements complet (bouton 🧾 + anti-doublon étapes 1-4 + réactivation + badge "✓ Facturé"). CRUD Contrats (enveloppe : Client/Sujet/Dates/Statut/Notes + panel détail 👁 : table abonnements colonnes Véhicule/Cycle/Installation/Début/Fin/Montant/Statut + ligne MRR total). CRUD Abonnements (SubscriptionFormModal : contrat/véhicule/catalogue/tarif/cycle/dates/toggle-fin + panel détail 👁 : 3 onglets Détails/Factures/Historique + menu ••• Suspendre/Résilier). Migrations SQL appliquées prod : `recovery_dossiers` + `recovery_actions` + `payments.payment_provider`. Backend : `GET /contracts/:id/subscriptions` + `GET /subscriptions/:id/invoices` + `POST /subscriptions/:id/suspend` + corrections POST/PUT subscriptions (vehicle_id, contract_id, catalog_item_id). Catalogue : `useCatalogue()` + dropdown Désignation dans InvoiceFormModal (optgroup par catégorie, sélection auto unit_price/accountingSale). 3 bugs FleetPage TDZ/référence corrigés en urgence (useMemo non importé VentePage, queryClient déclaré dans sous-composant VehicleRow, filtered TDZ dans exportSelection). Tout déployé prod `index-DZ20v-L0.js`.
+> Dernière mise à jour : **2026-05-06 (Session 31) — Module Factures V2 audit complet + Devis→Facture fix.** Formulaire : Revendeur auto (useEffect client→resellerId), Contrat dans DESTINATAIRE (filtré/read-only/checkbox créer), plaques depuis `GET /objects?filter_client_id`, TVA 0% default. Liste : dates dd/mm/yyyy, revendeur réel (map client→reseller), solde client (TierFull.balance), plaque tronquée+hover, badge catégorie, colonne Période (items[0].period JSONB), bulk actions (checkboxes, marquer envoyé, changer catégorie). Détail : items réels via useInvoiceDetail, TVA réelle, paidAmountRaw, contractRef. Backend fix critique : convertQuoteToInvoice bloquait sur status=ACCEPTED → fix check converted_to_invoice_id + champs manquants (date/due_date/license_plate). **Prochaine session : tests manuels CRUD Factures + Paiements + Contrats + Abonnements · bugs P0 FactureDetailPanel (clientName/resellerName/period/clientEmail) · module Paiements.**
+>
+> Dernière mise à jour : **2026-05-06 (Session 30) — Clients & Tiers refonte + bugfixes prod :** `TierFormModal` (max-w-5xl, sections scrollables, tous champs legacy : code comptable+bouton Générer, App GPS, Secteur SELECT 15 options, Segment, Langue, conditions paiement, REVENDEUR/FOURNISSEUR spécifiques) · `TierDetailModal` (max-w-6xl, sidebar+5 onglets, CA chart Recharts, données réelles factures/paiements/contrats/interventions/tickets, relevé calculé) · `ViewTiers` 3 types (CLIENT/REVENDEUR/FOURNISSEUR) · Bugfixes : SystemTab cpu.percent, AdminPage useQueryClient manquant, VentePage useVenteClients résiduel, deploy-v2.ps1 BOM nginx. **Prochaine étape : régressions Settings formulaires (UserForm/DriverForm/SubUserForm/GroupForm/TechForm/CommandForm) + boutons disabled.**
+
+> Dernière mise à jour : **2026-05-05 (Sessions 26-29) — Chantier régression legacy→V2 :** Monitoring 7 onglets refactorisés (actions câblées, Socket.IO, Kalman, Offline historique, enrôler IMEI) · Branches cross-tenant + concept corrigé · Settings formulaires complets (Alert/Maintenance/EcoDriving/Schedule/AlertConfig/Zones/POI/VehicleForm 5 tabs) · Admin Organisation 9 onglets + Messages CRUD + Documents HTML + Centre d'aide CRUD + Intégrations 5 providers · Notifications câblées · i18n Sidebar + chart MRR · Centre d'aide + Intégrations déployés. **Prochaine étape : session rattrapage regressions restantes — voir `project_regression_plan.md`.**
+>
+> Dernière mise à jour : **2026-05-05 (Session 26) — Tests manuels + corrections Prévente/Devis/Catalogue.** Leads : fix camelCase/sidebar/409, formulaire enrichi (catalogue+revendeur+catégorie), flow conversion Lead→Client+Devis. Devis : refonte complète QuoteFormModal + DevisDetailView + modale email (PDF pdfkit auto, PJ, templates, objet auto). Catalogue : fix PUT cross-tenant, filtre Revendeur, comptes comptables 706100/702100. **CRITIQUE : deploy.ps1 = legacy, deploy-v2.ps1 = V2 (port 8082).** Prochaine session : tests manuels module par module (Factures → Paiements → Contrats → Abonnements → Clients).
+
+> Dernière mise à jour archivée : **2026-05-05 (Session 25) — Stock Accessoires livré. Backend `/api/v1/tech/parts` était déjà en prod. `AccessoriesTab.tsx` créé (3 KPIs, DataTable, Dialog CRUD, alerte stock bas). V2 = 100% parité legacy. Mémoires stale corrigées. Prochaine étape : features nouvelles ou i18n EN.**
+>
+> Dernière mise à jour : **2026-05-05 (Session 24) — Check propreté V2 complet.** Audit + corrections systématiques sur tous les modules V2 : (1) **Barres de recherche** — 9 bugs `onChange={e => e.target.value}` sur `ToolbarSearch` corrigés (Abonnements, Factures, Paiements, Recouvrement, Support, Clients Vente, Compta Finance/Dépenses) ; (2) **Filtres** — `FilterSelect` UI kit partagé, 6 composants locaux supprimés (Prévente tabs) ; `ResetFiltersButton` 6 tabs Prévente ; (3) **Dates** — `Input type="date"` standardisé Fleet+Stock ; (4) **Pagination** — slicing réel TblWrap Admin (5 vues), Fleet custom pagination → `<Pagination>`, Compta double-pagination corrigée ; (5) **Bugs P0** — TblWrap page reset, RowActs callbacks, RÉAPPRO disabled, setTimeout memory leak Support ; (6) **Modales** — 7 overlays custom → `<Dialog>` UI kit (Admin ×4, AccountView, GroupsView, TableView) ; `Dialog.confirmDisabled` prop ajoutée ; (7) **FilterSelect** unifié dans 6 tabs Prévente (custom supprimés) ; (8) **Boutons** — `<Button>` dans Admin/GroupsView/VehicleEditModal ; (9) **Map keys** — `key={i}` instables → clés stables dans Stock, Compta, Admin ; (10) **Typage `any`** — `useSupportData.ts` 4 hooks typés, VentePage 14 `any` → `Invoice | Invoice|null`, `AnalyticsDashboard` interface, `downloadInvoicePDF(inv: Invoice)`. `FilterSelect.tsx` nouveau composant UI kit (toolbar compact 38px, active-state auto). Tout déployé prod live.trackyugps.com HTTP 200.
+>
+> Dernière mise à jour : **2026-05-04 (Session 21) — Polish Vente : Abonnements Lot B complet + Planning enrichi + Paiements refonte complète.** Abonnements : filtres Revendeur/Cycle/Expiration/Statuts dérivés (expiring_soon/expired), colonne Nb factures, actions Voir contrat + Supprimer, panel Détails (B1/B2 fixed, autoRenew, dates ISO), panel Factures (badge catégorie), panel Historique activé (timeline factures + événement création), formulaire édition dates pré-remplies (startDateRaw/endDateRaw). Planning : nouvel endpoint backend `GET /subscriptions/invoices/planning?year=YYYY` (sans limite, catégorie SUBSCRIPTION), hook `usePlanningInvoices(year)` remplace `useInvoices(1,200)`, fix `normalizeCategory` ('SUBSCRIPTION'→'ABONNEMENT'), popup prévision avec bouton "🧾 Générer la facture" (doublon + date install). Paiements : refonte tableau (Client/Revendeur/Contrat/Plaque/Opérateur + 6 filtres + total XOF), `PaymentModal` multi-factures (sélection client → factures non-payées avec solde dû + multi-checkbox), fix bug queryKey invalidation, backend `findAllPayments` JOINs enrichis + `findAllInvoices` filtre `?status=unpaid`. Check propreté Abonnements : 5 fixes (TERMINATED mapStatus, EmptyState, useEffect inutilisé, history useMemo, categoryInfo double-call). FINANCE V2 Priorité 3 entière livrée (b+c+d+a+f+e) : send multi-dest tags UI, Mobile Money sous-types `payment_provider` (migration + backend + PaymentModal Select opérateur), smart contract matching v3 (items depuis `contracts.items` JSONB + plaque depuis `vehicle_ids`), filtres Planning cycle complet (Client/Revendeur/Cycle cyclent sur toutes les valeurs). Chantier facturation abonnements complet (bouton 🧾 + anti-doublon étapes 1-4 + réactivation + badge "✓ Facturé"). CRUD Contrats (enveloppe : Client/Sujet/Dates/Statut/Notes + panel détail 👁 : table abonnements colonnes Véhicule/Cycle/Installation/Début/Fin/Montant/Statut + ligne MRR total). CRUD Abonnements (SubscriptionFormModal : contrat/véhicule/catalogue/tarif/cycle/dates/toggle-fin + panel détail 👁 : 3 onglets Détails/Factures/Historique + menu ••• Suspendre/Résilier). Migrations SQL appliquées prod : `recovery_dossiers` + `recovery_actions` + `payments.payment_provider`. Backend : `GET /contracts/:id/subscriptions` + `GET /subscriptions/:id/invoices` + `POST /subscriptions/:id/suspend` + corrections POST/PUT subscriptions (vehicle_id, contract_id, catalog_item_id). Catalogue : `useCatalogue()` + dropdown Désignation dans InvoiceFormModal (optgroup par catégorie, sélection auto unit_price/accountingSale). 3 bugs FleetPage TDZ/référence corrigés en urgence (useMemo non importé VentePage, queryClient déclaré dans sous-composant VehicleRow, filtered TDZ dans exportSelection). Tout déployé prod `index-DZ20v-L0.js`.
 >
 > Session 13 (2026-05-03) — Alignement données carburant V2 sur legacy (VehicleDetailPanel + VehicleDrawer). Audit utilisateur : le bloc Carburant V2 n'utilisait qu'environ 10% du travail legacy (1343 L de code dédié). Refonte intégrale en 4 lots, design V2 préservé, données legacy alignées. **Bug critique fixé** : `useVehicleFuel.events` recevait toujours `[]` car backend renvoie `{data:[...]}` mais le hook faisait `Array.isArray(data)` → false (aucun véhicule n'avait jamais d'événements carburant en V2). **Lot 1** : hook `useVehicleFuel.ts` réécrit — déballage `data.data ?? data`, filtre `DISMISSED`, ajout des 8 champs backend manquants (`totalRefillVolume`, `totalTheftVolume`, `refillCount`, `theftCount`, `totalConsumption`, `idlingWaste`, `tankCapacity`, `fuelType`), `FuelPoint` enrichi avec `level`/`consumption`, `FuelEvent` avec `amount`/`severity`/`confidence`, alias rétrocompat (`avg`, `min`, `max`, `tank_capacity`) pour ne pas casser le Replay. **Lot 2** : bloc Carburant `MapPage.tsx` — jauge ronde affiche les vrais litres + capacité réelle (avant : `60` codé en dur), 4 KPI alignés legacy (Recharge `+X L · n×`, Baisses, Consommation `X L · L/100km`, Pertes ralenti `X L · h/min` formule `idleHours × 1.89`), tabs Today/Semaine fonctionnels (formule legacy `start + refills − thefts − end`), bouton "📈 Courbe & détails". **Lot 3** : nouveau composant `features/fleet/components/FuelDetailModal.tsx` (529 L) — port de `legacy/FuelModalContent` avec design V2, modale 760px tabs Aujourd'hui/Semaine, 4 KPI cards, **ComposedChart Recharts** (Area niveau bleu + Line pertes ralenti orange pointillé + markers `+`/`−` REFILL/THEFT au point d'historique le plus proche), tooltip enrichi, légende, section "Événements détectés" (12 max, statut backend, confidence %). **Lot 4** : onglet Carburant `VehicleDrawer.tsx` Fleet refait — section "Niveau actuel" (grand chiffre + barre + capacité), section "Aujourd'hui" (mêmes 4 KPI), sparkline 7j alignée bleue, bouton modale, événements avec confidence %. **Build vert** : MapPage 64.73 → 182.79 kB, nouveau chunk lazy `FuelDetailModal-*.js` 383.15 kB (gzip 113.59) chargé à l'ouverture de la modale, 24.80s. Différé (à voir si métier prioritaire) : bar chart hebdo Mon-Sun, géocodage tooltip courbe, modale review events workflow CONFIRMER/REJETER (endpoint `POST /fuel-events/:id/review` déjà câblé). 🟧 En attente déploiement staging.
 >
@@ -235,45 +247,117 @@ Déposés dans [`trackyu-front-V2/_design-source/_handoff/`](../../trackyu-front
 
 ## 🚦 Prochaine action concrète
 
-### Session 13 (2026-05-03) — Carburant V2 aligné legacy ✅ — En attente staging
+### Après Sessions 22-25 (2026-05-05) — Polish complet + DNS landing fixé
 
-**4 lots livrés en local** (TS vert + Vite build vert 24.80s) :
+**État build :** TS vert + Vite build vert (~25s). Backend + frontend déployés prod HTTP 200.
 
-- Lot 1 — `features/fleet/hooks/useVehicleFuel.ts` réécrit (bug events `{data:[]}` fixé + 8 champs backend ajoutés)
-- Lot 2 — `features/map/MapPage.tsx` bloc Carburant refait (vrais litres, vraie capacité, KPI legacy, tabs Today/Week)
-- Lot 3 — `features/fleet/components/FuelDetailModal.tsx` créé (529 L, ComposedChart Recharts + markers + événements)
-- Lot 4 — `features/fleet/VehicleDrawer.tsx` onglet Carburant aligné (mêmes KPI + bouton modale)
+**Session 25 — fixes DNS/landing :**
 
-**Action #1** — smoke test en local :
+- `trackyugps.com` → landing page directe (plus de redirect `/landing`) ✅
+- `RootLayout` domain-aware : bypass RouteGuard sur trackyugps.com, RouteGuard+AppShell sur live.\*
+- Stock Accessoires : `AccessoriesTab.tsx` créé, backend `/api/v1/tech/parts` branché
+- `spare_parts` table structurée en prod (0 lignes, prête pour données)
 
-```bash
-cd C:\Users\ADMIN\Desktop\trackyu-front-V2
-npm run dev
-```
+**Tout ce qui a été fait en sessions 22-23 (résumé) :**
 
-→ Ouvrir Carte (`/map`) · sélectionner un véhicule · vérifier le bloc Carburant + le bouton "📈 Courbe & détails" · vérifier l'onglet Carburant du Drawer Fleet (`/fleet`).
+- **Compta** ✅ COMPLET : migrations DB, journal_code, useAccountingPeriods, BudgetFormModal, CaisseView
+- **Settings** ✅ COMPLET : 5 URLs 404, Mon compte useAuth, UserModal, BranchFormModal, GroupFormModal, POI CRUD, 4 modales Rules
+- **Monitoring** ✅ COMPLET : anomalies mapping, monitoring-health, AlertsTab bouton lu
+- **Check de propreté** ✅ 5 lots (tous modules) — corrections déployées
+- **Dashboard** ✅ COMPLET : FleetStats mapper, KPI Facturé mois, Carburant moyen, vehiclesWithAlerts
+- **Map** ✅ COMPLET : TicketFormModal depuis VehicleDetailPanel
+- **Admin** ✅ COMPLET : Webhooks/Corbeille delete, Revendeurs/Équipe edit+delete
+- **Tech** ✅ : Section "Charge par technicien" (données réelles, TI_STOCK_BY_TECH supprimé)
+- **Stock** ✅ : Onglet Mouvements connecté (/stock-movements, 22 entrées prod)
+- **Rapports** ✅ (déjà complet) : 78 rapports via RptDetailFlat + api.ts
+- **Vente Rapprochement** ✅ : UI fonctionnelle (0 à rapprocher = correct en prod)
 
-**Action #2** — déployer staging si validation OK :
+**Bilan modules — état final :**
 
-```bash
-cd C:\Users\ADMIN\Desktop\TRACKING
-powershell -File .\deploy-v2.ps1 -nobuild
-```
+| Module                      | État                                              |
+| --------------------------- | ------------------------------------------------- |
+| Dashboard · Map · Fleet     | ✅ 100%                                           |
+| Vente · Compta · Monitoring | ✅ 100%                                           |
+| Settings · Admin · Tech     | ✅ 100%                                           |
+| Support · Prévente · Agenda | ✅ 100%                                           |
+| Rapports (78/78)            | ✅ 100%                                           |
+| Stock                       | 🟡 Accessoires sans backend (placeholder honnête) |
 
-(Build déjà à jour dans `trackyu-front-V2/dist/` — `index-Df4OSsQG.js` 467.53 kB + `FuelDetailModal-sPazUmf2.js` 383.15 kB lazy.)
+**Seul gap structurel restant :**
 
-**Action #3** — valider en staging puis prod (workflow `staging → accord explicite → prod`).
+- **Stock Accessoires** : table `spare_parts` vide en prod, pas de route backend → placeholder "à venir"
 
-**Action #4** — décider des points différés (à faire en lots dédiés si métier prioritaire) :
+**Prochaine session — options :**
 
-1. Bar chart hebdo Mon-Sun composition Début/Recharge/Baisse/Conso/Fin (legacy `WeeklyBarChart`).
-2. Géocodage adresse au survol des points de la courbe (le `start_address` events est déjà affiché).
-3. Modale review events workflow (CONFIRMER/REJETER/DISPUTER) — endpoint `POST /fuel-events/:id/review` déjà câblé côté `services/api/fleet.ts`.
-4. Saisie manuelle d'un plein (`fuel_records`) — endpoint backend non identifié pour V2.
+**A) Bascule DNS v1→V2** (priorité haute)
 
-→ **Règle cardinale** : pas-à-pas, accord explicite utilisateur avant chaque nouveau module. Build vert entre chaque étape.
+- Vérifier checklist complète : auth flow, RBAC, données, performances
+- Configurer DNS `live.trackyugps.com` → déjà V2 ✅ (`trackyugps.com` → à pointer vers V2)
+- Mettre `v1.trackyugps.com` en archive
 
-→ **Voir** [`CONTEXTE_SESSION_SUIVANTE.md`](CONTEXTE_SESSION_SUIVANTE.md) pour le détail complet de la session.
+**B) Features nouvelles** (selon demande)
+
+- Stock Accessoires backend (créer `/spare-parts` endpoint + CRUD)
+- Nouveaux rapports backend (si besoin)
+- Mobile — session parallèle indépendante
+
+**C) Polish ciblé** (si retour utilisateurs)
+
+- Bugs post-déploiement signalés
+- Performances (lazy loading, cache)
+- i18n EN (vague B)
+- `trackyu-backend/src/repositories/objectRepository.ts` (bug SQL fix)
+
+---
+
+### Après Session 18 (2026-05-04) — Support/Tickets 100% fonctionnel
+
+**État build local :** TS vert + Vite build vert (28s). Prêt pour staging.
+
+**Prochain module Polish : Dashboard (`/`)**
+
+Points à vérifier :
+
+- KPIs live (fleet status, revenus, alertes, contrats, tickets, interventions, stock, leads) → connectés ?
+- Charts/sparklines → données réelles ou hardcodées ?
+- Liens de navigation (clic KPI → module) → fonctionnels ?
+
+**Chantiers VehicleDetailPanel (Carte) toujours ouverts (voir mémoire `project_vehicledetail_chantiers.md`) :**
+
+1. Odomètre cumulé depuis installation
+2. Bouton ▶ replay → trajet-spécifique
+3. Bouton "Créer ticket" → TicketFormModal maintenant disponible dans `features/support/TicketFormModal.tsx`
+
+**Différé Support :** Live Chat · FAQ · Config admin SLA/catégories
+
+---
+
+### Après Session 17 (2026-05-03) — Carte bouclé · Déploiements en attente session parallèle
+
+**État build local :** TS vert + Vite build vert (26s). Prêt pour staging.
+
+**Déploiements en attente (session parallèle) :**
+
+- Frontend V2 : `deploy-v2.ps1 -nobuild` → live.trackyugps.com
+- Backend : `deploy.ps1 -backend -nobuild -force` → prod (ww_plate + eco-events/today + days_until_expiration)
+
+**Prochain module Polish : Dashboard (`/`)**
+
+Selon le playbook : Dashboard = 2e priorité après Carte.
+
+Points à vérifier :
+
+- KPIs live (fleet status, revenus, alertes, contrats, tickets, interventions, stock, leads) → connectés ?
+- Charts/sparklines → données réelles ou hardcodées ?
+- Liens de navigation (clic KPI → module) → fonctionnels ?
+
+**Chantiers ouverts VehicleDetailPanel (voir mémoire `project_vehicledetail_chantiers.md`) :**
+
+1. Odomètre cumulé depuis installation (couplé champ kilométrage formulaire véhicule)
+2. Bouton ▶ replay → trajet-spécifique (date + vehicleId)
+3. Bouton "Créer ticket" → modale pré-remplie (pas navigation /support)
+
+→ Ces 3 points sont à adresser avant de déclarer Carte **entièrement** bouclé.
 
 ---
 

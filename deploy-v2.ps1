@@ -64,7 +64,7 @@ server {
 
 if (-not $dryrun) {
     $tmpConf = [IO.Path]::GetTempFileName() + ".conf"
-    [IO.File]::WriteAllText($tmpConf, $nginxConf, [Text.Encoding]::UTF8)
+    [IO.File]::WriteAllText($tmpConf, $nginxConf, [Text.UTF8Encoding]::new($false))
     & scp @SSH_OPTS $tmpConf ($SERVER + ":" + $REMOTE_PATH + "/nginx_v2.conf") 2>&1 | Out-Null
     Remove-Item $tmpConf -Force
 }

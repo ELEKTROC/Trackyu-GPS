@@ -21,7 +21,7 @@ import subprocess
 import sys
 
 PSQL = [
-    "docker", "exec", "6e9a3283ca3b_trackyu-gps-postgres-1",
+    "docker", "exec", "trackyu-gps-postgres-1",
     "psql", "-U", "fleet_user", "-d", "fleet_db",
     "-v", "ON_ERROR_STOP=1",
     "-c"
